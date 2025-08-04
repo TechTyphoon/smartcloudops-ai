@@ -80,7 +80,7 @@ resource "aws_subnet" "public_subnet_1" {
   vpc_id                  = aws_vpc.smartcloudops_vpc.id
   cidr_block              = var.public_subnet_1_cidr
   availability_zone       = data.aws_availability_zones.available.names[0]
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = {
     Name = "${var.project_name}-public-subnet-1"
@@ -92,7 +92,7 @@ resource "aws_subnet" "public_subnet_2" {
   vpc_id                  = aws_vpc.smartcloudops_vpc.id
   cidr_block              = var.public_subnet_2_cidr
   availability_zone       = data.aws_availability_zones.available.names[1]
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = {
     Name = "${var.project_name}-public-subnet-2"
@@ -140,21 +140,21 @@ resource "aws_security_group" "web_sg" {
     description = "SSH access"
   }
 
-  # HTTP access
+  # HTTP access (restricted to allowed CIDRs)
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.allowed_cidr_blocks
     description = "HTTP access"
   }
 
-  # HTTPS access
+  # HTTPS access (restricted to allowed CIDRs)
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.allowed_cidr_blocks
     description = "HTTPS access"
   }
 
@@ -167,13 +167,31 @@ resource "aws_security_group" "web_sg" {
     description = "Flask application"
   }
 
-  # Outbound traffic
+  # Outbound HTTP traffic
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    description = "All outbound traffic"
+    description = "HTTP outbound"
+  }
+
+  # Outbound HTTPS traffic
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "HTTPS outbound"
+  }
+
+  # DNS outbound
+  egress {
+    from_port   = 53
+    to_port     = 53
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "DNS outbound"
   }
 
   tags = {
@@ -223,13 +241,31 @@ resource "aws_security_group" "monitoring_sg" {
     description = "Grafana web UI"
   }
 
-  # Outbound traffic
+  # Outbound HTTP traffic
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    description = "All outbound traffic"
+    description = "HTTP outbound"
+  }
+
+  # Outbound HTTPS traffic
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "HTTPS outbound"
+  }
+
+  # DNS outbound
+  egress {
+    from_port   = 53
+    to_port     = 53
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "DNS outbound"
   }
 
   tags = {
@@ -249,12 +285,23 @@ resource "aws_key_pair" "smartcloudops_key" {
 
 # EC2 Instance for Monitoring
 resource "aws_instance" "ec2_monitoring" {
-  ami                     = data.aws_ami.amazon_linux.id
-  instance_type           = var.monitoring_instance_type
-  key_name                = aws_key_pair.smartcloudops_key.key_name
-  vpc_security_group_ids  = [aws_security_group.monitoring_sg.id]
-  subnet_id               = aws_subnet.public_subnet_1.id
-  disable_api_termination = false
+  ami                         = data.aws_ami.amazon_linux.id
+  instance_type               = var.monitoring_instance_type
+  key_name                    = aws_key_pair.smartcloudops_key.key_name
+  vpc_security_group_ids      = [aws_security_group.monitoring_sg.id]
+  subnet_id                   = aws_subnet.public_subnet_1.id
+  disable_api_termination     = false
+  monitoring                  = true
+  ebs_optimized               = true
+  iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
+  associate_public_ip_address = true
+
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 1
+    instance_metadata_tags      = "enabled"
+  }
 
   root_block_device {
     volume_type = "gp3"
@@ -272,12 +319,23 @@ resource "aws_instance" "ec2_monitoring" {
 
 # EC2 Instance for Application
 resource "aws_instance" "ec2_application" {
-  ami                     = data.aws_ami.amazon_linux.id
-  instance_type           = var.application_instance_type
-  key_name                = aws_key_pair.smartcloudops_key.key_name
-  vpc_security_group_ids  = [aws_security_group.web_sg.id, aws_security_group.monitoring_sg.id]
-  subnet_id               = aws_subnet.public_subnet_2.id
-  disable_api_termination = false
+  ami                         = data.aws_ami.amazon_linux.id
+  instance_type               = var.application_instance_type
+  key_name                    = aws_key_pair.smartcloudops_key.key_name
+  vpc_security_group_ids      = [aws_security_group.web_sg.id, aws_security_group.monitoring_sg.id]
+  subnet_id                   = aws_subnet.public_subnet_2.id
+  disable_api_termination     = false
+  monitoring                  = true
+  ebs_optimized               = true
+  iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
+  associate_public_ip_address = true
+
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 1
+    instance_metadata_tags      = "enabled"
+  }
 
   root_block_device {
     volume_type = "gp3"

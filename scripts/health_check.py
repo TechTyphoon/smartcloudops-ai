@@ -5,8 +5,13 @@ Phase 1: Basic system health verification
 """
 
 import sys
+import os
 import requests
 from typing import Dict, Any
+
+# Add the project root to Python path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
 from app.config import get_config
 
 
