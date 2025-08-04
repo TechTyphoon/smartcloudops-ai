@@ -18,3 +18,8 @@ click==8.1.7
 # Testing (Phase 1)
 pytest==7.4.3
 pytest-cov==4.1.0
+
+# Code quality tools
+flake8==6.1.0
+black==23.11.0
+isort==5.12.0
