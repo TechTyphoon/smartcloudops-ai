@@ -1,0 +1,57 @@
+# Smart CloudOps AI - Prometheus Configuration
+# Global configuration
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# Alertmanager configuration (to be added in Phase 6)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets:
+
+# Rule files for alerting
+rule_files:
+  - "alert_rules.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 5s
+    metrics_path: /metrics
+
+  # Node Exporter on monitoring server
+  - job_name: 'node-exporter-monitoring'
+    static_configs:
+      - targets: ['localhost:9100']
+    scrape_interval: 10s
+
+  # Node Exporter on application server (will be configured during deployment)
+  - job_name: 'node-exporter-application'
+    static_configs:
+      - targets: ['APPLICATION_SERVER_IP:9100']
+    scrape_interval: 10s
+
+  # Flask application metrics
+  - job_name: 'flask-application'
+    static_configs:
+      - targets: ['APPLICATION_SERVER_IP:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Additional monitoring targets
+  - job_name: 'ec2-instances'
+    ec2_sd_configs:
+      - region: us-west-2
+        port: 9100
+    relabel_configs:
+      - source_labels: [__meta_ec2_tag_Name]
+        target_label: instance_name
+
+  # Future: Add more services here
+  # - job_name: 'docker-containers'
+  # - job_name: 'aws-cloudwatch'
