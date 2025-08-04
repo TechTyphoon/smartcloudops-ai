@@ -6,17 +6,19 @@ on:
     paths:
       - 'app/**'
       - 'scripts/**'
-      - 'ml_models/**'
+      - 'tests/**'
       - 'requirements.txt'
       - 'Dockerfile'
+      - 'pytest.ini'
   pull_request:
     branches: [ main ]
     paths:
       - 'app/**'
       - 'scripts/**'
-      - 'ml_models/**'
+      - 'tests/**'
       - 'requirements.txt'
       - 'Dockerfile'
+      - 'pytest.ini'
 
 jobs:
   test:
@@ -25,7 +27,7 @@ jobs:
     
     strategy:
       matrix:
-        python-version: [3.10, 3.11]
+        python-version: ["3.10", "3.11"]
 
     steps:
     - name: Checkout code

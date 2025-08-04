@@ -107,7 +107,7 @@ output "monitoring_setup_command" {
 # Comprehensive Access Information
 output "access_summary" {
   description = "Complete access information for all services"
-  value = <<-EOT
+  value       = <<-EOT
   
 🎉 Smart CloudOps AI Infrastructure Deployed Successfully!
 
