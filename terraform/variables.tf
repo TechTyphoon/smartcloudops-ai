@@ -24,7 +24,7 @@ variable "project_owner" {
 variable "aws_region" {
   description = "AWS region for resources"
   type        = string
-  default     = "us-west-2"
+  default     = "ap-south-1" # Changed from us-west-2 to match local config
 }
 
 # Network Configuration
