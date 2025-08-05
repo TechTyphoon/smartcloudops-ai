@@ -26,6 +26,8 @@
 - 📊 **Live Prometheus Monitoring**: Real-time metrics collection and alerting
 - 📈 **Live Grafana Dashboards**: Beautiful visualizations with real data
 - 🔧 **Production Ready**: Zero-cost deployment using AWS Free Tier
+- 🐍 **Flask Application**: Complete with `/metrics` endpoint for Prometheus integration
+- ✅ **Full Testing Suite**: 100% functional with security scanning
 
 ---
 
@@ -38,8 +40,9 @@
 
 ### 📊 **Monitoring & Observability**
 - **Prometheus + Grafana stack** for comprehensive monitoring
-- **Real-time metrics collection** from AWS resources
+- **Real-time metrics collection** from AWS resources and Flask application
 - **Custom dashboards** for system insights
+- **Flask `/metrics` endpoint** with Prometheus client integration
 
 ### 🤖 **ML-Powered Intelligence**
 - **Anomaly detection** using machine learning algorithms

@@ -12,6 +12,34 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from app.config import get_config
 
 
+def check_flask_application() -> Dict[str, Any]:
+    """Check if Flask application is accessible."""
+    try:
+        # Test Flask app import
+        from app.main import create_app
+        app = create_app()
+        
+        # Test endpoints using test client
+        with app.test_client() as client:
+            health_response = client.get('/health')
+            metrics_response = client.get('/metrics')
+            
+            if health_response.status_code == 200 and metrics_response.status_code == 200:
+                return {
+                    "status": "healthy", 
+                    "message": "Flask application and endpoints working"
+                }
+            else:
+                return {
+                    "status": "unhealthy",
+                    "message": f"Flask endpoints failed: health={health_response.status_code}, metrics={metrics_response.status_code}"
+                }
+    except ImportError as e:
+        return {"status": "unhealthy", "message": f"Flask app import failed: {str(e)}"}
+    except Exception as e:
+        return {"status": "unhealthy", "message": f"Flask application error: {str(e)}"}
+
+
 def check_prometheus_connection() -> Dict[str, Any]:
     """Check if Prometheus is accessible."""
     config = get_config()
@@ -36,6 +64,7 @@ def run_health_checks() -> bool:
     print("=" * 50)
 
     checks = [
+        ("Flask Application", check_flask_application),
         ("Prometheus Connection", check_prometheus_connection),
     ]
 
