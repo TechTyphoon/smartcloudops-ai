@@ -43,15 +43,32 @@ resource "aws_iam_role_policy" "ec2_policy" {
       {
         Effect = "Allow"
         Action = [
-          "cloudwatch:PutMetricData",
+          "cloudwatch:PutMetricData"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
-          "logs:PutLogEvents",
+          "logs:PutLogEvents"
+        ]
+        Resource = [
+          "arn:aws:logs:${var.aws_region}:*:log-group:/aws/ec2/*",
+          "arn:aws:logs:${var.aws_region}:*:log-group:/aws/ec2/*:log-stream:*"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "ssm:GetParameter",
           "ssm:GetParameters",
           "ssm:GetParametersByPath"
         ]
-        Resource = "*"
+        Resource = [
+          "arn:aws:ssm:${var.aws_region}:*:parameter/${var.project_name}/*"
+        ]
       }
     ]
   })
@@ -60,7 +77,7 @@ resource "aws_iam_role_policy" "ec2_policy" {
 # VPC Flow Logs
 resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   name              = "/aws/vpc/flowlogs"
-  retention_in_days = 7
+  retention_in_days = 365
 
   tags = {
     Name = "${var.project_name}-vpc-flow-logs"
@@ -99,8 +116,11 @@ resource "aws_iam_role_policy" "flow_log_policy" {
           "logs:DescribeLogGroups",
           "logs:DescribeLogStreams"
         ]
-        Effect   = "Allow"
-        Resource = "*"
+        Effect = "Allow"
+        Resource = [
+          "arn:aws:logs:${var.aws_region}:*:log-group:/aws/vpc/flowlogs",
+          "arn:aws:logs:${var.aws_region}:*:log-group:/aws/vpc/flowlogs:log-stream:*"
+        ]
       }
     ]
   })

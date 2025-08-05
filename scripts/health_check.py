@@ -18,9 +18,7 @@ def check_prometheus_connection() -> Dict[str, Any]:
     prometheus_url = f"http://localhost:{config.METRICS_PORT}"
 
     try:
-        response = requests.get(
-            f"{prometheus_url}/api/v1/query?query=up", timeout=5
-        )
+        response = requests.get(f"{prometheus_url}/api/v1/query?query=up", timeout=5)
         if response.status_code == 200:
             return {"status": "healthy", "message": "Prometheus is accessible"}
         else:
