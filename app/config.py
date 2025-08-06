@@ -1,4 +1,4 @@
-"""Configuration module for Smart CloudOps AI Phase 1: Basic configuration setup."""
+"""Configuration module for Smart CloudOps AI Phase 2: ChatOps configuration setup."""
 
 import os
 from typing import Dict, Any
@@ -9,12 +9,27 @@ class Config:
 
     # Basic app configuration
     APP_NAME: str = "Smart CloudOps AI"
-    VERSION: str = "0.1.0"
+    VERSION: str = "0.2.0"
     DEBUG: bool = False
 
     # Monitoring configuration (Phase 1)
     PROMETHEUS_ENABLED: bool = True
     METRICS_PORT: int = 9090
+
+    # ChatOps configuration (Phase 2)
+    AI_PROVIDER: str = "auto"  # "openai", "gemini", or "auto"
+    OPENAI_API_KEY: str = ""
+    OPENAI_MODEL: str = "gpt-3.5-turbo"
+    OPENAI_MAX_TOKENS: int = 500
+    OPENAI_TEMPERATURE: float = 0.3
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-1.5-pro"
+    GEMINI_MAX_TOKENS: int = 500
+    GEMINI_TEMPERATURE: float = 0.3
+
+    # Logging configuration
+    LOG_LEVEL: str = "INFO"
+    LOG_DIR: str = "logs"
 
     @classmethod
     def from_env(cls) -> Dict[str, Any]:
@@ -22,6 +37,17 @@ class Config:
         return {
             "debug": os.getenv("DEBUG", "false").lower() == "true",
             "metrics_port": int(os.getenv("METRICS_PORT", "9090")),
+            "ai_provider": os.getenv("AI_PROVIDER", "auto"),
+            "openai_api_key": os.getenv("OPENAI_API_KEY", ""),
+            "openai_model": os.getenv("OPENAI_MODEL", "gpt-3.5-turbo"),
+            "openai_max_tokens": int(os.getenv("OPENAI_MAX_TOKENS", "500")),
+            "openai_temperature": float(os.getenv("OPENAI_TEMPERATURE", "0.3")),
+            "gemini_api_key": os.getenv("GEMINI_API_KEY", ""),
+            "gemini_model": os.getenv("GEMINI_MODEL", "gemini-1.5-pro"),
+            "gemini_max_tokens": int(os.getenv("GEMINI_MAX_TOKENS", "500")),
+            "gemini_temperature": float(os.getenv("GEMINI_TEMPERATURE", "0.3")),
+            "log_level": os.getenv("LOG_LEVEL", "INFO"),
+            "log_dir": os.getenv("LOG_DIR", "logs"),
         }
 
 

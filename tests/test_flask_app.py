@@ -52,8 +52,10 @@ class TestFlaskApplication:
         response = client.get('/status')
         assert response.status_code == 200
         data = response.get_json()
-        assert data['system'] == 'operational'
-        assert data['prometheus_ready'] is True
+        assert data['status'] == 'success'
+        assert 'data' in data
+        # Check that we get system context data
+        assert 'system_health' in data['data'] or 'prometheus_metrics' in data['data']
 
     def test_404_handler(self, client):
         """Test 404 error handler."""

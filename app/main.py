@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Smart CloudOps AI - Flask Application (Phase 1)
-Basic Flask application with metrics endpoint for Prometheus monitoring
+Smart CloudOps AI - Flask Application (Phase 2)
+ChatOps application with GPT integration and comprehensive monitoring
 """
 
 import sys
@@ -15,6 +15,8 @@ import logging
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from app.config import get_config
+from app.chatops.ai_handler import FlexibleAIHandler
+from app.chatops.utils import SystemContextGatherer, LogRetriever, validate_query_params, format_response
 
 # Configure logging
 logging.basicConfig(
@@ -27,6 +29,8 @@ logger = logging.getLogger(__name__)
 REQUEST_COUNT = Counter('flask_requests_total', 'Total Flask requests', ['method', 'endpoint'])
 REQUEST_DURATION = Histogram('flask_request_duration_seconds', 'Flask request duration')
 SYSTEM_HEALTH = Gauge('system_health_status', 'System health status (1=healthy, 0=unhealthy)')
+GPT_REQUESTS = Counter('gpt_requests_total', 'Total GPT API requests', ['status'])
+GPT_RESPONSE_TIME = Histogram('gpt_response_time_seconds', 'GPT API response time')
 
 def create_app(config_name='development'):
     """Create and configure the Flask application."""
@@ -38,6 +42,25 @@ def create_app(config_name='development'):
     
     # Set system health to healthy by default
     SYSTEM_HEALTH.set(1)
+    
+    # Initialize ChatOps components
+    try:
+        ai_handler = FlexibleAIHandler(provider="auto")
+        context_gatherer = SystemContextGatherer()
+        log_retriever = LogRetriever()
+        logger.info("ChatOps components initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize ChatOps components: {str(e)}")
+        ai_handler = None
+        context_gatherer = None
+        log_retriever = None
+    
+    # Log AI handler status
+    if ai_handler and ai_handler.provider:
+        provider_info = ai_handler.get_provider_info()
+        logger.info(f"AI integration: ENABLED ({provider_info['provider']})")
+    else:
+        logger.warning("AI integration: DISABLED (No API keys configured)")
     
     @app.before_request
     def before_request():
@@ -91,23 +114,223 @@ def create_app(config_name='development'):
             'service': config.APP_NAME,
             'version': config.VERSION,
             'status': 'running',
-            'phase': 'Phase 1 - Infrastructure & Monitoring',
+            'phase': 'Phase 2 - ChatOps Implementation',
+            'chatops_ready': ai_handler is not None,
             'endpoints': {
                 'health': '/health',
-                'metrics': '/metrics'
+                'status': '/status',
+                'metrics': '/metrics',
+                'query': '/query (POST)',
+                'logs': '/logs (GET)',
+                'chat_history': '/chatops/history (GET)',
+                'clear_history': '/chatops/clear (POST)',
+                'ai_info': '/chatops/info (GET)'
             }
         })
     
     @app.route('/status')
     def status():
-        """System status endpoint (Phase 1 basic implementation)."""
-        return jsonify({
-            'system': 'operational',
-            'monitoring': 'active',
-            'prometheus_ready': True,
-            'phase': 'Phase 1 Complete',
-            'next_phase': 'Phase 2 - ChatOps Implementation'
-        })
+        """System status endpoint with comprehensive health information."""
+        try:
+            if context_gatherer:
+                system_context = context_gatherer.get_system_context()
+                return jsonify(format_response(
+                    data=system_context,
+                    message="System status retrieved successfully"
+                ))
+            else:
+                                    return jsonify(format_response(
+                        data={
+                            'system': 'operational',
+                            'monitoring': 'active',
+                            'prometheus_ready': True,
+                            'phase': 'Phase 2 - ChatOps Implementation',
+                            'chatops_ready': ai_handler is not None
+                        },
+                        message="Basic system status"
+                    ))
+        except Exception as e:
+            logger.error(f"Status endpoint error: {str(e)}")
+            return jsonify(format_response(
+                data={'error': str(e)},
+                status="error",
+                message="Failed to retrieve system status"
+            )), 500
+    
+    @app.route('/query', methods=['POST'])
+    def query():
+        """ChatOps query endpoint with AI integration."""
+        if not ai_handler:
+            return jsonify(format_response(
+                data={'error': 'AI handler not available'},
+                status="error",
+                message="ChatOps functionality not available"
+            )), 503
+        
+        try:
+            # Get request data
+            request_data = request.get_json()
+            if not request_data or 'query' not in request_data:
+                return jsonify(format_response(
+                    data={'error': 'Query parameter required'},
+                    status="error",
+                    message="Missing query parameter"
+                )), 400
+            
+            query_text = request_data['query']
+            context = request_data.get('context', {})
+            
+            # Record start time for metrics
+            start_time = time.time()
+            
+            # Process query with AI
+            result = ai_handler.process_query(query_text, context)
+            
+            # Record metrics
+            response_time = time.time() - start_time
+            GPT_RESPONSE_TIME.observe(response_time)
+            
+            if result['status'] == 'success':
+                GPT_REQUESTS.labels(status='success').inc()
+                return jsonify(format_response(
+                    data=result,
+                    message="Query processed successfully"
+                ))
+            else:
+                GPT_REQUESTS.labels(status='error').inc()
+                return jsonify(format_response(
+                    data=result,
+                    status="error",
+                    message="Query processing failed"
+                )), 400
+                
+        except Exception as e:
+            logger.error(f"Query endpoint error: {str(e)}")
+            GPT_REQUESTS.labels(status='error').inc()
+            return jsonify(format_response(
+                data={'error': str(e)},
+                status="error",
+                message="Internal server error"
+            )), 500
+    
+    @app.route('/logs', methods=['GET'])
+    def logs():
+        """Log retrieval endpoint with filtering."""
+        if not log_retriever:
+            return jsonify(format_response(
+                data={'error': 'Log retriever not available'},
+                status="error",
+                message="Log functionality not available"
+            )), 503
+        
+        try:
+            # Validate and sanitize query parameters
+            params = validate_query_params(request.args.to_dict())
+            
+            # Get logs based on parameters
+            hours = params.get('hours', 24)
+            level = params.get('level')
+            service = params.get('service')
+            
+            if service:
+                logs_data = log_retriever.get_logs_by_service(service, hours)
+            elif level:
+                logs_data = log_retriever.get_recent_logs(hours, level)
+            else:
+                logs_data = log_retriever.get_recent_logs(hours)
+            
+            return jsonify(format_response(
+                data={
+                    'logs': logs_data,
+                    'count': len(logs_data),
+                    'filters': {
+                        'hours': hours,
+                        'level': level,
+                        'service': service
+                    }
+                },
+                message=f"Retrieved {len(logs_data)} log entries"
+            ))
+            
+        except Exception as e:
+            logger.error(f"Logs endpoint error: {str(e)}")
+            return jsonify(format_response(
+                data={'error': str(e)},
+                status="error",
+                message="Failed to retrieve logs"
+            )), 500
+    
+    @app.route('/chatops/history', methods=['GET'])
+    def chat_history():
+        """Get conversation history."""
+        if not ai_handler:
+            return jsonify(format_response(
+                data={'error': 'AI handler not available'},
+                status="error",
+                message="ChatOps functionality not available"
+            )), 503
+        
+        try:
+            history = ai_handler.get_conversation_history()
+            return jsonify(format_response(
+                data={'history': history, 'count': len(history)},
+                message="Conversation history retrieved"
+            ))
+        except Exception as e:
+            logger.error(f"History endpoint error: {str(e)}")
+            return jsonify(format_response(
+                data={'error': str(e)},
+                status="error",
+                message="Failed to retrieve conversation history"
+            )), 500
+    
+    @app.route('/chatops/clear', methods=['POST'])
+    def clear_history():
+        """Clear conversation history."""
+        if not ai_handler:
+            return jsonify(format_response(
+                data={'error': 'AI handler not available'},
+                status="error",
+                message="ChatOps functionality not available"
+            )), 503
+        
+        try:
+            success = ai_handler.clear_history()
+            return jsonify(format_response(
+                data={'cleared': success},
+                message="Conversation history cleared"
+            ))
+        except Exception as e:
+            logger.error(f"Clear history error: {str(e)}")
+            return jsonify(format_response(
+                data={'error': str(e)},
+                status="error",
+                message="Failed to clear conversation history"
+            )), 500
+    
+    @app.route('/chatops/info', methods=['GET'])
+    def ai_info():
+        """Get AI provider information."""
+        if not ai_handler:
+            return jsonify(format_response(
+                data={'error': 'AI handler not available'},
+                status="error",
+                message="ChatOps functionality not available"
+            )), 503
+        
+        try:
+            provider_info = ai_handler.get_provider_info()
+            return jsonify(format_response(
+                data=provider_info,
+                message="AI provider information retrieved"
+            ))
+        except Exception as e:
+            logger.error(f"AI info endpoint error: {str(e)}")
+            return jsonify(format_response(
+                data={'error': str(e)},
+                status="error",
+                message="Failed to retrieve AI provider information"
+            )), 500
     
     @app.errorhandler(404)
     def not_found(error):

@@ -20,7 +20,7 @@ class TestConfig:
         """Test base configuration values."""
         config = Config()
         assert config.APP_NAME == "Smart CloudOps AI"
-        assert config.VERSION == "0.1.0"
+        assert config.VERSION == "0.2.0"
         assert config.PROMETHEUS_ENABLED is True
         assert config.METRICS_PORT == 9090
 
@@ -42,9 +42,9 @@ class TestConfig:
         prod_config = get_config("production")
         default_config = get_config()
         
-        assert isinstance(dev_config, DevelopmentConfig)
-        assert isinstance(prod_config, ProductionConfig)
-        assert isinstance(default_config, DevelopmentConfig)
+        assert dev_config == DevelopmentConfig
+        assert prod_config == ProductionConfig
+        assert default_config == DevelopmentConfig
 
     def test_config_from_env(self):
         """Test configuration from environment variables."""

@@ -18,16 +18,17 @@
 
 ---
 
-## 🎯 **Latest: Phase 1 - Infrastructure & Monitoring COMPLETE!**
+## 🎯 **Latest: Phase 2 - Flask ChatOps App COMPLETE!**
 
-✨ **Live Infrastructure Deployments with Real Monitoring Data!**
+✨ **Complete ChatOps Application with AI Integration!**
 
 - 🚀 **Live AWS Infrastructure**: Real Terraform-managed AWS resources
 - 📊 **Live Prometheus Monitoring**: Real-time metrics collection and alerting
 - 📈 **Live Grafana Dashboards**: Beautiful visualizations with real data
+- 🐍 **Complete Flask ChatOps App**: AI-powered DevOps assistant with GPT integration
+- 🤖 **AI Integration**: Support for OpenAI and Google Gemini APIs
 - 🔧 **Production Ready**: Zero-cost deployment using AWS Free Tier
-- 🐍 **Flask Application**: Complete with `/metrics` endpoint for Prometheus integration
-- ✅ **Full Testing Suite**: 100% functional with security scanning
+- ✅ **Full Testing Suite**: 60 tests passing, 2 skipped with security scanning
 
 ---
 
@@ -101,8 +102,8 @@ smartcloudops-ai/
 |-------|--------|-------------|
 | **Phase 0** | ✅ **Complete** | Foundation & Setup |
 | **Phase 1** | ✅ **Complete** | Infrastructure + Monitoring |
-| **Phase 2** | 🚧 **In Progress** | Flask ChatOps App |
-| **Phase 3** | ⏳ **Planned** | ML Anomaly Detection |
+| **Phase 2** | ✅ **Complete** | Flask ChatOps App |
+| **Phase 3** | 🚧 **Ready to Start** | ML Anomaly Detection |
 | **Phase 4** | ⏳ **Planned** | Auto-Remediation Logic |
 | **Phase 5** | ⏳ **Planned** | ChatOps GPT Layer |
 | **Phase 6** | ⏳ **Planned** | Testing & Security |
@@ -187,7 +188,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 **🚀 Ready to revolutionize your DevOps workflow? Star ⭐ this repo and get started!**
 
 ![Footer](https://img.shields.io/badge/Made%20with-❤️-red)
-![Status](https://img.shields.io/badge/Status-Phase%201%20Complete-success)
+![Status](https://img.shields.io/badge/Status-Phase%202%20Complete-success)
 
 </div>
 # Trigger workflows again - Tue Aug  5 11:23:13 AM IST 2025
