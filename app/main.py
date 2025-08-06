@@ -18,6 +18,14 @@ from app.config import get_config
 from app.chatops.ai_handler import FlexibleAIHandler
 from app.chatops.utils import SystemContextGatherer, LogRetriever, validate_query_params, format_response
 
+# Import ML anomaly detection
+try:
+    from ml_models import AnomalyDetector
+    ML_AVAILABLE = True
+except ImportError as e:
+    logging.warning(f"ML models not available: {e}")
+    ML_AVAILABLE = False
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -31,6 +39,10 @@ REQUEST_DURATION = Histogram('flask_request_duration_seconds', 'Flask request du
 SYSTEM_HEALTH = Gauge('system_health_status', 'System health status (1=healthy, 0=unhealthy)')
 GPT_REQUESTS = Counter('gpt_requests_total', 'Total GPT API requests', ['status'])
 GPT_RESPONSE_TIME = Histogram('gpt_response_time_seconds', 'GPT API response time')
+
+# ML Anomaly Detection metrics
+ANOMALY_DETECTIONS = Counter('anomaly_detections_total', 'Total anomaly detections', ['severity'])
+ANOMALY_INFERENCE_TIME = Histogram('anomaly_inference_time_seconds', 'Anomaly detection inference time')
 
 def create_app(config_name='development'):
     """Create and configure the Flask application."""
@@ -54,6 +66,22 @@ def create_app(config_name='development'):
         ai_handler = None
         context_gatherer = None
         log_retriever = None
+    
+    # Initialize ML Anomaly Detection
+    anomaly_detector = None
+    if ML_AVAILABLE:
+        try:
+            anomaly_detector = AnomalyDetector()
+            # Try to load existing model
+            if anomaly_detector.load_model():
+                logger.info("ML anomaly detection model loaded successfully")
+            else:
+                logger.info("No existing ML model found, will train on first use")
+        except Exception as e:
+            logger.error(f"Failed to initialize ML anomaly detection: {str(e)}")
+            anomaly_detector = None
+    else:
+        logger.warning("ML anomaly detection not available")
     
     # Log AI handler status
     if ai_handler and ai_handler.provider:
@@ -330,6 +358,179 @@ def create_app(config_name='development'):
                 data={'error': str(e)},
                 status="error",
                 message="Failed to retrieve AI provider information"
+            )), 500
+    
+    # ML Anomaly Detection Endpoints
+    @app.route('/anomaly', methods=['POST'])
+    def detect_anomaly():
+        """Detect anomalies in real-time metrics."""
+        if not anomaly_detector:
+            return jsonify(format_response(
+                data={'error': 'Anomaly detection not available'},
+                status="error",
+                message="ML anomaly detection not available"
+            )), 503
+        
+        try:
+            # Get metrics from request
+            data = request.get_json()
+            if not data:
+                return jsonify(format_response(
+                    data={'error': 'No metrics data provided'},
+                    status="error",
+                    message="Please provide metrics data in JSON format"
+                )), 400
+            
+            # Validate metrics
+            is_valid, issues = anomaly_detector.validate_metrics(data)
+            if not is_valid:
+                return jsonify(format_response(
+                    data={'error': 'Invalid metrics data', 'issues': issues},
+                    status="error",
+                    message="Metrics validation failed"
+                )), 400
+            
+            # Perform anomaly detection
+            start_time = time.time()
+            result = anomaly_detector.detect_anomaly(data)
+            inference_time = time.time() - start_time
+            
+            # Record metrics
+            ANOMALY_INFERENCE_TIME.observe(inference_time)
+            if result['status'] == 'success' and result['is_anomaly']:
+                severity = 'high' if result['severity_score'] > 0.7 else 'medium' if result['severity_score'] > 0.4 else 'low'
+                ANOMALY_DETECTIONS.labels(severity=severity).inc()
+            
+            return jsonify(format_response(
+                data=result,
+                message="Anomaly detection completed"
+            ))
+            
+        except Exception as e:
+            logger.error(f"Anomaly detection error: {str(e)}")
+            return jsonify(format_response(
+                data={'error': str(e)},
+                status="error",
+                message="Failed to perform anomaly detection"
+            )), 500
+    
+    @app.route('/anomaly/batch', methods=['POST'])
+    def batch_detect_anomalies():
+        """Detect anomalies in a batch of metrics."""
+        if not anomaly_detector:
+            return jsonify(format_response(
+                data={'error': 'Anomaly detection not available'},
+                status="error",
+                message="ML anomaly detection not available"
+            )), 503
+        
+        try:
+            # Get batch metrics from request
+            data = request.get_json()
+            if not data or not isinstance(data, list):
+                return jsonify(format_response(
+                    data={'error': 'No batch metrics data provided'},
+                    status="error",
+                    message="Please provide batch metrics data as JSON array"
+                )), 400
+            
+            # Validate each metrics entry
+            for i, metrics in enumerate(data):
+                is_valid, issues = anomaly_detector.validate_metrics(metrics)
+                if not is_valid:
+                    return jsonify(format_response(
+                        data={'error': f'Invalid metrics at index {i}', 'issues': issues},
+                        status="error",
+                        message="Batch metrics validation failed"
+                    )), 400
+            
+            # Perform batch anomaly detection
+            start_time = time.time()
+            results = anomaly_detector.batch_detect(data)
+            inference_time = time.time() - start_time
+            
+            # Record metrics
+            ANOMALY_INFERENCE_TIME.observe(inference_time)
+            anomaly_count = sum(1 for r in results if r['status'] == 'success' and r['is_anomaly'])
+            if anomaly_count > 0:
+                ANOMALY_DETECTIONS.labels(severity='batch').inc()
+            
+            return jsonify(format_response(
+                data={
+                    'results': results,
+                    'batch_size': len(data),
+                    'anomaly_count': anomaly_count,
+                    'inference_time': inference_time
+                },
+                message="Batch anomaly detection completed"
+            ))
+            
+        except Exception as e:
+            logger.error(f"Batch anomaly detection error: {str(e)}")
+            return jsonify(format_response(
+                data={'error': str(e)},
+                status="error",
+                message="Failed to perform batch anomaly detection"
+            )), 500
+    
+    @app.route('/anomaly/train', methods=['POST'])
+    def train_anomaly_model():
+        """Train or retrain the anomaly detection model."""
+        if not anomaly_detector:
+            return jsonify(format_response(
+                data={'error': 'Anomaly detection not available'},
+                status="error",
+                message="ML anomaly detection not available"
+            )), 503
+        
+        try:
+            # Get training parameters from request
+            data = request.get_json() or {}
+            force_retrain = data.get('force_retrain', False)
+            
+            # Train model
+            start_time = time.time()
+            result = anomaly_detector.train_model(force_retrain=force_retrain)
+            training_time = time.time() - start_time
+            
+            result['training_time'] = training_time
+            
+            return jsonify(format_response(
+                data=result,
+                message="Model training completed"
+            ))
+            
+        except Exception as e:
+            logger.error(f"Model training error: {str(e)}")
+            return jsonify(format_response(
+                data={'error': str(e)},
+                status="error",
+                message="Failed to train model"
+            )), 500
+    
+    @app.route('/anomaly/status', methods=['GET'])
+    def anomaly_status():
+        """Get anomaly detection system status."""
+        if not anomaly_detector:
+            return jsonify(format_response(
+                data={'error': 'Anomaly detection not available'},
+                status="error",
+                message="ML anomaly detection not available"
+            )), 503
+        
+        try:
+            status = anomaly_detector.get_system_status()
+            return jsonify(format_response(
+                data=status,
+                message="Anomaly detection status retrieved"
+            ))
+            
+        except Exception as e:
+            logger.error(f"Status endpoint error: {str(e)}")
+            return jsonify(format_response(
+                data={'error': str(e)},
+                status="error",
+                message="Failed to retrieve anomaly detection status"
             )), 500
     
     @app.errorhandler(404)

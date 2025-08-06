@@ -1,0 +1,40 @@
+# ML Anomaly Detection Configuration
+model:
+  type: "isolation_forest"
+  contamination: 0.1
+  n_estimators: 100
+  random_state: 42
+  max_samples: "auto"
+
+data:
+  lookback_hours: 168  # 7 days
+  feature_window: 60   # 1 hour aggregation
+  update_frequency: 3600  # 1 hour
+  prometheus_url: "http://localhost:9090"
+
+thresholds:
+  anomaly_score: -0.5
+  severity_levels:
+    low: [-0.5, -0.3]
+    medium: [-0.3, -0.1]
+    high: [-0.1, 1.0]
+
+features:
+  - cpu_usage_avg
+  - cpu_usage_max
+  - memory_usage_pct
+  - disk_usage_pct
+  - network_bytes_total
+  - request_rate
+  - response_time_p95
+
+training:
+  min_data_points: 100
+  validation_split: 0.2
+  min_f1_score: 0.85
+  retrain_frequency_hours: 168  # Weekly
+
+inference:
+  batch_size: 100
+  max_inference_time_ms: 100
+  cache_duration_seconds: 300 
