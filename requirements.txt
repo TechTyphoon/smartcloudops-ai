@@ -7,10 +7,10 @@ gunicorn==21.2.0
 openai>=1.68.2
 google-generativeai>=0.3.0
 litellm==1.74.15
-scikit-learn==1.3.2  # Includes IsolationForest
-pandas==2.1.3
-numpy==1.24.3
-scipy==1.11.4
+scikit-learn>=1.4.0  # Updated for Python 3.13 compatibility
+pandas>=2.2.0  # Updated for Python 3.13 compatibility
+numpy>=1.26.0  # Updated for Python 3.13 compatibility
+scipy>=1.12.0  # Updated for Python 3.13 compatibility
 
 # Anomaly Detection
 prophet==1.1.4
