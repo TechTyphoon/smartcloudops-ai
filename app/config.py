@@ -2,6 +2,22 @@
 
 import os
 from typing import Dict, Any
+from pathlib import Path
+
+# Load .env file if it exists
+def load_dotenv():
+    """Load environment variables from .env file."""
+    env_path = Path(__file__).parent.parent / '.env'
+    if env_path.exists():
+        with open(env_path, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    key, value = line.split('=', 1)
+                    os.environ[key] = value
+
+# Load .env file
+load_dotenv()
 
 
 class Config:

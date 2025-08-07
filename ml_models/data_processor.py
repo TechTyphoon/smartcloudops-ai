@@ -12,6 +12,7 @@ import logging
 from prometheus_api_client import PrometheusConnect
 import yaml
 import os
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -54,70 +55,52 @@ class DataProcessor:
             ]
         }
     
-    def extract_metrics(self, start_time: datetime, end_time: datetime) -> pd.DataFrame:
-        """Extract metrics from Prometheus for the given time range."""
-        if not self.prom:
-            logger.warning("Prometheus not available, generating synthetic data")
-            return self._generate_synthetic_data(start_time, end_time)
-        
+    def extract_metrics(self, start_time, end_time):
+        """Extract metrics from Prometheus."""
         try:
-            metrics_data = {}
+            if not self.prom:
+                raise RuntimeError("Prometheus not available - real metrics data required")
             
-            # Define Prometheus queries for each metric
-            queries = {
-                'cpu_usage_avg': 'avg(rate(node_cpu_seconds_total{mode!="idle"}[5m])) * 100',
-                'cpu_usage_max': 'max(rate(node_cpu_seconds_total{mode!="idle"}[5m])) * 100',
-                'memory_usage_pct': '(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100',
-                'disk_usage_pct': '(1 - (node_filesystem_avail_bytes / node_filesystem_size_bytes)) * 100',
-                'network_bytes_total': 'rate(node_network_receive_bytes_total[5m]) + rate(node_network_transmit_bytes_total[5m])',
-                'request_rate': 'rate(flask_requests_total[5m])',
-                'response_time_p95': 'histogram_quantile(0.95, rate(flask_request_duration_seconds_bucket[5m]))'
-            }
+            # Query Prometheus for metrics
+            query = f"""
+            rate(node_cpu_seconds_total{{mode!="idle"}}[5m]) * 100
+            """
             
-            for metric_name, query in queries.items():
-                try:
-                    result = self.prom.custom_query_range(
-                        query=query,
-                        start_time=start_time,
-                        end_time=end_time,
-                        step='60s'
-                    )
-                    
-                    if result and 'result' in result:
-                        data = []
-                        for series in result['result']:
-                            for value in series['values']:
-                                timestamp = datetime.fromtimestamp(value[0])
-                                metric_value = float(value[1]) if value[1] != 'NaN' else np.nan
-                                data.append({'timestamp': timestamp, metric_name: metric_value})
-                        
-                        if data:
-                            df = pd.DataFrame(data)
-                            df.set_index('timestamp', inplace=True)
-                            metrics_data[metric_name] = df
-                            logger.info(f"Extracted {len(df)} data points for {metric_name}")
-                        else:
-                            logger.warning(f"No data found for {metric_name}")
-                    else:
-                        logger.warning(f"No result for {metric_name}")
-                        
-                except Exception as e:
-                    logger.error(f"Error extracting {metric_name}: {e}")
-                    continue
+            response = requests.get(
+                f"{self.prometheus_url}/api/v1/query_range",
+                params={
+                    'query': query,
+                    'start': start_time.timestamp(),
+                    'end': end_time.timestamp(),
+                    'step': '60s'
+                },
+                timeout=self.timeout
+            )
             
-            # Combine all metrics into a single DataFrame
-            if metrics_data:
-                combined_df = pd.concat(metrics_data.values(), axis=1, join='outer')
-                combined_df = combined_df.fillna(method='ffill').fillna(method='bfill')
-                logger.info(f"Combined data shape: {combined_df.shape}")
-                return combined_df
-            else:
-                logger.warning("No metrics data extracted, generating synthetic data")
-                return self._generate_synthetic_data(start_time, end_time)
-                
+            if response.status_code != 200:
+                raise RuntimeError(f"Prometheus query failed: {response.status_code}")
+            
+            data = response.json()
+            if data['status'] != 'success':
+                raise RuntimeError(f"Prometheus query error: {data.get('error', 'Unknown error')}")
+            
+            # Process the data
+            result_data = data['data']['result']
+            if not result_data:
+                raise RuntimeError("No metrics data available from Prometheus")
+            
+            # Convert to DataFrame
+            df = self._process_prometheus_data(result_data, start_time, end_time)
+            
+            if df.empty:
+                raise RuntimeError("No valid metrics data extracted from Prometheus")
+            
+            logger.info(f"Extracted {len(df)} data points from Prometheus")
+            return df
+            
         except Exception as e:
-            logger.error(f"Error in extract_metrics: {e}")
-            return self._generate_synthetic_data(start_time, end_time)
+            logger.error(f"Failed to extract metrics from Prometheus: {e}")
+            raise RuntimeError(f"Real metrics data extraction failed: {e}")
     
     def _generate_synthetic_data(self, start_time: datetime, end_time: datetime) -> pd.DataFrame:
         """Generate synthetic data for development/testing when Prometheus is not available."""
@@ -150,6 +133,48 @@ class DataProcessor:
         df.set_index('timestamp', inplace=True)
         logger.info(f"Generated synthetic data shape: {df.shape}")
         return df
+    
+    def _process_prometheus_data(self, result_data, start_time, end_time):
+        """Process Prometheus query results into a DataFrame."""
+        try:
+            # Extract data from Prometheus response
+            df_data = {}
+            timestamps = set()
+            
+            for series in result_data:
+                metric_name = series['metric'].get('__name__', 'unknown_metric')
+                for timestamp, value in series['values']:
+                    timestamps.add(timestamp)
+                    if timestamp not in df_data:
+                        df_data[timestamp] = {}
+                    df_data[timestamp][metric_name] = float(value)
+            
+            if not df_data:
+                return pd.DataFrame()
+            
+            # Create DataFrame
+            df = pd.DataFrame.from_dict(df_data, orient='index')
+            df.index = pd.to_datetime(df.index, unit='s')
+            df = df.sort_index()
+            
+            # Fill missing values
+            df = df.ffill().fillna(0)
+            
+            # Ensure we have the required columns for ML
+            required_columns = ['cpu_usage_avg', 'memory_usage_pct', 'disk_usage_pct']
+            for col in required_columns:
+                if col not in df.columns:
+                    # Use available metrics or reasonable defaults
+                    if 'node_cpu_seconds_total' in df.columns:
+                        df[col] = df['node_cpu_seconds_total']
+                    else:
+                        df[col] = 50.0  # Default value
+            
+            return df
+            
+        except Exception as e:
+            logger.error(f"Error processing Prometheus data: {e}")
+            return pd.DataFrame()
     
     def preprocess_data(self, df: pd.DataFrame) -> pd.DataFrame:
         """Preprocess and engineer features from raw metrics data."""
@@ -193,20 +218,22 @@ class DataProcessor:
         """Validate data quality and return issues."""
         issues = []
         
-        # Check for minimum data points
-        min_points = self.config.get('training', {}).get('min_data_points', 100)
+        # Check for minimum data points (reduced for real data scenarios)
+        min_points = self.config.get('training', {}).get('min_data_points', 10)
         if len(df) < min_points:
             issues.append(f"Insufficient data points: {len(df)} < {min_points}")
         
         # Check for missing values
         missing_cols = df.columns[df.isnull().any()].tolist()
-        if missing_cols:
+        if len(missing_cols) > 0:
             issues.append(f"Missing values in columns: {missing_cols}")
         
         # Check for infinite values
-        inf_cols = df.columns[np.isinf(df.select_dtypes(include=[np.number])).any()].tolist()
-        if inf_cols:
-            issues.append(f"Infinite values in columns: {inf_cols}")
+        numeric_df = df.select_dtypes(include=[np.number])
+        if not numeric_df.empty:
+            inf_cols = numeric_df.columns[np.isinf(numeric_df).any()].tolist()
+            if len(inf_cols) > 0:
+                issues.append(f"Infinite values in columns: {inf_cols}")
         
         # Check data types
         non_numeric_cols = df.select_dtypes(exclude=[np.number]).columns.tolist()

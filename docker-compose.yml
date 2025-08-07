@@ -5,7 +5,7 @@ services:
   smartcloudops-app:
     build: .
     ports:
-      - "3000:3000"
+      - "3003:3000"
     environment:
       - FLASK_ENV=development
       - PROMETHEUS_URL=http://prometheus:9090
@@ -34,8 +34,7 @@ services:
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
-    networks:
-      - cloudops-network
+    network_mode: host
 
   # Grafana for visualization
   grafana:

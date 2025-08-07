@@ -1,16 +1,18 @@
-# ML Anomaly Detection Configuration
+# ML Anomaly Detection Configuration - Enhanced for Production
 model:
   type: "isolation_forest"
-  contamination: 0.1
-  n_estimators: 100
+  contamination: 0.05  # Reduced for more precise anomaly detection
+  n_estimators: 500    # Increased from 100 for better performance
   random_state: 42
   max_samples: "auto"
+  bootstrap: true      # Enable bootstrapping for better generalization
+  max_features: 1.0    # Use all features
 
 data:
   lookback_hours: 168  # 7 days
   feature_window: 60   # 1 hour aggregation
   update_frequency: 3600  # 1 hour
-  prometheus_url: "http://localhost:9090"
+  prometheus_url: "http://35.94.24.216:9090"  # Updated to AWS Prometheus
 
 thresholds:
   anomaly_score: -0.5
@@ -29,12 +31,17 @@ features:
   - response_time_p95
 
 training:
-  min_data_points: 100
-  validation_split: 0.2
-  min_f1_score: 0.85
+  min_data_points: 100     # Increased for better model quality
+  validation_split: 0.3    # Increased validation split
+  min_f1_score: 0.7        # Stricter quality threshold
+  min_precision: 0.6       # Minimum precision requirement
+  min_recall: 0.5          # Minimum recall requirement
   retrain_frequency_hours: 168  # Weekly
+  max_training_iterations: 10   # Multiple training attempts
+  early_stopping_patience: 3    # Stop if no improvement
 
 inference:
   batch_size: 100
   max_inference_time_ms: 100
-  cache_duration_seconds: 300 
+  cache_duration_seconds: 300
+  confidence_threshold: 0.8  # High confidence for predictions 

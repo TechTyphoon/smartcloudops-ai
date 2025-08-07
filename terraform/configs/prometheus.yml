@@ -39,7 +39,7 @@ scrape_configs:
   # Flask application metrics
   - job_name: 'flask-application'
     static_configs:
-      - targets: ['APPLICATION_SERVER_IP:3000']
+      - targets: ['192.168.53.234:3003']
     metrics_path: '/metrics'
     scrape_interval: 10s
 

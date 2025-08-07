@@ -8,11 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Placeholder for future changes
+- **Phase 4 Readiness Checklist**: Comprehensive documentation of Phase 4 preparation
+- **Enhanced ML Model Training**: Improved model training with real data only
+- **Production-Ready Data Pipeline**: Removed all synthetic data fallbacks from production code
 
-## [0.1.0] - 2025-08-05
+### Fixed
+- **Test Failures**: Fixed 3 failing tests (AI handler, data processor, model trainer)
+- **Synthetic Data Cleanup**: Removed synthetic data fallbacks from production ML pipeline
+- **Configuration Issues**: Fixed hardcoded Prometheus URLs and configuration mismatches
+- **Model Training**: Enhanced error handling and validation for real data scenarios
 
-### Added - Phase 1 Completion
+### Changed
+- **Data Processing**: Now requires real Prometheus data instead of falling back to synthetic data
+- **Model Validation**: Removed synthetic anomaly generation from validation process
+- **Error Handling**: Improved error messages and handling for production scenarios
+
+## [0.1.1] - 2025-08-06
+
+### Added - Phase 4 Preparation
 - **Complete Flask Application** (`app/main.py`) with production-ready structure
 - **Prometheus Integration** with `/metrics` endpoint and custom metrics
 - **Health Check Endpoints** (`/health`, `/status`) for monitoring

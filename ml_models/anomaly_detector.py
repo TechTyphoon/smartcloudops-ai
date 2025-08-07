@@ -54,12 +54,13 @@ class AnomalyDetector:
             }
         }
     
-    def train_model(self, force_retrain: bool = False) -> Dict:
+    def train_model(self, force_retrain: bool = False, data: pd.DataFrame = None) -> Dict:
         """
         Train the anomaly detection model.
         
         Args:
             force_retrain: Force retraining even if model exists
+            data: Optional DataFrame with training data (if None, will extract from Prometheus)
             
         Returns:
             Dictionary with training results
@@ -72,16 +73,21 @@ class AnomalyDetector:
             
             logger.info("Starting model training process...")
             
-            # Extract training data
-            end_time = datetime.now()
-            lookback_hours = self.config['data'].get('lookback_hours', 168)
-            start_time = end_time - timedelta(hours=lookback_hours)
-            
-            logger.info(f"Extracting data from {start_time} to {end_time}")
-            raw_data = self.data_processor.extract_metrics(start_time, end_time)
-            
-            if raw_data.empty:
-                raise ValueError("No data available for training")
+            # Use provided data or extract from Prometheus
+            if data is not None:
+                logger.info("Using provided training data")
+                raw_data = data
+            else:
+                # Extract training data
+                end_time = datetime.now()
+                lookback_hours = self.config['data'].get('lookback_hours', 168)
+                start_time = end_time - timedelta(hours=lookback_hours)
+                
+                logger.info(f"Extracting data from {start_time} to {end_time}")
+                raw_data = self.data_processor.extract_metrics(start_time, end_time)
+                
+                if raw_data is None or len(raw_data) == 0:
+                    raise ValueError("No data available for training")
             
             # Preprocess data
             logger.info("Preprocessing data...")

@@ -274,27 +274,28 @@ resource "aws_security_group" "monitoring_sg" {
 }
 
 # Key Pair for EC2 instances
-resource "aws_key_pair" "smartcloudops_key" {
-  key_name   = "${var.project_name}-key"
-  public_key = var.public_key
-
-  tags = {
-    Name = "${var.project_name}-key"
-  }
-}
+# SSH Key Pair - Created manually via AWS CLI
+# resource "aws_key_pair" "smartcloudops_key" {
+#   key_name   = "${var.project_name}-key"
+#   public_key = var.public_key
+# 
+#   tags = {
+#     Name = "${var.project_name}-key"
+#   }
+# }
 
 # EC2 Instance for Monitoring
 resource "aws_instance" "ec2_monitoring" {
   ami                         = data.aws_ami.amazon_linux.id
   instance_type               = var.monitoring_instance_type
-  key_name                    = aws_key_pair.smartcloudops_key.key_name
+  key_name                    = "smartcloudops-ai-key"
   vpc_security_group_ids      = [aws_security_group.monitoring_sg.id]
   subnet_id                   = aws_subnet.public_subnet_1.id
-  disable_api_termination     = false
+  disable_api_termination     = true
   monitoring                  = true
   ebs_optimized               = true
   iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
-  associate_public_ip_address = false
+  associate_public_ip_address = true
 
   metadata_options {
     http_endpoint               = "enabled"
@@ -309,7 +310,7 @@ resource "aws_instance" "ec2_monitoring" {
     encrypted   = true
   }
 
-  user_data = base64encode(file("${path.module}/scripts/monitoring_setup.sh"))
+  # user_data = base64encode(file("${path.module}/scripts/monitoring_setup.sh"))
 
   tags = {
     Name = "${var.project_name}-monitoring"
@@ -321,14 +322,14 @@ resource "aws_instance" "ec2_monitoring" {
 resource "aws_instance" "ec2_application" {
   ami                         = data.aws_ami.amazon_linux.id
   instance_type               = var.application_instance_type
-  key_name                    = aws_key_pair.smartcloudops_key.key_name
+  key_name                    = "smartcloudops-ai-key"
   vpc_security_group_ids      = [aws_security_group.web_sg.id, aws_security_group.monitoring_sg.id]
   subnet_id                   = aws_subnet.public_subnet_2.id
-  disable_api_termination     = false
+  disable_api_termination     = true
   monitoring                  = true
   ebs_optimized               = true
   iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
-  associate_public_ip_address = false
+  associate_public_ip_address = true
 
   metadata_options {
     http_endpoint               = "enabled"
@@ -343,7 +344,7 @@ resource "aws_instance" "ec2_application" {
     encrypted   = true
   }
 
-  user_data = base64encode(file("${path.module}/scripts/application_setup.sh"))
+  # user_data = base64encode(file("${path.module}/scripts/application_setup.sh"))
 
   tags = {
     Name = "${var.project_name}-application"

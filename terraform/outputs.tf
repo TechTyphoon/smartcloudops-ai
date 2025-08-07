@@ -95,7 +95,7 @@ output "application_url" {
 # Key Pair Information
 output "key_pair_name" {
   description = "Name of the EC2 key pair"
-  value       = aws_key_pair.smartcloudops_key.key_name
+  value       = "smartcloudops-ai-key"
 }
 
 # Monitoring Configuration Commands
