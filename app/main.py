@@ -167,7 +167,7 @@ def create_app(config_name='development'):
                     message="System status retrieved successfully"
                 ))
             else:
-                                    return jsonify(format_response(
+                return jsonify(format_response(
                         data={
                             'system': 'operational',
                             'monitoring': 'active',

@@ -13,7 +13,7 @@ global:
 
 # Rule files for alerting
 rule_files:
-  - "alert_rules.yml"
+  - "alert-rules.yml"
 
 # Scrape configurations
 scrape_configs:
@@ -27,7 +27,7 @@ scrape_configs:
   # Node Exporter on monitoring server
   - job_name: 'node-exporter-monitoring'
     static_configs:
-      - targets: ['localhost:9100']
+      - targets: ['node-exporter:9100']
     scrape_interval: 10s
 
   # Node Exporter on application server (will be configured during deployment)
@@ -39,7 +39,7 @@ scrape_configs:
   # Flask application metrics
   - job_name: 'flask-application'
     static_configs:
-      - targets: ['192.168.53.234:3003']
+      - targets: ['smartcloudops-app:3000']
     metrics_path: '/metrics'
     scrape_interval: 10s
 

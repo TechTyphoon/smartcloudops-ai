@@ -24,6 +24,8 @@ class DataProcessor:
         self.config = self._load_config(config_path)
         self.prometheus_url = self.config['data']['prometheus_url']
         self.features = self.config['features']
+        # Configure HTTP timeout for Prometheus requests (seconds)
+        self.timeout = int(self.config.get('data', {}).get('timeout', 30))
         
         try:
             self.prom = PrometheusConnect(url=self.prometheus_url, disable_ssl=True)
@@ -47,7 +49,8 @@ class DataProcessor:
             'data': {
                 'prometheus_url': 'http://localhost:9090',
                 'lookback_hours': 168,
-                'feature_window': 60
+                'feature_window': 60,
+                'timeout': 30
             },
             'features': [
                 'cpu_usage_avg', 'cpu_usage_max', 'memory_usage_pct',
