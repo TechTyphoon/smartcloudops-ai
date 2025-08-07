@@ -69,9 +69,25 @@ resource "aws_iam_role_policy" "ec2_policy" {
         Resource = [
           "arn:aws:ssm:${var.aws_region}:*:parameter/${var.project_name}/*"
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ssm:SendCommand",
+          "ssm:GetCommandInvocation",
+          "ssm:ListCommands",
+          "ssm:ListCommandInvocations"
+        ]
+        Resource = "*"
       }
     ]
   })
+}
+
+# Attach AmazonSSMManagedInstanceCore to allow instances to register with SSM
+resource "aws_iam_role_policy_attachment" "ec2_ssm_core" {
+  role       = aws_iam_role.ec2_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
 # VPC Flow Logs
