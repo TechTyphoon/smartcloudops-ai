@@ -47,6 +47,14 @@ class Config:
     LOG_LEVEL: str = "INFO"
     LOG_DIR: str = "logs"
 
+    # Remediation configuration (Phase 4)
+    REQUIRE_APPROVAL: bool = False
+    MAX_ACTIONS_PER_HOUR: int = 3
+    COOLDOWN_MINUTES: int = 10
+    REMEDIATION_TAG_KEY: str = "Name"
+    REMEDIATION_TAG_VALUE: str = "smartcloudops-ai-application"
+    SSM_SERVICE_NAME: str = "smartcloudops-app"
+
     @classmethod
     def from_env(cls) -> Dict[str, Any]:
         """Load configuration from environment variables."""
@@ -64,6 +72,13 @@ class Config:
             "gemini_temperature": float(os.getenv("GEMINI_TEMPERATURE", "0.3")),
             "log_level": os.getenv("LOG_LEVEL", "INFO"),
             "log_dir": os.getenv("LOG_DIR", "logs"),
+            # Phase 4 remediation config
+            "require_approval": os.getenv("REQUIRE_APPROVAL", "false").lower() == "true",
+            "max_actions_per_hour": int(os.getenv("MAX_ACTIONS_PER_HOUR", "3")),
+            "cooldown_minutes": int(os.getenv("COOLDOWN_MINUTES", "10")),
+            "remediation_tag_key": os.getenv("REMEDIATION_TAG_KEY", "Name"),
+            "remediation_tag_value": os.getenv("REMEDIATION_TAG_VALUE", "smartcloudops-ai-application"),
+            "ssm_service_name": os.getenv("SSM_SERVICE_NAME", "smartcloudops-app"),
         }
 
 

@@ -61,6 +61,16 @@
 - `app/remediation/notifications.py` - Alert notifications
 - `configs/remediation-rules.yaml` - Action configuration
 
+### **Decisions for Free Tier (Implemented)**
+- Environment: `dev`
+- Action strategy: SSM-based service restart only (no scaling)
+- Targets: EC2 instances with tag `Name=smartcloudops-ai-application`
+- Safety: `MAX_ACTIONS_PER_HOUR=3`, `COOLDOWN_MINUTES=10`
+- Approvals: disabled (`REQUIRE_APPROVAL=false`)
+- Notifications: Slack via incoming webhook
+
+Environment variables are injected via Docker Compose `environment` for local/dev.
+
 ## 🔧 **Configuration Requirements**
 
 ### **AWS Permissions:**

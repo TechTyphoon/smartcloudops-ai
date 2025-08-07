@@ -400,6 +400,12 @@ def create_app(config_name='development'):
             if result['status'] == 'success' and result['is_anomaly']:
                 severity = 'high' if result['severity_score'] > 0.7 else 'medium' if result['severity_score'] > 0.4 else 'low'
                 ANOMALY_DETECTIONS.labels(severity=severity).inc()
+                # Trigger auto-remediation asynchronously (Phase 4)
+                try:
+                    from app.remediation import RemediationEngine
+                    RemediationEngine().handle_anomaly_async(result)
+                except Exception as rem_exc:
+                    logger.warning(f"Remediation trigger failed: {rem_exc}")
             
             return jsonify(format_response(
                 data=result,

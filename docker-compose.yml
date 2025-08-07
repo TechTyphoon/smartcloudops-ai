@@ -9,6 +9,14 @@ services:
     environment:
       - FLASK_ENV=development
       - PROMETHEUS_URL=http://prometheus:9090
+      - REQUIRE_APPROVAL=false
+      - MAX_ACTIONS_PER_HOUR=3
+      - COOLDOWN_MINUTES=10
+      - REMEDIATION_TAG_KEY=Name
+      - REMEDIATION_TAG_VALUE=smartcloudops-ai-application
+      - SSM_SERVICE_NAME=smartcloudops-app
+      - AWS_REGION=ap-south-1
+      - SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
     volumes:
       - ./app:/app/app
       - ./scripts:/app/scripts
