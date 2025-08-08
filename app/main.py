@@ -632,7 +632,7 @@ def not_found(error):
 # WSGI application object for Gunicorn
 if __name__ == "__main__":
     logger.info("Starting Smart CloudOps AI Flask Application (Phase 4)")
-    debug_mode = os.getenv('FLASK_DEBUG', 'false').lower() == 'true'
-    host = os.getenv('FLASK_HOST', '127.0.0.1')
-    port = int(os.getenv('FLASK_PORT', 3000))
+    debug_mode = os.getenv("FLASK_DEBUG", "false").lower() == "true"
+    host = os.getenv("FLASK_HOST", "127.0.0.1")
+    port = int(os.getenv("FLASK_PORT", 3000))
     app.run(host=host, port=port, debug=debug_mode)
