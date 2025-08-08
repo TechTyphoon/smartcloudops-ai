@@ -25,6 +25,8 @@ class RemediationEngine:
         self.tag_key: str = os.getenv("REMEDIATION_TAG_KEY", "Name")
         self.tag_value: str = os.getenv("REMEDIATION_TAG_VALUE", "smartcloudops-ai-application")
         self.service_name: str = os.getenv("SSM_SERVICE_NAME", "smartcloudops-app")
+        self.approval_param: str = os.getenv("APPROVAL_SSM_PARAM", "/smartcloudops/dev/approvals/auto")
+        self.region: str = os.getenv("AWS_REGION", os.getenv("AWS_DEFAULT_REGION", "us-west-2"))
 
     def _load_rules(self) -> Dict[str, Any]:
         try:
@@ -73,13 +75,23 @@ class RemediationEngine:
             return
 
         if self.require_approval:
-            self.notifier.send_slack_message(
-                title="Approval Required: Restart Service",
-                message=reason,
-                fields={"resource": resource_id, "service": self.service_name},
-            )
-            # For now we skip approval flow to keep it simple per user request
-            logger.info("Approval required but bypassed per configuration for dev phase")
+            # Check approval flag from SSM parameter (boolean string 'true')
+            try:
+                import boto3
+                ssm = boto3.client("ssm", region_name=self.region)
+                resp = ssm.get_parameter(Name=self.approval_param, WithDecryption=False)
+                value = (resp.get("Parameter", {}).get("Value", "false").lower() == "true")
+            except Exception:
+                value = False
+
+            if not value:
+                self.notifier.send_slack_message(
+                    title="Approval Required: Restart Service",
+                    message=reason,
+                    fields={"resource": resource_id, "service": self.service_name, "approval_param": self.approval_param},
+                )
+                logger.info("Approval required; awaiting approval flag in SSM")
+                return
 
         result = self.aws.restart_service_via_ssm(tag_key=self.tag_key, tag_value=self.tag_value, service_name=self.service_name)
         if result.get("status") == "success":

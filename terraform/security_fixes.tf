@@ -67,7 +67,8 @@ resource "aws_iam_role_policy" "ec2_policy" {
           "ssm:GetParametersByPath"
         ]
         Resource = [
-          "arn:aws:ssm:${var.aws_region}:*:parameter/${var.project_name}/*"
+          "arn:aws:ssm:${var.aws_region}:*:parameter/${var.project_name}/*",
+          "arn:aws:ssm:${var.aws_region}:*:parameter/smartcloudops/*"
         ]
       },
       {
