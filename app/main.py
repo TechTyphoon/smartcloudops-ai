@@ -728,6 +728,10 @@ def create_app(config_name="development"):
     return app
 
 
+# Expose WSGI application instance for servers like Gunicorn (app.main:app)
+app = create_app(os.getenv("FLASK_ENV", "development"))
+
+
 def main():
     """Main entry point for the application."""
     # Determine environment
