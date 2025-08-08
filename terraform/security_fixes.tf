@@ -1,5 +1,8 @@
 # Additional security configurations to fix Checkov violations
 
+# Current AWS account identity for KMS key policy principal
+data "aws_caller_identity" "current" {}
+
 # IAM Role for EC2 instances
 resource "aws_iam_role" "ec2_role" {
   name = "${var.project_name}-ec2-role"
@@ -117,6 +120,24 @@ resource "aws_kms_key" "log_group_key" {
   description             = "KMS key for CloudWatch log group encryption"
   deletion_window_in_days = 7
   enable_key_rotation     = true
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Id": "key-default-1",
+  "Statement": [
+    {
+      "Sid": "Allow administration of the key",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+      },
+      "Action": "kms:*",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
 
   tags = {
     Name = "${var.project_name}-logs-kms"
