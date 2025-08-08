@@ -54,3 +54,13 @@ class TestFlaskApplication:
         assert response.status_code == 404
         data = response.get_json()
         assert 'error' in data
+
+    def test_health_endpoint(self, client):
+        """Test health endpoint."""
+        response = client.get('/health')
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['status'] == 'healthy'
+        assert 'timestamp' in data
+        assert 'version' in data
+        assert 'checks' in data

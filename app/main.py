@@ -179,6 +179,23 @@ def status():
     )
 
 
+@app.route("/health")
+def health():
+    """Health check endpoint for monitoring."""
+    return jsonify(
+        {
+            "status": "healthy",
+            "timestamp": time.time(),
+            "version": "1.0.0-phase4",
+            "checks": {
+                "ai_handler": ai_handler is not None,
+                "ml_models": ML_AVAILABLE,
+                "remediation_engine": REMEDIATION_AVAILABLE,
+            },
+        }
+    )
+
+
 @app.route("/query", methods=["POST"])
 def query():
     """ChatOps query endpoint with AI integration."""
@@ -615,4 +632,7 @@ def not_found(error):
 # WSGI application object for Gunicorn
 if __name__ == "__main__":
     logger.info("Starting Smart CloudOps AI Flask Application (Phase 4)")
-    app.run(host="0.0.0.0", port=3000, debug=True)
+    debug_mode = os.getenv('FLASK_DEBUG', 'false').lower() == 'true'
+    host = os.getenv('FLASK_HOST', '127.0.0.1')
+    port = int(os.getenv('FLASK_PORT', 3000))
+    app.run(host=host, port=port, debug=debug_mode)

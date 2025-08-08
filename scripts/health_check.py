@@ -17,9 +17,7 @@ def check_flask_application() -> Dict[str, Any]:
     """Check if Flask application is accessible."""
     try:
         # Test Flask app import
-        from app.main import create_app
-
-        app = create_app()
+        from app.main import app
 
         # Test endpoints using test client
         with app.test_client() as client:
