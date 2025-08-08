@@ -55,7 +55,7 @@ jobs:
 
     - name: Sort imports check with isort
       run: |
-        isort --check-only app/ scripts/
+        isort --profile black --check-only app/ scripts/
 
     - name: Run tests with pytest
       run: |
