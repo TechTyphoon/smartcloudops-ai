@@ -27,6 +27,12 @@ variable "aws_region" {
   default     = "ap-south-1" # Changed from us-west-2 to match local config
 }
 
+variable "account_id" {
+  description = "AWS Account ID used for scoping IAM resources"
+  type        = string
+  default     = "*"
+}
+
 # Network Configuration
 variable "vpc_cidr" {
   description = "CIDR block for VPC"

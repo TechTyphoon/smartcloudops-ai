@@ -46,6 +46,11 @@ resource "aws_iam_role_policy" "ec2_policy" {
           "cloudwatch:PutMetricData"
         ]
         Resource = "*"
+        Condition = {
+          StringEquals = {
+            "aws:RequestedRegion" = var.aws_region
+          }
+        }
       },
       {
         Effect = "Allow"
@@ -79,7 +84,12 @@ resource "aws_iam_role_policy" "ec2_policy" {
           "ssm:ListCommands",
           "ssm:ListCommandInvocations"
         ]
-        Resource = "*"
+        Resource = [
+          "arn:aws:ec2:${var.aws_region}:*:instance/*",
+          "arn:aws:ssm:${var.aws_region}:*:document/AWS-RunShellScript",
+          "arn:aws:ssm:${var.aws_region}:*:managed-instance/*",
+          "arn:aws:ssm:${var.aws_region}:*:command/*"
+        ]
       }
     ]
   })
@@ -95,9 +105,21 @@ resource "aws_iam_role_policy_attachment" "ec2_ssm_core" {
 resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   name              = "/aws/vpc/flowlogs"
   retention_in_days = 365
+  kms_key_id        = aws_kms_key.log_group_key.arn
 
   tags = {
     Name = "${var.project_name}-vpc-flow-logs"
+  }
+}
+
+# KMS key for encrypting CloudWatch Log Groups
+resource "aws_kms_key" "log_group_key" {
+  description             = "KMS key for CloudWatch log group encryption"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+
+  tags = {
+    Name = "${var.project_name}-logs-kms"
   }
 }
 

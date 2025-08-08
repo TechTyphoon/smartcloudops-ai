@@ -295,7 +295,7 @@ resource "aws_instance" "ec2_monitoring" {
   monitoring                  = true
   ebs_optimized               = true
   iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
-  associate_public_ip_address = true
+  associate_public_ip_address = false
 
   metadata_options {
     http_endpoint               = "enabled"
@@ -329,7 +329,7 @@ resource "aws_instance" "ec2_application" {
   monitoring                  = true
   ebs_optimized               = true
   iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
-  associate_public_ip_address = true
+  associate_public_ip_address = false
 
   metadata_options {
     http_endpoint               = "enabled"
