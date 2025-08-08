@@ -22,12 +22,7 @@ class NotificationManager:
 
     def __init__(self, slack_webhook_url: Optional[str] = None):
         """Initialize the notification manager."""
-        # Load from env first; if not present, fall back to AWS SSM Parameter Store
-        self.slack_webhook_url = slack_webhook_url or os.getenv("SLACK_WEBHOOK_URL", "")
-        if not self.slack_webhook_url:
-            self.slack_webhook_url = self._load_slack_webhook_from_ssm()
-
-        # Initialize AWS SSM client for parameter access
+        # Initialize AWS SSM client for parameter access first
         try:
             self.ssm = boto3.client(
                 "ssm", region_name=os.getenv("AWS_REGION", "ap-south-1")
@@ -35,6 +30,11 @@ class NotificationManager:
         except Exception as e:
             logger.warning(f"Could not initialize SSM client: {e}")
             self.ssm = None
+
+        # Load from env first; if not present, fall back to AWS SSM Parameter Store
+        self.slack_webhook_url = slack_webhook_url or os.getenv("SLACK_WEBHOOK_URL", "")
+        if not self.slack_webhook_url:
+            self.slack_webhook_url = self._load_slack_webhook_from_ssm()
 
         logger.info("Notification manager initialized")
 
