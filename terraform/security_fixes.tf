@@ -121,27 +121,28 @@ resource "aws_kms_key" "log_group_key" {
   deletion_window_in_days = 7
   enable_key_rotation     = true
 
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Id": "key-default-1",
-  "Statement": [
-    {
-      "Sid": "Allow administration of the key",
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
-      },
-      "Action": "kms:*",
-      "Resource": "*"
-    }
-  ]
-}
-EOF
-
   tags = {
     Name = "${var.project_name}-logs-kms"
   }
+}
+
+# Explicit key policy resource to satisfy policy definition checks
+resource "aws_kms_key_policy" "log_group_key_policy" {
+  key_id = aws_kms_key.log_group_key.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Id      = "key-default-policy",
+    Statement = [
+      {
+        Sid      = "Allow administration of the key",
+        Effect   = "Allow",
+        Principal = { AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root" },
+        Action   = "kms:*",
+        Resource = "*"
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role" "flow_log_role" {
