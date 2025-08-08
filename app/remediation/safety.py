@@ -1,6 +1,6 @@
+import logging
 import os
 import time
-import logging
 from typing import Dict, Tuple
 
 logger = logging.getLogger(__name__)

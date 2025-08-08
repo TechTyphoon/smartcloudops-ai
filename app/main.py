@@ -4,30 +4,31 @@ Smart CloudOps AI - Flask Application (Phase 2)
 ChatOps application with GPT integration and comprehensive monitoring
 """
 
-import sys
+import logging
 import os
+import sys
 import time
+
 from flask import Flask, jsonify, request
 from prometheus_client import (
-    Counter,
-    Histogram,
-    Gauge,
-    generate_latest,
     CONTENT_TYPE_LATEST,
+    Counter,
+    Gauge,
+    Histogram,
+    generate_latest,
 )
-import logging
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from app.config import get_config
 from app.chatops.ai_handler import FlexibleAIHandler
 from app.chatops.utils import (
-    SystemContextGatherer,
     LogRetriever,
-    validate_query_params,
+    SystemContextGatherer,
     format_response,
+    validate_query_params,
 )
+from app.config import get_config
 
 # Import ML anomaly detection
 try:

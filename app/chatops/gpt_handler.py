@@ -3,12 +3,13 @@ Smart CloudOps AI - GPT Handler Module
 OpenAI integration for ChatOps functionality
 """
 
+import logging
 import os
 import re
-import logging
-from typing import Dict, Any, Optional, List
-from openai import OpenAI
 from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
+
+from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 

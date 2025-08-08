@@ -1,12 +1,13 @@
-import os
-import yaml
-import threading
 import logging
-from typing import Dict, Any
+import os
+import threading
+from typing import Any, Dict
+
+import yaml
 
 from .actions import AWSActions
-from .safety import SafetyController
 from .notifications import Notifier
+from .safety import SafetyController
 
 logger = logging.getLogger(__name__)
 

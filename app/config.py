@@ -1,8 +1,8 @@
 """Configuration module for Smart CloudOps AI Phase 2: ChatOps configuration setup."""
 
 import os
-from typing import Dict, Any
 from pathlib import Path
+from typing import Any, Dict
 
 
 # Load .env file if it exists

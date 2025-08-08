@@ -5,8 +5,8 @@ Helps users start the application with proper configuration
 """
 
 import os
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 

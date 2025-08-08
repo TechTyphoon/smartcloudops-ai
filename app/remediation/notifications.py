@@ -1,10 +1,10 @@
-import os
 import json
 import logging
-from typing import Dict, Any, Optional
+import os
+from typing import Any, Dict, Optional
 
-import requests
 import boto3
+import requests
 
 logger = logging.getLogger(__name__)
 

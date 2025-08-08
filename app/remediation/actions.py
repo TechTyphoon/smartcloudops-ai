@@ -1,6 +1,6 @@
-import os
 import logging
-from typing import List, Dict
+import os
+from typing import Dict, List
 
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
