@@ -287,9 +287,8 @@ class TestChatOpsIntegration:
 
     def test_query_endpoint_success(self, client):
         """Test successful query endpoint."""
-        # Mock the FlexibleAIHandler initialization at the module level
-        with patch('app.main.FlexibleAIHandler') as mock_ai_handler_class:
-            mock_ai_handler = Mock()
+        # Mock the FlexibleAIHandler at the module level
+        with patch('app.main.ai_handler') as mock_ai_handler:
             mock_ai_handler.process_query.return_value = {
                 "status": "success",
                 "response": "Test response",
@@ -299,15 +298,8 @@ class TestChatOpsIntegration:
                 "provider": "test",
                 "model": "test-model"
             }
-            mock_ai_handler_class.return_value = mock_ai_handler
             
-            # Create a new app instance with mocked AI handler
-            from app.main import app
-            test_app = app
-            test_app.config['TESTING'] = True
-            test_client = test_app.test_client()
-            
-            response = test_client.post('/query', json={'query': 'test query'})
+            response = client.post('/query', json={'query': 'test query'})
             assert response.status_code == 200
             data = response.get_json()
             assert data['status'] == 'success'
