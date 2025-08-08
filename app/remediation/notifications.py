@@ -4,11 +4,12 @@ Smart CloudOps AI - Notification Manager (Phase 4)
 Sends notifications for remediation actions via Slack
 """
 
-import logging
 import json
+import logging
 import os
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
+
 import boto3
 import requests
 

@@ -5,11 +5,12 @@ Implements safety mechanisms for auto-remediation actions
 """
 
 import logging
+import os
 import time
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
+
 import boto3
-import os
 
 logger = logging.getLogger(__name__)
 
