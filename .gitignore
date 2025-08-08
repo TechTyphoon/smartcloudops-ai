@@ -27,6 +27,8 @@ env/
 ENV/
 env.bak/
 venv.bak/
+.formatvenv/
+.venv/
 
 # IDE
 .vscode/
@@ -51,6 +53,7 @@ Thumbs.db
 .terraform.lock.hcl
 terraform.tfvars
 *.tfplan
+tfplan*
 
 # AWS
 .aws/
@@ -78,6 +81,8 @@ yarn-error.log*
 *.h5
 *.ckpt
 models/
+ml_models/models/
+ml_models/data/
 
 # Jupyter Notebooks
 .ipynb_checkpoints/
@@ -105,3 +110,7 @@ coverage.xml
 # Documentation builds
 docs/_build/
 site/
+
+# Test data generation scripts (one-time use)
+generate_*.py
+test_*.py
