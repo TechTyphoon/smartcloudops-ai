@@ -31,8 +31,6 @@ class GPTHandler:
             raise ValueError("OpenAI API key is required")
 
         try:
-            from openai import OpenAI
-
             self.client = OpenAI(api_key=self.api_key)
             logger.info("GPT handler initialized successfully")
         except Exception as e:

@@ -5,7 +5,6 @@ Helper functions for log retrieval, context gathering, and system utilities
 
 import json
 import logging
-import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -113,7 +112,10 @@ class SystemContextGatherer:
                     )
 
             # Disk usage
-            disk_query = '(1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100'
+            disk_query = (
+                '(1 - (node_filesystem_avail_bytes{mountpoint="/"} / '
+                'node_filesystem_size_bytes{mountpoint="/"})) * 100'
+            )
             disk_response = requests.get(
                 f"{self.prometheus_url}/api/v1/query",
                 params={"query": disk_query},
