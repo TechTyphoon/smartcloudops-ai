@@ -17,11 +17,11 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first for better Docker layer caching
-COPY requirements-minimal.txt .
+COPY requirements.txt .
 
-# Install Python dependencies
+# Install Python dependencies (full deps to support ML features)
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements-minimal.txt
+    && pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY app/ ./app/

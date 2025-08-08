@@ -33,7 +33,7 @@ scrape_configs:
   # Node Exporter on application server (will be configured during deployment)
   - job_name: 'node-exporter-application'
     static_configs:
-      - targets: ['APPLICATION_SERVER_IP:9100']
+      - targets: ['node-exporter:9100']
     scrape_interval: 10s
 
   # Flask application metrics
@@ -46,7 +46,7 @@ scrape_configs:
   # Additional monitoring targets
   - job_name: 'ec2-instances'
     ec2_sd_configs:
-      - region: us-west-2
+      - region: ap-south-1
         port: 9100
     relabel_configs:
       - source_labels: [__meta_ec2_tag_Name]

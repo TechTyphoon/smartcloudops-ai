@@ -22,7 +22,10 @@ class DataProcessor:
     def __init__(self, config_path: str = "ml_models/config.yaml"):
         """Initialize data processor with configuration."""
         self.config = self._load_config(config_path)
-        self.prometheus_url = self.config['data']['prometheus_url']
+        # Allow environment override for Prometheus URL (e.g., compose, AWS)
+        self.prometheus_url = os.getenv(
+            'PROMETHEUS_URL', self.config['data']['prometheus_url']
+        )
         self.features = self.config['features']
         # Configure HTTP timeout for Prometheus requests (seconds)
         self.timeout = int(self.config.get('data', {}).get('timeout', 30))

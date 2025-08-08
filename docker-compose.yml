@@ -33,7 +33,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./terraform/configs/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./terraform/configs/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -54,10 +54,10 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./terraform/configs/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
-      - ./terraform/configs/grafana-datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
-      - ./terraform/configs/grafana-dashboard-system-overview.json:/etc/grafana/provisioning/dashboards/grafana-dashboard-system-overview.json
-      - ./terraform/configs/grafana-dashboard-prometheus-monitoring.json:/etc/grafana/provisioning/dashboards/grafana-dashboard-prometheus-monitoring.json
+      - ./terraform/configs/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro
+      - ./terraform/configs/grafana-datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml:ro
+      - ./terraform/configs/grafana-dashboard-system-overview.json:/etc/grafana/provisioning/dashboards/grafana-dashboard-system-overview.json:ro
+      - ./terraform/configs/grafana-dashboard-prometheus-monitoring.json:/etc/grafana/provisioning/dashboards/grafana-dashboard-prometheus-monitoring.json:ro
     depends_on:
       - prometheus
     networks:

@@ -49,7 +49,8 @@ variable "public_subnet_2_cidr" {
 variable "allowed_cidr_blocks" {
   description = "CIDR blocks allowed to access the infrastructure"
   type        = list(string)
-  default     = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"] # Private IP ranges only
+  # Default to restrictive localhost; override per environment (e.g., your /32) via tfvars
+  default     = ["127.0.0.1/32"]
 }
 
 # EC2 Configuration
