@@ -18,9 +18,6 @@ from prometheus_client import (
     generate_latest,
 )
 
-# Add the project root to Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
 from app.chatops.ai_handler import FlexibleAIHandler
 from app.chatops.utils import (
     LogRetriever,
@@ -744,7 +741,7 @@ def main():
     port = int(os.getenv("PORT", 3000))
     debug = config.DEBUG
 
-    logger.info(f"Starting Smart CloudOps AI Flask Application")
+    logger.info("Starting Smart CloudOps AI Flask Application")
     logger.info(f"Environment: {env}")
     logger.info(f"Debug mode: {debug}")
     logger.info(f"Port: {port}")
