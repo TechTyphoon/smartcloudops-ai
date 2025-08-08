@@ -16,7 +16,7 @@ services:
       - REMEDIATION_TAG_VALUE=smartcloudops-ai-application
       - SSM_SERVICE_NAME=smartcloudops-app
       - AWS_REGION=ap-south-1
-      - SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
     volumes:
       - ./app:/app/app
       - ./scripts:/app/scripts
