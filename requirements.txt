@@ -20,6 +20,7 @@ prophet==1.1.4  # Re-enabled with NumPy compatibility fix
 
 # Monitoring & Metrics
 prometheus-client==0.19.0
+prometheus-api-client==0.6.0
 requests==2.31.0
 
 # AWS Integration
