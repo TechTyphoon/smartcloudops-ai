@@ -274,17 +274,16 @@ class TestChatOpsIntegration:
     """Integration tests for ChatOps functionality."""
 
     @pytest.fixture
-    def app(self):
+    def test_app(self):
         """Create test Flask app."""
-        from app.main import create_app
-        app = create_app('development')
+        from app.main import app
         app.config['TESTING'] = True
         return app
 
     @pytest.fixture
-    def client(self, app):
+    def client(self, test_app):
         """Create test client."""
-        return app.test_client()
+        return test_app.test_client()
 
     def test_query_endpoint_success(self, client):
         """Test successful query endpoint."""
@@ -303,8 +302,8 @@ class TestChatOpsIntegration:
             mock_ai_handler_class.return_value = mock_ai_handler
             
             # Create a new app instance with mocked AI handler
-            from app.main import create_app
-            test_app = create_app('development')
+            from app.main import app
+            test_app = app
             test_app.config['TESTING'] = True
             test_client = test_app.test_client()
             

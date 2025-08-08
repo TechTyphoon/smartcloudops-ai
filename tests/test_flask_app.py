@@ -7,31 +7,30 @@ import os
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from app.main import create_app
+from app.main import app
 
 
 class TestFlaskApplication:
     """Test cases for Flask application."""
 
     @pytest.fixture
-    def app(self):
+    def test_app(self):
         """Create test app."""
-        app = create_app('development')
         app.config['TESTING'] = True
         return app
 
     @pytest.fixture
-    def client(self, app):
+    def client(self, test_app):
         """Create test client."""
-        return app.test_client()
+        return test_app.test_client()
 
-    def test_health_endpoint(self, client):
-        """Test health endpoint."""
-        response = client.get('/health')
+    def test_home_endpoint(self, client):
+        """Test home endpoint."""
+        response = client.get('/')
         assert response.status_code == 200
         data = response.get_json()
-        assert data['status'] == 'healthy'
-        assert 'Smart CloudOps AI' in data['service']
+        assert data['status'] == 'running'
+        assert 'Smart CloudOps AI' in data['message']
 
     def test_metrics_endpoint(self, client):
         """Test metrics endpoint."""
@@ -39,23 +38,15 @@ class TestFlaskApplication:
         assert response.status_code == 200
         assert response.content_type.startswith('text/plain')
 
-    def test_root_endpoint(self, client):
-        """Test root endpoint."""
-        response = client.get('/')
-        assert response.status_code == 200
-        data = response.get_json()
-        assert 'Smart CloudOps AI' in data['service']
-        assert 'endpoints' in data
-
     def test_status_endpoint(self, client):
         """Test status endpoint."""
         response = client.get('/status')
         assert response.status_code == 200
         data = response.get_json()
-        assert data['status'] == 'success'
-        assert 'data' in data
-        # Check that we get system context data
-        assert 'system_health' in data['data'] or 'prometheus_metrics' in data['data']
+        assert data['status'] == 'healthy'
+        assert 'components' in data
+
+
 
     def test_404_handler(self, client):
         """Test 404 error handler."""

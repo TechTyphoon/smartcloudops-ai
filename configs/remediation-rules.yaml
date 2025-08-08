@@ -1,3 +1,169 @@
-anomaly:
-  severity_threshold: 0.7
-  action: restart_service
+# Smart CloudOps AI - Remediation Rules Configuration (Phase 4)
+# Defines rules for auto-remediation based on anomaly severity and metrics
+
+# Global settings
+global:
+  enabled: true
+  max_actions_per_hour: 10
+  cooldown_minutes: 5
+  require_approval: false  # Set to true for production
+
+# Severity thresholds
+severity_thresholds:
+  critical: 0.8
+  high: 0.6
+  medium: 0.4
+  low: 0.2
+
+# Remediation rules by severity and issue type
+remediation_rules:
+  critical:
+    high_cpu_usage:
+      condition: "cpu_usage_avg > 90"
+      actions:
+        - action: "restart_service"
+          target: "application"
+          priority: "immediate"
+          reason: "Critical CPU usage detected"
+    
+    critical_memory_usage:
+      condition: "memory_usage_pct > 95"
+      actions:
+        - action: "restart_service"
+          target: "application"
+          priority: "immediate"
+          reason: "Critical memory usage detected"
+    
+    critical_disk_usage:
+      condition: "disk_usage_pct > 95"
+      actions:
+        - action: "cleanup_disk"
+          target: "system"
+          priority: "immediate"
+          reason: "Critical disk usage detected"
+  
+  high:
+    elevated_cpu_usage:
+      condition: "cpu_usage_avg > 80"
+      actions:
+        - action: "scale_up"
+          target: "resources"
+          priority: "high"
+          reason: "High CPU usage detected"
+    
+    high_memory_usage:
+      condition: "memory_usage_pct > 85"
+      actions:
+        - action: "scale_up"
+          target: "resources"
+          priority: "high"
+          reason: "High memory usage detected"
+    
+    high_disk_usage:
+      condition: "disk_usage_pct > 85"
+      actions:
+        - action: "cleanup_disk"
+          target: "system"
+          priority: "high"
+          reason: "High disk usage detected"
+  
+  medium:
+    slow_response_time:
+      condition: "response_time_p95 > 5.0"
+      actions:
+        - action: "optimize_performance"
+          target: "application"
+          priority: "medium"
+          reason: "Performance optimization needed"
+    
+    elevated_network_usage:
+      condition: "network_bytes_total > 1000000000"
+      actions:
+        - action: "enhance_monitoring"
+          target: "monitoring"
+          priority: "medium"
+          reason: "Enhanced monitoring for network usage"
+  
+  low:
+    minor_issues:
+      condition: "anomaly_score > 0.2"
+      actions:
+        - action: "enhance_monitoring"
+          target: "monitoring"
+          priority: "low"
+          reason: "Enhanced monitoring for minor anomalies"
+
+# Action definitions
+actions:
+  restart_service:
+    description: "Restart a systemd service"
+    timeout_seconds: 300
+    requires_approval: true
+    max_retries: 2
+  
+  scale_up:
+    description: "Scale up resources (CPU, memory, instances)"
+    timeout_seconds: 600
+    requires_approval: false
+    max_retries: 1
+  
+  scale_down:
+    description: "Scale down resources to save costs"
+    timeout_seconds: 600
+    requires_approval: true
+    max_retries: 1
+  
+  cleanup_disk:
+    description: "Clean up disk space by removing old files"
+    timeout_seconds: 600
+    requires_approval: false
+    max_retries: 1
+  
+  optimize_performance:
+    description: "Optimize application performance"
+    timeout_seconds: 300
+    requires_approval: false
+    max_retries: 1
+  
+  enhance_monitoring:
+    description: "Enhance monitoring and alerting"
+    timeout_seconds: 120
+    requires_approval: false
+    max_retries: 1
+
+# Notification settings
+notifications:
+  slack:
+    enabled: true
+    webhook_param: "/smartcloudops/dev/slack/webhook"
+    channels:
+      - "#alerts"
+      - "#devops"
+  
+  email:
+    enabled: false
+    recipients: []
+  
+  webhook:
+    enabled: false
+    endpoints: []
+
+# Safety settings
+safety:
+  max_concurrent_actions: 3
+  action_timeout_seconds: 600
+  rollback_enabled: true
+  dry_run_mode: false  # Set to true for testing
+  
+  # Blacklist of actions that should never be auto-executed
+  blacklisted_actions:
+    - "terminate_instance"
+    - "delete_data"
+    - "modify_security_groups"
+  
+  # Whitelist of safe actions that can be auto-executed
+  whitelisted_actions:
+    - "restart_service"
+    - "cleanup_disk"
+    - "enhance_monitoring"
+    - "optimize_performance"
