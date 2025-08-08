@@ -499,7 +499,11 @@ class TestNotificationManager:
     
     def setup_method(self):
         """Set up test fixtures."""
-        with patch('boto3.client'):
+        with patch('boto3.client') as mock_boto:
+            # Mock SSM to return None for webhook
+            mock_ssm = Mock()
+            mock_ssm.get_parameter.return_value = {'Parameter': {'Value': ''}}
+            mock_boto.return_value = mock_ssm
             self.notification_manager = NotificationManager()
     
     def test_initialization(self):
@@ -580,6 +584,8 @@ class TestNotificationManager:
     
     def test_send_remediation_notification_no_webhook(self):
         """Test sending remediation notification without webhook."""
+        # Ensure webhook URL is empty
+        self.notification_manager.slack_webhook_url = ""
         evaluation = {'severity': 'high', 'anomaly_score': 0.7}
         execution_results = []
         
@@ -604,6 +610,8 @@ class TestNotificationManager:
     
     def test_send_simple_notification_no_webhook(self):
         """Test sending simple notification without webhook."""
+        # Ensure webhook URL is empty
+        self.notification_manager.slack_webhook_url = ""
         result = self.notification_manager.send_simple_notification('Test Title', 'Test Message')
         
         assert result['status'] == 'skipped'
@@ -622,6 +630,8 @@ class TestNotificationManager:
     
     def test_get_status(self):
         """Test getting notification manager status."""
+        # Ensure webhook URL is empty for this test
+        self.notification_manager.slack_webhook_url = ""
         status = self.notification_manager.get_status()
         
         assert status['status'] == 'operational'
