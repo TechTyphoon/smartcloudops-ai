@@ -21,8 +21,12 @@ class Notifier:
     def _load_webhook_from_ssm(self) -> None:
         """Load Slack webhook from AWS SSM Parameter Store if configured."""
         try:
-            param_name = os.getenv("SSM_PARAM_SLACK_WEBHOOK", "/smartcloudops/dev/slack/webhook")
-            region = os.getenv("AWS_REGION", os.getenv("AWS_DEFAULT_REGION", "us-west-2"))
+            param_name = os.getenv(
+                "SSM_PARAM_SLACK_WEBHOOK", "/smartcloudops/dev/slack/webhook"
+            )
+            region = os.getenv(
+                "AWS_REGION", os.getenv("AWS_DEFAULT_REGION", "us-west-2")
+            )
             ssm = boto3.client("ssm", region_name=region)
             resp = ssm.get_parameter(Name=param_name, WithDecryption=True)
             self.slack_webhook_url = resp.get("Parameter", {}).get("Value", "")
@@ -33,7 +37,9 @@ class Notifier:
         except Exception as exc:
             logger.warning(f"Could not load Slack webhook from SSM: {exc}")
 
-    def send_slack_message(self, title: str, message: str, fields: Optional[Dict[str, Any]] = None) -> bool:
+    def send_slack_message(
+        self, title: str, message: str, fields: Optional[Dict[str, Any]] = None
+    ) -> bool:
         if not self.slack_webhook_url:
             logger.info("Slack webhook URL not configured; skipping notification")
             return False
@@ -47,10 +53,17 @@ class Notifier:
             payload["text"] += f"\n{formatted_fields}"
 
         try:
-            response = requests.post(self.slack_webhook_url, data=json.dumps(payload), headers={"Content-Type": "application/json"}, timeout=10)
+            response = requests.post(
+                self.slack_webhook_url,
+                data=json.dumps(payload),
+                headers={"Content-Type": "application/json"},
+                timeout=10,
+            )
             if response.status_code >= 200 and response.status_code < 300:
                 return True
-            logger.warning(f"Slack webhook failed with status {response.status_code}: {response.text}")
+            logger.warning(
+                f"Slack webhook failed with status {response.status_code}: {response.text}"
+            )
             return False
         except Exception as exc:
             logger.error(f"Failed to send Slack notification: {exc}")

@@ -17,22 +17,26 @@ def check_flask_application() -> Dict[str, Any]:
     try:
         # Test Flask app import
         from app.main import create_app
+
         app = create_app()
-        
+
         # Test endpoints using test client
         with app.test_client() as client:
-            health_response = client.get('/health')
-            metrics_response = client.get('/metrics')
-            
-            if health_response.status_code == 200 and metrics_response.status_code == 200:
+            health_response = client.get("/health")
+            metrics_response = client.get("/metrics")
+
+            if (
+                health_response.status_code == 200
+                and metrics_response.status_code == 200
+            ):
                 return {
-                    "status": "healthy", 
-                    "message": "Flask application and endpoints working"
+                    "status": "healthy",
+                    "message": "Flask application and endpoints working",
                 }
             else:
                 return {
                     "status": "unhealthy",
-                    "message": f"Flask endpoints failed: health={health_response.status_code}, metrics={metrics_response.status_code}"
+                    "message": f"Flask endpoints failed: health={health_response.status_code}, metrics={metrics_response.status_code}",
                 }
     except ImportError as e:
         return {"status": "unhealthy", "message": f"Flask app import failed: {str(e)}"}

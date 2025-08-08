@@ -4,17 +4,19 @@ import os
 from typing import Dict, Any
 from pathlib import Path
 
+
 # Load .env file if it exists
 def load_dotenv():
     """Load environment variables from .env file."""
-    env_path = Path(__file__).parent.parent / '.env'
+    env_path = Path(__file__).parent.parent / ".env"
     if env_path.exists():
-        with open(env_path, 'r') as f:
+        with open(env_path, "r") as f:
             for line in f:
                 line = line.strip()
-                if line and not line.startswith('#') and '=' in line:
-                    key, value = line.split('=', 1)
+                if line and not line.startswith("#") and "=" in line:
+                    key, value = line.split("=", 1)
                     os.environ[key] = value
+
 
 # Load .env file
 load_dotenv()
@@ -73,11 +75,14 @@ class Config:
             "log_level": os.getenv("LOG_LEVEL", "INFO"),
             "log_dir": os.getenv("LOG_DIR", "logs"),
             # Phase 4 remediation config
-            "require_approval": os.getenv("REQUIRE_APPROVAL", "false").lower() == "true",
+            "require_approval": os.getenv("REQUIRE_APPROVAL", "false").lower()
+            == "true",
             "max_actions_per_hour": int(os.getenv("MAX_ACTIONS_PER_HOUR", "3")),
             "cooldown_minutes": int(os.getenv("COOLDOWN_MINUTES", "10")),
             "remediation_tag_key": os.getenv("REMEDIATION_TAG_KEY", "Name"),
-            "remediation_tag_value": os.getenv("REMEDIATION_TAG_VALUE", "smartcloudops-ai-application"),
+            "remediation_tag_value": os.getenv(
+                "REMEDIATION_TAG_VALUE", "smartcloudops-ai-application"
+            ),
             "ssm_service_name": os.getenv("SSM_SERVICE_NAME", "smartcloudops-app"),
         }
 
