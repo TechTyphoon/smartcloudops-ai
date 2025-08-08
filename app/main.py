@@ -57,6 +57,11 @@ app = Flask(__name__)
 REQUEST_COUNT = Counter('flask_requests_total', 'Total Flask HTTP requests', ['method', 'endpoint'])
 REQUEST_LATENCY = Histogram('flask_request_duration_seconds', 'Flask HTTP request latency')
 
+# Phase 3: ML metrics
+ML_PREDICTIONS = Counter('ml_predictions_total', 'Total ML predictions made', ['model_type'])
+ML_ANOMALIES = Counter('ml_anomalies_detected', 'Total anomalies detected', ['severity'])
+ML_TRAINING_RUNS = Counter('ml_training_runs_total', 'Total model training runs', ['status'])
+
 # Phase 4: Remediation metrics
 REMEDIATION_ACTIONS = Counter('remediation_actions_total', 'Total remediation actions executed', ['action_type', 'severity'])
 REMEDIATION_SUCCESS = Counter('remediation_success_total', 'Successful remediation actions', ['action_type'])
@@ -67,6 +72,18 @@ config = get_config()
 ai_handler = FlexibleAIHandler()
 log_retriever = LogRetriever()
 system_gatherer = SystemContextGatherer()
+
+# Initialize ML components
+if ML_AVAILABLE:
+    anomaly_detector = AnomalyDetector()
+    # Try to load existing model
+    try:
+        anomaly_detector.load_model()
+        logger.info("ML model loaded successfully")
+    except Exception as e:
+        logger.warning(f"Could not load existing ML model: {e}")
+else:
+    anomaly_detector = None
 
 # Initialize Phase 4 components
 if REMEDIATION_AVAILABLE:
@@ -99,6 +116,12 @@ def home():
             "chatops": True,
             "ml_anomaly_detection": ML_AVAILABLE,
             "auto_remediation": REMEDIATION_AVAILABLE
+        },
+        "endpoints": {
+            "chatops": ["/query", "/logs", "/chatops/history", "/chatops/clear"],
+            "ml_anomaly_detection": ["/anomaly", "/anomaly/batch", "/anomaly/status", "/anomaly/train"],
+            "remediation": ["/remediation/status", "/remediation/evaluate", "/remediation/execute", "/remediation/test"],
+            "monitoring": ["/status", "/metrics"]
         }
     })
 
@@ -110,7 +133,10 @@ def status():
         "uptime": "running",
         "components": {
             "ai_handler": {"status": "operational"} if ai_handler else None,
-            "ml_models": ML_AVAILABLE,
+            "ml_models": {
+                "available": ML_AVAILABLE,
+                "status": anomaly_detector.get_system_status() if anomaly_detector else None
+            },
             "remediation_engine": remediation_engine.get_status() if remediation_engine else None
         }
     })
@@ -190,6 +216,111 @@ def clear_history():
     except Exception as e:
         logger.error(f"Error clearing chat history: {e}")
         return jsonify(format_response({"error": str(e)}, "error", "Failed to clear conversation history")), 500
+
+# Phase 3: ML Anomaly Detection Endpoints
+
+@app.route('/anomaly', methods=['POST'])
+def detect_anomaly():
+    """Detect anomalies in real-time."""
+    try:
+        if not ML_AVAILABLE:
+            return jsonify({
+                "error": "ML models not available",
+                "status": "disabled"
+            }), 503
+        
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        metrics = data.get('metrics', {})
+        if not metrics:
+            return jsonify({"error": "No metrics provided"}), 400
+        
+        # Detect anomaly
+        result = anomaly_detector.detect_anomaly(metrics)
+        
+        # Update metrics
+        ML_PREDICTIONS.labels(model_type='anomaly_detector').inc()
+        if result.get('is_anomaly', False):
+            severity = result.get('severity', 'unknown')
+            ML_ANOMALIES.labels(severity=severity).inc()
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Error detecting anomaly: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/anomaly/batch', methods=['POST'])
+def batch_detect_anomaly():
+    """Detect anomalies in batch."""
+    try:
+        if not ML_AVAILABLE:
+            return jsonify({
+                "error": "ML models not available",
+                "status": "disabled"
+            }), 503
+        
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        metrics_batch = data.get('metrics_batch', [])
+        if not metrics_batch:
+            return jsonify({"error": "No metrics batch provided"}), 400
+        
+        # Batch detect anomalies
+        results = anomaly_detector.batch_detect(metrics_batch)
+        
+        return jsonify({"results": results, "count": len(results)})
+        
+    except Exception as e:
+        logger.error(f"Error in batch anomaly detection: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/anomaly/status', methods=['GET'])
+def ml_status():
+    """Get ML system status."""
+    try:
+        if not ML_AVAILABLE:
+            return jsonify({
+                "error": "ML models not available",
+                "status": "disabled"
+            }), 503
+        
+        status = anomaly_detector.get_system_status()
+        return jsonify(status)
+        
+    except Exception as e:
+        logger.error(f"Error getting ML status: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/anomaly/train', methods=['POST'])
+def train_model():
+    """Train or retrain the ML model."""
+    try:
+        if not ML_AVAILABLE:
+            return jsonify({
+                "error": "ML models not available",
+                "status": "disabled"
+            }), 503
+        
+        data = request.get_json() or {}
+        force_retrain = data.get('force_retrain', False)
+        
+        # Train model
+        result = anomaly_detector.train_model(force_retrain=force_retrain)
+        
+        # Update metrics
+        status = result.get('status', 'unknown')
+        ML_TRAINING_RUNS.labels(status=status).inc()
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Error training model: {e}")
+        return jsonify({"error": str(e)}), 500
 
 # Phase 4: Auto-Remediation Endpoints
 

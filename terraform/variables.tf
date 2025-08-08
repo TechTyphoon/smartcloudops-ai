@@ -56,7 +56,7 @@ variable "allowed_cidr_blocks" {
   description = "CIDR blocks allowed to access the infrastructure"
   type        = list(string)
   # Default to restrictive localhost; override per environment (e.g., your /32) via tfvars
-  default     = ["127.0.0.1/32"]
+  default = ["127.0.0.1/32"]
 }
 
 # EC2 Configuration

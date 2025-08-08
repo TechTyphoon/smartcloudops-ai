@@ -30,10 +30,21 @@ class RemediationEngine:
     def __init__(self, config: Optional[Dict] = None):
         """Initialize the remediation engine."""
         self.config = config or get_config()
+        
+        # Handle both dict and class config objects
+        if hasattr(self.config, 'MAX_ACTIONS_PER_HOUR'):
+            max_actions = self.config.MAX_ACTIONS_PER_HOUR
+            cooldown = self.config.COOLDOWN_MINUTES
+            approval_param = getattr(self.config, 'APPROVAL_SSM_PARAM', '/smartcloudops/dev/approvals/auto')
+        else:
+            max_actions = self.config.get('MAX_ACTIONS_PER_HOUR', 10)
+            cooldown = self.config.get('COOLDOWN_MINUTES', 5)
+            approval_param = self.config.get('APPROVAL_SSM_PARAM', '/smartcloudops/dev/approvals/auto')
+        
         self.safety_manager = SafetyManager(
-            max_actions_per_hour=self.config.get('MAX_ACTIONS_PER_HOUR', 10),
-            cooldown_minutes=self.config.get('COOLDOWN_MINUTES', 5),
-            approval_param=self.config.get('APPROVAL_SSM_PARAM', '/smartcloudops/dev/approvals/auto')
+            max_actions_per_hour=max_actions,
+            cooldown_minutes=cooldown,
+            approval_param=approval_param
         )
         self.action_manager = ActionManager()
         self.notification_manager = NotificationManager()

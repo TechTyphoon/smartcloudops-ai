@@ -135,11 +135,11 @@ resource "aws_kms_key_policy" "log_group_key_policy" {
     Id      = "key-default-policy",
     Statement = [
       {
-        Sid      = "Allow administration of the key",
-        Effect   = "Allow",
+        Sid       = "Allow administration of the key",
+        Effect    = "Allow",
         Principal = { AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root" },
-        Action   = "kms:*",
-        Resource = "*"
+        Action    = "kms:*",
+        Resource  = "*"
       }
     ]
   })

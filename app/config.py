@@ -51,8 +51,8 @@ class Config:
 
     # Remediation configuration (Phase 4)
     REQUIRE_APPROVAL: bool = False
-    MAX_ACTIONS_PER_HOUR: int = 3
-    COOLDOWN_MINUTES: int = 10
+    MAX_ACTIONS_PER_HOUR: int = 10
+    COOLDOWN_MINUTES: int = 5
     REMEDIATION_TAG_KEY: str = "Name"
     REMEDIATION_TAG_VALUE: str = "smartcloudops-ai-application"
     SSM_SERVICE_NAME: str = "smartcloudops-app"
