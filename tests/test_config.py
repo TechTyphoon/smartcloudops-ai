@@ -47,8 +47,19 @@ class TestConfig:
         assert default_config == DevelopmentConfig
 
     def test_config_from_env(self):
-        """Test configuration from environment variables."""
-        env_config = Config.from_env()
-        assert isinstance(env_config, dict)
-        assert "debug" in env_config
-        assert "metrics_port" in env_config
+        """Test configuration loading from environment variables."""
+        # Set required environment variables for testing
+        os.environ['AI_PROVIDER'] = 'auto'
+        os.environ['OPENAI_API_KEY'] = 'test-key'
+        
+        try:
+            env_config = Config.from_env()
+            assert isinstance(env_config, dict)
+            assert 'ai_provider' in env_config
+            assert 'openai_api_key' in env_config
+        finally:
+            # Clean up environment variables
+            if 'AI_PROVIDER' in os.environ:
+                del os.environ['AI_PROVIDER']
+            if 'OPENAI_API_KEY' in os.environ:
+                del os.environ['OPENAI_API_KEY']

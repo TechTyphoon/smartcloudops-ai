@@ -163,6 +163,11 @@ class AnomalyDetector:
                 return False
             
             self.inference_engine = AnomalyInferenceEngine(self.model_path)
+            # Actually load the model in the inference engine
+            if not self.inference_engine.load_model(self.model_path):
+                logger.error("Failed to load model in inference engine")
+                return False
+                
             self.is_initialized = True
             logger.info("Model loaded successfully")
             return True
@@ -193,13 +198,14 @@ class AnomalyDetector:
             # Perform anomaly detection
             is_anomaly, severity_score, explanation = self.inference_engine.detect_anomalies(metrics_data)
             
+            # Ensure all values are JSON serializable
             return {
                 'status': 'success',
-                'is_anomaly': is_anomaly,
-                'severity_score': severity_score,
-                'explanation': explanation,
+                'is_anomaly': bool(is_anomaly),  # Convert numpy.bool_ to Python bool
+                'severity_score': float(severity_score),  # Convert numpy.float64 to Python float
+                'explanation': str(explanation),
                 'timestamp': datetime.now().isoformat(),
-                'metrics': metrics_data
+                'metrics': {k: float(v) if isinstance(v, (int, float)) else v for k, v in metrics_data.items()}
             }
             
         except Exception as e:
@@ -267,6 +273,38 @@ class AnomalyDetector:
         if self.inference_engine:
             self.inference_engine.clear_cache()
             logger.info("Cache cleared")
+    
+    def cleanup_resources(self) -> None:
+        """Clean up all resources and file handles."""
+        try:
+            # Clear inference engine cache
+            if self.inference_engine:
+                self.inference_engine.clear_cache()
+                self.inference_engine = None
+            
+            # Clear data processor cache
+            if hasattr(self.data_processor, 'clear_cache'):
+                self.data_processor.clear_cache()
+            
+            # Clear model trainer cache
+            if hasattr(self.model_trainer, 'clear_cache'):
+                self.model_trainer.clear_cache()
+            
+            # Reset initialization flag
+            self.is_initialized = False
+            
+            logger.info("All resources cleaned up successfully")
+            
+        except Exception as e:
+            logger.error(f"Error during resource cleanup: {e}")
+    
+    def __enter__(self):
+        """Context manager entry."""
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit with cleanup."""
+        self.cleanup_resources()
     
     def get_feature_importance(self) -> Dict:
         """Get feature importance information."""

@@ -217,7 +217,7 @@ class FlexibleAIHandler:
 Always respond in a professional, helpful manner focused on operational excellence."""
 
     def sanitize_input(self, query: str) -> str:
-        """Sanitize and validate user input."""
+        """Sanitize and validate user input with comprehensive security checks."""
         if not query or not isinstance(query, str):
             raise ValueError("Query must be a non-empty string")
 
@@ -239,20 +239,187 @@ Always respond in a professional, helpful manner focused on operational excellen
         if len(sanitized) > 1000:
             sanitized = sanitized[:1000] + "..."
 
-        # Basic injection prevention
+        # Enhanced injection prevention patterns
         dangerous_patterns = [
+            # Command injection
             r"system\s*\(",
             r"eval\s*\(",
             r"exec\s*\(",
-            r"import\s+os",
+            r"subprocess\.",
+            r"os\.system",
+            r"commands\.",
+            
+            # SQL injection
+            r"SELECT\s+.*FROM",
+            r"INSERT\s+INTO",
+            r"UPDATE\s+.*SET",
+            r"DELETE\s+FROM",
+            r"DROP\s+TABLE",
+            r"CREATE\s+TABLE",
+            r"ALTER\s+TABLE",
+            r"UNION\s+SELECT",
+            r"OR\s+1\s*=\s*1",
+            r"AND\s+1\s*=\s*1",
+            
+            # Python code injection
             r"__import__",
+            r"import\s+os",
+            r"import\s+sys",
+            r"import\s+subprocess",
+            r"globals\(",
+            r"locals\(",
+            r"compile\(",
+            
+            # File system access
+            r"open\s*\(",
+            r"file\s*\(",
+            r"read\s*\(",
+            r"write\s*\(",
+            
+            # Network access
+            r"urllib\.",
+            r"requests\.",
+            r"socket\.",
+            r"http\.",
+            
+            # Reflection and metaprogramming
+            r"getattr\(",
+            r"setattr\(",
+            r"hasattr\(",
+            r"delattr\(",
+            r"type\(",
+            r"isinstance\(",
+            
+            # Dangerous built-ins
+            r"input\(",
+            r"raw_input\(",
+            r"exec\(",
+            r"eval\(",
+            
+            # Unicode normalization attacks
+            r"\\u[0-9a-fA-F]{4}",
+            r"\\x[0-9a-fA-F]{2}",
+            
+            # Template injection
+            r"\{\{.*\}\}",
+            r"\{%.*%\}",
+            r"\{#.*#\}",
+            
+            # XSS patterns
+            r"javascript:",
+            r"on\w+\s*=",
+            r"<iframe",
+            r"<object",
+            r"<embed",
+            r"<form",
+            r"<input",
+            r"<textarea",
+            r"<select",
+            r"<button",
+            
+            # Path traversal
+            r"\.\./",
+            r"\.\.\\",
+            r"~",
+            r"/etc/",
+            r"/proc/",
+            r"/sys/",
+            r"C:\\",
+            r"D:\\",
+            
+            # Shell command patterns (more specific)
+            r"\$\(.*\)",
+            r"`.*`",
+            r"&&\s*[a-zA-Z]",
+            r"\|\|\s*[a-zA-Z]",
+            r";\s*[a-zA-Z]",
+            r"&\s*[a-zA-Z]",
+            r"\|\s*[a-zA-Z]",
+            r">\s*[a-zA-Z]",
+            r"<\s*[a-zA-Z]",
+            r">>\s*[a-zA-Z]",
+            r"<<\s*[a-zA-Z]",
+            
+            # Environment variable access
+            r"\$\{.*\}",
+            r"\$[A-Z_]+",
+            
+            # Hex encoded payloads
+            r"\\x[0-9a-fA-F]{2,}",
+            
+            # URL encoded payloads
+            r"%[0-9a-fA-F]{2}",
         ]
 
         for pattern in dangerous_patterns:
             if re.search(pattern, sanitized, re.IGNORECASE):
-                raise ValueError("Query contains potentially unsafe content")
+                logger.warning(f"Potentially dangerous pattern detected: {pattern}")
+                raise ValueError(f"Query contains potentially unsafe content: {pattern}")
+
+        # Additional validation checks
+        if self._contains_suspicious_encoding(sanitized):
+            raise ValueError("Query contains suspicious encoding patterns")
+        
+        if self._contains_obfuscated_code(sanitized):
+            raise ValueError("Query contains obfuscated code patterns")
+        
+        if self._contains_privilege_escalation(sanitized):
+            raise ValueError("Query contains privilege escalation patterns")
 
         return sanitized
+
+    def _contains_suspicious_encoding(self, text: str) -> bool:
+        """Check for suspicious encoding patterns."""
+        # Check for excessive encoding
+        encoded_chars = len(re.findall(r'%[0-9a-fA-F]{2}', text))
+        if encoded_chars > len(text) * 0.3:  # More than 30% encoded
+            return True
+        
+        # Check for double encoding
+        if re.search(r'%25[0-9a-fA-F]{2}', text):
+            return True
+        
+        return False
+
+    def _contains_obfuscated_code(self, text: str) -> bool:
+        """Check for obfuscated code patterns."""
+        # Check for excessive use of special characters
+        special_chars = len(re.findall(r'[^\w\s]', text))
+        special_char_ratio = special_chars / len(text) if text else 0
+        
+        if special_char_ratio > 0.7:  # More than 70% special chars (increased from 50%)
+            logger.debug(f"High special character ratio: {special_char_ratio:.2f}")
+            return True
+        
+        # Check for repeated patterns that might indicate obfuscation
+        # Only check for repeated special characters, not alphanumeric
+        if re.search(r'([^\w\s])\1{20,}', text):  # Same special character repeated 20+ times
+            logger.debug("Detected repeated special character pattern")
+            return True
+        
+        return False
+
+    def _contains_privilege_escalation(self, text: str) -> bool:
+        """Check for privilege escalation patterns."""
+        privilege_patterns = [
+            r'sudo',
+            r'su\s+',
+            r'runas',
+            r'elevate',
+            r'privilege',
+            r'admin',
+            r'root',
+            r'chmod\s+777',
+            r'chown\s+root',
+            r'setuid',
+            r'setgid',
+        ]
+        
+        for pattern in privilege_patterns:
+            if re.search(pattern, text, re.IGNORECASE):
+                return True
+        
+        return False
 
     def add_context(self, context: Dict[str, Any]) -> str:
         """Add system context to the conversation."""

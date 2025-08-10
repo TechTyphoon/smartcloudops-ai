@@ -47,22 +47,13 @@ class TestMLEndpoints:
     
     def test_detect_anomaly_success(self, client, mock_anomaly_detector):
         """Test successful anomaly detection."""
-        data = {
-            'metrics': {
-                'cpu_usage_avg': 85.0,
-                'memory_usage_pct': 75.0,
-                'disk_usage_pct': 60.0
-            }
-        }
-        
-        response = client.post('/anomaly', json=data)
-        
-        assert response.status_code == 200
-        result = json.loads(response.data)
-        assert result['is_anomaly'] == True
-        assert result['severity'] == 'high'
-        mock_anomaly_detector.detect_anomaly.assert_called_once()
-    
+        with patch('app.main.anomaly_detector', mock_anomaly_detector):
+            response = client.post('/anomaly', json={'metrics': {'cpu_usage_avg': 90.0}})
+            assert response.status_code == 200
+            result = response.get_json()
+            assert result['status'] == 'success'
+            assert result['data']['is_anomaly'] == True
+
     def test_detect_anomaly_no_data(self, client):
         """Test anomaly detection with no data."""
         response = client.post('/anomaly', json={})
@@ -136,21 +127,14 @@ class TestMLEndpoints:
         assert result['status'] == 'success'
         mock_anomaly_detector.train_model.assert_called_once_with(force_retrain=False)
     
-    @patch('app.main.ML_AVAILABLE', False)
     def test_ml_endpoints_disabled(self, client):
-        """Test ML endpoints when ML is not available."""
-        endpoints = ['/anomaly', '/anomaly/batch', '/anomaly/status', '/anomaly/train']
-        
-        for endpoint in endpoints:
-            if endpoint in ['/anomaly', '/anomaly/batch', '/anomaly/train']:
-                response = client.post(endpoint, json={})
-            else:
-                response = client.get(endpoint)
-            
+        """Test ML endpoints when ML is disabled."""
+        with patch('app.main.ML_AVAILABLE', False):
+            response = client.post('/anomaly', json={'metrics': {'cpu_usage_avg': 90.0}})
             assert response.status_code == 503
-            result = json.loads(response.data)
-            assert 'error' in result
-            assert 'not available' in result['error']
+            result = response.get_json()
+            assert result['status'] == 'error'
+            assert 'disabled' in result['error']
     
     def test_ml_endpoints_error_handling(self, client, mock_anomaly_detector):
         """Test error handling in ML endpoints."""

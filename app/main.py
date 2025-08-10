@@ -22,6 +22,9 @@ from app.chatops.utils import (
     SystemContextGatherer,
     format_response,
     validate_query_params,
+    advanced_context_manager,
+    intelligent_query_processor,
+    conversation_manager,
 )
 from app.config import get_config
 
@@ -205,7 +208,9 @@ def query():
             return (
                 jsonify(
                     format_response(
-                        {"error": "No data provided"}, "error", "Missing request data"
+                        status="error",
+                        message="Missing request data",
+                        error="No data provided"
                     )
                 ),
                 400,
@@ -216,9 +221,9 @@ def query():
             return (
                 jsonify(
                     format_response(
-                        {"error": "No query provided"},
-                        "error",
-                        "Missing query parameter",
+                        status="error",
+                        message="Missing query parameter",
+                        error="No query provided"
                     )
                 ),
                 400,
@@ -233,14 +238,22 @@ def query():
         # Process query with AI
         response = ai_handler.process_query(query_text, system_context)
 
-        # Return the response directly as expected by the test
-        return jsonify(format_response(response))
+        # Return the response with proper formatting
+        return jsonify(format_response(
+            status="success",
+            message="Query processed successfully",
+            data=response
+        ))
 
     except Exception as e:
         logger.error(f"Error processing query: {e}")
         return (
             jsonify(
-                format_response({"error": str(e)}, "error", "Query processing failed")
+                format_response(
+                    status="error",
+                    message="Query processing failed",
+                    error=str(e)
+                )
             ),
             500,
         )
@@ -259,9 +272,9 @@ def logs():
 
         return jsonify(
             format_response(
-                {"logs": log_data, "count": len(log_data)},
-                "success",
-                f"Retrieved {len(log_data)} log entries",
+                status="success",
+                message=f"Retrieved {len(log_data)} log entries",
+                data={"logs": log_data, "count": len(log_data)}
             )
         )
 
@@ -269,7 +282,11 @@ def logs():
         logger.error(f"Error retrieving logs: {e}")
         return (
             jsonify(
-                format_response({"error": str(e)}, "error", "Failed to retrieve logs")
+                format_response(
+                    status="error",
+                    message="Failed to retrieve logs",
+                    error=str(e)
+                )
             ),
             500,
         )
@@ -318,35 +335,209 @@ def chat_history():
 def clear_history():
     """Clear conversation history."""
     try:
-        if not ai_handler:
-            return (
-                jsonify(
-                    format_response(
-                        {"error": "AI handler not available"},
-                        "error",
-                        "ChatOps functionality not available",
-                    )
-                ),
-                503,
-            )
-
-        success = ai_handler.clear_history()
+        # Clear AI handler history
+        if ai_handler:
+            ai_handler.clear_history()
+        
+        # Clear conversation manager history
+        conversation_manager.conversation_history.clear()
+        
         return jsonify(
             format_response(
-                {"cleared": success}, "success", "Conversation history cleared"
+                status="success",
+                message="Conversation history cleared successfully",
+                data={"cleared": True}
             )
         )
 
     except Exception as e:
-        logger.error(f"Error clearing chat history: {e}")
-        return (
-            jsonify(
-                format_response(
-                    {"error": str(e)}, "error", "Failed to clear conversation history"
-                )
-            ),
-            500,
+        logger.error(f"Error clearing history: {e}")
+        return jsonify(
+            format_response(
+                status="error",
+                message="Failed to clear conversation history",
+                error=str(e)
+            )
+        ), 500
+
+
+# Phase 5: Advanced ChatOps Endpoints
+
+@app.route("/chatops/context", methods=["GET"])
+def get_system_context():
+    """Get comprehensive system context for ChatOps."""
+    try:
+        context = advanced_context_manager.get_system_context()
+        
+        return jsonify(
+            format_response(
+                status="success",
+                message="System context retrieved successfully",
+                data=context
+            )
         )
+
+    except Exception as e:
+        logger.error(f"Error getting system context: {e}")
+        return jsonify(
+            format_response(
+                status="error",
+                message="Failed to get system context",
+                error=str(e)
+            )
+        ), 500
+
+
+@app.route("/chatops/analyze", methods=["POST"])
+def analyze_query():
+    """Analyze a query to determine intent and required context."""
+    try:
+        data = request.get_json()
+        if not data or "query" not in data:
+            return jsonify(
+                format_response(
+                    status="error",
+                    message="Query is required",
+                    error="Missing query parameter"
+                )
+            ), 400
+
+        query = data["query"]
+        analysis = intelligent_query_processor.analyze_query(query)
+        
+        return jsonify(
+            format_response(
+                status="success",
+                message="Query analyzed successfully",
+                data=analysis
+            )
+        )
+
+    except Exception as e:
+        logger.error(f"Error analyzing query: {e}")
+        return jsonify(
+            format_response(
+                status="error",
+                message="Failed to analyze query",
+                error=str(e)
+            )
+        ), 500
+
+
+@app.route("/chatops/smart-query", methods=["POST"])
+def smart_query():
+    """Enhanced query endpoint with intelligent context gathering."""
+    try:
+        data = request.get_json()
+        if not data or "query" not in data:
+            return jsonify(
+                format_response(
+                    status="error",
+                    message="Query is required",
+                    error="Missing query parameter"
+                )
+            ), 400
+
+        query = data["query"]
+        
+        # Analyze query intent
+        analysis = intelligent_query_processor.analyze_query(query)
+        
+        # Get relevant context
+        context = conversation_manager.get_context_for_query(query)
+        
+        # Process with AI if available
+        ai_response = None
+        if ai_handler and ai_handler.provider:
+            try:
+                # Add context to the query
+                enhanced_query = f"{query}\n\nContext: {context['system_summary']}"
+                ai_result = ai_handler.process_query(enhanced_query, context)
+                ai_response = ai_result.get("response", "AI processing failed")
+            except Exception as e:
+                logger.warning(f"AI processing failed: {e}")
+                ai_response = "AI processing unavailable"
+        else:
+            ai_response = "AI provider not available"
+        
+        # Add to conversation history
+        conversation_manager.add_exchange(query, ai_response, context)
+        
+        return jsonify(
+            format_response(
+                status="success",
+                message="Smart query processed successfully",
+                data={
+                    "query": query,
+                    "analysis": analysis,
+                    "context": context,
+                    "response": ai_response
+                }
+            )
+        )
+
+    except Exception as e:
+        logger.error(f"Error processing smart query: {e}")
+        return jsonify(
+            format_response(
+                status="error",
+                message="Failed to process smart query",
+                error=str(e)
+            )
+        ), 500
+
+
+@app.route("/chatops/conversation-summary", methods=["GET"])
+def get_conversation_summary():
+    """Get a summary of the conversation history."""
+    try:
+        summary = conversation_manager.get_conversation_summary()
+        
+        return jsonify(
+            format_response(
+                status="success",
+                message="Conversation summary retrieved successfully",
+                data={
+                    "summary": summary,
+                    "total_exchanges": len(conversation_manager.conversation_history)
+                }
+            )
+        )
+
+    except Exception as e:
+        logger.error(f"Error getting conversation summary: {e}")
+        return jsonify(
+            format_response(
+                status="error",
+                message="Failed to get conversation summary",
+                error=str(e)
+            )
+        ), 500
+
+
+@app.route("/chatops/system-summary", methods=["GET"])
+def get_system_summary():
+    """Get a human-readable system summary."""
+    try:
+        summary = advanced_context_manager.get_context_summary()
+        
+        return jsonify(
+            format_response(
+                status="success",
+                message="System summary retrieved successfully",
+                data={"summary": summary}
+            )
+        )
+
+    except Exception as e:
+        logger.error(f"Error getting system summary: {e}")
+        return jsonify(
+            format_response(
+                status="error",
+                message="Failed to get system summary",
+                error=str(e)
+            )
+        ), 500
 
 
 # Phase 3: ML Anomaly Detection Endpoints
@@ -358,17 +549,35 @@ def detect_anomaly():
     try:
         if not ML_AVAILABLE:
             return (
-                jsonify({"error": "ML models not available", "status": "disabled"}),
+                jsonify(
+                    format_response(
+                        status="error",
+                        message="ML models not available",
+                        error="ML functionality disabled"
+                    )
+                ),
                 503,
             )
 
         data = request.get_json()
         if not data:
-            return jsonify({"error": "No data provided"}), 400
+            return jsonify(
+                format_response(
+                    status="error",
+                    message="No data provided",
+                    error="Request body is required"
+                )
+            ), 400
 
         metrics = data.get("metrics", {})
         if not metrics:
-            return jsonify({"error": "No metrics provided"}), 400
+            return jsonify(
+                format_response(
+                    status="error",
+                    message="No metrics provided",
+                    error="Metrics data is required"
+                )
+            ), 400
 
         # Detect anomaly
         result = anomaly_detector.detect_anomaly(metrics)
@@ -379,11 +588,23 @@ def detect_anomaly():
             severity = result.get("severity", "unknown")
             ML_ANOMALIES.labels(severity=severity).inc()
 
-        return jsonify(result)
+        return jsonify(
+            format_response(
+                status="success",
+                message="Anomaly detection completed",
+                data=result
+            )
+        )
 
     except Exception as e:
         logger.error(f"Error detecting anomaly: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify(
+            format_response(
+                status="error",
+                message="Anomaly detection failed",
+                error=str(e)
+            )
+        ), 500
 
 
 @app.route("/anomaly/batch", methods=["POST"])

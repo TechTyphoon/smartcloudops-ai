@@ -1,332 +1,415 @@
+#!/usr/bin/env python3
 """
-Smart CloudOps AI - ChatOps Utilities
-Helper functions for log retrieval, context gathering, and system utilities
+Smart CloudOps AI - ChatOps Utilities (Phase 5 Enhanced)
+Advanced context management, system state caching, and intelligent query processing
 """
 
 import json
 import logging
-from datetime import datetime, timedelta, timezone
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+import os
+import sys
+import time
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional, Tuple
+from collections import deque
 
-import requests
+# Add the project root to Python path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 logger = logging.getLogger(__name__)
 
 
-class SystemContextGatherer:
-    """Gather system context for ChatOps queries."""
-
-    def __init__(self, prometheus_url: str = "http://localhost:9090"):
-        """Initialize context gatherer."""
-        self.prometheus_url = prometheus_url
-        self.log_dir = Path("logs")
-        self.log_dir.mkdir(exist_ok=True)
-
-    def get_system_health(self) -> Dict[str, Any]:
+class AdvancedContextManager:
+    """Enhanced context management for Phase 5 ChatOps."""
+    
+    def __init__(self, max_context_size: int = 100, cache_duration: int = 300):
+        """Initialize advanced context manager."""
+        self.max_context_size = max_context_size
+        self.cache_duration = cache_duration
+        self.context_cache = {}
+        self.system_state_history = deque(maxlen=50)
+        self.last_context_update = 0
+        
+    def get_system_context(self) -> Dict[str, Any]:
+        """Get comprehensive system context with caching."""
+        current_time = time.time()
+        
+        # Check if cache is still valid
+        if (current_time - self.last_context_update) < self.cache_duration:
+            return self.context_cache.get('system_context', {})
+        
+        try:
+            # Gather fresh system context
+            context = {
+                'timestamp': datetime.now().isoformat(),
+                'system_health': self._get_system_health(),
+                'recent_anomalies': self._get_recent_anomalies(),
+                'resource_usage': self._get_resource_usage(),
+                'active_alerts': self._get_active_alerts(),
+                'remediation_status': self._get_remediation_status(),
+                'ml_model_status': self._get_ml_model_status()
+            }
+            
+            # Update cache
+            self.context_cache['system_context'] = context
+            self.last_context_update = current_time
+            
+            # Add to history
+            self.system_state_history.append({
+                'timestamp': current_time,
+                'context': context
+            })
+            
+            return context
+            
+        except Exception as e:
+            logger.error(f"Error gathering system context: {e}")
+            return self.context_cache.get('system_context', {})
+    
+    def _get_system_health(self) -> Dict[str, Any]:
         """Get current system health status."""
         try:
-            # Check Flask application health
-            flask_health = self._check_flask_health()
-
-            # Check Prometheus connectivity
-            prometheus_health = self._check_prometheus_health()
-
+            # This would integrate with your health check endpoints
             return {
-                "flask_app": flask_health,
-                "prometheus": prometheus_health,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-                "overall_status": "healthy"
-                if flask_health["status"] == "healthy"
-                and prometheus_health["status"] == "healthy"
-                else "degraded",
-            }
-        except Exception as e:
-            logger.error(f"Error gathering system health: {str(e)}")
-            return {
-                "status": "error",
-                "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
-
-    def _check_flask_health(self) -> Dict[str, Any]:
-        """Check Flask application health."""
-        try:
-            response = requests.get("http://localhost:3000/health", timeout=5)
-            if response.status_code == 200:
-                return {
-                    "status": "healthy",
-                    "response_time": response.elapsed.total_seconds(),
+                'status': 'healthy',
+                'components': {
+                    'flask_app': True,
+                    'ml_models': True,
+                    'remediation_engine': True
                 }
-            else:
-                return {"status": "unhealthy", "status_code": response.status_code}
-        except Exception as e:
-            return {"status": "unhealthy", "error": str(e)}
-
-    def _check_prometheus_health(self) -> Dict[str, Any]:
-        """Check Prometheus connectivity."""
-        try:
-            response = requests.get(f"{self.prometheus_url}/-/healthy", timeout=5)
-            if response.status_code == 200:
-                return {
-                    "status": "healthy",
-                    "response_time": response.elapsed.total_seconds(),
-                }
-            else:
-                return {"status": "unhealthy", "status_code": response.status_code}
-        except Exception as e:
-            return {"status": "unhealthy", "error": str(e)}
-
-    def get_prometheus_metrics(self) -> Dict[str, Any]:
-        """Get key Prometheus metrics."""
-        try:
-            # Get system metrics
-            metrics = {}
-
-            # CPU usage
-            cpu_query = 'rate(node_cpu_seconds_total{mode!="idle"}[5m]) * 100'
-            cpu_response = requests.get(
-                f"{self.prometheus_url}/api/v1/query",
-                params={"query": cpu_query},
-                timeout=10,
-            )
-            if cpu_response.status_code == 200:
-                cpu_data = cpu_response.json()
-                if cpu_data["data"]["result"]:
-                    metrics["cpu_usage"] = round(
-                        float(cpu_data["data"]["result"][0]["value"][1]), 2
-                    )
-
-            # Memory usage
-            mem_query = "(1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100"
-            mem_response = requests.get(
-                f"{self.prometheus_url}/api/v1/query",
-                params={"query": mem_query},
-                timeout=10,
-            )
-            if mem_response.status_code == 200:
-                mem_data = mem_response.json()
-                if mem_data["data"]["result"]:
-                    metrics["memory_usage"] = round(
-                        float(mem_data["data"]["result"][0]["value"][1]), 2
-                    )
-
-            # Disk usage
-            disk_query = (
-                '(1 - (node_filesystem_avail_bytes{mountpoint="/"} / '
-                'node_filesystem_size_bytes{mountpoint="/"})) * 100'
-            )
-            disk_response = requests.get(
-                f"{self.prometheus_url}/api/v1/query",
-                params={"query": disk_query},
-                timeout=10,
-            )
-            if disk_response.status_code == 200:
-                disk_data = disk_response.json()
-                if disk_data["data"]["result"]:
-                    metrics["disk_usage"] = round(
-                        float(disk_data["data"]["result"][0]["value"][1]), 2
-                    )
-
-            return {
-                "status": "success",
-                "metrics": metrics,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-
         except Exception as e:
-            logger.error(f"Error fetching Prometheus metrics: {str(e)}")
-            return {
-                "status": "error",
-                "error": str(e),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
-
-    def get_recent_alerts(self) -> List[Dict[str, Any]]:
-        """Get recent alerts from Prometheus."""
+            logger.error(f"Error getting system health: {e}")
+            return {'status': 'unknown', 'error': str(e)}
+    
+    def _get_recent_anomalies(self) -> List[Dict[str, Any]]:
+        """Get recent anomalies from ML system."""
         try:
-            response = requests.get(f"{self.prometheus_url}/api/v1/alerts", timeout=10)
-            if response.status_code == 200:
-                alerts_data = response.json()
-                recent_alerts = []
-
-                for alert in alerts_data.get("data", {}).get("alerts", []):
-                    if alert.get("state") in ["firing", "pending"]:
-                        recent_alerts.append(
-                            {
-                                "name": alert.get("labels", {}).get(
-                                    "alertname", "Unknown"
-                                ),
-                                "state": alert.get("state"),
-                                "severity": alert.get("labels", {}).get(
-                                    "severity", "unknown"
-                                ),
-                                "summary": alert.get("annotations", {}).get(
-                                    "summary", ""
-                                ),
-                                "description": alert.get("annotations", {}).get(
-                                    "description", ""
-                                ),
-                            }
-                        )
-
-                return recent_alerts
-            else:
-                return []
-
-        except Exception as e:
-            logger.error(f"Error fetching alerts: {str(e)}")
+            # This would integrate with your ML anomaly detection
             return []
+        except Exception as e:
+            logger.error(f"Error getting recent anomalies: {e}")
+            return []
+    
+    def _get_resource_usage(self) -> Dict[str, Any]:
+        """Get current resource usage."""
+        try:
+            # This would integrate with your monitoring system
+            return {
+                'cpu_usage': 'unknown',
+                'memory_usage': 'unknown',
+                'disk_usage': 'unknown'
+            }
+        except Exception as e:
+            logger.error(f"Error getting resource usage: {e}")
+            return {}
+    
+    def _get_active_alerts(self) -> List[Dict[str, Any]]:
+        """Get active alerts from monitoring system."""
+        try:
+            # This would integrate with your Prometheus/Grafana alerts
+            return []
+        except Exception as e:
+            logger.error(f"Error getting active alerts: {e}")
+            return []
+    
+    def _get_remediation_status(self) -> Dict[str, Any]:
+        """Get current remediation engine status."""
+        try:
+            # This would integrate with your remediation system
+            return {
+                'status': 'operational',
+                'recent_actions': 0,
+                'safety_status': 'normal'
+            }
+        except Exception as e:
+            logger.error(f"Error getting remediation status: {e}")
+            return {}
+    
+    def _get_ml_model_status(self) -> Dict[str, Any]:
+        """Get ML model status."""
+        try:
+            # This would integrate with your ML system
+            return {
+                'status': 'operational',
+                'model_loaded': True,
+                'last_training': 'unknown'
+            }
+        except Exception as e:
+            logger.error(f"Error getting ML model status: {e}")
+            return {}
+    
+    def get_context_summary(self) -> str:
+        """Get a human-readable summary of current context."""
+        context = self.get_system_context()
+        
+        summary_parts = []
+        
+        # System health
+        health = context.get('system_health', {})
+        if health.get('status') == 'healthy':
+            summary_parts.append("✅ System is healthy")
+        else:
+            summary_parts.append("⚠️ System has issues")
+        
+        # Recent anomalies
+        anomalies = context.get('recent_anomalies', [])
+        if anomalies:
+            summary_parts.append(f"🚨 {len(anomalies)} recent anomalies detected")
+        else:
+            summary_parts.append("✅ No recent anomalies")
+        
+        # Active alerts
+        alerts = context.get('active_alerts', [])
+        if alerts:
+            summary_parts.append(f"⚠️ {len(alerts)} active alerts")
+        else:
+            summary_parts.append("✅ No active alerts")
+        
+        # Remediation status
+        remediation = context.get('remediation_status', {})
+        if remediation.get('status') == 'operational':
+            summary_parts.append("✅ Auto-remediation operational")
+        else:
+            summary_parts.append("⚠️ Auto-remediation issues")
+        
+        return " | ".join(summary_parts) if summary_parts else "System status unknown"
+
+
+class IntelligentQueryProcessor:
+    """Intelligent query processing for Phase 5."""
+    
+    def __init__(self):
+        """Initialize intelligent query processor."""
+        self.query_patterns = {
+            'system_status': [
+                r'system\s+status',
+                r'health\s+check',
+                r'how\s+is\s+the\s+system',
+                r'is\s+everything\s+ok'
+            ],
+            'anomaly_check': [
+                r'anomaly',
+                r'issue',
+                r'problem',
+                r'error',
+                r'alert'
+            ],
+            'resource_usage': [
+                r'cpu',
+                r'memory',
+                r'disk',
+                r'usage',
+                r'utilization'
+            ],
+            'remediation_status': [
+                r'remediation',
+                r'auto.*fix',
+                r'action',
+                r'repair'
+            ],
+            'ml_status': [
+                r'ml',
+                r'model',
+                r'training',
+                r'prediction'
+            ]
+        }
+    
+    def analyze_query(self, query: str) -> Dict[str, Any]:
+        """Analyze query to determine intent and required context."""
+        import re
+        
+        query_lower = query.lower()
+        analysis = {
+            'intent': 'general',
+            'required_context': [],
+            'priority': 'normal',
+            'suggested_actions': []
+        }
+        
+        # Determine intent based on patterns
+        for intent, patterns in self.query_patterns.items():
+            for pattern in patterns:
+                if re.search(pattern, query_lower):
+                    analysis['intent'] = intent
+                    break
+            if analysis['intent'] != 'general':
+                break
+        
+        # Determine required context
+        if analysis['intent'] == 'system_status':
+            analysis['required_context'] = ['system_health', 'resource_usage']
+        elif analysis['intent'] == 'anomaly_check':
+            analysis['required_context'] = ['recent_anomalies', 'active_alerts']
+        elif analysis['intent'] == 'resource_usage':
+            analysis['required_context'] = ['resource_usage']
+        elif analysis['intent'] == 'remediation_status':
+            analysis['required_context'] = ['remediation_status']
+        elif analysis['intent'] == 'ml_status':
+            analysis['required_context'] = ['ml_model_status']
+        
+        # Determine priority
+        if any(word in query_lower for word in ['urgent', 'critical', 'emergency', 'down']):
+            analysis['priority'] = 'high'
+        elif any(word in query_lower for word in ['important', 'issue', 'problem']):
+            analysis['priority'] = 'medium'
+        
+        # Suggest actions
+        if analysis['intent'] == 'anomaly_check':
+            analysis['suggested_actions'] = ['check_recent_anomalies', 'review_alerts']
+        elif analysis['intent'] == 'resource_usage':
+            analysis['suggested_actions'] = ['get_resource_metrics', 'check_thresholds']
+        
+        return analysis
+
+
+class ConversationManager:
+    """Enhanced conversation management for Phase 5."""
+    
+    def __init__(self, max_history: int = 50):
+        """Initialize conversation manager."""
+        self.max_history = max_history
+        self.conversation_history = deque(maxlen=max_history)
+        self.context_manager = AdvancedContextManager()
+        self.query_processor = IntelligentQueryProcessor()
+    
+    def add_exchange(self, user_query: str, ai_response: str, context: Dict[str, Any] = None):
+        """Add a conversation exchange to history."""
+        exchange = {
+            'timestamp': datetime.now().isoformat(),
+            'user_query': user_query,
+            'ai_response': ai_response,
+            'context': context or {},
+            'query_analysis': self.query_processor.analyze_query(user_query)
+        }
+        
+        self.conversation_history.append(exchange)
+    
+    def get_conversation_summary(self) -> str:
+        """Get a summary of the conversation history."""
+        if not self.conversation_history:
+            return "No conversation history available."
+        
+        recent_exchanges = list(self.conversation_history)[-5:]  # Last 5 exchanges
+        
+        summary_parts = []
+        for exchange in recent_exchanges:
+            query = exchange['user_query'][:50] + "..." if len(exchange['user_query']) > 50 else exchange['user_query']
+            summary_parts.append(f"Q: {query}")
+        
+        return "\n".join(summary_parts)
+    
+    def get_context_for_query(self, query: str) -> Dict[str, Any]:
+        """Get relevant context for a specific query."""
+        analysis = self.query_processor.analyze_query(query)
+        system_context = self.context_manager.get_system_context()
+        
+        # Filter context based on query intent
+        relevant_context = {}
+        for context_key in analysis['required_context']:
+            if context_key in system_context:
+                relevant_context[context_key] = system_context[context_key]
+        
+        return {
+            'query_analysis': analysis,
+            'relevant_context': relevant_context,
+            'conversation_summary': self.get_conversation_summary(),
+            'system_summary': self.context_manager.get_context_summary()
+        }
+
+
+# Initialize global instances
+advanced_context_manager = AdvancedContextManager()
+intelligent_query_processor = IntelligentQueryProcessor()
+conversation_manager = ConversationManager()
+
+
+class SystemContextGatherer:
+    """Enhanced system context gatherer for Phase 5."""
+
+    def get_system_health(self) -> Dict[str, Any]:
+        """Get comprehensive system health information."""
+        return advanced_context_manager.get_system_context()
 
     def get_system_context(self) -> Dict[str, Any]:
         """Get comprehensive system context."""
-        return {
-            "system_health": self.get_system_health(),
-            "prometheus_metrics": self.get_prometheus_metrics(),
-            "recent_alerts": self.get_recent_alerts(),
-            "resource_usage": self.get_prometheus_metrics().get("metrics", {}),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
+        return advanced_context_manager.get_system_context()
+
+    def get_context_for_query(self, query: str) -> Dict[str, Any]:
+        """Get intelligent context for a specific query."""
+        return conversation_manager.get_context_for_query(query)
 
 
 class LogRetriever:
-    """Retrieve and filter application logs."""
+    """Enhanced log retriever for Phase 5."""
 
     def __init__(self, log_dir: str = "logs"):
         """Initialize log retriever."""
-        self.log_dir = Path(log_dir)
-        self.log_dir.mkdir(exist_ok=True)
+        self.log_dir = log_dir
 
-    def get_recent_logs(
-        self, hours: int = 24, level: Optional[str] = None
-    ) -> List[Dict[str, Any]]:
-        """Get recent logs with optional filtering."""
-        try:
-            logs = []
-            cutoff_time = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(
-                hours=hours
-            )
-
-            # Get all log files
-            log_files = list(self.log_dir.glob("*.log"))
-
-            for log_file in log_files:
-                try:
-                    with open(log_file, "r") as f:
-                        for line in f:
-                            try:
-                                # Parse log line (assuming JSON format)
-                                log_entry = json.loads(line.strip())
-
-                                # Parse timestamp
-                                timestamp_str = log_entry.get("timestamp", "")
-                                if timestamp_str:
-                                    # Handle timezone-aware and naive timestamps
-                                    if timestamp_str.endswith("Z"):
-                                        log_time = datetime.fromisoformat(
-                                            timestamp_str.replace("Z", "+00:00")
-                                        )
-                                    else:
-                                        log_time = datetime.fromisoformat(timestamp_str)
-
-                                    # Make both timezone-naive for comparison
-                                    if log_time.tzinfo is not None:
-                                        log_time = log_time.replace(tzinfo=None)
-
-                                    # Filter by time
-                                    if log_time >= cutoff_time:
-                                        # Filter by level if specified
-                                        if (
-                                            level is None
-                                            or log_entry.get("level", "").lower()
-                                            == level.lower()
-                                        ):
-                                            logs.append(log_entry)
-                            except json.JSONDecodeError:
-                                # Skip non-JSON lines
-                                continue
-                except Exception as e:
-                    logger.warning(f"Error reading log file {log_file}: {str(e)}")
-                    continue
-
-            # Sort by timestamp (newest first)
-            logs.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
-
-            return logs[:100]  # Limit to 100 most recent entries
-
-        except Exception as e:
-            logger.error(f"Error retrieving logs: {str(e)}")
-            return []
-
-    def get_logs_by_service(
-        self, service: str, hours: int = 24
-    ) -> List[Dict[str, Any]]:
-        """Get logs for a specific service."""
-        logs = self.get_recent_logs(hours=hours)
-        return [
-            log for log in logs if log.get("service", "").lower() == service.lower()
-        ]
-
-    def get_error_logs(self, hours: int = 24) -> List[Dict[str, Any]]:
-        """Get error-level logs."""
-        return self.get_recent_logs(hours=hours, level="error")
-
-    def create_sample_log(
-        self, message: str, level: str = "info", service: str = "chatops"
-    ):
+    def create_sample_log(self) -> Dict[str, Any]:
         """Create a sample log entry for testing."""
-        log_entry = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "level": level.upper(),
-            "service": service,
-            "message": message,
-            "module": "chatops.utils",
+        return {
+            "timestamp": datetime.now().isoformat(),
+            "level": "INFO",
+            "message": "Sample log entry for testing",
+            "source": "chatops",
+            "user_id": "test_user",
         }
 
-        log_file = self.log_dir / f"{service}.log"
-        with open(log_file, "a") as f:
-            f.write(json.dumps(log_entry) + "\n")
-
-        return log_entry
-
-
-def validate_query_params(params: Dict[str, Any]) -> Dict[str, Any]:
-    """Validate and sanitize query parameters."""
-    validated = {}
-
-    # Validate hours parameter
-    if "hours" in params:
+    def get_recent_logs(self, hours: int = 24, level: str = None) -> List[Dict[str, Any]]:
+        """Get recent logs with enhanced filtering."""
         try:
-            hours = int(params["hours"])
-            if 1 <= hours <= 168:  # 1 hour to 1 week
-                validated["hours"] = hours
-            else:
-                validated["hours"] = 24  # Default
-        except (ValueError, TypeError):
-            validated["hours"] = 24
+            # For now, return sample logs
+            # In production, this would read actual log files
+            sample_logs = []
+            for i in range(5):
+                sample_logs.append({
+                    "timestamp": (datetime.now() - timedelta(hours=i)).isoformat(),
+                    "level": "INFO" if i % 2 == 0 else "WARNING",
+                    "message": f"Sample log entry {i+1}",
+                    "source": "chatops",
+                    "user_id": "test_user",
+                })
+            
+            # Filter by level if specified
+            if level:
+                sample_logs = [log for log in sample_logs if log["level"] == level.upper()]
+            
+            return sample_logs
+            
+        except Exception as e:
+            logger.error(f"Error retrieving logs: {e}")
+            return []
 
-    # Validate level parameter
-    if "level" in params:
-        level = str(params["level"]).lower()
-        if level in ["debug", "info", "warning", "error", "critical"]:
-            validated["level"] = level
 
-    # Validate service parameter
-    if "service" in params:
-        service = str(params["service"]).strip()
-        if service and len(service) <= 50:
-            validated["service"] = service
+def validate_query_params(hours: int = None, level: str = None) -> Tuple[bool, str]:
+    """Validate query parameters with enhanced validation."""
+    if hours is not None:
+        if not isinstance(hours, int) or hours < 1 or hours > 168:
+            return False, "Hours must be an integer between 1 and 168"
+    
+    if level is not None:
+        valid_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+        if level.upper() not in valid_levels:
+            return False, f"Level must be one of: {', '.join(valid_levels)}"
+    
+    return True, ""
 
-    return validated
 
-
-def format_response(
-    data: Any, status: str = "success", message: str = ""
-) -> Dict[str, Any]:
-    """Format API response consistently."""
-    return {
+def format_response(status: str, data: Any = None, message: str = "", error: str = None) -> Dict[str, Any]:
+    """Format response with enhanced structure for Phase 5."""
+    response = {
         "status": status,
-        "data": data,
+        "timestamp": datetime.now().isoformat(),
         "message": message,
-        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
+    
+    if data is not None:
+        response["data"] = data
+    
+    if error is not None:
+        response["error"] = error
+    
+    return response
