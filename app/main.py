@@ -210,7 +210,7 @@ def query():
                     format_response(
                         status="error",
                         message="Missing request data",
-                        error="No data provided"
+                        error="No data provided",
                     )
                 ),
                 400,
@@ -223,7 +223,7 @@ def query():
                     format_response(
                         status="error",
                         message="Missing query parameter",
-                        error="No query provided"
+                        error="No query provided",
                     )
                 ),
                 400,
@@ -239,20 +239,18 @@ def query():
         response = ai_handler.process_query(query_text, system_context)
 
         # Return the response with proper formatting
-        return jsonify(format_response(
-            status="success",
-            message="Query processed successfully",
-            data=response
-        ))
+        return jsonify(
+            format_response(
+                status="success", message="Query processed successfully", data=response
+            )
+        )
 
     except Exception as e:
         logger.error(f"Error processing query: {e}")
         return (
             jsonify(
                 format_response(
-                    status="error",
-                    message="Query processing failed",
-                    error=str(e)
+                    status="error", message="Query processing failed", error=str(e)
                 )
             ),
             500,
@@ -274,7 +272,7 @@ def logs():
             format_response(
                 status="success",
                 message=f"Retrieved {len(log_data)} log entries",
-                data={"logs": log_data, "count": len(log_data)}
+                data={"logs": log_data, "count": len(log_data)},
             )
         )
 
@@ -283,9 +281,7 @@ def logs():
         return (
             jsonify(
                 format_response(
-                    status="error",
-                    message="Failed to retrieve logs",
-                    error=str(e)
+                    status="error", message="Failed to retrieve logs", error=str(e)
                 )
             ),
             500,
@@ -338,54 +334,59 @@ def clear_history():
         # Clear AI handler history
         if ai_handler:
             ai_handler.clear_history()
-        
+
         # Clear conversation manager history
         conversation_manager.conversation_history.clear()
-        
+
         return jsonify(
             format_response(
                 status="success",
                 message="Conversation history cleared successfully",
-                data={"cleared": True}
+                data={"cleared": True},
             )
         )
 
     except Exception as e:
         logger.error(f"Error clearing history: {e}")
-        return jsonify(
-            format_response(
-                status="error",
-                message="Failed to clear conversation history",
-                error=str(e)
-            )
-        ), 500
+        return (
+            jsonify(
+                format_response(
+                    status="error",
+                    message="Failed to clear conversation history",
+                    error=str(e),
+                )
+            ),
+            500,
+        )
 
 
 # Phase 5: Advanced ChatOps Endpoints
+
 
 @app.route("/chatops/context", methods=["GET"])
 def get_system_context():
     """Get comprehensive system context for ChatOps."""
     try:
         context = advanced_context_manager.get_system_context()
-        
+
         return jsonify(
             format_response(
                 status="success",
                 message="System context retrieved successfully",
-                data=context
+                data=context,
             )
         )
 
     except Exception as e:
         logger.error(f"Error getting system context: {e}")
-        return jsonify(
-            format_response(
-                status="error",
-                message="Failed to get system context",
-                error=str(e)
-            )
-        ), 500
+        return (
+            jsonify(
+                format_response(
+                    status="error", message="Failed to get system context", error=str(e)
+                )
+            ),
+            500,
+        )
 
 
 @app.route("/chatops/analyze", methods=["POST"])
@@ -394,34 +395,36 @@ def analyze_query():
     try:
         data = request.get_json()
         if not data or "query" not in data:
-            return jsonify(
-                format_response(
-                    status="error",
-                    message="Query is required",
-                    error="Missing query parameter"
-                )
-            ), 400
+            return (
+                jsonify(
+                    format_response(
+                        status="error",
+                        message="Query is required",
+                        error="Missing query parameter",
+                    )
+                ),
+                400,
+            )
 
         query = data["query"]
         analysis = intelligent_query_processor.analyze_query(query)
-        
+
         return jsonify(
             format_response(
-                status="success",
-                message="Query analyzed successfully",
-                data=analysis
+                status="success", message="Query analyzed successfully", data=analysis
             )
         )
 
     except Exception as e:
         logger.error(f"Error analyzing query: {e}")
-        return jsonify(
-            format_response(
-                status="error",
-                message="Failed to analyze query",
-                error=str(e)
-            )
-        ), 500
+        return (
+            jsonify(
+                format_response(
+                    status="error", message="Failed to analyze query", error=str(e)
+                )
+            ),
+            500,
+        )
 
 
 @app.route("/chatops/smart-query", methods=["POST"])
@@ -430,22 +433,25 @@ def smart_query():
     try:
         data = request.get_json()
         if not data or "query" not in data:
-            return jsonify(
-                format_response(
-                    status="error",
-                    message="Query is required",
-                    error="Missing query parameter"
-                )
-            ), 400
+            return (
+                jsonify(
+                    format_response(
+                        status="error",
+                        message="Query is required",
+                        error="Missing query parameter",
+                    )
+                ),
+                400,
+            )
 
         query = data["query"]
-        
+
         # Analyze query intent
         analysis = intelligent_query_processor.analyze_query(query)
-        
+
         # Get relevant context
         context = conversation_manager.get_context_for_query(query)
-        
+
         # Process with AI if available
         ai_response = None
         if ai_handler and ai_handler.provider:
@@ -459,10 +465,10 @@ def smart_query():
                 ai_response = "AI processing unavailable"
         else:
             ai_response = "AI provider not available"
-        
+
         # Add to conversation history
         conversation_manager.add_exchange(query, ai_response, context)
-        
+
         return jsonify(
             format_response(
                 status="success",
@@ -471,20 +477,23 @@ def smart_query():
                     "query": query,
                     "analysis": analysis,
                     "context": context,
-                    "response": ai_response
-                }
+                    "response": ai_response,
+                },
             )
         )
 
     except Exception as e:
         logger.error(f"Error processing smart query: {e}")
-        return jsonify(
-            format_response(
-                status="error",
-                message="Failed to process smart query",
-                error=str(e)
-            )
-        ), 500
+        return (
+            jsonify(
+                format_response(
+                    status="error",
+                    message="Failed to process smart query",
+                    error=str(e),
+                )
+            ),
+            500,
+        )
 
 
 @app.route("/chatops/conversation-summary", methods=["GET"])
@@ -492,27 +501,30 @@ def get_conversation_summary():
     """Get a summary of the conversation history."""
     try:
         summary = conversation_manager.get_conversation_summary()
-        
+
         return jsonify(
             format_response(
                 status="success",
                 message="Conversation summary retrieved successfully",
                 data={
                     "summary": summary,
-                    "total_exchanges": len(conversation_manager.conversation_history)
-                }
+                    "total_exchanges": len(conversation_manager.conversation_history),
+                },
             )
         )
 
     except Exception as e:
         logger.error(f"Error getting conversation summary: {e}")
-        return jsonify(
-            format_response(
-                status="error",
-                message="Failed to get conversation summary",
-                error=str(e)
-            )
-        ), 500
+        return (
+            jsonify(
+                format_response(
+                    status="error",
+                    message="Failed to get conversation summary",
+                    error=str(e),
+                )
+            ),
+            500,
+        )
 
 
 @app.route("/chatops/system-summary", methods=["GET"])
@@ -520,24 +532,25 @@ def get_system_summary():
     """Get a human-readable system summary."""
     try:
         summary = advanced_context_manager.get_context_summary()
-        
+
         return jsonify(
             format_response(
                 status="success",
                 message="System summary retrieved successfully",
-                data={"summary": summary}
+                data={"summary": summary},
             )
         )
 
     except Exception as e:
         logger.error(f"Error getting system summary: {e}")
-        return jsonify(
-            format_response(
-                status="error",
-                message="Failed to get system summary",
-                error=str(e)
-            )
-        ), 500
+        return (
+            jsonify(
+                format_response(
+                    status="error", message="Failed to get system summary", error=str(e)
+                )
+            ),
+            500,
+        )
 
 
 # Phase 3: ML Anomaly Detection Endpoints
@@ -553,7 +566,7 @@ def detect_anomaly():
                     format_response(
                         status="error",
                         message="ML models not available",
-                        error="ML functionality disabled"
+                        error="ML functionality disabled",
                     )
                 ),
                 503,
@@ -561,23 +574,29 @@ def detect_anomaly():
 
         data = request.get_json()
         if not data:
-            return jsonify(
-                format_response(
-                    status="error",
-                    message="No data provided",
-                    error="Request body is required"
-                )
-            ), 400
+            return (
+                jsonify(
+                    format_response(
+                        status="error",
+                        message="No data provided",
+                        error="Request body is required",
+                    )
+                ),
+                400,
+            )
 
         metrics = data.get("metrics", {})
         if not metrics:
-            return jsonify(
-                format_response(
-                    status="error",
-                    message="No metrics provided",
-                    error="Metrics data is required"
-                )
-            ), 400
+            return (
+                jsonify(
+                    format_response(
+                        status="error",
+                        message="No metrics provided",
+                        error="Metrics data is required",
+                    )
+                ),
+                400,
+            )
 
         # Detect anomaly
         result = anomaly_detector.detect_anomaly(metrics)
@@ -590,21 +609,20 @@ def detect_anomaly():
 
         return jsonify(
             format_response(
-                status="success",
-                message="Anomaly detection completed",
-                data=result
+                status="success", message="Anomaly detection completed", data=result
             )
         )
 
     except Exception as e:
         logger.error(f"Error detecting anomaly: {e}")
-        return jsonify(
-            format_response(
-                status="error",
-                message="Anomaly detection failed",
-                error=str(e)
-            )
-        ), 500
+        return (
+            jsonify(
+                format_response(
+                    status="error", message="Anomaly detection failed", error=str(e)
+                )
+            ),
+            500,
+        )
 
 
 @app.route("/anomaly/batch", methods=["POST"])

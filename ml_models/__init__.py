@@ -13,8 +13,8 @@ __version__ = "1.0.0"
 __author__ = "Smart CloudOps AI Team"
 
 __all__ = [
-    'AnomalyDetector',
-    'DataProcessor', 
-    'AnomalyModelTrainer',
-    'AnomalyInferenceEngine'
+    "AnomalyDetector",
+    "DataProcessor",
+    "AnomalyModelTrainer",
+    "AnomalyInferenceEngine",
 ]

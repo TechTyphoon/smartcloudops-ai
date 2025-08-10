@@ -24,6 +24,7 @@ load_dotenv()
 
 class ConfigValidationError(Exception):
     """Custom exception for configuration validation errors."""
+
     pass
 
 
@@ -72,31 +73,53 @@ class Config:
             errors.append("AI_PROVIDER must be 'auto', 'openai', or 'gemini'")
 
         # Validate OpenAI configuration
-        if config_dict.get("ai_provider") == "openai" and not config_dict.get("openai_api_key"):
+        if config_dict.get("ai_provider") == "openai" and not config_dict.get(
+            "openai_api_key"
+        ):
             errors.append("OPENAI_API_KEY is required when AI_PROVIDER is 'openai'")
 
         # Validate Gemini configuration
-        if config_dict.get("ai_provider") == "gemini" and not config_dict.get("gemini_api_key"):
+        if config_dict.get("ai_provider") == "gemini" and not config_dict.get(
+            "gemini_api_key"
+        ):
             errors.append("GEMINI_API_KEY is required when AI_PROVIDER is 'gemini'")
 
         # Validate numeric values
-        if not isinstance(config_dict.get("openai_max_tokens", 500), int) or config_dict.get("openai_max_tokens", 500) <= 0:
+        if (
+            not isinstance(config_dict.get("openai_max_tokens", 500), int)
+            or config_dict.get("openai_max_tokens", 500) <= 0
+        ):
             errors.append("OPENAI_MAX_TOKENS must be a positive integer")
 
-        if not isinstance(config_dict.get("gemini_max_tokens", 500), int) or config_dict.get("gemini_max_tokens", 500) <= 0:
+        if (
+            not isinstance(config_dict.get("gemini_max_tokens", 500), int)
+            or config_dict.get("gemini_max_tokens", 500) <= 0
+        ):
             errors.append("GEMINI_MAX_TOKENS must be a positive integer")
 
-        if not isinstance(config_dict.get("openai_temperature", 0.3), (int, float)) or not 0 <= config_dict.get("openai_temperature", 0.3) <= 2:
+        if (
+            not isinstance(config_dict.get("openai_temperature", 0.3), (int, float))
+            or not 0 <= config_dict.get("openai_temperature", 0.3) <= 2
+        ):
             errors.append("OPENAI_TEMPERATURE must be between 0 and 2")
 
-        if not isinstance(config_dict.get("gemini_temperature", 0.3), (int, float)) or not 0 <= config_dict.get("gemini_temperature", 0.3) <= 2:
+        if (
+            not isinstance(config_dict.get("gemini_temperature", 0.3), (int, float))
+            or not 0 <= config_dict.get("gemini_temperature", 0.3) <= 2
+        ):
             errors.append("GEMINI_TEMPERATURE must be between 0 and 2")
 
         # Validate remediation configuration
-        if not isinstance(config_dict.get("max_actions_per_hour", 10), int) or config_dict.get("max_actions_per_hour", 10) <= 0:
+        if (
+            not isinstance(config_dict.get("max_actions_per_hour", 10), int)
+            or config_dict.get("max_actions_per_hour", 10) <= 0
+        ):
             errors.append("MAX_ACTIONS_PER_HOUR must be a positive integer")
 
-        if not isinstance(config_dict.get("cooldown_minutes", 5), int) or config_dict.get("cooldown_minutes", 5) < 0:
+        if (
+            not isinstance(config_dict.get("cooldown_minutes", 5), int)
+            or config_dict.get("cooldown_minutes", 5) < 0
+        ):
             errors.append("COOLDOWN_MINUTES must be a non-negative integer")
 
         # Validate log level
@@ -105,7 +128,9 @@ class Config:
             errors.append(f"LOG_LEVEL must be one of: {', '.join(valid_log_levels)}")
 
         if errors:
-            raise ConfigValidationError(f"Configuration validation failed: {'; '.join(errors)}")
+            raise ConfigValidationError(
+                f"Configuration validation failed: {'; '.join(errors)}"
+            )
 
     @classmethod
     def from_env(cls) -> Dict[str, Any]:
@@ -125,11 +150,14 @@ class Config:
             "log_level": os.getenv("LOG_LEVEL", "INFO"),
             "log_dir": os.getenv("LOG_DIR", "logs"),
             # Phase 4 remediation config
-            "require_approval": os.getenv("REQUIRE_APPROVAL", "false").lower() == "true",
+            "require_approval": os.getenv("REQUIRE_APPROVAL", "false").lower()
+            == "true",
             "max_actions_per_hour": int(os.getenv("MAX_ACTIONS_PER_HOUR", "10")),
             "cooldown_minutes": int(os.getenv("COOLDOWN_MINUTES", "5")),
             "remediation_tag_key": os.getenv("REMEDIATION_TAG_KEY", "Name"),
-            "remediation_tag_value": os.getenv("REMEDIATION_TAG_VALUE", "smartcloudops-ai-application"),
+            "remediation_tag_value": os.getenv(
+                "REMEDIATION_TAG_VALUE", "smartcloudops-ai-application"
+            ),
             "ssm_service_name": os.getenv("SSM_SERVICE_NAME", "smartcloudops-app"),
         }
 
@@ -178,14 +206,16 @@ class ProductionConfig(Config):
     def from_env(cls) -> Dict[str, Any]:
         """Load production configuration with additional validation."""
         config_dict = super().from_env()
-        
+
         # Additional production-specific validation
         if config_dict.get("debug", False):
             raise ConfigValidationError("DEBUG must be False in production")
-        
+
         if config_dict.get("ai_provider") == "auto":
-            raise ConfigValidationError("AI_PROVIDER must be explicitly set in production")
-        
+            raise ConfigValidationError(
+                "AI_PROVIDER must be explicitly set in production"
+            )
+
         return config_dict
 
 
@@ -203,7 +233,9 @@ def get_config(env: str = "default") -> Config:
         config_class = config_map.get(env, DevelopmentConfig)
         return config_class
     except Exception as e:
-        raise ConfigValidationError(f"Failed to load configuration for environment '{env}': {str(e)}")
+        raise ConfigValidationError(
+            f"Failed to load configuration for environment '{env}': {str(e)}"
+        )
 
 
 def validate_current_config() -> Dict[str, Any]:
@@ -211,12 +243,14 @@ def validate_current_config() -> Dict[str, Any]:
     try:
         config_dict = Config.from_env()
         missing_vars = Config.check_missing_env_vars()
-        
+
         return {
             "valid": True,
             "config": config_dict,
             "missing_vars": missing_vars,
-            "warnings": [] if not missing_vars else [f"Missing: {', '.join(missing_vars.keys())}"]
+            "warnings": []
+            if not missing_vars
+            else [f"Missing: {', '.join(missing_vars.keys())}"],
         }
     except ConfigValidationError as e:
         return {
@@ -224,5 +258,5 @@ def validate_current_config() -> Dict[str, Any]:
             "error": str(e),
             "config": {},
             "missing_vars": {},
-            "warnings": []
+            "warnings": [],
         }
