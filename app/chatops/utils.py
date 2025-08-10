@@ -9,9 +9,9 @@ import logging
 import os
 import sys
 import time
+from collections import deque
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
-from collections import deque
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
