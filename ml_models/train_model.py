@@ -4,9 +4,9 @@ Training Script for Anomaly Detection Model
 Trains and validates the ML anomaly detection model
 """
 
-import sys
-import os
 import logging
+import os
+import sys
 from datetime import datetime
 
 # Add the project root to Python path

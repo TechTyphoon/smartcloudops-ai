@@ -4,14 +4,15 @@ Inference Engine for ML Anomaly Detection
 Handles real-time anomaly detection, severity scoring, and explanations
 """
 
-import pandas as pd
-import numpy as np
-import joblib
-import yaml
 import logging
-from typing import Dict, List, Tuple, Optional
-from datetime import datetime, timedelta
 import time
+from datetime import datetime, timedelta
+from typing import Dict, List, Optional, Tuple
+
+import joblib
+import numpy as np
+import pandas as pd
+import yaml
 
 logger = logging.getLogger(__name__)
 

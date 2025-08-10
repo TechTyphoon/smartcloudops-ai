@@ -4,17 +4,17 @@ Production Enhancements for ML Anomaly Detection
 Real-world implementation with no synthetic data
 """
 
-import pandas as pd
-import numpy as np
-from sklearn.ensemble import IsolationForest
-from sklearn.neighbors import LocalOutlierFactor
-from sklearn.svm import OneClassSVM
-from sklearn.ensemble import VotingClassifier
-from sklearn.preprocessing import StandardScaler
-import joblib
 import logging
-from typing import Dict, List, Tuple
 from datetime import datetime, timedelta
+from typing import Dict, List, Tuple
+
+import joblib
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import IsolationForest, VotingClassifier
+from sklearn.neighbors import LocalOutlierFactor
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import OneClassSVM
 
 logger = logging.getLogger(__name__)
 

@@ -4,18 +4,19 @@ Model Trainer for ML Anomaly Detection
 Handles model training, validation, and persistence
 """
 
-import pandas as pd
-import numpy as np
-from sklearn.ensemble import IsolationForest
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import f1_score, precision_score, recall_score
-import joblib
-import yaml
-import os
 import logging
-from typing import Dict, Tuple, Optional, List
+import os
 from datetime import datetime
+from typing import Dict, List, Optional, Tuple
+
+import joblib
+import numpy as np
+import pandas as pd
+import yaml
+from sklearn.ensemble import IsolationForest
+from sklearn.metrics import f1_score, precision_score, recall_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 logger = logging.getLogger(__name__)
 

@@ -4,15 +4,16 @@ Data Processor for ML Anomaly Detection
 Handles Prometheus data extraction, preprocessing, and feature engineering
 """
 
-import pandas as pd
-import numpy as np
+import logging
+import os
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple
-import logging
-from prometheus_api_client import PrometheusConnect
-import yaml
-import os
+
+import numpy as np
+import pandas as pd
 import requests
+import yaml
+from prometheus_api_client import PrometheusConnect
 
 logger = logging.getLogger(__name__)
 
