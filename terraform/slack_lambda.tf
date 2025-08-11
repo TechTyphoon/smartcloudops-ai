@@ -4,6 +4,12 @@ locals {
   slack_enabled = var.enable_slack_notifications && length(var.slack_webhook_secret_name) > 0
 }
 
+# Look up Slack webhook secret by name
+data "aws_secretsmanager_secret" "slack" {
+  count = local.slack_enabled ? 1 : 0
+  name  = var.slack_webhook_secret_name
+}
+
 resource "aws_iam_role" "slack_lambda_role" {
   count = local.slack_enabled ? 1 : 0
   name  = "${var.project_name}-slack-lambda-role"
@@ -27,7 +33,7 @@ resource "aws_iam_role_policy" "slack_lambda_policy" {
       {
         Effect: "Allow",
         Action: ["secretsmanager:GetSecretValue"],
-        Resource: "*"
+        Resource: data.aws_secretsmanager_secret.slack[0].arn
       },
       {
         Effect: "Allow",
