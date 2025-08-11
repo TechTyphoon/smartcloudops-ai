@@ -71,6 +71,21 @@ resource "aws_cloudwatch_metric_alarm" "alb_5xx_high" {
   alarm_actions = [aws_sns_topic.ops_alarms.arn]
 }
 
+resource "aws_cloudwatch_metric_alarm" "alb_4xx_high" {
+  alarm_name          = "${var.project_name}-alb-4xx-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "HTTPCode_ELB_4XX_Count"
+  namespace           = "AWS/ApplicationELB"
+  period              = 60
+  statistic           = "Sum"
+  threshold           = 100
+  dimensions = {
+    LoadBalancer = aws_lb.app_alb.arn_suffix
+  }
+  alarm_actions = [aws_sns_topic.ops_alarms.arn]
+}
+
 resource "aws_cloudwatch_metric_alarm" "ecs_cpu_high" {
   alarm_name          = "${var.project_name}-ecs-cpu-high"
   comparison_operator = "GreaterThanThreshold"

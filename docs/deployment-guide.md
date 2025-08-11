@@ -434,3 +434,23 @@ For deployment issues:
 ---
 
 **🎉 Congratulations!** You now have a fully functional Smart CloudOps AI infrastructure with comprehensive monitoring capabilities.
+
+### Step 6: CI/CD and Image Security
+
+- Configure GitHub Actions secret `AWS_ROLE_TO_ASSUME` and repository variables `AWS_REGION`, `ECR_REPOSITORY`.
+- On push to main, workflow `.github/workflows/ecr-build-push.yml` builds `Dockerfile.production`, pushes to ECR, and scans with Trivy. The build fails on HIGH/CRITICAL findings.
+
+### Step 7: Alarms and Notifications
+
+- SNS topic `${project_name}-ops-alarms` is created. Provide `-var="alarm_email=you@example.com"` to subscribe an email.
+- CloudWatch alarms include ALB 5xx/4xx, ECS CPU/Mem, and RDS failover.
+
+### Step 8: HTTPS and Fallback
+
+- If `domain_name` and `hosted_zone_id` provided, ACM cert is validated via Route53 and HTTP redirects to HTTPS.
+- If no domain provided, ALB serves HTTP directly for smoke tests. Once ACM is ready, re-apply with domain vars to enforce HTTPS.
+
+### Step 9: Database Persistence
+
+- App resolves `DATABASE_URL` from SSM SecureString. RDS runs Multi-AZ with encryption and backups.
+- A Secrets Manager secret for RDS creds is provisioned with a 30-day rotation placeholder (attach rotation Lambda later for full automation).

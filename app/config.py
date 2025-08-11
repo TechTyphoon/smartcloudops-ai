@@ -151,6 +151,11 @@ class Config:
             "log_dir": os.getenv("LOG_DIR", "logs"),
             # Database
             "database_url": os.getenv("DATABASE_URL", ""),
+            "db_host": os.getenv("DB_HOST", ""),
+            "db_port": int(os.getenv("DB_PORT", "5432")),
+            "db_name": os.getenv("DB_NAME", ""),
+            "db_username": os.getenv("DB_USERNAME", ""),
+            "db_password": os.getenv("DB_PASSWORD", ""),
             # Phase 4 remediation config
             "require_approval": os.getenv("REQUIRE_APPROVAL", "false").lower()
             == "true",
@@ -162,6 +167,20 @@ class Config:
             ),
             "ssm_service_name": os.getenv("SSM_SERVICE_NAME", "smartcloudops-app"),
         }
+
+        # If database_url is not provided, assemble from parts if available
+        if not config_dict["database_url"] and all(
+            [
+                config_dict.get("db_host"),
+                config_dict.get("db_name"),
+                config_dict.get("db_username"),
+                config_dict.get("db_password"),
+            ]
+        ):
+            config_dict["database_url"] = (
+                f"postgresql+psycopg://{config_dict['db_username']}:{config_dict['db_password']}@"
+                f"{config_dict['db_host']}:{config_dict['db_port']}/{config_dict['db_name']}"
+            )
 
         # Validate configuration
         cls.validate_config(config_dict)
@@ -218,7 +237,7 @@ class ProductionConfig(Config):
                 "AI_PROVIDER must be explicitly set in production"
             )
 
-        # Require a managed database URL in production
+        # Require a managed database in production
         if not config_dict.get("database_url"):
             raise ConfigValidationError("DATABASE_URL must be set in production")
 

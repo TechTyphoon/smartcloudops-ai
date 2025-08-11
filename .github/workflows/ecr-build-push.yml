@@ -39,10 +39,21 @@ jobs:
         run: |
           IMAGE_TAG=${GITHUB_SHA::7}
           REPO_NAME=${ECR_REPOSITORY}
+          # Enable Docker BuildKit with inline SBOM and provenance if desired
+          export DOCKER_BUILDKIT=1
           docker build -f Dockerfile.production -t $ECR_REGISTRY/$REPO_NAME:$IMAGE_TAG .
           docker tag $ECR_REGISTRY/$REPO_NAME:$IMAGE_TAG $ECR_REGISTRY/$REPO_NAME:latest
           docker push $ECR_REGISTRY/$REPO_NAME:$IMAGE_TAG
           docker push $ECR_REGISTRY/$REPO_NAME:latest
+
+      - name: Scan image with Trivy (fail on CRITICAL/HIGH)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
 
       - name: Output image URI
         run: echo "Image pushed: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest"
