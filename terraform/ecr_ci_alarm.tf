@@ -71,9 +71,9 @@ output "gh_actions_role_arn" {
 }
 
 // IAM policy allowing task to read SSM parameter for secrets
-resource "aws_iam_policy" "ecs_task_ssm_read" {
-  name        = "${var.project_name}-ecs-task-ssm-read"
-  description = "Allow ECS task to read secure SSM parameters"
+resource "aws_iam_policy" "ecs_task_secrets_read" {
+  name        = "${var.project_name}-ecs-task-secrets-read"
+  description = "Allow ECS task to read SSM parameters and Secrets Manager secrets"
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -84,16 +84,31 @@ resource "aws_iam_policy" "ecs_task_ssm_read" {
       },
       {
         Effect   = "Allow",
-        Action   = ["kms:Decrypt"],
-        Resource = "*"
+        Action   = ["secretsmanager:GetSecretValue"],
+        Resource = aws_secretsmanager_secret.db_secret.arn
+      },
+      {
+        Effect = "Allow",
+        Action = ["kms:Decrypt"],
+        Resource = [
+          "arn:aws:kms:${var.aws_region}:${data.aws_caller_identity.current.account_id}:key/*"
+        ],
+        Condition = {
+          StringEquals = {
+            "kms:ViaService" = [
+              "ssm.${var.aws_region}.amazonaws.com",
+              "secretsmanager.${var.aws_region}.amazonaws.com"
+            ]
+          }
+        }
       }
     ]
   })
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_task_ssm_read_attach" {
+resource "aws_iam_role_policy_attachment" "ecs_task_secrets_read_attach" {
   role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = aws_iam_policy.ecs_task_ssm_read.arn
+  policy_arn = aws_iam_policy.ecs_task_secrets_read.arn
 }
 
 // SNS topic for alarms
@@ -127,28 +142,34 @@ resource "aws_cloudwatch_metric_alarm" "alb_5xx_high" {
   evaluation_periods  = 2
   metric_name         = "HTTPCode_ELB_5XX_Count"
   namespace           = "AWS/ApplicationELB"
-  period              = 60
+  period              = 300
   statistic           = "Sum"
-  threshold           = 10
+  threshold           = 5
+  alarm_description   = "ALB 5xx errors detected (>5 in 10 minutes) - Critical issue"
+  treat_missing_data  = "notBreaching"
   dimensions = {
     LoadBalancer = aws_lb.app_alb.arn_suffix
   }
   alarm_actions = [aws_sns_topic.ops_alarms.arn]
+  ok_actions    = [aws_sns_topic.ops_alarms.arn]
 }
 
 resource "aws_cloudwatch_metric_alarm" "alb_4xx_high" {
   alarm_name          = "${var.project_name}-alb-4xx-high"
   comparison_operator = "GreaterThanThreshold"
-  evaluation_periods  = 2
+  evaluation_periods  = 3
   metric_name         = "HTTPCode_ELB_4XX_Count"
   namespace           = "AWS/ApplicationELB"
-  period              = 60
+  period              = 300
   statistic           = "Sum"
-  threshold           = 100
+  threshold           = 25
+  alarm_description   = "ALB 4xx errors are high (>25 in 15 minutes)"
+  treat_missing_data  = "notBreaching"
   dimensions = {
     LoadBalancer = aws_lb.app_alb.arn_suffix
   }
   alarm_actions = [aws_sns_topic.ops_alarms.arn]
+  ok_actions    = [aws_sns_topic.ops_alarms.arn]
 }
 
 resource "aws_cloudwatch_metric_alarm" "ecs_cpu_high" {
@@ -197,6 +218,65 @@ resource "aws_cloudwatch_metric_alarm" "rds_failover" {
   }
   alarm_description = "Alert when RDS failover is detected"
   alarm_actions     = [aws_sns_topic.ops_alarms.arn]
+}
+
+# Enhanced alarms: ECS task failures and ALB target health
+resource "aws_cloudwatch_metric_alarm" "ecs_task_fail" {
+  alarm_name          = "${var.project_name}-ecs-task-fail"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "TaskCount"
+  namespace           = "AWS/ECS"
+  period              = 300
+  statistic           = "Average"
+  threshold           = 0
+  alarm_description   = "ECS tasks are failing or stopped unexpectedly"
+  treat_missing_data  = "breaching"
+  dimensions = {
+    ClusterName   = aws_ecs_cluster.app_cluster.name
+    ServiceName   = aws_ecs_service.app_service.name
+    DesiredStatus = "STOPPED"
+  }
+  alarm_actions = [aws_sns_topic.ops_alarms.arn]
+  ok_actions    = [aws_sns_topic.ops_alarms.arn]
+}
+
+resource "aws_cloudwatch_metric_alarm" "alb_target_unhealthy" {
+  alarm_name          = "${var.project_name}-alb-target-unhealthy"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "HealthyHostCount"
+  namespace           = "AWS/ApplicationELB"
+  period              = 300
+  statistic           = "Average"
+  threshold           = 1
+  alarm_description   = "ALB has no healthy targets available"
+  treat_missing_data  = "breaching"
+  dimensions = {
+    TargetGroup  = aws_lb_target_group.app_tg.arn_suffix
+    LoadBalancer = aws_lb.app_alb.arn_suffix
+  }
+  alarm_actions = [aws_sns_topic.ops_alarms.arn]
+  ok_actions    = [aws_sns_topic.ops_alarms.arn]
+}
+
+resource "aws_cloudwatch_metric_alarm" "ecs_service_desired_vs_running" {
+  alarm_name          = "${var.project_name}-ecs-service-capacity"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = 3
+  metric_name         = "RunningTaskCount"
+  namespace           = "AWS/ECS"
+  period              = 300
+  statistic           = "Average"
+  threshold           = 1
+  alarm_description   = "ECS service has fewer running tasks than desired"
+  treat_missing_data  = "breaching"
+  dimensions = {
+    ClusterName = aws_ecs_cluster.app_cluster.name
+    ServiceName = aws_ecs_service.app_service.name
+  }
+  alarm_actions = [aws_sns_topic.ops_alarms.arn]
+  ok_actions    = [aws_sns_topic.ops_alarms.arn]
 }
 
 // Note: RDS automated snapshot retention is configured via backup_retention in rds.tf

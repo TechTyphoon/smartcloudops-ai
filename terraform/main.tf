@@ -12,6 +12,10 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.1"
     }
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.1"
+    }
   }
 
   # Remote state: For production, create backend.hcl with:
@@ -21,7 +25,7 @@ terraform {
   # encrypt        = true
   # dynamodb_table = "terraform-locks"
   # Then run: terraform init -backend-config=backend.hcl
-  
+
   # For validation, using local backend (comment out for production)
   # backend "s3" {}
 }

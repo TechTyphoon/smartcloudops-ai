@@ -107,6 +107,17 @@ output "ecr_repository_url" {
   value       = aws_ecr_repository.app_repo.repository_url
 }
 
+# Hardening features outputs
+output "alb_access_logs_bucket" {
+  description = "S3 bucket for ALB access logs (if enabled)"
+  value       = var.enable_alb_access_logs ? aws_s3_bucket.alb_access_logs[0].bucket : null
+}
+
+output "waf_web_acl_arn" {
+  description = "WAF Web ACL ARN (if enabled)"
+  value       = var.enable_waf ? aws_wafv2_web_acl.alb_waf[0].arn : null
+}
+
 # Key Pair Information
 output "key_pair_name" {
   description = "Name of the EC2 key pair"

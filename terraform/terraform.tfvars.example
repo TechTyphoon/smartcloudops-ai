@@ -45,8 +45,13 @@ github_branch    = "refs/heads/main"
 # Optional Production Features
 enable_slack_notifications     = false      # Set to true to enable Slack alerts
 slack_webhook_secret_name      = "/smartcloudops/prod/slack/webhook"
-use_secrets_manager_for_db     = true       # Recommended for production
+use_secrets_manager_for_db     = true       # REQUIRED for production (enables credential rotation)
 enable_blue_green              = false      # Set to true for Blue/Green deployments
+
+# Additional Hardening Features (Optional)
+enable_alb_access_logs         = false      # Set to true to enable ALB access logs to S3
+alb_access_logs_bucket         = ""         # Auto-generated if empty when enabled
+enable_waf                     = false      # Set to true to enable AWS WAF protection
 
 # Database Configuration
 rds_instance_class          = "db.t3.micro"

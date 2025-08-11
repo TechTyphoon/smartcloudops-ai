@@ -182,6 +182,25 @@ variable "hosted_zone_id" {
   default     = ""
 }
 
+# Additional hardening features
+variable "enable_alb_access_logs" {
+  description = "Enable ALB access logs to S3"
+  type        = bool
+  default     = false
+}
+
+variable "enable_waf" {
+  description = "Enable AWS WAF for ALB protection"
+  type        = bool
+  default     = false
+}
+
+variable "alb_access_logs_bucket" {
+  description = "S3 bucket name for ALB access logs (will be created if enable_alb_access_logs=true)"
+  type        = string
+  default     = ""
+}
+
 # Database settings
 variable "rds_instance_class" {
   description = "RDS instance class"

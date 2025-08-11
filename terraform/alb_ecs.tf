@@ -12,6 +12,16 @@ resource "aws_lb" "app_alb" {
   security_groups    = [aws_security_group.web_sg.id]
   subnets            = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
 
+  # Optional access logs to S3
+  dynamic "access_logs" {
+    for_each = var.enable_alb_access_logs ? [1] : []
+    content {
+      bucket  = aws_s3_bucket.alb_access_logs[0].bucket
+      enabled = true
+      prefix  = "alb-access-logs"
+    }
+  }
+
   tags = {
     Name = "${var.project_name}-alb"
   }
@@ -167,6 +177,25 @@ resource "aws_ssm_parameter" "db_url" {
 resource "random_password" "db_password" {
   length  = 20
   special = true
+}
+
+# Validation: Recommend Secrets Manager for production
+locals {
+  is_production     = var.environment == "prod" || var.environment == "production"
+  using_ssm_in_prod = local.is_production && !var.use_secrets_manager_for_db
+}
+
+# Warning for SSM usage in production
+resource "null_resource" "ssm_prod_warning" {
+  count = local.using_ssm_in_prod ? 1 : 0
+
+  triggers = {
+    warning = "WARNING: Using SSM Parameter Store for DATABASE_URL in production. Consider setting use_secrets_manager_for_db=true for automatic credential rotation."
+  }
+
+  provisioner "local-exec" {
+    command = "echo 'WARNING: Using SSM Parameter Store for DATABASE_URL in production. Consider setting use_secrets_manager_for_db=true for automatic credential rotation.'"
+  }
 }
 
 resource "aws_ecs_task_definition" "app_task" {

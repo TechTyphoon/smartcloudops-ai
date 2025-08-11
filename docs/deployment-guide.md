@@ -471,6 +471,33 @@ git push origin main
 - Trivy security scan runs against pushed image and **fails the build** on HIGH/CRITICAL vulnerabilities.
 - On scan failure, check Trivy output and update base images or dependencies before retrying.
 
+### Step 6.5: Enhanced Monitoring and Alarms
+
+#### 6.5.1 Enhanced CloudWatch Alarms
+The infrastructure includes comprehensive monitoring with refined thresholds:
+
+**Application Load Balancer:**
+- **ALB 5xx Errors**: >5 errors in 10 minutes (critical issues)
+- **ALB 4xx Errors**: >25 errors in 15 minutes (client/config issues)
+- **Target Health**: Alerts when no healthy targets available
+
+**ECS Service:**
+- **Task Failures**: Detects when tasks stop unexpectedly
+- **Service Capacity**: Alerts when running tasks < desired count
+- **CPU/Memory**: Existing thresholds for resource utilization
+
+**RDS Database:**
+- **Failover Detection**: Immediate alert on Multi-AZ failover events
+
+#### 6.5.2 Secrets Management (Production)
+```bash
+# Enable Secrets Manager for production credential rotation
+use_secrets_manager_for_db = true
+
+# Terraform will warn if using SSM in production environment
+# Secrets Manager provides automatic 30-day credential rotation
+```
+
 ### Step 7: Alarms and Notifications
 
 - SNS topic `${project_name}-ops-alarms` is created. Provide `-var="alarm_email=you@example.com"` to subscribe an email.
@@ -537,4 +564,55 @@ aws deploy get-deployment --deployment-id <deployment-id> --region us-west-2
 
 # Stop deployment to test rollback
 aws deploy stop-deployment --deployment-id <deployment-id> --auto-rollback-enabled --region us-west-2
+```
+
+### Step 11: Additional Security Hardening (Optional)
+
+#### 11.1 ALB Access Logs
+```bash
+# Enable detailed ALB access logging to S3
+enable_alb_access_logs = true
+alb_access_logs_bucket = "my-company-alb-logs"  # Optional: specify bucket name
+
+# Terraform will create S3 bucket with:
+# - Versioning enabled
+# - AES256 encryption
+# - 90-day lifecycle policy
+# - Proper bucket policy for ALB service account
+```
+
+**What you get:**
+- All ALB requests logged to S3 with detailed information
+- Request/response times, status codes, client IPs
+- Useful for security analysis and performance troubleshooting
+- Logs automatically expire after 90 days to control costs
+
+#### 11.2 AWS WAF Protection
+```bash
+# Enable AWS WAF for advanced threat protection
+enable_waf = true
+
+# Terraform will create WAF with:
+# - Rate limiting (2000 requests/IP/5min)
+# - AWS Managed Common Rule Set
+# - Known Bad Inputs protection
+# - CloudWatch metrics and logging
+```
+
+**Protection includes:**
+- **Rate Limiting**: Blocks IPs exceeding 2000 requests per 5 minutes
+- **Common Attacks**: SQL injection, XSS, and other OWASP Top 10
+- **Known Bad IPs**: AWS-maintained list of malicious sources
+- **Real-time Metrics**: CloudWatch dashboards for blocked requests
+
+#### 11.3 Verify Hardening Features
+```bash
+# Check ALB access logs
+aws s3 ls s3://$(terraform output -raw alb_access_logs_bucket)/
+
+# View WAF metrics
+aws wafv2 get-web-acl --scope REGIONAL --id $(terraform output -raw waf_web_acl_arn | cut -d'/' -f3) --region us-west-2
+
+# Test rate limiting (careful - will temporarily block your IP)
+for i in {1..2100}; do curl -s https://your-domain.com/ >/dev/null; done
 ```
