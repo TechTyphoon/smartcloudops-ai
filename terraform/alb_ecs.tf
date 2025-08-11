@@ -229,7 +229,7 @@ resource "aws_ecs_service" "app_service" {
     container_port   = 3000
   }
 
-  depends_on = [aws_lb_listener.http]
+  # Implicit dependencies via target group and listeners
 }
 
 resource "aws_appautoscaling_target" "ecs_scaling_target" {
