@@ -1,6 +1,6 @@
-# Additional security configurations to fix Checkov violations
+# Smart CloudOps AI - Security Configuration (Phase 7.1)
+# Simplified security configuration for production deployment
 
-# Current AWS account identity for KMS key policy principal
 data "aws_caller_identity" "current" {}
 
 # IAM Role for EC2 instances
@@ -29,13 +29,9 @@ resource "aws_iam_role" "ec2_role" {
 resource "aws_iam_instance_profile" "ec2_profile" {
   name = "${var.project_name}-ec2-profile"
   role = aws_iam_role.ec2_role.name
-
-  tags = {
-    Name = "${var.project_name}-ec2-profile"
-  }
 }
 
-# IAM Policy for CloudWatch and Systems Manager
+# Simplified IAM Policy for EC2 instances
 resource "aws_iam_role_policy" "ec2_policy" {
   name = "${var.project_name}-ec2-policy"
   role = aws_iam_role.ec2_role.id
@@ -44,55 +40,25 @@ resource "aws_iam_role_policy" "ec2_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
         Action = [
-          "cloudwatch:PutMetricData"
-        ]
-        Resource = "*"
-        Condition = {
-          StringEquals = {
-            "aws:RequestedRegion" = var.aws_region
-          }
-        }
-      },
-      {
-        Effect = "Allow"
-        Action = [
+          "ec2:DescribeInstances",
+          "ec2:DescribeTags",
+          "ec2:DescribeVolumes",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DescribeVpcs",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeRouteTables",
+          "ec2:DescribeInternetGateways",
+          "ec2:DescribeNatGateways",
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
-          "logs:PutLogEvents"
+          "logs:PutLogEvents",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams"
         ]
-        Resource = [
-          "arn:aws:logs:${var.aws_region}:*:log-group:/aws/ec2/*",
-          "arn:aws:logs:${var.aws_region}:*:log-group:/aws/ec2/*:log-stream:*"
-        ]
-      },
-      {
         Effect = "Allow"
-        Action = [
-          "ssm:GetParameter",
-          "ssm:GetParameters",
-          "ssm:GetParametersByPath"
-        ]
-        Resource = [
-          "arn:aws:ssm:${var.aws_region}:*:parameter/${var.project_name}/*",
-          "arn:aws:ssm:${var.aws_region}:*:parameter/smartcloudops/*"
-        ]
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "ssm:SendCommand",
-          "ssm:GetCommandInvocation",
-          "ssm:ListCommands",
-          "ssm:ListCommandInvocations"
-        ]
-        Resource = [
-          "arn:aws:ec2:${var.aws_region}:*:instance/*",
-          "arn:aws:ssm:${var.aws_region}:*:document/AWS-RunShellScript",
-          "arn:aws:ssm:${var.aws_region}:*:managed-instance/*",
-          "arn:aws:ssm:${var.aws_region}:*:command/*"
-        ]
+        Resource = "*"
       }
     ]
   })
@@ -104,45 +70,14 @@ resource "aws_iam_role_policy_attachment" "ec2_ssm_core" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-# VPC Flow Logs
+# VPC Flow Logs (simplified without KMS encryption for production deployment)
 resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   name              = "/aws/vpc/flowlogs"
-  retention_in_days = 365
-  kms_key_id        = aws_kms_key.log_group_key.arn
+  retention_in_days = 30  # Reduced retention for cost optimization
 
   tags = {
     Name = "${var.project_name}-vpc-flow-logs"
   }
-}
-
-# KMS key for encrypting CloudWatch Log Groups
-resource "aws_kms_key" "log_group_key" {
-  description             = "KMS key for CloudWatch log group encryption"
-  deletion_window_in_days = 7
-  enable_key_rotation     = true
-
-  tags = {
-    Name = "${var.project_name}-logs-kms"
-  }
-}
-
-# Explicit key policy resource to satisfy policy definition checks
-resource "aws_kms_key_policy" "log_group_key_policy" {
-  key_id = aws_kms_key.log_group_key.id
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Id      = "key-default-policy",
-    Statement = [
-      {
-        Sid       = "Allow administration of the key",
-        Effect    = "Allow",
-        Principal = { AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root" },
-        Action    = "kms:*",
-        Resource  = "*"
-      }
-    ]
-  })
 }
 
 resource "aws_iam_role" "flow_log_role" {
@@ -198,14 +133,14 @@ resource "aws_flow_log" "vpc_flow_log" {
   }
 }
 
-# Default Security Group restriction
+# Default Security Group Rules
 resource "aws_default_security_group" "default" {
   vpc_id = aws_vpc.smartcloudops_vpc.id
 
-  # No ingress rules (deny all inbound)
-  # No egress rules (deny all outbound)
-
   tags = {
-    Name = "${var.project_name}-default-sg-restricted"
+    Name = "${var.project_name}-default-sg"
   }
 }
+
+# Note: Security groups are defined in main.tf to avoid duplication
+# This file focuses on IAM roles, policies, and VPC flow logs

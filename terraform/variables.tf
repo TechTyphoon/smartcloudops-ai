@@ -24,7 +24,7 @@ variable "project_owner" {
 variable "aws_region" {
   description = "AWS region for resources"
   type        = string
-  default     = "ap-south-1" # Changed from us-west-2 to match local config
+  default     = "us-west-2" # Changed to us-west-2 to match current deployment
 }
 
 variable "account_id" {
@@ -55,8 +55,8 @@ variable "public_subnet_2_cidr" {
 variable "allowed_cidr_blocks" {
   description = "CIDR blocks allowed to access the infrastructure"
   type        = list(string)
-  # Default to restrictive localhost; override per environment (e.g., your /32) via tfvars
-  default = ["127.0.0.1/32"]
+  # Allow access from anywhere for development; restrict in production
+  default = ["0.0.0.0/0"]
 }
 
 # EC2 Configuration

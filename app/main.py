@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 """
-Smart CloudOps AI - Flask Application (Phase 4)
-ChatOps application with GPT integration, ML anomaly detection, and auto-remediation
+Smart CloudOps AI - Main Application
+Phase 5: Production-Ready ML Integration & Auto-Remediation
 """
 
-import logging
 import os
 import sys
 import time
+
+# Add the project root to Python path - MUST be first
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+import logging
 from datetime import datetime
 
 from flask import Flask, jsonify, request
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
-
-# Add the project root to Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from app.chatops.ai_handler import FlexibleAIHandler
 from app.chatops.utils import (
@@ -45,6 +46,9 @@ try:
 except ImportError as e:
     logging.warning(f"Remediation components not available: {e}")
     REMEDIATION_AVAILABLE = False
+
+# Import beta testing API
+from .beta_api import beta_api
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -868,10 +872,13 @@ def not_found(error):
     return jsonify({"error": "Endpoint not found"}), 404
 
 
+# Register blueprints
+app.register_blueprint(beta_api)  # Add beta testing API
+
 # WSGI application object for Gunicorn
 if __name__ == "__main__":
     logger.info("Starting Smart CloudOps AI Flask Application (Phase 4)")
     debug_mode = os.getenv("FLASK_DEBUG", "false").lower() == "true"
     host = os.getenv("FLASK_HOST", "127.0.0.1")
-    port = int(os.getenv("FLASK_PORT", 3000))
+    port = int(os.getenv("FLASK_PORT", 3003))
     app.run(host=host, port=port, debug=debug_mode)

@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  # Main Flask Application
+  smartcloudops-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    ports:
+      - "3000:3000"
+    environment:
+      - FLASK_ENV=production
+      - PROMETHEUS_URL=http://44.246.186.75:9090
+      - REQUIRE_APPROVAL=false
+      - MAX_ACTIONS_PER_HOUR=3
+      - COOLDOWN_MINUTES=10
+      - REMEDIATION_TAG_KEY=Name
+      - REMEDIATION_TAG_VALUE=smartcloudops-ai-application
+      - SSM_SERVICE_NAME=smartcloudops-app
+      - AWS_REGION=us-west-2
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s 

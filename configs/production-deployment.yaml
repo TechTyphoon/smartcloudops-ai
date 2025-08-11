@@ -1,0 +1,93 @@
+# Smart CloudOps AI - Production Deployment Configuration (Phase 7.1)
+# Configuration for production deployment
+
+# AWS Configuration
+aws:
+  region: ap-south-1
+  environment: production
+  
+# Deployment Settings
+deployment:
+  timeout: 1800  # 30 minutes
+  health_check_interval: 30  # 30 seconds
+  max_health_check_attempts: 20
+  
+# Infrastructure Configuration
+infrastructure:
+  vpc_cidr: "10.0.0.0/16"
+  public_subnets:
+    - "10.0.1.0/24"
+    - "10.0.2.0/24"
+  instance_types:
+    monitoring: "t3.medium"
+    application: "t3.small"
+  security_groups:
+    - name: "monitoring-sg"
+      ports: [22, 80, 3000, 9090, 9100]
+    - name: "application-sg"
+      ports: [22, 80, 3000]
+      
+# Monitoring Configuration
+monitoring:
+  prometheus:
+    port: 9090
+    retention_days: 15
+  grafana:
+    port: 3000
+    admin_password: "admin123"  # Change in production
+  node_exporter:
+    port: 9100
+    
+# Application Configuration
+application:
+  port: 3000
+  docker_image: "smartcloudops-ai:latest"
+  container_name: "smartcloudops-app"
+  environment:
+    - FLASK_ENV=production
+    - FLASK_DEBUG=false
+    
+# Security Configuration
+security:
+  ssh_key_name: "cloudops-key"
+  encrypted_volumes: true
+  security_groups: true
+  
+# Backup Configuration
+backup:
+  enabled: true
+  retention_days: 30
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  
+# Logging Configuration
+logging:
+  level: "INFO"
+  file: "logs/production_deployment.log"
+  max_size: "100MB"
+  backup_count: 5
+  
+# Health Check Configuration
+health_checks:
+  endpoints:
+    - "/health"
+    - "/status"
+    - "/metrics"
+  timeout: 10
+  interval: 30
+  
+# Notification Configuration
+notifications:
+  email:
+    enabled: true
+    recipients:
+      - "dileepkumarreddy12345@gmail.com"
+  slack:
+    enabled: false
+    webhook_url: ""
+    
+# Performance Configuration
+performance:
+  max_concurrent_requests: 100
+  request_timeout: 30
+  memory_limit: "2GB"
+  cpu_limit: "2" 

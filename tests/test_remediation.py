@@ -526,6 +526,9 @@ class TestNotificationManager:
         mock_response.json.return_value = {'ok': True}
         mock_post.return_value = mock_response
         
+        # Set a webhook URL for the test
+        self.notification_manager.slack_webhook_url = "https://hooks.slack.com/services/test"
+        
         message = {'text': 'Test message'}
         result = self.notification_manager._send_slack_message(message)
         
@@ -539,6 +542,9 @@ class TestNotificationManager:
         mock_response.status_code = 400
         mock_response.text = 'Bad Request'
         mock_post.return_value = mock_response
+        
+        # Set a webhook URL for the test
+        self.notification_manager.slack_webhook_url = "https://hooks.slack.com/services/test"
         
         message = {'text': 'Test message'}
         result = self.notification_manager._send_slack_message(message)

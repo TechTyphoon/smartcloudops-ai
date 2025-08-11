@@ -4,16 +4,15 @@ Smart CloudOps AI - Auto-Remediation Engine (Phase 4)
 Orchestrates anomaly detection, safety checks, and remediation actions
 """
 
-import json
-import logging
 import os
 import sys
-import time
+
+# Add the project root to Python path - MUST be first
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+
+import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
-
-# Add the project root to Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from app.config import get_config
 from app.remediation.actions import ActionManager

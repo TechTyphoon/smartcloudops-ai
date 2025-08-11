@@ -6,7 +6,6 @@ Implements safety mechanisms for auto-remediation actions
 
 import logging
 import os
-import time
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
@@ -157,11 +156,9 @@ class SafetyManager:
             # Critical actions always require approval
             if severity == "critical":
                 approval_required = True
-                reason = "Critical severity actions require approval"
             else:
                 # Check SSM parameter for approval setting
                 approval_required = self._get_approval_setting()
-                reason = "Approval setting from SSM parameter"
 
             if approval_required:
                 # For now, we'll auto-approve but log the requirement

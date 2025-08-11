@@ -5,7 +5,6 @@ Helps users start the application with proper configuration
 """
 
 import os
-import subprocess
 import sys
 from pathlib import Path
 
@@ -78,7 +77,7 @@ def create_env_example():
 # Flask Configuration
 FLASK_ENV=development
 DEBUG=true
-PORT=3000
+    PORT=3003
 
 # AI Provider Configuration (Required for Phase 2.2)
 AI_PROVIDER=auto  # "openai", "gemini", or "auto"
@@ -120,7 +119,7 @@ def start_application():
         os.environ["FLASK_ENV"] = "development"
 
     if not os.getenv("PORT"):
-        os.environ["PORT"] = "3000"
+        os.environ["PORT"] = "3003"
 
     # Start the application
     try:

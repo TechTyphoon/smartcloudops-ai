@@ -80,7 +80,7 @@ resource "aws_subnet" "public_subnet_1" {
   vpc_id                  = aws_vpc.smartcloudops_vpc.id
   cidr_block              = var.public_subnet_1_cidr
   availability_zone       = data.aws_availability_zones.available.names[0]
-  map_public_ip_on_launch = false
+  map_public_ip_on_launch = true  # Enable public IPs for production access
 
   tags = {
     Name = "${var.project_name}-public-subnet-1"
@@ -92,7 +92,7 @@ resource "aws_subnet" "public_subnet_2" {
   vpc_id                  = aws_vpc.smartcloudops_vpc.id
   cidr_block              = var.public_subnet_2_cidr
   availability_zone       = data.aws_availability_zones.available.names[1]
-  map_public_ip_on_launch = false
+  map_public_ip_on_launch = true  # Enable public IPs for production access
 
   tags = {
     Name = "${var.project_name}-public-subnet-2"
@@ -127,44 +127,40 @@ resource "aws_route_table_association" "public_rta_2" {
 
 # Security Group for Web Services
 resource "aws_security_group" "web_sg" {
-  name        = "${var.project_name}-web-sg"
+  name        = "${var.project_name}-web-sg-v2"
   description = "Security group for web services"
   vpc_id      = aws_vpc.smartcloudops_vpc.id
 
-  # SSH access
   ingress {
+    description = "SSH access"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = var.allowed_cidr_blocks
-    description = "SSH access"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # HTTP access (restricted to allowed CIDRs)
   ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = var.allowed_cidr_blocks
-    description = "HTTP access"
-  }
-
-  # HTTPS access (restricted to allowed CIDRs)
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = var.allowed_cidr_blocks
-    description = "HTTPS access"
-  }
-
-  # Flask application
-  ingress {
+    description = "Flask application"
     from_port   = 3000
     to_port     = 3000
     protocol    = "tcp"
-    cidr_blocks = var.allowed_cidr_blocks
-    description = "Flask application"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTP access"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTPS access"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Outbound HTTP traffic
@@ -195,50 +191,50 @@ resource "aws_security_group" "web_sg" {
   }
 
   tags = {
-    Name = "${var.project_name}-web-sg"
+    Name = "${var.project_name}-web-sg-v2"
   }
 }
 
 # Security Group for Monitoring Services
 resource "aws_security_group" "monitoring_sg" {
-  name        = "${var.project_name}-monitoring-sg"
+  name        = "${var.project_name}-monitoring-sg-v2"
   description = "Security group for monitoring services"
   vpc_id      = aws_vpc.smartcloudops_vpc.id
 
   # SSH access
   ingress {
+    description = "SSH access"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = var.allowed_cidr_blocks
-    description = "SSH access"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Prometheus
   ingress {
+    description = "Prometheus web UI"
     from_port   = 9090
     to_port     = 9090
     protocol    = "tcp"
-    cidr_blocks = var.allowed_cidr_blocks
-    description = "Prometheus web UI"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Node Exporter
   ingress {
-    from_port   = 9100
-    to_port     = 9100
-    protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
     description = "Node Exporter metrics"
+    from_port   = 9100
+    to_port     = 9101
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Grafana
   ingress {
+    description = "Grafana web UI"
     from_port   = 3001
     to_port     = 3001
     protocol    = "tcp"
-    cidr_blocks = var.allowed_cidr_blocks
-    description = "Grafana web UI"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Outbound HTTP traffic
@@ -269,7 +265,7 @@ resource "aws_security_group" "monitoring_sg" {
   }
 
   tags = {
-    Name = "${var.project_name}-monitoring-sg"
+    Name = "${var.project_name}-monitoring-sg-v2"
   }
 }
 
@@ -295,11 +291,11 @@ resource "aws_instance" "ec2_monitoring" {
   monitoring                  = true
   ebs_optimized               = true
   iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
-  associate_public_ip_address = false
+  associate_public_ip_address = true  # Enable public IPs for production access
 
   metadata_options {
     http_endpoint               = "enabled"
-    http_tokens                 = "required"
+    http_tokens                 = "optional"
     http_put_response_hop_limit = 1
     instance_metadata_tags      = "enabled"
   }
@@ -310,7 +306,7 @@ resource "aws_instance" "ec2_monitoring" {
     encrypted   = true
   }
 
-  # user_data = base64encode(file("${path.module}/scripts/monitoring_setup.sh"))
+  user_data = base64encode(file("${path.module}/scripts/monitoring_setup.sh"))
 
   tags = {
     Name = "${var.project_name}-monitoring"
@@ -329,11 +325,11 @@ resource "aws_instance" "ec2_application" {
   monitoring                  = true
   ebs_optimized               = true
   iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
-  associate_public_ip_address = false
+  associate_public_ip_address = true  # Enable public IPs for production access
 
   metadata_options {
     http_endpoint               = "enabled"
-    http_tokens                 = "required"
+    http_tokens                 = "optional"
     http_put_response_hop_limit = 1
     instance_metadata_tags      = "enabled"
   }
@@ -344,7 +340,7 @@ resource "aws_instance" "ec2_application" {
     encrypted   = true
   }
 
-  # user_data = base64encode(file("${path.module}/scripts/application_setup.sh"))
+  user_data = base64encode(file("${path.module}/scripts/application_setup.sh"))
 
   tags = {
     Name = "${var.project_name}-application"

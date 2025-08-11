@@ -4,14 +4,13 @@ Smart CloudOps AI - ChatOps Utilities (Phase 5 Enhanced)
 Advanced context management, system state caching, and intelligent query processing
 """
 
-import json
 import logging
 import os
 import sys
 import time
 from collections import deque
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
