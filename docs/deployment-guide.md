@@ -445,6 +445,8 @@ For deployment issues:
 - SNS topic `${project_name}-ops-alarms` is created. Provide `-var="alarm_email=you@example.com"` to subscribe an email.
 - CloudWatch alarms include ALB 5xx/4xx, ECS CPU/Mem, and RDS failover.
 
+- Optional Slack: set `-var="enable_slack_notifications=true" -var="slack_webhook_secret_name=projects/smartcloudops/slack/webhook"` where the secret contains `{ "webhook": "https://hooks.slack.com/services/..." }`. The Lambda bridge posts alarm summaries to Slack.
+
 ### Step 8: HTTPS and Fallback
 
 - If `domain_name` and `hosted_zone_id` provided, ACM cert is validated via Route53 and HTTP redirects to HTTPS.
@@ -454,3 +456,7 @@ For deployment issues:
 
 - App resolves `DATABASE_URL` from SSM SecureString. RDS runs Multi-AZ with encryption and backups.
 - A Secrets Manager secret for RDS creds is provisioned with a 30-day rotation placeholder (attach rotation Lambda later for full automation).
+
+### Step 10: Safe Releases (Optional)
+
+- Enable CodeDeploy Blue/Green with `-var="enable_blue_green=true"`. This wires a CodeDeploy application/group to coordinate traffic shifting with ALB listeners. Default remains ECS rolling with circuit breaker and rollback.

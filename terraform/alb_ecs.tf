@@ -158,9 +158,11 @@ resource "aws_ecs_task_definition" "app_task" {
         { name = "FLASK_PORT", value = "3000" },
         { name = "PROMETHEUS_URL", value = "http://localhost:9090" }
       ]
-      secrets = [
+      secrets = ${var.use_secrets_manager_for_db ? jsonencode([
+        { name = "DATABASE_URL", valueFrom = aws_secretsmanager_secret.db_secret.arn }
+      ]) : jsonencode([
         { name = "DATABASE_URL", valueFrom = aws_ssm_parameter.db_url.arn }
-      ]
+      ])}
       logConfiguration = {
         logDriver = "awslogs"
         options = {

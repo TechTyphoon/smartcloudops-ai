@@ -131,6 +131,31 @@ variable "openai_api_key" {
   sensitive   = true
 }
 
+# Feature toggles and notifications
+variable "enable_slack_notifications" {
+  description = "Enable Slack notifications via SNS -> Lambda forwarder"
+  type        = bool
+  default     = false
+}
+
+variable "slack_webhook_secret_name" {
+  description = "Secrets Manager secret name containing Slack webhook URL"
+  type        = string
+  default     = ""
+}
+
+variable "use_secrets_manager_for_db" {
+  description = "If true, ECS uses Secrets Manager secret for DATABASE_URL; otherwise SSM parameter"
+  type        = bool
+  default     = false
+}
+
+variable "enable_blue_green" {
+  description = "Enable CodeDeploy Blue/Green for ECS service"
+  type        = bool
+  default     = false
+}
+
 # Domain for ACM/ALB
 variable "domain_name" {
   description = "Fully qualified domain name for the application (e.g. app.example.com)"
