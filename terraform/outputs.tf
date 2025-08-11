@@ -89,7 +89,17 @@ output "grafana_url" {
 
 output "application_url" {
   description = "URL to access the Flask application"
-  value       = "http://${aws_instance.ec2_application.public_ip}:3000"
+  value       = length(var.domain_name) > 0 ? "https://${var.domain_name}" : "http://${aws_lb.app_alb.dns_name}"
+}
+
+output "alb_dns_name" {
+  description = "ALB DNS name"
+  value       = aws_lb.app_alb.dns_name
+}
+
+output "rds_endpoint" {
+  description = "RDS endpoint hostname"
+  value       = aws_db_instance.app_db.address
 }
 
 # Key Pair Information

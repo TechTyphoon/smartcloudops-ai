@@ -52,6 +52,19 @@ variable "public_subnet_2_cidr" {
   default     = "10.0.2.0/24"
 }
 
+# Private subnets for ECS/RDS
+variable "private_subnet_1_cidr" {
+  description = "CIDR block for private subnet 1"
+  type        = string
+  default     = "10.0.3.0/24"
+}
+
+variable "private_subnet_2_cidr" {
+  description = "CIDR block for private subnet 2"
+  type        = string
+  default     = "10.0.4.0/24"
+}
+
 variable "allowed_cidr_blocks" {
   description = "CIDR blocks allowed to access the infrastructure"
   type        = list(string)
@@ -116,4 +129,48 @@ variable "openai_api_key" {
   type        = string
   default     = ""
   sensitive   = true
+}
+
+# Domain for ACM/ALB
+variable "domain_name" {
+  description = "Fully qualified domain name for the application (e.g. app.example.com)"
+  type        = string
+  default     = ""
+}
+
+variable "hosted_zone_id" {
+  description = "Route53 hosted zone ID for the domain"
+  type        = string
+  default     = ""
+}
+
+# Database settings
+variable "rds_instance_class" {
+  description = "RDS instance class"
+  type        = string
+  default     = "db.t3.micro"
+}
+
+variable "rds_allocated_storage" {
+  description = "RDS allocated storage in GB"
+  type        = number
+  default     = 20
+}
+
+variable "rds_backup_retention_days" {
+  description = "Number of days to retain automated backups"
+  type        = number
+  default     = 7
+}
+
+variable "db_username" {
+  description = "Database admin username"
+  type        = string
+  default     = "cloudops"
+}
+
+variable "db_name" {
+  description = "Database name"
+  type        = string
+  default     = "cloudops"
 }
