@@ -194,6 +194,7 @@ Open these URLs in your browser:
   - Username: `admin`
   - Password: `admin` (or your configured password)
 - **Flask Application**: https://[YOUR_DOMAIN] or http://[ALB_DNS] (HTTP redirects to HTTPS)
+  - Route53: Alias record `A` for `[YOUR_DOMAIN]` pointing to ALB DNS is auto-created when vars set.
 
 ### Step 5.3 Application Environments
 - Development/local: use `.env` (copied from `env.template`). `docker-compose.yml` provisions Postgres and sets `DATABASE_URL` for the app service.
@@ -446,6 +447,7 @@ For deployment issues:
 - CloudWatch alarms include ALB 5xx/4xx, ECS CPU/Mem, and RDS failover.
 
 - Optional Slack: set `-var="enable_slack_notifications=true" -var="slack_webhook_secret_name=projects/smartcloudops/slack/webhook"` where the secret contains `{ "webhook": "https://hooks.slack.com/services/..." }`. The Lambda bridge posts alarm summaries to Slack.
+  - Validate: publish test to `$(terraform output -raw ops_alarms_topic_arn)` and check Slack.
 
 ### Step 8: HTTPS and Fallback
 
@@ -460,3 +462,4 @@ For deployment issues:
 ### Step 10: Safe Releases (Optional)
 
 - Enable CodeDeploy Blue/Green with `-var="enable_blue_green=true"`. This wires a CodeDeploy application/group to coordinate traffic shifting with ALB listeners. Default remains ECS rolling with circuit breaker and rollback.
+  - Two target groups (`-tg` and `-tg-green`) are configured for full blue/green isolation.

@@ -59,7 +59,9 @@ resource "aws_codedeploy_deployment_group" "ecs_dg" {
       target_group {
         name = aws_lb_target_group.app_tg.name
       }
-      # A second target group for green would be defined here in a fuller impl.
+      target_group {
+        name = aws_lb_target_group.app_tg_green.name
+      }
     }
   }
 }

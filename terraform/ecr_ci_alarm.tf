@@ -41,6 +41,11 @@ resource "aws_sns_topic" "ops_alarms" {
   name = "${var.project_name}-ops-alarms"
 }
 
+output "ops_alarms_topic_arn" {
+  description = "SNS topic ARN for ops alarms"
+  value       = aws_sns_topic.ops_alarms.arn
+}
+
 // Example: subscribe email (optional; can be Slack webhook via Lambda later)
 variable "alarm_email" {
   description = "Email address to subscribe to SNS alarms"

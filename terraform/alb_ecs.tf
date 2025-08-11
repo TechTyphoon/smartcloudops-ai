@@ -34,6 +34,24 @@ resource "aws_lb_target_group" "app_tg" {
   }
 }
 
+# Second target group for blue/green deployments
+resource "aws_lb_target_group" "app_tg_green" {
+  name        = "${var.project_name}-tg-green"
+  port        = 3000
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.smartcloudops_vpc.id
+  target_type = "ip"
+
+  health_check {
+    path                = "/health"
+    healthy_threshold   = 3
+    unhealthy_threshold = 3
+    interval            = 30
+    timeout             = 5
+    matcher             = "200"
+  }
+}
+
 // ACM certificate (DNS validation). If domain_name not provided, skip creation.
 resource "aws_acm_certificate" "app_cert" {
   count             = length(var.domain_name) > 0 ? 1 : 0
@@ -99,6 +117,20 @@ resource "aws_lb_listener" "https" {
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.app_tg.arn
+  }
+}
+
+# Route53 alias record to ALB when domain_name provided
+resource "aws_route53_record" "app_alias" {
+  count   = length(var.domain_name) > 0 ? 1 : 0
+  zone_id = var.hosted_zone_id
+  name    = var.domain_name
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.app_alb.dns_name
+    zone_id                = aws_lb.app_alb.zone_id
+    evaluate_target_health = true
   }
 }
 
@@ -206,8 +238,11 @@ resource "aws_ecs_service" "app_service" {
   desired_count   = 2
   launch_type     = "FARGATE"
 
-  deployment_controller {
-    type = "ECS"
+  dynamic "deployment_controller" {
+    for_each = [1]
+    content {
+      type = var.enable_blue_green ? "CODE_DEPLOY" : "ECS"
+    }
   }
 
   deployment_circuit_breaker {
