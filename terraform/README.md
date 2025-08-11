@@ -17,6 +17,7 @@ This directory contains the Terraform configuration for provisioning AWS infrast
 1. **AWS CLI configured** with appropriate permissions
 2. **Terraform installed** (>= 1.0)
 3. **SSH key pair generated** for EC2 access
+4. S3 bucket and DynamoDB table for Terraform remote state (recommended)
 
 ## 🚀 Quick Start
 
@@ -87,31 +88,39 @@ ssh -i ~/.ssh/smartcloudops-ai-key.pem ec2-user@<application-ip>
 - **SSH key-based authentication** only
 - **Configurable CIDR blocks** for access control
 
-## 🔄 Remote State (Optional)
+## 🔄 Remote State (Recommended)
 
-For team collaboration, uncomment the S3 backend in `main.tf`:
+Remote state is enforced. Provide a `backend.hcl` file and initialize with it.
+
+Example `backend.hcl`:
 
 ```hcl
-backend "s3" {
-  bucket         = "smartcloudops-terraform-state"
-  key            = "infrastructure/terraform.tfstate"
-  region         = "us-west-2"
-  encrypt        = true
-  dynamodb_table = "terraform-state-lock"
-}
+bucket         = "smartcloudops-terraform-state"
+key            = "smartcloudops-ai/dev/terraform.tfstate"
+region         = "us-west-2"
+encrypt        = true
+dynamodb_table = "terraform-state-lock"
 ```
 
-Create the S3 bucket and DynamoDB table first:
+Initialize:
+
+```bash
+terraform init -backend-config=backend.hcl
+```
+
+Bootstrap state resources first if needed:
+
 ```bash
 # Create state bucket
-aws s3 mb s3://smartcloudops-terraform-state
+aws s3 mb s3://smartcloudops-terraform-state --region us-west-2
 
 # Create lock table
 aws dynamodb create-table \
   --table-name terraform-state-lock \
   --attribute-definitions AttributeName=LockID,AttributeType=S \
   --key-schema AttributeName=LockID,KeyType=HASH \
-  --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
+  --billing-mode PAY_PER_REQUEST \
+  --region us-west-2
 ```
 
 ## 🧹 Cleanup

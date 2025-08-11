@@ -31,6 +31,10 @@ botocore==1.34.0
 python-dotenv==1.0.0
 pyyaml==6.0.1
 
+# Database
+SQLAlchemy==2.0.32
+psycopg[binary]==3.2.9
+
 # Logging & Utilities
 structlog==23.2.0
 click==8.1.7

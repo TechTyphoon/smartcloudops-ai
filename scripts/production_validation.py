@@ -99,14 +99,18 @@ def check_security_scan():
     print("🔒 Running security scan...")
 
     try:
+        # Prefer venv bandit if available
+        venv_bandit = Path(__file__).parent.parent / "venv" / "bin" / "bandit"
+        bandit_cmd = [str(venv_bandit)] if venv_bandit.exists() else ["bandit"]
+
         # Check if bandit is available
-        result = subprocess.run(["bandit", "--version"], capture_output=True, text=True)
+        result = subprocess.run(bandit_cmd + ["--version"], capture_output=True, text=True)
         if result.returncode == 0:
             print("✅ Bandit security scanner available")
 
             # Run bandit on app directory
             result = subprocess.run(
-                ["bandit", "-r", "app/", "-f", "json"], capture_output=True, text=True
+                bandit_cmd + ["-r", "app/", "-f", "json"], capture_output=True, text=True
             )
 
             if result.returncode == 0:
@@ -172,7 +176,11 @@ def check_dependencies():
     print("📦 Checking dependencies...")
 
     try:
-        result = subprocess.run(["pip3", "list"], capture_output=True, text=True)
+        # Prefer venv pip if available
+        venv_pip = Path(__file__).parent.parent / "venv" / "bin" / "pip"
+        pip_cmd = [str(venv_pip)] if venv_pip.exists() else ["pip3"]
+
+        result = subprocess.run(pip_cmd + ["list"], capture_output=True, text=True)
         if result.returncode == 0:
             installed_packages = result.stdout.lower()
 

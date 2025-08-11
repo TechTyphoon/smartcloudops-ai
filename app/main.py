@@ -18,6 +18,7 @@ from flask import Flask, jsonify, request
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 
 from app.chatops.ai_handler import FlexibleAIHandler
+from sqlalchemy import create_engine, text
 from app.chatops.utils import (
     LogRetriever,
     SystemContextGatherer,
@@ -28,6 +29,7 @@ from app.chatops.utils import (
     validate_query_params,
 )
 from app.config import get_config
+import json
 
 # Import ML anomaly detection
 try:
@@ -56,6 +58,16 @@ logger = logging.getLogger(__name__)
 
 # Create Flask app
 app = Flask(__name__)
+
+# Load environment and validated config
+from app.config import get_config as _get_config
+
+_env = os.getenv("FLASK_ENV", "development").lower()
+_ConfigClass = _get_config(_env)
+try:
+    _app_config = _ConfigClass.from_env()
+except Exception:
+    _app_config = {}
 
 # Prometheus metrics
 REQUEST_COUNT = Counter(
@@ -90,7 +102,7 @@ REMEDIATION_FAILURE = Counter(
 )
 
 # Initialize components
-config = get_config()
+config = _ConfigClass
 ai_handler = FlexibleAIHandler()
 log_retriever = LogRetriever()
 system_gatherer = SystemContextGatherer()
@@ -107,11 +119,38 @@ if ML_AVAILABLE:
 else:
     anomaly_detector = None
 
+# Initialize database connection if configured
+db_engine = None
+if _app_config.get("database_url"):
+    try:
+        db_engine = create_engine(_app_config["database_url"], pool_pre_ping=True)
+        with db_engine.connect() as _conn:
+            _conn.execute(text("SELECT 1"))
+        logger.info("Database connection established")
+
+        # Ensure conversations table exists
+        with db_engine.begin() as _conn:
+            _conn.execute(
+                text(
+                    """
+                    CREATE TABLE IF NOT EXISTS conversations (
+                        id SERIAL PRIMARY KEY,
+                        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+                        user_query TEXT NOT NULL,
+                        ai_response TEXT,
+                        context_json TEXT
+                    )
+                    """
+                )
+            )
+            logger.info("Ensured conversations table exists")
+    except Exception as e:
+        logger.warning(f"Database not available: {e}")
+        db_engine = None
+
 # Initialize Phase 4 components
 if REMEDIATION_AVAILABLE:
-    # Convert config to dict if it's a class
-    config_dict = config.__dict__ if hasattr(config, "__dict__") else {}
-    remediation_engine = RemediationEngine(config_dict)
+    remediation_engine = RemediationEngine(_app_config)
 else:
     remediation_engine = None
 
@@ -178,6 +217,7 @@ def status():
                     if anomaly_detector
                     else None,
                 },
+                "database": {"connected": db_engine is not None},
                 "remediation_engine": remediation_engine.get_status()
                 if remediation_engine
                 else None,
@@ -472,6 +512,26 @@ def smart_query():
 
         # Add to conversation history
         conversation_manager.add_exchange(query, ai_response, context)
+
+        # Persist to database if available
+        if db_engine is not None:
+            try:
+                with db_engine.begin() as conn:
+                    conn.execute(
+                        text(
+                            """
+                            INSERT INTO conversations (user_query, ai_response, context_json)
+                            VALUES (:user_query, :ai_response, :context_json)
+                            """
+                        ),
+                        {
+                            "user_query": query,
+                            "ai_response": ai_response,
+                            "context_json": json.dumps(context),
+                        },
+                    )
+            except Exception as e:
+                logger.warning(f"Failed to persist conversation: {e}")
 
         return jsonify(
             format_response(

@@ -63,6 +63,14 @@ aws sts get-caller-identity
 
 ### Step 2: Infrastructure Configuration
 
+#### 2.0 Remote State (Recommended)
+Create `terraform/backend.hcl` with your S3/DynamoDB details and initialize with:
+
+```bash
+cd terraform
+terraform init -backend-config=backend.hcl
+```
+
 #### 2.1 Configure Terraform Variables
 ```bash
 # Navigate to terraform directory
@@ -186,6 +194,10 @@ Open these URLs in your browser:
   - Username: `admin`
   - Password: `admin` (or your configured password)
 - **Flask Application**: http://[APPLICATION_IP]:3000
+
+### Step 5.3 Application Environments
+- Development/local: use `.env` (copied from `env.template`). `docker-compose.yml` provisions Postgres and sets `DATABASE_URL` for the app service.
+- Production: set environment variables via your orchestrator or AWS SSM. `DATABASE_URL` is required; `FLASK_ENV=production` and `FLASK_PORT=3000` are expected.
 
 ### Step 6: SSH Access Configuration
 

@@ -149,6 +149,8 @@ class Config:
             "gemini_temperature": float(os.getenv("GEMINI_TEMPERATURE", "0.3")),
             "log_level": os.getenv("LOG_LEVEL", "INFO"),
             "log_dir": os.getenv("LOG_DIR", "logs"),
+            # Database
+            "database_url": os.getenv("DATABASE_URL", ""),
             # Phase 4 remediation config
             "require_approval": os.getenv("REQUIRE_APPROVAL", "false").lower()
             == "true",
@@ -215,6 +217,10 @@ class ProductionConfig(Config):
             raise ConfigValidationError(
                 "AI_PROVIDER must be explicitly set in production"
             )
+
+        # Require a managed database URL in production
+        if not config_dict.get("database_url"):
+            raise ConfigValidationError("DATABASE_URL must be set in production")
 
         return config_dict
 

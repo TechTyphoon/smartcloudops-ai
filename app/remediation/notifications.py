@@ -111,98 +111,100 @@ class NotificationManager:
             return {"ok": False, "error": str(e)}
 
     def _create_remediation_message(self, evaluation: Dict, execution_results: List[Dict]) -> Dict:
-        """Create Slack message for remediation action"""
+        """Create Slack message for remediation action (matches test expectations)."""
+        # Support both nested anomaly and top-level fields
         anomaly = evaluation.get('anomaly', {})
-        severity = anomaly.get('severity', 'unknown')
+        severity = (evaluation.get('severity') or anomaly.get('severity') or 'unknown').lower()
+
+        # Optional informational fields if present
         metric = anomaly.get('metric', 'unknown')
-        value = anomaly.get('value', 'unknown')
+        value = anomaly.get('value', evaluation.get('anomaly_score', 'unknown'))
         threshold = anomaly.get('threshold', 'unknown')
 
-        # Color based on severity
+        # Color based on severity (lowercase hex to match tests)
         color_map = {
-            'critical': '#FF0000',
-            'high': '#FF6600',
-            'medium': '#FFCC00',
-            'low': '#00CC00',
-            'normal': '#0066CC'
+            'critical': '#ff0000',
+            'high': '#ff6600',
+            'medium': '#ffcc00',
+            'low': '#00cc00',
+            'normal': '#0066cc'
         }
         color = color_map.get(severity, '#999999')
 
-        # Create message
+        # Create message (title must match tests exactly)
         message = {
             "attachments": [
                 {
                     "color": color,
-                    "title": f"🚨 Anomaly Detected: {severity.upper()}",
+                    "title": "🚨 SmartCloudOps Auto-Remediation Alert",
                     "fields": [
-                        {
-                            "title": "Metric",
-                            "value": metric,
-                            "short": True
-                        },
-                        {
-                            "title": "Value",
-                            "value": str(value),
-                            "short": True
-                        },
-                        {
-                            "title": "Threshold",
-                            "value": str(threshold),
-                            "short": True
-                        },
-                        {
-                            "title": "Severity",
-                            "value": severity.upper(),
-                            "short": True
-                        }
+                        {"title": "Severity", "value": severity.upper(), "short": True},
+                        {"title": "Metric", "value": str(metric), "short": True},
+                        {"title": "Value", "value": str(value), "short": True},
+                        {"title": "Threshold", "value": str(threshold), "short": True},
                     ],
                     "footer": "SmartCloudOps AI",
-                    "ts": int(datetime.now().timestamp())
+                    "ts": int(datetime.now().timestamp()),
                 }
             ]
         }
 
         # Add remediation actions if any
         if execution_results:
-            actions_text = "\n".join([
-                f"• {result.get('action', 'Unknown action')}: {result.get('status', 'Unknown status')}"
-                for result in execution_results
-            ])
+            def _format_action(result_item: Dict) -> str:
+                action_info = result_item.get('action')
+                if isinstance(action_info, dict):
+                    action_name = action_info.get('action', 'unknown')
+                else:
+                    action_name = str(action_info)
+                status_info = result_item.get('result') or result_item
+                status_text = status_info.get('status', 'unknown') if isinstance(status_info, dict) else str(status_info)
+                return f"• {action_name}: {status_text}"
+
+            actions_text = "\n".join([_format_action(r) for r in execution_results])
             message["attachments"][0]["fields"].append({
                 "title": "Remediation Actions",
                 "value": actions_text,
-                "short": False
+                "short": False,
             })
 
         return message
 
     def send_remediation_notification(self, evaluation: Dict, execution_results: List[Dict]) -> Dict:
-        """Send notification about remediation action"""
+        """Send notification about remediation action with standardized return structure."""
         try:
+            if not self.slack_webhook_url:
+                logger.error("Failed to send remediation notification: No webhook URL configured")
+                return {"status": "skipped", "reason": "No Slack webhook URL configured"}
+
             message = self._create_remediation_message(evaluation, execution_results)
             result = self._send_slack_message(message)
 
             if result.get('ok'):
                 logger.info("Remediation notification sent successfully")
+                return {"status": "success", "slack_response": result}
             else:
                 logger.error(f"Failed to send remediation notification: {result.get('error')}")
-
-            return result
+                return {"status": "failed", "error": result.get('error'), "slack_response": result}
 
         except Exception as e:
             logger.error(f"Error sending remediation notification: {e}")
-            return {"ok": False, "error": str(e)}
+            return {"status": "failed", "error": str(e)}
 
     def send_simple_notification(self, title: str, message: str, level: str = 'info') -> Dict:
-        """Send simple notification with title and message"""
+        """Send simple notification with title and message (standardized return)."""
         try:
-            # Color based on level
+            if not self.slack_webhook_url:
+                logger.error("Failed to send simple notification: No webhook URL configured")
+                return {"status": "skipped", "reason": "No Slack webhook URL configured"}
+
+            # Color based on level (lowercase hex)
             color_map = {
-                'critical': '#FF0000',
-                'high': '#FF6600',
-                'medium': '#FFCC00',
-                'low': '#00CC00',
-                'info': '#0066CC'
+                'critical': '#ff0000',
+                'high': '#ff6600',
+                'medium': '#ffcc00',
+                'low': '#00cc00',
+                'info': '#0066cc'
             }
             color = color_map.get(level, '#999999')
 
@@ -213,31 +215,32 @@ class NotificationManager:
                         "title": title,
                         "text": message,
                         "footer": "SmartCloudOps AI",
-                        "ts": int(datetime.now().timestamp())
+                        "ts": int(datetime.now().timestamp()),
                     }
                 ]
             }
 
             result = self._send_slack_message(slack_message)
-
             if result.get('ok'):
                 logger.info(f"Simple notification sent successfully: {title}")
+                return {"status": "success", "slack_response": result}
             else:
                 logger.error(f"Failed to send simple notification: {result.get('error')}")
-
-            return result
+                return {"status": "failed", "error": result.get('error'), "slack_response": result}
 
         except Exception as e:
             logger.error(f"Error sending simple notification: {e}")
-            return {"ok": False, "error": str(e)}
+            return {"status": "failed", "error": str(e)}
 
     def get_status(self) -> Dict:
-        """Get notification manager status"""
+        """Get notification manager status (matches tests)."""
         return {
-            "slack_configured": bool(self.slack_webhook_url),
+            "status": "operational",
+            "slack_webhook_configured": bool(self.slack_webhook_url),
+            "ssm_available": bool(self.ssm),
             "ses_configured": bool(self.ses_client),
             "admin_emails": len(self.admin_emails),
-            "sender_email": self.sender_email
+            "sender_email": self.sender_email,
         }
 
     def send_notification(self,

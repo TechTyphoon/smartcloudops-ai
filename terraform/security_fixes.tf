@@ -57,7 +57,7 @@ resource "aws_iam_role_policy" "ec2_policy" {
           "logs:DescribeLogGroups",
           "logs:DescribeLogStreams"
         ]
-        Effect = "Allow"
+        Effect   = "Allow"
         Resource = "*"
       }
     ]
@@ -73,7 +73,7 @@ resource "aws_iam_role_policy_attachment" "ec2_ssm_core" {
 # VPC Flow Logs (simplified without KMS encryption for production deployment)
 resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   name              = "/aws/vpc/flowlogs"
-  retention_in_days = 30  # Reduced retention for cost optimization
+  retention_in_days = 30 # Reduced retention for cost optimization
 
   tags = {
     Name = "${var.project_name}-vpc-flow-logs"

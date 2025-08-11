@@ -10,14 +10,16 @@ terraform {
     }
   }
 
-  # Optional: Uncomment and configure for remote state
-  # backend "s3" {
-  #   bucket         = "smartcloudops-terraform-state"
-  #   key            = "infrastructure/terraform.tfstate"
-  #   region         = "us-west-2"
-  #   encrypt        = true
-  #   dynamodb_table = "terraform-state-lock"
-  # }
+  # Remote state: configure via backend.hcl for consistency across envs
+  # Usage:
+  #   terraform init -backend-config=backend.hcl
+  # Provide the following keys in backend.hcl:
+  # bucket         = "<your-state-bucket>"
+  # key            = "smartcloudops-ai/<env>/terraform.tfstate"
+  # region         = "<aws-region>"
+  # encrypt        = true
+  # dynamodb_table = "<your-lock-table>"
+  backend "s3" {}
 }
 
 # AWS Provider Configuration
@@ -80,7 +82,7 @@ resource "aws_subnet" "public_subnet_1" {
   vpc_id                  = aws_vpc.smartcloudops_vpc.id
   cidr_block              = var.public_subnet_1_cidr
   availability_zone       = data.aws_availability_zones.available.names[0]
-  map_public_ip_on_launch = true  # Enable public IPs for production access
+  map_public_ip_on_launch = true # Enable public IPs for production access
 
   tags = {
     Name = "${var.project_name}-public-subnet-1"
@@ -92,7 +94,7 @@ resource "aws_subnet" "public_subnet_2" {
   vpc_id                  = aws_vpc.smartcloudops_vpc.id
   cidr_block              = var.public_subnet_2_cidr
   availability_zone       = data.aws_availability_zones.available.names[1]
-  map_public_ip_on_launch = true  # Enable public IPs for production access
+  map_public_ip_on_launch = true # Enable public IPs for production access
 
   tags = {
     Name = "${var.project_name}-public-subnet-2"
@@ -291,7 +293,7 @@ resource "aws_instance" "ec2_monitoring" {
   monitoring                  = true
   ebs_optimized               = true
   iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
-  associate_public_ip_address = true  # Enable public IPs for production access
+  associate_public_ip_address = true # Enable public IPs for production access
 
   metadata_options {
     http_endpoint               = "enabled"
@@ -325,7 +327,7 @@ resource "aws_instance" "ec2_application" {
   monitoring                  = true
   ebs_optimized               = true
   iam_instance_profile        = aws_iam_instance_profile.ec2_profile.name
-  associate_public_ip_address = true  # Enable public IPs for production access
+  associate_public_ip_address = true # Enable public IPs for production access
 
   metadata_options {
     http_endpoint               = "enabled"

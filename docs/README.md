@@ -37,6 +37,12 @@ If you're starting a new chat session, please read:
 2. **[PHASE_SUMMARY.md](PHASE_SUMMARY.md)** - Review what's been completed
 3. **[deployment-guide.md](deployment-guide.md)** - Understand the current setup
 
+## 🔧 Configuration & Environments
+
+- Local/dev: copy `env.template` to `.env`. `docker-compose.yml` provisions Postgres and injects `DATABASE_URL` for the app.
+- Production: set environment variables via orchestrator/SSM. `DATABASE_URL` is required; `FLASK_ENV=production`, `FLASK_PORT=3000` are expected.
+- Terraform uses remote state. Create `terraform/backend.hcl` and run `terraform init -backend-config=backend.hcl`.
+
 ## 📈 Progress Tracking
 
 | Phase | Status | Completion Date | Notes |
