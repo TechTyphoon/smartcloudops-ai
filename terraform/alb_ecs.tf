@@ -60,7 +60,8 @@ resource "aws_acm_certificate_validation" "app_cert_validation" {
   validation_record_fqdns = [aws_route53_record.cert_validation[0].fqdn]
 }
 
-resource "aws_lb_listener" "http" {
+resource "aws_lb_listener" "http_redirect" {
+  count             = length(var.domain_name) > 0 ? 1 : 0
   load_balancer_arn = aws_lb.app_alb.arn
   port              = 80
   protocol          = "HTTP"
@@ -72,6 +73,18 @@ resource "aws_lb_listener" "http" {
       protocol    = "HTTPS"
       status_code = "HTTP_301"
     }
+  }
+}
+
+resource "aws_lb_listener" "http_plain" {
+  count             = length(var.domain_name) == 0 ? 1 : 0
+  load_balancer_arn = aws_lb.app_alb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.app_tg.arn
   }
 }
 
@@ -135,7 +148,7 @@ resource "aws_ecs_task_definition" "app_task" {
   container_definitions = jsonencode([
     {
       name      = "app"
-      image     = "public.ecr.aws/docker/library/python:3.10-slim" // placeholder; user should push built image to ECR and update
+      image     = "${aws_ecr_repository.app_repo.repository_url}:latest"
       essential = true
       portMappings = [
         { containerPort = 3000, hostPort = 3000, protocol = "tcp" }

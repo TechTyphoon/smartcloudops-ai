@@ -109,10 +109,11 @@ output "key_pair_name" {
 }
 
 # Monitoring Configuration Commands
-output "monitoring_setup_command" {
-  description = "Command to configure monitoring after deployment"
-  value       = "./scripts/configure_monitoring.sh ${aws_instance.ec2_monitoring.public_ip} ${aws_instance.ec2_application.public_ip}"
-}
+// Deprecated for ECS-based deployment; retained for backward-compat
+// output "monitoring_setup_command" {
+//   description = "Command to configure monitoring after deployment"
+//   value       = "./scripts/configure_monitoring.sh ${aws_instance.ec2_monitoring.public_ip} ${aws_instance.ec2_application.public_ip}"
+// }
 
 # Comprehensive Access Information
 output "access_summary" {
