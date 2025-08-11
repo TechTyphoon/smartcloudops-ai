@@ -126,13 +126,13 @@ terraform fmt
 terraform validate
 
 # Plan deployment (review changes)
-terraform plan
+terraform plan -var="domain_name=app.example.com" -var="hosted_zone_id=Z123456ABCDEFG"
 ```
 
 #### 3.2 Deploy Infrastructure
 ```bash
 # Deploy infrastructure
-terraform apply
+terraform apply -var="domain_name=app.example.com" -var="hosted_zone_id=Z123456ABCDEFG"
 
 # Type 'yes' when prompted to confirm deployment
 ```
@@ -193,7 +193,7 @@ Open these URLs in your browser:
 - **Grafana**: http://[MONITORING_IP]:3001
   - Username: `admin`
   - Password: `admin` (or your configured password)
-- **Flask Application**: http://[APPLICATION_IP]:3000
+- **Flask Application**: https://[YOUR_DOMAIN] or http://[ALB_DNS] (HTTP redirects to HTTPS)
 
 ### Step 5.3 Application Environments
 - Development/local: use `.env` (copied from `env.template`). `docker-compose.yml` provisions Postgres and sets `DATABASE_URL` for the app service.
