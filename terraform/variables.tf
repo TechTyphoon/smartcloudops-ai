@@ -156,6 +156,19 @@ variable "enable_blue_green" {
   default     = false
 }
 
+# GitHub OIDC for CI to push to ECR
+variable "github_repo" {
+  description = "GitHub repository in 'owner/repo' format for OIDC trust"
+  type        = string
+  default     = ""
+}
+
+variable "github_branch" {
+  description = "Branch to allow in OIDC condition (e.g., 'refs/heads/main')"
+  type        = string
+  default     = "refs/heads/main"
+}
+
 # Domain for ACM/ALB
 variable "domain_name" {
   description = "Fully qualified domain name for the application (e.g. app.example.com)"

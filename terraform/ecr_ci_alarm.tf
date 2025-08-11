@@ -10,6 +10,66 @@ resource "aws_ecr_repository" "app_repo" {
   }
 }
 
+# GitHub OIDC role to allow CI to push to ECR
+data "aws_iam_policy_document" "gh_oidc_assume" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
+    principals {
+      type        = "Federated"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "token.actions.githubusercontent.com:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+    condition {
+      test     = "StringLike"
+      variable = "token.actions.githubusercontent.com:sub"
+      values   = ["repo:${var.github_repo}:${var.github_branch}"]
+    }
+  }
+}
+
+data "aws_caller_identity" "current" {}
+
+resource "aws_iam_role" "gh_actions_ecr_role" {
+  count              = length(var.github_repo) > 0 ? 1 : 0
+  name               = "${var.project_name}-gh-actions-ecr"
+  assume_role_policy = data.aws_iam_policy_document.gh_oidc_assume.json
+}
+
+data "aws_iam_policy_document" "ecr_push" {
+  statement {
+    actions = [
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:CompleteLayerUpload",
+      "ecr:InitiateLayerUpload",
+      "ecr:PutImage",
+      "ecr:UploadLayerPart"
+    ]
+    resources = [aws_ecr_repository.app_repo.arn]
+  }
+}
+
+resource "aws_iam_policy" "ecr_push_policy" {
+  count  = length(var.github_repo) > 0 ? 1 : 0
+  name   = "${var.project_name}-ecr-push-policy"
+  policy = data.aws_iam_policy_document.ecr_push.json
+}
+
+resource "aws_iam_role_policy_attachment" "gh_ecr_attach" {
+  count      = length(var.github_repo) > 0 ? 1 : 0
+  role       = aws_iam_role.gh_actions_ecr_role[0].name
+  policy_arn = aws_iam_policy.ecr_push_policy[0].arn
+}
+
+output "gh_actions_role_arn" {
+  description = "GitHub Actions OIDC role ARN for ECR push"
+  value       = length(var.github_repo) > 0 ? aws_iam_role.gh_actions_ecr_role[0].arn : null
+}
+
 // IAM policy allowing task to read SSM parameter for secrets
 resource "aws_iam_policy" "ecs_task_ssm_read" {
   name        = "${var.project_name}-ecs-task-ssm-read"

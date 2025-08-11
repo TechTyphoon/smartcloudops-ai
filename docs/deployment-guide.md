@@ -440,6 +440,7 @@ For deployment issues:
 
 - Configure GitHub Actions secret `AWS_ROLE_TO_ASSUME` and repository variables `AWS_REGION`, `ECR_REPOSITORY`.
 - On push to main, workflow `.github/workflows/ecr-build-push.yml` builds `Dockerfile.production`, pushes to ECR, and scans with Trivy. The build fails on HIGH/CRITICAL findings.
+ - Terraform now outputs `gh_actions_role_arn` (when `github_repo` is set). Use that ARN as `AWS_ROLE_TO_ASSUME` in GitHub secrets.
 
 ### Step 7: Alarms and Notifications
 

@@ -23,6 +23,12 @@ resource "aws_iam_role" "slack_lambda_role" {
   })
 }
 
+resource "aws_cloudwatch_log_group" "slack_lambda_lg" {
+  count             = local.slack_enabled ? 1 : 0
+  name              = "/aws/lambda/${var.project_name}-slack-forwarder"
+  retention_in_days = 14
+}
+
 resource "aws_iam_role_policy" "slack_lambda_policy" {
   count = local.slack_enabled ? 1 : 0
   name  = "${var.project_name}-slack-lambda-policy"
@@ -37,12 +43,8 @@ resource "aws_iam_role_policy" "slack_lambda_policy" {
       },
       {
         Effect: "Allow",
-        Action: [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ],
-        Resource: "*"
+        Action: ["logs:CreateLogStream","logs:PutLogEvents"],
+        Resource: "${aws_cloudwatch_log_group.slack_lambda_lg[0].arn}:*"
       }
     ]
   })
@@ -56,6 +58,7 @@ resource "aws_lambda_function" "slack_forwarder" {
   handler       = "lambda_function.handler"
   filename      = "${path.module}/lambda/slack_forwarder.zip"
   timeout       = 10
+  depends_on    = [aws_cloudwatch_log_group.slack_lambda_lg]
 
   environment {
     variables = {
