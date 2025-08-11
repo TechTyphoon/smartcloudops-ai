@@ -102,6 +102,11 @@ output "rds_endpoint" {
   value       = aws_db_instance.app_db.address
 }
 
+output "ecr_repository_url" {
+  description = "ECR repository URL for container images"
+  value       = aws_ecr_repository.app_repo.repository_url
+}
+
 # Key Pair Information
 output "key_pair_name" {
   description = "Name of the EC2 key pair"

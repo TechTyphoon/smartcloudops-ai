@@ -438,9 +438,38 @@ For deployment issues:
 
 ### Step 6: CI/CD and Image Security
 
-- Configure GitHub Actions secret `AWS_ROLE_TO_ASSUME` and repository variables `AWS_REGION`, `ECR_REPOSITORY`.
-- On push to main, workflow `.github/workflows/ecr-build-push.yml` builds `Dockerfile.production`, pushes to ECR, and scans with Trivy. The build fails on HIGH/CRITICAL findings.
- - Terraform now outputs `gh_actions_role_arn` (when `github_repo` is set). Use that ARN as `AWS_ROLE_TO_ASSUME` in GitHub secrets.
+#### 6.1 Configure GitHub Repository Variables
+After applying Terraform with `github_repo` set, configure these repository settings:
+
+**Repository Secrets:**
+```bash
+# In GitHub repo Settings > Secrets and variables > Actions > Secrets
+AWS_ROLE_TO_ASSUME = $(terraform output -raw gh_actions_role_arn)
+```
+
+**Repository Variables:**
+```bash
+# In GitHub repo Settings > Secrets and variables > Actions > Variables
+AWS_REGION = us-west-2  # Or your target region
+ECR_REPOSITORY = $(terraform output -raw ecr_repository_url | cut -d'/' -f2)
+GITHUB_REPO = your-username/CloudOps  # Must match terraform.tfvars
+```
+
+#### 6.2 Validate CI/CD Pipeline
+```bash
+# Push to main branch to trigger workflow
+git add -A
+git commit -m "Configure CI/CD pipeline"
+git push origin main
+
+# Monitor workflow in GitHub Actions tab
+# Expected: Build succeeds, Trivy scan passes, image pushed to ECR
+```
+
+#### 6.3 Image Security Scanning
+- Workflow `.github/workflows/ecr-build-push.yml` builds `Dockerfile.production`, pushes to ECR with tags `latest` and `${GITHUB_SHA::7}`.
+- Trivy security scan runs against pushed image and **fails the build** on HIGH/CRITICAL vulnerabilities.
+- On scan failure, check Trivy output and update base images or dependencies before retrying.
 
 ### Step 7: Alarms and Notifications
 
@@ -460,7 +489,52 @@ For deployment issues:
 - App resolves `DATABASE_URL` from SSM SecureString. RDS runs Multi-AZ with encryption and backups.
 - A Secrets Manager secret for RDS creds is provisioned with a 30-day rotation placeholder (attach rotation Lambda later for full automation).
 
-### Step 10: Safe Releases (Optional)
+### Step 10: Safe Releases and Deployment Validation
 
-- Enable CodeDeploy Blue/Green with `-var="enable_blue_green=true"`. This wires a CodeDeploy application/group to coordinate traffic shifting with ALB listeners. Default remains ECS rolling with circuit breaker and rollback.
-  - Two target groups (`-tg` and `-tg-green`) are configured for full blue/green isolation.
+#### 10.1 Enable Blue/Green Deployments (Optional)
+```bash
+# Enable CodeDeploy Blue/Green in terraform.tfvars
+enable_blue_green = true
+
+# Apply with Blue/Green enabled
+terraform apply -var="enable_blue_green=true"
+```
+
+This creates:
+- CodeDeploy application and deployment group for ECS
+- Two target groups (`-tg` and `-tg-green`) for traffic isolation
+- Deployment configuration with automatic rollback on health check failures
+
+#### 10.2 Validate Deployment and Rollback
+```bash
+# Run Blue/Green validation script
+python3 scripts/validate_bluegreen_deployment.py
+
+# Expected output:
+# ✅ Application accessible: True
+# ✅ ECS service configured: True  
+# ✅ Blue/Green deployment: Enabled (or ECS rolling with circuit breaker)
+# ✅ Rollback mechanism: True
+```
+
+#### 10.3 Test Deployment Rollback
+The validation script tests:
+- **ECS Circuit Breaker**: Automatically rolls back failed deployments based on health checks
+- **CodeDeploy Blue/Green**: Traffic shifting with automatic rollback on failure
+- **Target Group Health**: ALB health checks prevent traffic to unhealthy targets
+- **Application Health**: `/health` endpoint responds correctly during deployments
+
+#### 10.4 Manual Rollback Testing
+```bash
+# For CodeDeploy Blue/Green, trigger a deployment
+aws deploy create-deployment \
+  --application-name $(terraform output -raw project_name)-cd-app \
+  --deployment-group-name $(terraform output -raw project_name)-cd-dg \
+  --region us-west-2
+
+# Monitor deployment status
+aws deploy get-deployment --deployment-id <deployment-id> --region us-west-2
+
+# Stop deployment to test rollback
+aws deploy stop-deployment --deployment-id <deployment-id> --auto-rollback-enabled --region us-west-2
+```

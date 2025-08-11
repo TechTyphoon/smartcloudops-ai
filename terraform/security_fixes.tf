@@ -1,8 +1,6 @@
 # Smart CloudOps AI - Security Configuration (Phase 7.1)
 # Simplified security configuration for production deployment
 
-data "aws_caller_identity" "current" {}
-
 # IAM Role for EC2 instances
 resource "aws_iam_role" "ec2_role" {
   name = "${var.project_name}-ec2-role"

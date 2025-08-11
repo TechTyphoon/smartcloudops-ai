@@ -7,7 +7,7 @@ resource "aws_secretsmanager_secret" "db_secret" {
 }
 
 resource "aws_secretsmanager_secret_version" "db_secret_value" {
-  secret_id     = aws_secretsmanager_secret.db_secret.id
+  secret_id = aws_secretsmanager_secret.db_secret.id
   secret_string = jsonencode({
     username = var.db_username,
     password = random_password.db_password.result,
@@ -39,18 +39,96 @@ resource "aws_iam_role_policy_attachment" "rds_rotation_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSSecretsManagerRotationLambdaBasic"
 }
 
+# Additional IAM policy for VPC and Secrets Manager access
+resource "aws_iam_role_policy" "rds_rotation_vpc_policy" {
+  name = "${var.project_name}-rds-rotation-vpc-policy"
+  role = aws_iam_role.rds_rotation_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2:CreateNetworkInterface",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DeleteNetworkInterface",
+          "ec2:AttachNetworkInterface",
+          "ec2:DetachNetworkInterface"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:PutSecretValue",
+          "secretsmanager:UpdateSecretVersionStage"
+        ]
+        Resource = aws_secretsmanager_secret.db_secret.arn
+      }
+    ]
+  })
+}
+
+# Security group for RDS rotation Lambda
+resource "aws_security_group" "rds_rotation_lambda_sg" {
+  name   = "${var.project_name}-rds-rotation-lambda-sg"
+  vpc_id = aws_vpc.smartcloudops_vpc.id
+
+  # Outbound HTTPS for Secrets Manager API
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.project_name}-rds-rotation-lambda-sg"
+  }
+}
+
+# Separate rule to avoid circular dependency
+resource "aws_security_group_rule" "lambda_to_rds" {
+  type                     = "egress"
+  from_port                = 5432
+  to_port                  = 5432
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.db_sg.id
+  security_group_id        = aws_security_group.rds_rotation_lambda_sg.id
+}
+
+resource "aws_security_group_rule" "rds_from_lambda" {
+  type                     = "ingress"
+  from_port                = 5432
+  to_port                  = 5432
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.rds_rotation_lambda_sg.id
+  security_group_id        = aws_security_group.db_sg.id
+}
+
 resource "aws_lambda_function" "rds_rotation_lambda" {
-  filename         = null
-  s3_bucket        = null
-  s3_key           = null
-  function_name    = "${var.project_name}-rds-rotation"
-  role             = aws_iam_role.rds_rotation_role.arn
-  handler          = "SecretsManagerRDSPostgreSQLRotationMultiUser"
-  runtime          = "python3.10"
-  package_type     = "Image"
-  image_uri        = "public.ecr.aws/aws-secrets-manager/secrets-manager-rotation-lambdas:postgresql-rotation"
-  timeout          = 300
-  depends_on       = [aws_iam_role_policy_attachment.rds_rotation_policy]
+  function_name = "${var.project_name}-rds-rotation"
+  role          = aws_iam_role.rds_rotation_role.arn
+  package_type  = "Image"
+  image_uri     = "public.ecr.aws/aws-secrets-manager/secrets-manager-rotation-lambdas:postgresql"
+  timeout       = 300
+
+  vpc_config {
+    subnet_ids         = [aws_subnet.private_subnet_1.id, aws_subnet.private_subnet_2.id]
+    security_group_ids = [aws_security_group.rds_rotation_lambda_sg.id]
+  }
+
+  environment {
+    variables = {
+      SECRETS_MANAGER_ENDPOINT = "https://secretsmanager.${var.aws_region}.amazonaws.com"
+      EXCLUDE_CHARACTERS       = " %+~`#$&*()|[]{}:;<>?!'/\"\\@"
+    }
+  }
+
+  depends_on = [aws_iam_role_policy_attachment.rds_rotation_policy]
 }
 
 resource "aws_secretsmanager_secret_rotation" "db_rotation" {

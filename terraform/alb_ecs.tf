@@ -143,9 +143,9 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect = "Allow"
+      Effect    = "Allow"
       Principal = { Service = "ecs-tasks.amazonaws.com" }
-      Action   = "sts:AssumeRole"
+      Action    = "sts:AssumeRole"
     }]
   })
 }
@@ -156,9 +156,9 @@ resource "aws_iam_role_policy_attachment" "ecs_exec_logs" {
 }
 
 resource "aws_ssm_parameter" "db_url" {
-  name   = "/smartcloudops/prod/database/url"
-  type   = "SecureString"
-  value  = "postgresql+psycopg2://cloudops:${random_password.db_password.result}@${aws_db_instance.app_db.address}:5432/${var.db_name}"
+  name  = "/smartcloudops/prod/database/url"
+  type  = "SecureString"
+  value = "postgresql+psycopg2://cloudops:${random_password.db_password.result}@${aws_db_instance.app_db.address}:5432/${var.db_name}"
   tags = {
     Environment = var.environment
   }
@@ -186,15 +186,15 @@ resource "aws_ecs_task_definition" "app_task" {
         { containerPort = 3000, hostPort = 3000, protocol = "tcp" }
       ]
       environment = [
-        { name = "FLASK_ENV",  value = "production" },
+        { name = "FLASK_ENV", value = "production" },
         { name = "FLASK_PORT", value = "3000" },
         { name = "PROMETHEUS_URL", value = "http://localhost:9090" }
       ]
-      secrets = ${var.use_secrets_manager_for_db ? jsonencode([
+      secrets = var.use_secrets_manager_for_db ? [
         { name = "DATABASE_URL", valueFrom = aws_secretsmanager_secret.db_secret.arn }
-      ]) : jsonencode([
+        ] : [
         { name = "DATABASE_URL", valueFrom = aws_ssm_parameter.db_url.arn }
-      ])}
+      ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {

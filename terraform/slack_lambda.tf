@@ -16,9 +16,9 @@ resource "aws_iam_role" "slack_lambda_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
-      Effect = "Allow",
+      Effect    = "Allow",
       Principal = { Service = "lambda.amazonaws.com" },
-      Action   = "sts:AssumeRole"
+      Action    = "sts:AssumeRole"
     }]
   })
 }
@@ -37,14 +37,14 @@ resource "aws_iam_role_policy" "slack_lambda_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Effect: "Allow",
-        Action: ["secretsmanager:GetSecretValue"],
-        Resource: data.aws_secretsmanager_secret.slack[0].arn
+        Effect : "Allow",
+        Action : ["secretsmanager:GetSecretValue"],
+        Resource : data.aws_secretsmanager_secret.slack[0].arn
       },
       {
-        Effect: "Allow",
-        Action: ["logs:CreateLogStream","logs:PutLogEvents"],
-        Resource: "${aws_cloudwatch_log_group.slack_lambda_lg[0].arn}:*"
+        Effect : "Allow",
+        Action : ["logs:CreateLogStream", "logs:PutLogEvents"],
+        Resource : "${aws_cloudwatch_log_group.slack_lambda_lg[0].arn}:*"
       }
     ]
   })

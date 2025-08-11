@@ -74,7 +74,7 @@ output "gh_actions_role_arn" {
 resource "aws_iam_policy" "ecs_task_ssm_read" {
   name        = "${var.project_name}-ecs-task-ssm-read"
   description = "Allow ECS task to read secure SSM parameters"
-  policy      = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {

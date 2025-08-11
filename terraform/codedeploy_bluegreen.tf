@@ -10,9 +10,9 @@ resource "aws_iam_role" "codedeploy_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
-      Effect = "Allow",
+      Effect    = "Allow",
       Principal = { Service = "codedeploy.amazonaws.com" },
-      Action   = "sts:AssumeRole"
+      Action    = "sts:AssumeRole"
     }]
   })
 }
@@ -24,8 +24,8 @@ resource "aws_iam_role_policy_attachment" "codedeploy_role_attach" {
 }
 
 resource "aws_codedeploy_app" "ecs_app" {
-  count        = local.blue_green_enabled ? 1 : 0
-  name         = "${var.project_name}-cd-app"
+  count            = local.blue_green_enabled ? 1 : 0
+  name             = "${var.project_name}-cd-app"
   compute_platform = "ECS"
 }
 

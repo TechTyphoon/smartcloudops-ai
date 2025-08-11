@@ -8,18 +8,22 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.1"
+    }
   }
 
-  # Remote state: configure via backend.hcl for consistency across envs
-  # Usage:
-  #   terraform init -backend-config=backend.hcl
-  # Provide the following keys in backend.hcl:
-  # bucket         = "<your-state-bucket>"
-  # key            = "smartcloudops-ai/<env>/terraform.tfstate"
-  # region         = "<aws-region>"
+  # Remote state: For production, create backend.hcl with:
+  # bucket         = "your-terraform-state-bucket" 
+  # key            = "smartcloudops-ai/terraform.tfstate"
+  # region         = "us-west-2"
   # encrypt        = true
-  # dynamodb_table = "<your-lock-table>"
-  backend "s3" {}
+  # dynamodb_table = "terraform-locks"
+  # Then run: terraform init -backend-config=backend.hcl
+  
+  # For validation, using local backend (comment out for production)
+  # backend "s3" {}
 }
 
 # AWS Provider Configuration

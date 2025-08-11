@@ -5,7 +5,7 @@ data "aws_availability_zones" "available_priv" {
 }
 
 resource "aws_eip" "nat_eip" {
-  vpc = true
+  domain = "vpc"
 
   tags = {
     Name = "${var.project_name}-nat-eip"

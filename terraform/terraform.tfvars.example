@@ -32,3 +32,25 @@ grafana_admin_password   = "your-secure-password"
 # Application Configuration
 flask_debug      = true
 openai_api_key   = "your-openai-api-key"
+
+# TLS/HTTPS Configuration (Required for production)
+# Create a hosted zone in Route53 first, then get its ID from console
+domain_name      = "app.example.com"        # Replace with your domain
+hosted_zone_id   = "Z1234567890ABCDEF"      # Replace with your Route53 hosted zone ID
+
+# GitHub OIDC for ECR Push (Required for CI/CD)
+github_repo      = "your-username/CloudOps"  # Replace with your GitHub repo
+github_branch    = "refs/heads/main"
+
+# Optional Production Features
+enable_slack_notifications     = false      # Set to true to enable Slack alerts
+slack_webhook_secret_name      = "/smartcloudops/prod/slack/webhook"
+use_secrets_manager_for_db     = true       # Recommended for production
+enable_blue_green              = false      # Set to true for Blue/Green deployments
+
+# Database Configuration
+rds_instance_class          = "db.t3.micro"
+rds_allocated_storage       = 20
+rds_backup_retention_days   = 7
+db_username                 = "cloudops"
+db_name                     = "cloudops"
