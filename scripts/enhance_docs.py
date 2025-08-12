@@ -5,10 +5,10 @@ Phase 6.3: Documentation Enhancement
 """
 
 import os
-import sys
-from pathlib import Path
 import re
+import sys
 from datetime import datetime
+from pathlib import Path
 
 # Add project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))

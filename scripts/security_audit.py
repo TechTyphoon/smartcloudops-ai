@@ -4,16 +4,17 @@ Comprehensive Security Audit Script for Smart CloudOps AI
 Phase 6.1: Security Audit & Vulnerability Assessment
 """
 
-import os
-import sys
-import json
-import subprocess
-import logging
-from pathlib import Path
-from typing import Dict, List, Any
-import yaml
 import hashlib
+import json
+import logging
+import os
 import re
+import subprocess
+import sys
+from pathlib import Path
+from typing import Any, Dict, List
+
+import yaml
 
 # Add project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))

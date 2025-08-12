@@ -4,13 +4,14 @@ Production Readiness Validation Script for Smart CloudOps AI
 Phase 6.4: Production Readiness Validation
 """
 
-import os
-import sys
-import subprocess
 import json
-from pathlib import Path
-import requests
+import os
+import subprocess
+import sys
 import time
+from pathlib import Path
+
+import requests
 
 # Add project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -104,13 +105,17 @@ def check_security_scan():
         bandit_cmd = [str(venv_bandit)] if venv_bandit.exists() else ["bandit"]
 
         # Check if bandit is available
-        result = subprocess.run(bandit_cmd + ["--version"], capture_output=True, text=True)
+        result = subprocess.run(
+            bandit_cmd + ["--version"], capture_output=True, text=True
+        )
         if result.returncode == 0:
             print("✅ Bandit security scanner available")
 
             # Run bandit on app directory
             result = subprocess.run(
-                bandit_cmd + ["-r", "app/", "-f", "json"], capture_output=True, text=True
+                bandit_cmd + ["-r", "app/", "-f", "json"],
+                capture_output=True,
+                text=True,
             )
 
             if result.returncode == 0:

@@ -4,18 +4,19 @@ Load Testing Framework for Smart CloudOps AI
 Phase 6.2: Load Testing & Performance Optimization
 """
 
+import argparse
+import asyncio
+import json
+import logging
 import os
+import statistics
 import sys
 import time
-import json
-import asyncio
-import aiohttp
-import statistics
 from datetime import datetime
-from typing import Dict, List, Any, Optional
-import logging
 from pathlib import Path
-import argparse
+from typing import Any, Dict, List, Optional
+
+import aiohttp
 
 # Add project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -294,12 +295,12 @@ class LoadTester:
                 overall_metrics["successful_scenarios"] += 1
 
                 metrics = scenario_result["metrics"]
-                
+
                 # Safe metric extraction with defaults
                 total_requests = metrics.get("total_requests", 0)
                 successful_requests = metrics.get("successful_requests", 0)
                 rps = metrics.get("requests_per_second", 0)
-                
+
                 overall_metrics["total_requests"] += total_requests
                 overall_metrics["total_successful_requests"] += successful_requests
 
@@ -333,9 +334,7 @@ class LoadTester:
                         {
                             "type": "high_error_rate",
                             "scenario": scenario_name,
-                            "severity": "high"
-                            if success_rate < 80
-                            else "medium",
+                            "severity": "high" if success_rate < 80 else "medium",
                             "description": f"Success rate {success_rate:.1f}% is below 95% threshold",
                             "recommendation": "Investigate endpoint failures and improve error handling",
                         }
@@ -432,7 +431,9 @@ class LoadTester:
                 report += f"**Status**: ✅ Completed\n"
                 report += f"**Total Requests**: {metrics.get('total_requests', 0):,}\n"
                 report += f"**Success Rate**: {metrics.get('success_rate', 0):.1f}%\n"
-                report += f"**Throughput**: {metrics.get('requests_per_second', 0):.1f} RPS\n"
+                report += (
+                    f"**Throughput**: {metrics.get('requests_per_second', 0):.1f} RPS\n"
+                )
                 report += f"**Avg Response Time**: {metrics.get('response_time', {}).get('mean', 0):.3f}s\n\n"
 
         # Bottlenecks section

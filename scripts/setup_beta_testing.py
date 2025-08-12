@@ -4,84 +4,94 @@ Beta Testing Setup Script for SmartCloudOps AI
 Sets up beta testing environment and configures testers
 """
 
-import os
-import sys
 import json
 import logging
-import boto3
+import os
+import sys
 from datetime import datetime
 from pathlib import Path
+
+import boto3
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from app.beta_testing import BetaTestingManager, UserRole, TestingScenario
+from app.beta_testing import BetaTestingManager, TestingScenario, UserRole
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 def setup_aws_ses():
     """Set up AWS SES for email notifications"""
     try:
-        region = os.getenv('AWS_REGION', 'ap-south-1')
-        ses_client = boto3.client('ses', region_name=region)
-        
+        region = os.getenv("AWS_REGION", "ap-south-1")
+        ses_client = boto3.client("ses", region_name=region)
+
         # Check if email is verified
-        sender_email = os.getenv('SENDER_EMAIL', 'alerts@smartcloudops.ai')
-        
+        sender_email = os.getenv("SENDER_EMAIL", "alerts@smartcloudops.ai")
+
         try:
             response = ses_client.get_send_quota()
-            logger.info(f"✅ SES quota: {response['SentLast24Hours']}/{response['Max24HourSend']} emails sent in last 24h")
+            logger.info(
+                f"✅ SES quota: {response['SentLast24Hours']}/{response['Max24HourSend']} emails sent in last 24h"
+            )
         except Exception as e:
             logger.warning(f"Could not get SES quota: {e}")
-        
+
         # Try to verify sender email
         try:
             ses_client.verify_email_identity(EmailAddress=sender_email)
             logger.info(f"📧 Verification email sent to {sender_email}")
             logger.info("Please check your email and click the verification link")
         except Exception as e:
-            logger.info(f"Email {sender_email} might already be verified or verification failed: {e}")
-        
+            logger.info(
+                f"Email {sender_email} might already be verified or verification failed: {e}"
+            )
+
         return True
-        
+
     except Exception as e:
         logger.error(f"❌ Failed to setup SES: {e}")
         return False
 
+
 def setup_aws_ssm_parameters():
     """Set up AWS SSM parameters for beta testing"""
     try:
-        region = os.getenv('AWS_REGION', 'ap-south-1')
-        ssm_client = boto3.client('ssm', region_name=region)
-        
+        region = os.getenv("AWS_REGION", "ap-south-1")
+        ssm_client = boto3.client("ssm", region_name=region)
+
         # Set admin emails parameter
         admin_emails = "dileepkumarreddy12345@gmail.com"
         try:
             ssm_client.put_parameter(
-                Name='/smartcloudops/dev/admin/emails',
+                Name="/smartcloudops/dev/admin/emails",
                 Value=admin_emails,
-                Type='SecureString',
-                Description='Admin email addresses for notifications',
-                Overwrite=True
+                Type="SecureString",
+                Description="Admin email addresses for notifications",
+                Overwrite=True,
             )
             logger.info(f"✅ Set admin emails parameter: {admin_emails}")
         except Exception as e:
             logger.warning(f"Could not set admin emails parameter: {e}")
-        
+
         return True
-        
+
     except Exception as e:
         logger.error(f"❌ Failed to setup SSM parameters: {e}")
         return False
+
 
 def setup_beta_testing_manager():
     """Set up beta testing manager and create default testers"""
     try:
         beta_manager = BetaTestingManager()
-        
+
         # Check if Dileep Reddy is already configured
         dileep = beta_manager.get_tester("dileepkumarreddy12345@gmail.com")
         if dileep:
@@ -90,7 +100,7 @@ def setup_beta_testing_manager():
             logger.info(f"   Scenarios: {[s.value for s in dileep.testing_scenarios]}")
         else:
             logger.info("❌ Beta tester not found, this shouldn't happen")
-        
+
         # Get testing summary
         summary = beta_manager.get_testing_summary()
         logger.info(f"📊 Beta Testing Summary:")
@@ -98,12 +108,13 @@ def setup_beta_testing_manager():
         logger.info(f"   Active Testers: {summary['active_testers']}")
         logger.info(f"   Total Sessions: {summary['total_sessions']}")
         logger.info(f"   Total Feedback: {summary['total_feedback']}")
-        
+
         return beta_manager
-        
+
     except Exception as e:
         logger.error(f"❌ Failed to setup beta testing manager: {e}")
         return None
+
 
 def create_beta_testing_guide():
     """Create beta testing guide for Dileep Reddy"""
@@ -247,28 +258,31 @@ Your feedback is invaluable in making SmartCloudOps AI production-ready!
 
 ---
 *Generated on: {datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")}*
-""".format(datetime=datetime)
-        
+""".format(
+            datetime=datetime
+        )
+
         guide_path = project_root / "docs" / "BETA_TESTING_GUIDE.md"
         guide_path.parent.mkdir(exist_ok=True)
-        
-        with open(guide_path, 'w') as f:
+
+        with open(guide_path, "w") as f:
             f.write(guide_content)
-        
+
         logger.info(f"✅ Created beta testing guide: {guide_path}")
         return True
-        
+
     except Exception as e:
         logger.error(f"❌ Failed to create testing guide: {e}")
         return False
+
 
 def test_beta_api_endpoints():
     """Test beta API endpoints"""
     try:
         import requests
-        
+
         base_url = "http://localhost:5000"
-        
+
         # Test health endpoint (no auth required)
         try:
             response = requests.get(f"{base_url}/api/beta/health", timeout=10)
@@ -278,59 +292,62 @@ def test_beta_api_endpoints():
                 logger.info(f"   Service: {data['data']['service']}")
                 logger.info(f"   Status: {data['data']['status']}")
             else:
-                logger.warning(f"⚠️ Beta API health check failed: {response.status_code}")
+                logger.warning(
+                    f"⚠️ Beta API health check failed: {response.status_code}"
+                )
         except Exception as e:
             logger.warning(f"⚠️ Could not test Beta API health: {e}")
-        
+
         return True
-        
+
     except Exception as e:
         logger.error(f"❌ Failed to test beta API: {e}")
         return False
+
 
 def main():
     """Main setup function"""
     logger.info("🚀 Setting up SmartCloudOps AI Beta Testing Environment")
     logger.info("=" * 60)
-    
+
     # Check AWS credentials
     try:
-        sts = boto3.client('sts')
+        sts = boto3.client("sts")
         identity = sts.get_caller_identity()
         logger.info(f"✅ AWS credentials verified: {identity['Account']}")
     except Exception as e:
         logger.error(f"❌ AWS credentials not working: {e}")
         logger.info("Please configure AWS credentials before proceeding")
         return False
-    
+
     # Setup AWS services
     logger.info("\n🔧 Setting up AWS services...")
     ses_success = setup_aws_ses()
     ssm_success = setup_aws_ssm_parameters()
-    
+
     # Setup beta testing
     logger.info("\n🧪 Setting up beta testing...")
     beta_manager = setup_beta_testing_manager()
-    
+
     # Create testing guide
     logger.info("\n📚 Creating testing documentation...")
     guide_success = create_beta_testing_guide()
-    
+
     # Test API endpoints
     logger.info("\n🌐 Testing API endpoints...")
     api_success = test_beta_api_endpoints()
-    
+
     # Summary
     logger.info("\n" + "=" * 60)
     logger.info("📋 SETUP SUMMARY")
     logger.info("=" * 60)
-    
+
     if beta_manager:
         summary = beta_manager.get_testing_summary()
         logger.info(f"✅ Beta Testing Manager: READY")
         logger.info(f"   Testers: {summary['total_testers']}")
         logger.info(f"   Scenarios: {len(TestingScenario)}")
-        
+
         # Show Dileep's details
         dileep = beta_manager.get_tester("dileepkumarreddy12345@gmail.com")
         if dileep:
@@ -341,21 +358,22 @@ def main():
             logger.info(f"   Access Level: {dileep.access_level}")
     else:
         logger.error("❌ Beta Testing Manager: FAILED")
-    
+
     logger.info(f"\n📧 Email Notifications: {'✅ READY' if ses_success else '❌ FAILED'}")
     logger.info(f"🔐 SSM Parameters: {'✅ READY' if ssm_success else '❌ FAILED'}")
     logger.info(f"📚 Testing Guide: {'✅ READY' if guide_success else '❌ FAILED'}")
     logger.info(f"🌐 API Endpoints: {'✅ READY' if api_success else '❌ FAILED'}")
-    
+
     logger.info("\n🎯 NEXT STEPS:")
     logger.info("1. Check your email for SES verification")
     logger.info("2. Review the beta testing guide in docs/BETA_TESTING_GUIDE.md")
     logger.info("3. Start testing with your API key")
     logger.info("4. Submit feedback through the API")
-    
+
     logger.info("\n🚀 Beta testing environment setup complete!")
     return True
 
+
 if __name__ == "__main__":
     success = main()
-    sys.exit(0 if success else 1) 
+    sys.exit(0 if success else 1)

@@ -21,38 +21,45 @@ logger = logging.getLogger(__name__)
 
 def timed_cache(seconds: int = 300):
     """Time-based cache decorator for expensive operations."""
+
     def decorator(func):
         cache = {}
-        
+
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             # Create cache key from arguments
             key = str(args) + str(sorted(kwargs.items()))
             now = time.time()
-            
+
             # Check if we have a cached result that's still valid
             if key in cache:
                 result, timestamp = cache[key]
                 if now - timestamp < seconds:
                     logger.debug(f"Cache hit for {func.__name__}")
                     return result
-            
+
             # Cache miss or expired - compute new result
             logger.debug(f"Cache miss for {func.__name__}, computing new result")
             result = func(*args, **kwargs)
             cache[key] = (result, now)
-            
+
             # Clean old entries periodically
             if len(cache) > 100:  # Prevent cache from growing too large
-                expired_keys = [k for k, (_, ts) in cache.items() if now - ts > seconds * 2]
+                expired_keys = [
+                    k for k, (_, ts) in cache.items() if now - ts > seconds * 2
+                ]
                 for k in expired_keys[:50]:  # Remove up to 50 expired entries
                     cache.pop(k, None)
-            
+
             return result
-        
+
         wrapper.cache_clear = lambda: cache.clear()
-        wrapper.cache_info = lambda: {"size": len(cache), "hits": getattr(wrapper, "_hits", 0)}
+        wrapper.cache_info = lambda: {
+            "size": len(cache),
+            "hits": getattr(wrapper, "_hits", 0),
+        }
         return wrapper
+
     return decorator
 
 
@@ -72,7 +79,7 @@ class AdvancedContextManager:
         """Get comprehensive system context with advanced caching."""
         try:
             current_time = datetime.now()
-            
+
             # Gather fresh system context - this is expensive so we cache it
             context = {
                 "timestamp": current_time.isoformat(),

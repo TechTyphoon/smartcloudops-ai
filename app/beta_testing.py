@@ -3,21 +3,23 @@ Beta Testing Management System for SmartCloudOps AI
 Manages beta testers, their access levels, and testing scenarios
 """
 
-import os
 import json
 import logging
-import boto3
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
-from enum import Enum
+import os
 import secrets
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta
+from enum import Enum
+from typing import Any, Dict, List, Optional
+
+import boto3
 
 logger = logging.getLogger(__name__)
 
 
 class UserRole(Enum):
     """User roles for access control"""
+
     ADMIN = "admin"
     OPERATOR = "operator"
     VIEWER = "viewer"
@@ -26,6 +28,7 @@ class UserRole(Enum):
 
 class TestingScenario(Enum):
     """Predefined testing scenarios"""
+
     BASIC_CHATOPS = "basic_chatops"
     ML_ANOMALY_DETECTION = "ml_anomaly_detection"
     AUTO_REMEDIATION = "auto_remediation"
@@ -37,6 +40,7 @@ class TestingScenario(Enum):
 @dataclass
 class BetaTester:
     """Beta tester information"""
+
     name: str
     email: str
     role: UserRole
@@ -51,27 +55,30 @@ class BetaTester:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for storage"""
         data = asdict(self)
-        data['role'] = self.role.value
-        data['testing_scenarios'] = [s.value for s in self.testing_scenarios]
-        data['created_at'] = self.created_at.isoformat()
+        data["role"] = self.role.value
+        data["testing_scenarios"] = [s.value for s in self.testing_scenarios]
+        data["created_at"] = self.created_at.isoformat()
         if self.last_active:
-            data['last_active'] = self.last_active.isoformat()
+            data["last_active"] = self.last_active.isoformat()
         return data
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'BetaTester':
+    def from_dict(cls, data: Dict[str, Any]) -> "BetaTester":
         """Create from dictionary"""
-        data['role'] = UserRole(data['role'])
-        data['testing_scenarios'] = [TestingScenario(s) for s in data['testing_scenarios']]
-        data['created_at'] = datetime.fromisoformat(data['created_at'])
-        if data.get('last_active'):
-            data['last_active'] = datetime.fromisoformat(data['last_active'])
+        data["role"] = UserRole(data["role"])
+        data["testing_scenarios"] = [
+            TestingScenario(s) for s in data["testing_scenarios"]
+        ]
+        data["created_at"] = datetime.fromisoformat(data["created_at"])
+        if data.get("last_active"):
+            data["last_active"] = datetime.fromisoformat(data["last_active"])
         return cls(**data)
 
 
 @dataclass
 class TestingSession:
     """Testing session information"""
+
     id: str
     tester_email: str
     scenario: TestingScenario
@@ -83,10 +90,10 @@ class TestingSession:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for storage"""
         data = asdict(self)
-        data['scenario'] = self.scenario.value
-        data['started_at'] = self.started_at.isoformat()
+        data["scenario"] = self.scenario.value
+        data["started_at"] = self.started_at.isoformat()
         if self.ended_at:
-            data['ended_at'] = self.ended_at.isoformat()
+            data["ended_at"] = self.ended_at.isoformat()
         return data
 
     @property
@@ -101,6 +108,7 @@ class TestingSession:
 @dataclass
 class Feedback:
     """Feedback information"""
+
     id: str
     session_id: str
     tester_email: str
@@ -113,7 +121,7 @@ class Feedback:
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for storage"""
         data = asdict(self)
-        data['submitted_at'] = self.submitted_at.isoformat()
+        data["submitted_at"] = self.submitted_at.isoformat()
         return data
 
 
@@ -133,7 +141,7 @@ class BetaTestingManager:
     def _init_ssm_client(self) -> Optional[boto3.client]:
         """Initialize SSM client"""
         try:
-            return boto3.client('ssm', region_name='ap-south-1')
+            return boto3.client("ssm", region_name="ap-south-1")
         except Exception as e:
             logger.warning(f"Could not initialize SSM client: {e}")
             return None
@@ -141,7 +149,7 @@ class BetaTestingManager:
     def _init_s3_client(self) -> Optional[boto3.client]:
         """Initialize S3 client"""
         try:
-            return boto3.client('s3', region_name='ap-south-1')
+            return boto3.client("s3", region_name="ap-south-1")
         except Exception as e:
             logger.warning(f"Could not initialize S3 client: {e}")
             return None
@@ -151,10 +159,9 @@ class BetaTestingManager:
         try:
             if self.ssm_client:
                 response = self.ssm_client.get_parameter(
-                    Name='/smartcloudops/beta/testers',
-                    WithDecryption=True
+                    Name="/smartcloudops/beta/testers", WithDecryption=True
                 )
-                testers_data = json.loads(response['Parameter']['Value'])
+                testers_data = json.loads(response["Parameter"]["Value"])
                 self.testers = [BetaTester.from_dict(t) for t in testers_data]
                 logger.info(f"Loaded {len(self.testers)} testers from SSM")
             else:
@@ -167,24 +174,24 @@ class BetaTestingManager:
         """Create default testers for development"""
         default_testers = [
             {
-                'name': 'Admin User',
-                'email': 'admin@smartcloudops.ai',
-                'role': UserRole.ADMIN,
-                'access_level': 'full',
-                'testing_scenarios': list(TestingScenario),
-                'created_at': datetime.now()
+                "name": "Admin User",
+                "email": "admin@smartcloudops.ai",
+                "role": UserRole.ADMIN,
+                "access_level": "full",
+                "testing_scenarios": list(TestingScenario),
+                "created_at": datetime.now(),
             },
             {
-                'name': 'Beta Tester',
-                'email': 'tester@smartcloudops.ai',
-                'role': UserRole.BETA_TESTER,
-                'access_level': 'limited',
-                'testing_scenarios': [
+                "name": "Beta Tester",
+                "email": "tester@smartcloudops.ai",
+                "role": UserRole.BETA_TESTER,
+                "access_level": "limited",
+                "testing_scenarios": [
                     TestingScenario.BASIC_CHATOPS,
-                    TestingScenario.ML_ANOMALY_DETECTION
+                    TestingScenario.ML_ANOMALY_DETECTION,
                 ],
-                'created_at': datetime.now()
-            }
+                "created_at": datetime.now(),
+            },
         ]
 
         for tester_data in default_testers:
@@ -199,10 +206,9 @@ class BetaTestingManager:
         try:
             if self.s3_client:
                 response = self.s3_client.get_object(
-                    Bucket='smartcloudops-beta-data',
-                    Key='sessions.json'
+                    Bucket="smartcloudops-beta-data", Key="sessions.json"
                 )
-                sessions_data = json.loads(response['Body'].read())
+                sessions_data = json.loads(response["Body"].read())
                 self.sessions = [TestingSession(**s) for s in sessions_data]
                 logger.info(f"Loaded {len(self.sessions)} sessions from S3")
         except Exception as e:
@@ -213,10 +219,9 @@ class BetaTestingManager:
         try:
             if self.s3_client:
                 response = self.s3_client.get_object(
-                    Bucket='smartcloudops-beta-data',
-                    Key='feedback.json'
+                    Bucket="smartcloudops-beta-data", Key="feedback.json"
                 )
-                feedback_data = json.loads(response['Body'].read())
+                feedback_data = json.loads(response["Body"].read())
                 self.feedback = [Feedback(**f) for f in feedback_data]
                 logger.info(f"Loaded {len(self.feedback)} feedback entries from S3")
         except Exception as e:
@@ -226,7 +231,9 @@ class BetaTestingManager:
         """Generate a secure API key"""
         return secrets.token_urlsafe(32)
 
-    def add_tester(self, name: str, email: str, role: UserRole = UserRole.BETA_TESTER) -> BetaTester:
+    def add_tester(
+        self, name: str, email: str, role: UserRole = UserRole.BETA_TESTER
+    ) -> BetaTester:
         """Add a new beta tester"""
         if self.get_tester(email):
             raise ValueError(f"Tester with email {email} already exists")
@@ -235,9 +242,9 @@ class BetaTestingManager:
             name=name,
             email=email,
             role=role,
-            access_level='limited',
+            access_level="limited",
             testing_scenarios=[TestingScenario.BASIC_CHATOPS],
-            created_at=datetime.now()
+            created_at=datetime.now(),
         )
         tester.api_key = self._generate_api_key()
         self.testers.append(tester)
@@ -257,7 +264,9 @@ class BetaTestingManager:
         """Get all testers"""
         return self.testers
 
-    def update_tester_scenarios(self, email: str, scenarios: List[TestingScenario]) -> bool:
+    def update_tester_scenarios(
+        self, email: str, scenarios: List[TestingScenario]
+    ) -> bool:
         """Update tester's testing scenarios"""
         tester = self.get_tester(email)
         if not tester:
@@ -268,13 +277,15 @@ class BetaTestingManager:
         logger.info(f"Updated scenarios for tester: {email}")
         return True
 
-    def start_session(self, tester: BetaTester, scenario: TestingScenario) -> TestingSession:
+    def start_session(
+        self, tester: BetaTester, scenario: TestingScenario
+    ) -> TestingSession:
         """Start a new testing session"""
         session = TestingSession(
             id=secrets.token_urlsafe(16),
             tester_email=tester.email,
             scenario=scenario,
-            started_at=datetime.now()
+            started_at=datetime.now(),
         )
         self.sessions.append(session)
         tester.last_active = datetime.now()
@@ -283,7 +294,9 @@ class BetaTestingManager:
         logger.info(f"Started session {session.id} for {tester.email}")
         return session
 
-    def end_session(self, session_id: str, tester: BetaTester, notes: str = "") -> Optional[TestingSession]:
+    def end_session(
+        self, session_id: str, tester: BetaTester, notes: str = ""
+    ) -> Optional[TestingSession]:
         """End a testing session"""
         session = next((s for s in self.sessions if s.id == session_id), None)
         if not session or session.tester_email != tester.email:
@@ -305,8 +318,15 @@ class BetaTestingManager:
         """Get all active sessions"""
         return [s for s in self.sessions if not s.ended_at]
 
-    def submit_feedback(self, session_id: str, tester: BetaTester, rating: int, comments: str,
-                       category: str = 'general', priority: str = 'medium') -> Optional[Feedback]:
+    def submit_feedback(
+        self,
+        session_id: str,
+        tester: BetaTester,
+        rating: int,
+        comments: str,
+        category: str = "general",
+        priority: str = "medium",
+    ) -> Optional[Feedback]:
         """Submit feedback for a session"""
         session = next((s for s in self.sessions if s.id == session_id), None)
         if not session or session.tester_email != tester.email:
@@ -320,7 +340,7 @@ class BetaTestingManager:
             comments=comments,
             category=category,
             priority=priority,
-            submitted_at=datetime.now()
+            submitted_at=datetime.now(),
         )
 
         self.feedback.append(feedback)
@@ -350,12 +370,15 @@ class BetaTestingManager:
         total_feedback = sum(t.feedback_count for t in self.testers)
 
         return {
-            'total_testers': len(self.testers),
-            'active_testers': len(active_testers),
-            'total_sessions': len(self.sessions),
-            'active_sessions': len(active_sessions),
-            'total_feedback': total_feedback,
-            'scenarios': {s.value: len([sess for sess in self.sessions if sess.scenario == s]) for s in TestingScenario}
+            "total_testers": len(self.testers),
+            "active_testers": len(active_testers),
+            "total_sessions": len(self.sessions),
+            "active_sessions": len(active_sessions),
+            "total_feedback": total_feedback,
+            "scenarios": {
+                s.value: len([sess for sess in self.sessions if sess.scenario == s])
+                for s in TestingScenario
+            },
         }
 
     def _save_testers(self):
@@ -364,10 +387,10 @@ class BetaTestingManager:
             if self.ssm_client:
                 testers_data = [t.to_dict() for t in self.testers]
                 self.ssm_client.put_parameter(
-                    Name='/smartcloudops/beta/testers',
+                    Name="/smartcloudops/beta/testers",
                     Value=json.dumps(testers_data),
-                    Type='SecureString',
-                    Overwrite=True
+                    Type="SecureString",
+                    Overwrite=True,
                 )
         except Exception as e:
             logger.warning(f"Could not save testers to SSM: {e}")
@@ -378,9 +401,9 @@ class BetaTestingManager:
             if self.s3_client:
                 sessions_data = [s.to_dict() for s in self.sessions]
                 self.s3_client.put_object(
-                    Bucket='smartcloudops-beta-data',
-                    Key='sessions.json',
-                    Body=json.dumps(sessions_data)
+                    Bucket="smartcloudops-beta-data",
+                    Key="sessions.json",
+                    Body=json.dumps(sessions_data),
                 )
         except Exception as e:
             logger.warning(f"Could not save sessions to S3: {e}")
@@ -391,9 +414,9 @@ class BetaTestingManager:
             if self.s3_client:
                 feedback_data = [f.to_dict() for f in self.feedback]
                 self.s3_client.put_object(
-                    Bucket='smartcloudops-beta-data',
-                    Key='feedback.json',
-                    Body=json.dumps(feedback_data)
+                    Bucket="smartcloudops-beta-data",
+                    Key="feedback.json",
+                    Body=json.dumps(feedback_data),
                 )
         except Exception as e:
             logger.warning(f"Could not save feedback to S3: {e}")
@@ -401,12 +424,14 @@ class BetaTestingManager:
     def cleanup_inactive_sessions(self, max_age_hours: int = 24):
         """Clean up old inactive sessions"""
         cutoff_time = datetime.now() - timedelta(hours=max_age_hours)
-        old_sessions = [s for s in self.sessions if s.started_at < cutoff_time and not s.ended_at]
-        
+        old_sessions = [
+            s for s in self.sessions if s.started_at < cutoff_time and not s.ended_at
+        ]
+
         for session in old_sessions:
             session.ended_at = datetime.now()
             session.notes = "Auto-ended due to inactivity"
 
         if old_sessions:
             self._save_sessions()
-            logger.info(f"Cleaned up {len(old_sessions)} inactive sessions") 
+            logger.info(f"Cleaned up {len(old_sessions)} inactive sessions")
