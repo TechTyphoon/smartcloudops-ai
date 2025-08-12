@@ -71,9 +71,11 @@ class AdvancedContextManager:
     def get_system_context(self) -> Dict[str, Any]:
         """Get comprehensive system context with advanced caching."""
         try:
+            current_time = datetime.now()
+            
             # Gather fresh system context - this is expensive so we cache it
             context = {
-                "timestamp": datetime.now().isoformat(),
+                "timestamp": current_time.isoformat(),
                 "system_health": self._get_system_health(),
                 "recent_anomalies": self._get_recent_anomalies(),
                 "resource_usage": self._get_resource_usage(),
@@ -88,7 +90,7 @@ class AdvancedContextManager:
 
             # Add to history
             self.system_state_history.append(
-                {"timestamp": current_time, "context": context}
+                {"timestamp": current_time.isoformat(), "context": context}
             )
 
             return context
