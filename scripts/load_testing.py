@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 class LoadTester:
     """Comprehensive load testing for Smart CloudOps AI Flask application."""
 
-    def __init__(self, base_url: str = "http://localhost:5000"):
+    def __init__(self, base_url: str = "http://localhost:3003"):
         self.base_url = base_url.rstrip("/")
         self.results = {
             "timestamp": "",
@@ -137,9 +137,10 @@ class LoadTester:
 
         for request_id in range(requests_per_user):
             # Randomly select endpoint for variety
-            import random
+            import secrets
 
-            endpoint = random.choice(self.endpoints)
+            # Security fix: Use secrets module for cryptographically secure randomness
+            endpoint = secrets.choice(self.endpoints)
 
             result = await self.test_endpoint(session, endpoint, user_id, request_id)
             results.append(result)
@@ -289,24 +290,30 @@ class LoadTester:
         }
 
         for scenario_name, scenario_result in self.results["test_scenarios"].items():
-            if "error" not in scenario_result:
+            if "error" not in scenario_result and "metrics" in scenario_result:
                 overall_metrics["successful_scenarios"] += 1
 
                 metrics = scenario_result["metrics"]
-                overall_metrics["total_requests"] += metrics["total_requests"]
-                overall_metrics["total_successful_requests"] += metrics[
-                    "successful_requests"
-                ]
+                
+                # Safe metric extraction with defaults
+                total_requests = metrics.get("total_requests", 0)
+                successful_requests = metrics.get("successful_requests", 0)
+                rps = metrics.get("requests_per_second", 0)
+                
+                overall_metrics["total_requests"] += total_requests
+                overall_metrics["total_successful_requests"] += successful_requests
 
-                rps = metrics["requests_per_second"]
                 if rps > overall_metrics["peak_rps"]:
                     overall_metrics["peak_rps"] = rps
 
+        # Calculate success rate safely
         if overall_metrics["total_requests"] > 0:
             overall_metrics["overall_success_rate"] = (
                 overall_metrics["total_successful_requests"]
                 / overall_metrics["total_requests"]
             ) * 100
+        else:
+            overall_metrics["overall_success_rate"] = 0
 
         self.results["performance_metrics"] = overall_metrics
 
@@ -318,26 +325,28 @@ class LoadTester:
 
         # Check for high error rates
         for scenario_name, scenario_result in self.results["test_scenarios"].items():
-            if "error" not in scenario_result:
+            if "error" not in scenario_result and "metrics" in scenario_result:
                 metrics = scenario_result["metrics"]
-                if metrics["success_rate"] < 95:
+                success_rate = metrics.get("success_rate", 0)
+                if success_rate < 95:
                     bottlenecks.append(
                         {
                             "type": "high_error_rate",
                             "scenario": scenario_name,
                             "severity": "high"
-                            if metrics["success_rate"] < 80
+                            if success_rate < 80
                             else "medium",
-                            "description": f"Success rate {metrics['success_rate']:.1f}% is below 95% threshold",
+                            "description": f"Success rate {success_rate:.1f}% is below 95% threshold",
                             "recommendation": "Investigate endpoint failures and improve error handling",
                         }
                     )
 
         # Check for slow response times
         for scenario_name, scenario_result in self.results["test_scenarios"].items():
-            if "error" not in scenario_result:
+            if "error" not in scenario_result and "metrics" in scenario_result:
                 metrics = scenario_result["metrics"]
-                avg_response_time = metrics["response_time"]["mean"]
+                response_time_data = metrics.get("response_time", {})
+                avg_response_time = response_time_data.get("mean", 0)
 
                 if avg_response_time > 2.0:  # 2 seconds threshold
                     bottlenecks.append(
@@ -421,10 +430,10 @@ class LoadTester:
                 metrics = scenario_result["metrics"]
                 report += f"### {scenario_name.replace('_', ' ').title()}\n"
                 report += f"**Status**: ✅ Completed\n"
-                report += f"**Total Requests**: {metrics['total_requests']:,}\n"
-                report += f"**Success Rate**: {metrics['success_rate']:.1f}%\n"
-                report += f"**Throughput**: {metrics['requests_per_second']:.1f} RPS\n"
-                report += f"**Avg Response Time**: {metrics['response_time']['mean']:.3f}s\n\n"
+                report += f"**Total Requests**: {metrics.get('total_requests', 0):,}\n"
+                report += f"**Success Rate**: {metrics.get('success_rate', 0):.1f}%\n"
+                report += f"**Throughput**: {metrics.get('requests_per_second', 0):.1f} RPS\n"
+                report += f"**Avg Response Time**: {metrics.get('response_time', {}).get('mean', 0):.3f}s\n\n"
 
         # Bottlenecks section
         if self.results["bottlenecks"]:

@@ -1,6 +1,6 @@
 # Security Audit Report - Smart CloudOps AI
 
-**Generated**: 2025-08-10T12:14:33.621264  
+**Generated**: 2025-08-11T21:59:32.238823  
 **Overall Security Score**: 0/100 (F)
 
 ## 🚨 Critical Issues (0)
@@ -16,7 +16,7 @@
 - **terraform/main.tf:N/A** - Open security group rule
   - Security group allows access from 0.0.0.0/0
 
-## 🔶 Medium Priority Issues (1416)
+## 🔶 Medium Priority Issues (1495)
 
 - **venv/lib/python3.13/site-packages/fsspec/spec.py:1640** - Potential hardcoded_secrets
   - Pattern matched: password='password'
@@ -35,6 +35,30 @@
 
 - **venv/lib/python3.13/site-packages/pip/_internal/utils/misc.py:470** - Potential hardcoded_secrets
   - Pattern matched: password = ":****"
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/oracle/cx_oracle.py:162** - Potential hardcoded_secrets
+  - Pattern matched: password="tiger"
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/oracle/cx_oracle.py:197** - Potential hardcoded_secrets
+  - Pattern matched: password="tiger"
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/oracle/provision.py:193** - Potential hardcoded_secrets
+  - Pattern matched: password="xe"
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/sqlite/provision.py:78** - Potential hardcoded_secrets
+  - Pattern matched: password="test"
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/mysql/mysqldb.py:204** - Potential hardcoded_secrets
+  - Pattern matched: password="passwd"
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/mssql/pyodbc.py:75** - Potential hardcoded_secrets
+  - Pattern matched: password="tiger"
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/mssql/pyodbc.py:200** - Potential hardcoded_secrets
+  - Pattern matched: password="tiger"
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/mssql/pyodbc.py:230** - Potential hardcoded_secrets
+  - Pattern matched: password="tiger"
 
 - **venv/lib/python3.13/site-packages/checkov/common/util/secrets.py:23** - Potential hardcoded_secrets
   - Pattern matched: PASSWORD = 'password'
@@ -393,6 +417,21 @@
 - **venv/lib/python3.13/site-packages/google/auth/aio/credentials.py:92** - Potential hardcoded_secrets
   - Pattern matched: token="token123"
 
+- **venv/lib/python3.13/site-packages/sqlalchemy/engine/default.py:221** - Potential hardcoded_secrets
+  - Pattern matched: token = "DEFAULT"
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/connectors/pyodbc.py:83** - Potential hardcoded_secrets
+  - Pattern matched: token = "{%s}"
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/path_registry.py:85** - Potential hardcoded_secrets
+  - Pattern matched: TOKEN = "_sa_default"
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/sqlite/base.py:1929** - Potential hardcoded_secrets
+  - Pattern matched: token = "NULL"
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/postgresql/base.py:4222** - Potential hardcoded_secrets
+  - Pattern matched: token = '(?:"
+
 - **venv/lib/python3.13/site-packages/safety_schemas/models/base.py:88** - Potential hardcoded_secrets
   - Pattern matched: TOKEN = "token"
 
@@ -577,6 +616,27 @@
 - **venv/lib/python3.13/site-packages/coverage/sqldata.py:938** - Potential sql_injection
   - Pattern matched: execute("select id from context where " +
 
+- **venv/lib/python3.13/site-packages/sqlalchemy/testing/suite/test_types.py:534** - Potential sql_injection
+  - Pattern matched: execute(
+            select(interval_table.c.interval_data +
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/testing/suite/test_types.py:554** - Potential sql_injection
+  - Pattern matched: execute(
+            select(interval_table.c.date_data +
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/postgresql/pg8000.py:360** - Potential sql_injection
+  - Pattern matched: execute("FETCH FORWARD 1 FROM " +
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/postgresql/pg8000.py:367** - Potential sql_injection
+  - Pattern matched: execute(
+                "FETCH FORWARD " +
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/postgresql/pg8000.py:373** - Potential sql_injection
+  - Pattern matched: execute("FETCH FORWARD ALL FROM " +
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/postgresql/pg8000.py:377** - Potential sql_injection
+  - Pattern matched: execute("CLOSE " +
+
 - **.formatvenv/lib/python3.13/site-packages/coverage/sqldata.py:687** - Potential sql_injection
   - Pattern matched: execute(
                 "select file.path, context.context, arc.fromno, arc.tono " +
@@ -600,6 +660,19 @@
 
 - **.formatvenv/lib/python3.13/site-packages/coverage/sqldata.py:938** - Potential sql_injection
   - Pattern matched: execute("select id from context where " +
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/postgresql/pg8000.py:360** - Potential sql_injection
+  - Pattern matched: cursor.execute("FETCH FORWARD 1 FROM " +
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/postgresql/pg8000.py:367** - Potential sql_injection
+  - Pattern matched: cursor.execute(
+                "FETCH FORWARD " +
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/postgresql/pg8000.py:373** - Potential sql_injection
+  - Pattern matched: cursor.execute("FETCH FORWARD ALL FROM " +
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/postgresql/pg8000.py:377** - Potential sql_injection
+  - Pattern matched: cursor.execute("CLOSE " +
 
 - **tests/test_integration.py:271** - Potential command_injection
   - Pattern matched: os.system(
@@ -702,6 +775,16 @@
 
 - **.formatvenv/lib/python3.13/site-packages/click/_termui_impl.py:613** - Potential command_injection
   - Pattern matched: os.system(
+
+- **scripts/production_validation.py:107** - Potential command_injection
+  - Pattern matched: subprocess.run(bandit_cmd +
+
+- **scripts/production_validation.py:112** - Potential command_injection
+  - Pattern matched: subprocess.run(
+                bandit_cmd +
+
+- **scripts/production_validation.py:183** - Potential command_injection
+  - Pattern matched: subprocess.run(pip_cmd +
 
 - **venv/lib/python3.13/site-packages/safety/scan/util.py:130** - Potential command_injection
   - Pattern matched: subprocess.run(
@@ -851,13 +934,13 @@
 - **venv/lib/python3.13/site-packages/lark/load_grammar.py:559** - Potential command_injection
   - Pattern matched: eval(
 
-- **venv/lib/python3.13/site-packages/flask/cli.py:150** - Potential command_injection
+- **venv/lib/python3.13/site-packages/flask/cli.py:142** - Potential command_injection
   - Pattern matched: eval(
 
-- **venv/lib/python3.13/site-packages/flask/cli.py:152** - Potential command_injection
+- **venv/lib/python3.13/site-packages/flask/cli.py:143** - Potential command_injection
   - Pattern matched: eval(
 
-- **venv/lib/python3.13/site-packages/flask/cli.py:1031** - Potential command_injection
+- **venv/lib/python3.13/site-packages/flask/cli.py:964** - Potential command_injection
   - Pattern matched: eval(
 
 - **venv/lib/python3.13/site-packages/pymeeus/Angle.py:1212** - Potential command_injection
@@ -869,10 +952,10 @@
 - **venv/lib/python3.13/site-packages/coverage/parser.py:662** - Potential command_injection
   - Pattern matched: eval(
 
-- **venv/lib/python3.13/site-packages/gunicorn/util.py:398** - Potential command_injection
+- **venv/lib/python3.13/site-packages/gunicorn/util.py:399** - Potential command_injection
   - Pattern matched: eval(
 
-- **venv/lib/python3.13/site-packages/gunicorn/util.py:399** - Potential command_injection
+- **venv/lib/python3.13/site-packages/gunicorn/util.py:400** - Potential command_injection
   - Pattern matched: eval(
 
 - **venv/lib/python3.13/site-packages/serializable/__init__.py:957** - Potential command_injection
@@ -2603,6 +2686,36 @@
 - **venv/lib/python3.13/site-packages/google/ai/generativelanguage_v1beta/types/content.py:408** - Potential command_injection
   - Pattern matched: eval(
 
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/_orm_constructors.py:1045** - Potential command_injection
+  - Pattern matched: eval(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/_orm_constructors.py:1282** - Potential command_injection
+  - Pattern matched: eval(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/_orm_constructors.py:1484** - Potential command_injection
+  - Pattern matched: eval(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/_orm_constructors.py:1581** - Potential command_injection
+  - Pattern matched: eval(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/_orm_constructors.py:1600** - Potential command_injection
+  - Pattern matched: eval(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/_orm_constructors.py:1642** - Potential command_injection
+  - Pattern matched: eval(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/clsregistry.py:532** - Potential command_injection
+  - Pattern matched: eval(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/util/typing.py:230** - Potential command_injection
+  - Pattern matched: eval(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/util/typing.py:232** - Potential command_injection
+  - Pattern matched: eval(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/util/typing.py:258** - Potential command_injection
+  - Pattern matched: eval(
+
 - **venv/lib/python3.13/site-packages/networkx/readwrite/gml.py:109** - Potential command_injection
   - Pattern matched: eval(
 
@@ -3723,7 +3836,7 @@
 - **venv/lib/python3.13/site-packages/typing_inspection/typing_objects.py:132** - Potential command_injection
   - Pattern matched: exec(
 
-- **venv/lib/python3.13/site-packages/flask/config.py:209** - Potential command_injection
+- **venv/lib/python3.13/site-packages/flask/config.py:189** - Potential command_injection
   - Pattern matched: exec(
 
 - **venv/lib/python3.13/site-packages/prophet/serialize.py:23** - Potential command_injection
@@ -3738,34 +3851,34 @@
 - **venv/lib/python3.13/site-packages/coverage/execfile.py:211** - Potential command_injection
   - Pattern matched: exec(
 
-- **venv/lib/python3.13/site-packages/gunicorn/config.py:1895** - Potential command_injection
+- **venv/lib/python3.13/site-packages/gunicorn/config.py:1876** - Potential command_injection
   - Pattern matched: Exec(
 
-- **venv/lib/python3.13/site-packages/gunicorn/config.py:1901** - Potential command_injection
+- **venv/lib/python3.13/site-packages/gunicorn/config.py:1882** - Potential command_injection
   - Pattern matched: exec(
 
-- **venv/lib/python3.13/site-packages/gunicorn/arbiter.py:181** - Potential command_injection
+- **venv/lib/python3.13/site-packages/gunicorn/arbiter.py:182** - Potential command_injection
   - Pattern matched: exec(
 
-- **venv/lib/python3.13/site-packages/gunicorn/arbiter.py:183** - Potential command_injection
+- **venv/lib/python3.13/site-packages/gunicorn/arbiter.py:184** - Potential command_injection
   - Pattern matched: exec(
 
-- **venv/lib/python3.13/site-packages/gunicorn/arbiter.py:301** - Potential command_injection
+- **venv/lib/python3.13/site-packages/gunicorn/arbiter.py:302** - Potential command_injection
   - Pattern matched: exec(
 
-- **venv/lib/python3.13/site-packages/gunicorn/arbiter.py:399** - Potential command_injection
+- **venv/lib/python3.13/site-packages/gunicorn/arbiter.py:400** - Potential command_injection
   - Pattern matched: exec(
 
-- **venv/lib/python3.13/site-packages/gunicorn/arbiter.py:416** - Potential command_injection
+- **venv/lib/python3.13/site-packages/gunicorn/arbiter.py:417** - Potential command_injection
   - Pattern matched: exec(
 
-- **venv/lib/python3.13/site-packages/gunicorn/glogging.py:393** - Potential command_injection
+- **venv/lib/python3.13/site-packages/gunicorn/glogging.py:394** - Potential command_injection
   - Pattern matched: exec(
 
-- **venv/lib/python3.13/site-packages/gunicorn/glogging.py:400** - Potential command_injection
+- **venv/lib/python3.13/site-packages/gunicorn/glogging.py:401** - Potential command_injection
   - Pattern matched: exec(
 
-- **venv/lib/python3.13/site-packages/gunicorn/util.py:257** - Potential command_injection
+- **venv/lib/python3.13/site-packages/gunicorn/util.py:258** - Potential command_injection
   - Pattern matched: exec(
 
 - **venv/lib/python3.13/site-packages/jinja2/debug.py:145** - Potential command_injection
@@ -3906,28 +4019,160 @@
 - **venv/lib/python3.13/site-packages/pyflakes/test/test_api.py:398** - Potential command_injection
   - Pattern matched: exec(
 
+- **venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py:1841** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py:1981** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/engine/base.py:2149** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/engine/interfaces.py:2931** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/engine/interfaces.py:3075** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/engine/interfaces.py:3121** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/engine/default.py:1763** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/engine/default.py:1771** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/engine/default.py:1789** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/sql/lambdas.py:1271** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/events.py:2010** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/bulk_persistence.py:661** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/bulk_persistence.py:1176** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py:2187** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py:2218** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py:2226** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/session.py:4482** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/strategies.py:2796** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/strategies.py:2835** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/context.py:272** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/context.py:322** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/context.py:464** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/orm/instrumentation.py:744** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/util/langhelpers.py:341** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/util/langhelpers.py:968** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/util/langhelpers.py:1959** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/testing/plugin/pytestplugin.py:622** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/oracle/cx_oracle.py:882** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/oracle/cx_oracle.py:883** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/oracle/cx_oracle.py:893** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/oracle/base.py:1406** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/mysql/mariadbconnector.py:82** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/mysql/mariadbconnector.py:83** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/mysql/base.py:1173** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/postgresql/pg8000.py:326** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/postgresql/psycopg2.py:567** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py:450** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/mssql/base.py:1831** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/mssql/base.py:1880** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/mssql/pyodbc.py:553** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/mssql/pyodbc.py:566** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/mssql/pyodbc.py:579** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/sqlalchemy/dialects/mssql/pyodbc.py:605** - Potential command_injection
+  - Pattern matched: exec(
+
 - **venv/lib/python3.13/site-packages/botocore/vendored/six.py:735** - Potential command_injection
   - Pattern matched: exec(
 
 - **venv/lib/python3.13/site-packages/networkx/utils/decorators.py:915** - Potential command_injection
   - Pattern matched: exec(
 
-- **venv/lib/python3.13/site-packages/gunicorn/workers/base.py:108** - Potential command_injection
+- **venv/lib/python3.13/site-packages/gunicorn/workers/base.py:107** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/gunicorn/workers/base.py:111** - Potential command_injection
   - Pattern matched: exec(
 
 - **venv/lib/python3.13/site-packages/gunicorn/workers/base.py:112** - Potential command_injection
   - Pattern matched: exec(
 
-- **venv/lib/python3.13/site-packages/gunicorn/workers/base.py:113** - Potential command_injection
+- **venv/lib/python3.13/site-packages/gunicorn/workers/base.py:116** - Potential command_injection
   - Pattern matched: exec(
 
-- **venv/lib/python3.13/site-packages/gunicorn/workers/base.py:117** - Potential command_injection
-  - Pattern matched: exec(
-
-- **venv/lib/python3.13/site-packages/gunicorn/workers/sync.py:30** - Potential command_injection
+- **venv/lib/python3.13/site-packages/gunicorn/workers/sync.py:31** - Potential command_injection
   - Pattern matched: exec(
 
 - **venv/lib/python3.13/site-packages/prophet/stan_model/cmdstan-2.31.0/stan/lib/stan_math/lib/tbb_2020.3/python/tbb/pool.py:353** - Potential command_injection
+  - Pattern matched: exec(
+
+- **venv/lib/python3.13/site-packages/psycopg/pq/pq_ctypes.py:277** - Potential command_injection
   - Pattern matched: exec(
 
 - **venv/lib/python3.13/site-packages/numpy/testing/_private/utils.py:1119** - Potential command_injection
@@ -4287,16 +4532,13 @@
 - **.env:N/A** - Potential hardcoded secret
   - Long value detected, ensure no secrets are committed
 
-- **terraform/main.tf:N/A** - Unencrypted storage
-  - Storage volumes should be encrypted
-
 ## 📋 Recommendations
 
 - **HIGH**: Address within 24 hours
   - Fix 3 high-priority security issues
 
 - **MEDIUM**: Address within 1 week
-  - Review and fix 1416 medium-priority issues
+  - Review and fix 1495 medium-priority issues
 
 - **GENERAL**: Security review required
   - Conduct comprehensive security review before production deployment

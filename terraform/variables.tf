@@ -69,7 +69,7 @@ variable "allowed_cidr_blocks" {
   description = "CIDR blocks allowed to access the infrastructure"
   type        = list(string)
   # Allow access from anywhere for development; restrict in production
-  default = ["0.0.0.0/0"]
+  default = ["152.57.28.188/32"]
 }
 
 # EC2 Configuration

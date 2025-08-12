@@ -1,0 +1,161 @@
+# Security Monitoring Alerts Configuration
+# Enhanced security alerting rules for Prometheus/Grafana
+
+groups:
+  - name: security.rules
+    rules:
+      # Security: High CPU usage (potential DoS)
+      - alert: HighCPUUsage
+        expr: cpu_usage_percent > 90
+        for: 5m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is {{ $value }}% for more than 5 minutes"
+          
+      # Security: High memory usage (potential memory bomb)
+      - alert: HighMemoryUsage
+        expr: memory_usage_percent > 95
+        for: 3m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "Critical memory usage detected"
+          description: "Memory usage is {{ $value }}% for more than 3 minutes"
+          
+      # Security: Too many failed requests (potential attack)
+      - alert: HighErrorRate
+        expr: rate(flask_requests_total{status=~"4..|5.."}[5m]) > 10
+        for: 2m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }} errors/sec for more than 2 minutes"
+          
+      # Security: Anomalous request volume (potential DDoS)
+      - alert: UnusualRequestVolume
+        expr: rate(flask_requests_total[5m]) > 100
+        for: 1m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "Unusual request volume detected"
+          description: "Request rate is {{ $value }} req/sec, above normal threshold"
+          
+      # Security: Multiple remediation failures (potential system compromise)
+      - alert: RepeatedRemediationFailures
+        expr: increase(remediation_failure_total[30m]) > 5
+        for: 0m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "Multiple remediation failures detected"
+          description: "{{ $value }} remediation failures in the last 30 minutes"
+          
+      # Security: ML anomalies spike (potential attack pattern)
+      - alert: AnomalySpike
+        expr: increase(ml_anomalies_detected[10m]) > 10
+        for: 0m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "Anomaly detection spike"
+          description: "{{ $value }} anomalies detected in 10 minutes"
+          
+      # Security: Database connection failures (potential attack)
+      - alert: DatabaseConnectionFailures
+        expr: increase(database_connection_errors[5m]) > 3
+        for: 0m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "Database connection failures"
+          description: "{{ $value }} database connection failures in 5 minutes"
+          
+      # Security: Disk space critical (potential log flooding attack)
+      - alert: DiskSpaceCritical
+        expr: disk_usage_percent > 95
+        for: 1m
+        labels:
+          severity: critical
+          component: security
+        annotations:
+          summary: "Critical disk space usage"
+          description: "Disk usage is {{ $value }}% - potential storage attack"
+          
+      # Security: Too many authentication failures
+      - alert: AuthenticationFailures
+        expr: increase(authentication_failures[5m]) > 10
+        for: 0m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "Multiple authentication failures"
+          description: "{{ $value }} authentication failures in 5 minutes"
+          
+      # Security: Unusual network traffic
+      - alert: UnusualNetworkTraffic
+        expr: rate(network_bytes_total[5m]) > 1000000000  # 1GB/sec
+        for: 2m
+        labels:
+          severity: warning
+          component: security
+        annotations:
+          summary: "Unusual network traffic detected"
+          description: "Network traffic is {{ $value }} bytes/sec"
+
+  - name: application.security.rules
+    rules:
+      # Application: Service unavailable
+      - alert: ServiceUnavailable
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: availability
+        annotations:
+          summary: "Service is down"
+          description: "{{ $labels.instance }} has been down for more than 1 minute"
+          
+      # Application: Request latency high
+      - alert: HighRequestLatency
+        expr: histogram_quantile(0.95, rate(flask_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: performance
+        annotations:
+          summary: "High request latency"
+          description: "95th percentile latency is {{ $value }}s"
+          
+      # Application: ML model performance degraded
+      - alert: MLModelPerformanceDegraded
+        expr: ml_model_accuracy < 0.8
+        for: 10m
+        labels:
+          severity: warning
+          component: ml
+        annotations:
+          summary: "ML model performance degraded"
+          description: "Model accuracy is {{ $value }}, below threshold"
+          
+      # Application: Auto-remediation disabled
+      - alert: AutoRemediationDisabled
+        expr: remediation_engine_enabled == 0
+        for: 0m
+        labels:
+          severity: warning
+          component: remediation
+        annotations:
+          summary: "Auto-remediation is disabled"
+          description: "Remediation engine is not operational"

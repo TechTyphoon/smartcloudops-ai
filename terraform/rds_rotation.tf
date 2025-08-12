@@ -82,7 +82,7 @@ resource "aws_security_group" "rds_rotation_lambda_sg" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["152.57.28.188/32"]
   }
 
   tags = {

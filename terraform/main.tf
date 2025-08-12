@@ -146,7 +146,7 @@ resource "aws_security_group" "web_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["152.57.28.188/32"]
   }
 
   ingress {
@@ -154,7 +154,7 @@ resource "aws_security_group" "web_sg" {
     from_port   = 3000
     to_port     = 3000
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["152.57.28.188/32"]
   }
 
   ingress {
@@ -162,7 +162,7 @@ resource "aws_security_group" "web_sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["152.57.28.188/32"]
   }
 
   ingress {
@@ -170,7 +170,7 @@ resource "aws_security_group" "web_sg" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["152.57.28.188/32"]
   }
 
   # Outbound HTTP traffic
@@ -178,7 +178,7 @@ resource "aws_security_group" "web_sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["152.57.28.188/32"]
     description = "HTTP outbound"
   }
 
@@ -187,7 +187,7 @@ resource "aws_security_group" "web_sg" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["152.57.28.188/32"]
     description = "HTTPS outbound"
   }
 
@@ -196,7 +196,7 @@ resource "aws_security_group" "web_sg" {
     from_port   = 53
     to_port     = 53
     protocol    = "udp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["152.57.28.188/32"]
     description = "DNS outbound"
   }
 
@@ -217,7 +217,7 @@ resource "aws_security_group" "monitoring_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["152.57.28.188/32"]
   }
 
   # Prometheus
@@ -226,7 +226,7 @@ resource "aws_security_group" "monitoring_sg" {
     from_port   = 9090
     to_port     = 9090
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["152.57.28.188/32"]
   }
 
   # Node Exporter
@@ -235,7 +235,7 @@ resource "aws_security_group" "monitoring_sg" {
     from_port   = 9100
     to_port     = 9101
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["152.57.28.188/32"]
   }
 
   # Grafana
@@ -244,7 +244,7 @@ resource "aws_security_group" "monitoring_sg" {
     from_port   = 3001
     to_port     = 3001
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["152.57.28.188/32"]
   }
 
   # Outbound HTTP traffic
@@ -252,7 +252,7 @@ resource "aws_security_group" "monitoring_sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["152.57.28.188/32"]
     description = "HTTP outbound"
   }
 
@@ -261,7 +261,7 @@ resource "aws_security_group" "monitoring_sg" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["152.57.28.188/32"]
     description = "HTTPS outbound"
   }
 
@@ -270,7 +270,7 @@ resource "aws_security_group" "monitoring_sg" {
     from_port   = 53
     to_port     = 53
     protocol    = "udp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["152.57.28.188/32"]
     description = "DNS outbound"
   }
 

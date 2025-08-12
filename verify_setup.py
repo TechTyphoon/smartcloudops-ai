@@ -32,14 +32,30 @@ def check_directory_exists(dir_path, description):
 
 def run_command_check(command, description):
     """Run a command and check if it succeeds."""
+    import shlex
     try:
-        result = subprocess.run(command, shell=True, capture_output=True, text=True)
+        # Parse command safely - split shell command into list
+        if isinstance(command, str):
+            cmd_list = shlex.split(command)
+        else:
+            cmd_list = command
+            
+        result = subprocess.run(
+            cmd_list, 
+            shell=False,  # Security fix: Never use shell=True
+            capture_output=True, 
+            text=True,
+            timeout=30  # Add timeout for security
+        )
         if result.returncode == 0:
             print(f"✅ {description}: Available")
             return True
         else:
             print(f"❌ {description}: Not available or not working")
             return False
+    except subprocess.TimeoutExpired:
+        print(f"❌ {description}: Command timed out")
+        return False
     except Exception as e:
         print(f"❌ {description}: Error - {str(e)}")
         return False
