@@ -3,10 +3,10 @@ services:
   smartcloudops-app:
     build: .
     ports:
-      - "3003:3003"
+      - "3003:3000"
     environment:
       - FLASK_ENV=development
-      - FLASK_PORT=3003
+      - FLASK_PORT=3000
       - PROMETHEUS_URL=http://prometheus:9090
       - REQUIRE_APPROVAL=false
       - MAX_ACTIONS_PER_HOUR=3
