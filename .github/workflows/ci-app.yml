@@ -10,6 +10,7 @@ on:
       - 'requirements.txt'
       - 'Dockerfile'
       - 'pytest.ini'
+      - '.github/workflows/ci-app.yml'
   pull_request:
     branches: [ main ]
     paths:
