@@ -27,6 +27,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 COPY app/ ./app/
 COPY scripts/ ./scripts/
 COPY ml_models/ ./ml_models/
+# Copy .env file if it exists (for CI/CD builds)
 COPY .env .env
 
 # Create non-root user for security

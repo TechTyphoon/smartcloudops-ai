@@ -81,6 +81,15 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
+    - name: Create minimal .env file for build
+      run: |
+        echo "# Minimal .env file for CI/CD build" > .env
+        echo "FLASK_ENV=production" >> .env
+        echo "FLASK_DEBUG=false" >> .env
+        echo "AI_PROVIDER=auto" >> .env
+        echo "OPENAI_API_KEY=" >> .env
+        echo "GEMINI_API_KEY=" >> .env
+
     - name: Build Docker image
       uses: docker/build-push-action@v5
       with:

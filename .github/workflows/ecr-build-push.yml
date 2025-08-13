@@ -57,4 +57,3 @@ jobs:
 
       - name: Output image URI
         run: echo "Image pushed: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest"
-
