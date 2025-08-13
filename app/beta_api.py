@@ -62,9 +62,11 @@ def get_status():
                             s.value for s in tester.testing_scenarios
                         ],
                         "created_at": tester.created_at.isoformat(),
-                        "last_active": tester.last_active.isoformat()
-                        if tester.last_active
-                        else None,
+                        "last_active": (
+                            tester.last_active.isoformat()
+                            if tester.last_active
+                            else None
+                        ),
                         "feedback_count": tester.feedback_count,
                         "is_active": tester.is_active,
                     }
@@ -228,9 +230,11 @@ def get_sessions():
                             "id": session.id,
                             "scenario": session.scenario.value,
                             "started_at": session.started_at.isoformat(),
-                            "ended_at": session.ended_at.isoformat()
-                            if session.ended_at
-                            else None,
+                            "ended_at": (
+                                session.ended_at.isoformat()
+                                if session.ended_at
+                                else None
+                            ),
                             "duration_minutes": session.duration_minutes,
                             "notes": session.notes,
                         }
@@ -335,9 +339,9 @@ def admin_get_testers():
                             "access_level": t.access_level,
                             "is_active": t.is_active,
                             "created_at": t.created_at.isoformat(),
-                            "last_active": t.last_active.isoformat()
-                            if t.last_active
-                            else None,
+                            "last_active": (
+                                t.last_active.isoformat() if t.last_active else None
+                            ),
                             "feedback_count": t.feedback_count,
                         }
                         for t in all_testers

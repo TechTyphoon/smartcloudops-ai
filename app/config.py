@@ -273,9 +273,11 @@ def validate_current_config() -> Dict[str, Any]:
             "valid": True,
             "config": config_dict,
             "missing_vars": missing_vars,
-            "warnings": []
-            if not missing_vars
-            else [f"Missing: {', '.join(missing_vars.keys())}"],
+            "warnings": (
+                []
+                if not missing_vars
+                else [f"Missing: {', '.join(missing_vars.keys())}"]
+            ),
         }
     except ConfigValidationError as e:
         return {

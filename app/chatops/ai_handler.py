@@ -118,9 +118,11 @@ class GeminiProvider(AIProvider):
                 "status": "success",
                 "response": response.text.strip(),
                 "model": self.model,
-                "tokens_used": response.usage_metadata.total_token_count
-                if hasattr(response, "usage_metadata")
-                else None,
+                "tokens_used": (
+                    response.usage_metadata.total_token_count
+                    if hasattr(response, "usage_metadata")
+                    else None
+                ),
                 "provider": "gemini",
             }
         except Exception as e:

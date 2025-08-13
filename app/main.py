@@ -345,20 +345,20 @@ def after_request(response):
 
         # HSTS (only for HTTPS)
         if request.is_secure:
-            response.headers[
-                "Strict-Transport-Security"
-            ] = "max-age=31536000; includeSubDomains"
+            response.headers["Strict-Transport-Security"] = (
+                "max-age=31536000; includeSubDomains"
+            )
 
         # Feature Policy / Permissions Policy
-        response.headers[
-            "Permissions-Policy"
-        ] = "camera=(), microphone=(), geolocation=()"
+        response.headers["Permissions-Policy"] = (
+            "camera=(), microphone=(), geolocation=()"
+        )
 
         # Cache Control for sensitive endpoints
         if request.endpoint in ["query", "logs", "chatops"]:
-            response.headers[
-                "Cache-Control"
-            ] = "no-store, no-cache, must-revalidate, private"
+            response.headers["Cache-Control"] = (
+                "no-store, no-cache, must-revalidate, private"
+            )
             response.headers["Pragma"] = "no-cache"
             response.headers["Expires"] = "0"
 
@@ -408,14 +408,16 @@ def status():
                 "ai_handler": {"status": "operational"} if ai_handler else None,
                 "ml_models": {
                     "available": ML_AVAILABLE,
-                    "status": anomaly_detector.get_system_status()
-                    if anomaly_detector
-                    else None,
+                    "status": (
+                        anomaly_detector.get_system_status()
+                        if anomaly_detector
+                        else None
+                    ),
                 },
                 "database": {"connected": db_engine is not None},
-                "remediation_engine": remediation_engine.get_status()
-                if remediation_engine
-                else None,
+                "remediation_engine": (
+                    remediation_engine.get_status() if remediation_engine else None
+                ),
             },
         }
     )

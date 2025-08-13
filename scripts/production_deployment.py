@@ -502,13 +502,15 @@ class ProductionDeployment:
                 "deployment_info": {
                     "phase": "Phase 7.1 - Production Deployment",
                     "timestamp": datetime.now().isoformat(),
-                    "status": "completed"
-                    if all(
-                        component.get("status")
-                        in ["deployed", "configured", "completed"]
-                        for component in self.deployment_status.values()
-                    )
-                    else "partial",
+                    "status": (
+                        "completed"
+                        if all(
+                            component.get("status")
+                            in ["deployed", "configured", "completed"]
+                            for component in self.deployment_status.values()
+                        )
+                        else "partial"
+                    ),
                 },
                 "components": self.deployment_status,
                 "summary": {

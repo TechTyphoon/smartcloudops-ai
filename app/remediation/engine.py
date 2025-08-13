@@ -362,9 +362,9 @@ class RemediationEngine:
         try:
             return {
                 "status": "operational",
-                "last_action_time": self.last_action_time.isoformat()
-                if self.last_action_time
-                else None,
+                "last_action_time": (
+                    self.last_action_time.isoformat() if self.last_action_time else None
+                ),
                 "recent_actions_count": len(self.recent_actions),
                 "safety_status": self.safety_manager.get_status(),
                 "timestamp": datetime.now().isoformat(),

@@ -248,9 +248,9 @@ class SafetyManager:
                 "max_actions_per_hour": self.max_actions_per_hour,
                 "cooldown_minutes": self.cooldown_minutes,
                 "recent_actions_count": len(self.recent_actions),
-                "last_action_time": self.last_action_time.isoformat()
-                if self.last_action_time
-                else None,
+                "last_action_time": (
+                    self.last_action_time.isoformat() if self.last_action_time else None
+                ),
                 "approval_param": self.approval_param,
                 "timestamp": datetime.now().isoformat(),
             }
