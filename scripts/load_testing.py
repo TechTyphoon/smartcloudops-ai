@@ -531,9 +531,7 @@ async def main():
             b for b in results["bottlenecks"] if b["severity"] == "high"
         ]
         if critical_bottlenecks:
-            print(
-                f"\n❌ {len(critical_bottlenecks)} critical performance issues found."
-            )
+            print(f"\n❌ {len(critical_bottlenecks)} critical performance issues found.")
             sys.exit(1)
         else:
             print(f"\n✅ Load testing completed successfully.")

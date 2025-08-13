@@ -1,18 +1,22 @@
+#!/usr/bin/env python3
 """
-Beta Testing Management System for SmartCloudOps AI
-Manages beta testers, their access levels, and testing scenarios
+Smart CloudOps AI - Beta Testing Module
 """
 
 import json
 import logging
-import os
 import secrets
+import time
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
 import boto3
+
+from app.chatops.ai_handler import FlexibleAIHandler
+from app.chatops.utils import SystemContextGatherer
+from app.remediation.engine import RemediationEngine
 
 logger = logging.getLogger(__name__)
 

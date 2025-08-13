@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-Smart CloudOps AI - Notification Manager (Phase 4)
-Sends notifications for remediation actions via Slack
+Smart CloudOps AI - Notification Management
 """
 
+import json
 import logging
 import os
-from datetime import datetime
-from typing import Dict, List, Optional, Union
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Union
 
 import boto3
 import requests
-from botocore.exceptions import ClientError
+from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 
 logger = logging.getLogger(__name__)
 

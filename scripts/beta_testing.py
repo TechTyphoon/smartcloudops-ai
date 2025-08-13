@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 """
-Phase 7.2: Beta Testing Framework
-Comprehensive testing and feedback collection system for personal use
+Smart CloudOps AI - Beta Testing Framework
 """
 
-import asyncio
 import json
 import logging
-import time
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
-import requests
 import statistics
+import time
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
+
+import requests
+
+from app.chatops.ai_handler import FlexibleAIHandler
+from app.chatops.utils import SystemContextGatherer
 
 # Configure logging
 logging.basicConfig(

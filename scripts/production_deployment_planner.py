@@ -6,10 +6,11 @@ Complete production deployment strategy and configuration
 
 import json
 import logging
-import yaml
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
+
+import yaml
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

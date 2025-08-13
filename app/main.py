@@ -345,20 +345,20 @@ def after_request(response):
 
         # HSTS (only for HTTPS)
         if request.is_secure:
-            response.headers["Strict-Transport-Security"] = (
-                "max-age=31536000; includeSubDomains"
-            )
+            response.headers[
+                "Strict-Transport-Security"
+            ] = "max-age=31536000; includeSubDomains"
 
         # Feature Policy / Permissions Policy
-        response.headers["Permissions-Policy"] = (
-            "camera=(), microphone=(), geolocation=()"
-        )
+        response.headers[
+            "Permissions-Policy"
+        ] = "camera=(), microphone=(), geolocation=()"
 
         # Cache Control for sensitive endpoints
         if request.endpoint in ["query", "logs", "chatops"]:
-            response.headers["Cache-Control"] = (
-                "no-store, no-cache, must-revalidate, private"
-            )
+            response.headers[
+                "Cache-Control"
+            ] = "no-store, no-cache, must-revalidate, private"
             response.headers["Pragma"] = "no-cache"
             response.headers["Expires"] = "0"
 

@@ -7,12 +7,13 @@ Complete security, performance, and readiness assessment
 import json
 import logging
 import subprocess
-import requests
 import time
-import psutil
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
+
+import psutil
+import requests
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -605,7 +606,9 @@ class SystemAuditor:
         overall_health = (
             "EXCELLENT"
             if security_score >= 80 and performance_compliant
-            else "GOOD" if security_score >= 60 else "NEEDS_IMPROVEMENT"
+            else "GOOD"
+            if security_score >= 60
+            else "NEEDS_IMPROVEMENT"
         )
 
         report = f"""# Comprehensive System Audit Report

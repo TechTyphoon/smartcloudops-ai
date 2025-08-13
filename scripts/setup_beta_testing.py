@@ -359,9 +359,7 @@ def main():
     else:
         logger.error("❌ Beta Testing Manager: FAILED")
 
-    logger.info(
-        f"\n📧 Email Notifications: {'✅ READY' if ses_success else '❌ FAILED'}"
-    )
+    logger.info(f"\n📧 Email Notifications: {'✅ READY' if ses_success else '❌ FAILED'}")
     logger.info(f"🔐 SSM Parameters: {'✅ READY' if ssm_success else '❌ FAILED'}")
     logger.info(f"📚 Testing Guide: {'✅ READY' if guide_success else '❌ FAILED'}")
     logger.info(f"🌐 API Endpoints: {'✅ READY' if api_success else '❌ FAILED'}")
