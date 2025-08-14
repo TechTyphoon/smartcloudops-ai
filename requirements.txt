@@ -1,7 +1,7 @@
 # Core Flask Application
 Flask==2.3.3
 Flask-CORS==4.0.0
-gunicorn==21.2.0
+gunicorn==22.0.0  # Fix for CVE-2024-6827
 
 # Security fix for CVE-2025-47273
 setuptools>=78.1.2
