@@ -26,7 +26,9 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Copy application code
 COPY app/ ./app/
 COPY scripts/ ./scripts/
-COPY ml_models/ ./ml_models/
+COPY ml_models.py ./
+COPY models.py ./
+COPY templates/ ./templates/
 # Copy .env file if it exists (for CI/CD builds)
 COPY .env .env
 
@@ -36,11 +38,11 @@ RUN adduser --disabled-password --gecos '' appuser \
 USER appuser
 
 # Expose port
-EXPOSE 3000
+EXPOSE 5000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3000/status || exit 1
+    CMD curl -f http://localhost:5000/health || exit 1
 
 # Run the application
-CMD ["gunicorn", "--bind", "0.0.0.0:3000", "--workers", "4", "--timeout", "60", "app.main:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--timeout", "60", "app.main:app"]

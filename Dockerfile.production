@@ -48,6 +48,8 @@ COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/pytho
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application files
+COPY --chown=smartcloudops:smartcloudops app/ app/
+COPY --chown=smartcloudops:smartcloudops ml_models.py .
 COPY --chown=smartcloudops:smartcloudops complete_production_app_with_database.py .
 COPY --chown=smartcloudops:smartcloudops database_config.py .
 COPY --chown=smartcloudops:smartcloudops database_integration.py .

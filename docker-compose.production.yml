@@ -71,6 +71,7 @@ services:
     restart: unless-stopped
     environment:
       - FLASK_ENV=production
+      - FLASK_PORT=5000
       - DATABASE_URL=postgresql://smartcloudops:cloudops123@postgres:5432/smartcloudops_production
       - REDIS_URL=redis://:cloudops123@redis:6379/0
       - SECRET_KEY=${SECRET_KEY:-smartcloudops_production_secret}

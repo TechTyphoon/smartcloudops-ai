@@ -52,8 +52,14 @@ except ImportError as e:
     logging.warning(f"Remediation components not available: {e}")
     REMEDIATION_AVAILABLE = False
 
-# Import beta testing API
-from app.beta_api import beta_api
+# Import beta testing API - temporarily disabled for basic functionality
+try:
+    from app.beta_api import beta_api
+    BETA_API_AVAILABLE = True
+except ImportError as e:
+    logging.warning(f"Beta API components not available: {e}")
+    BETA_API_AVAILABLE = False
+    beta_api = None
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -199,6 +205,14 @@ try:
     _app_config = _ConfigClass.from_env()
 except Exception:
     _app_config = {}
+
+# Register authentication blueprint for enterprise security
+try:
+    from app.auth_routes import auth_bp
+    app.register_blueprint(auth_bp)
+    logger.info("✅ Enterprise authentication system enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ Authentication system not available: {e}")
 
 # Prometheus metrics
 REQUEST_COUNT = Counter(
@@ -367,11 +381,38 @@ def after_request(response):
 
 @app.route("/")
 def home():
+    """Serve the beautiful web dashboard"""
+    try:
+        # Check if we're in the app directory, if not look in parent
+        template_path = None
+        for potential_path in [
+            "/app/templates/dashboard.html",
+            "templates/dashboard.html",
+            "../templates/dashboard.html"
+        ]:
+            if os.path.exists(potential_path):
+                template_path = potential_path
+                break
+        
+        if template_path:
+            with open(template_path, 'r') as f:
+                return f.read()
+        else:
+            # Fallback to JSON if template not found
+            return jsonify({"error": "Dashboard template not found"})
+    except Exception as e:
+        logger.error(f"Error serving dashboard: {e}")
+        return jsonify({"error": "Dashboard unavailable"})
+
+
+@app.route("/api/system-info")
+def api_system_info():
+    """API endpoint for dashboard data (JSON)"""
     return jsonify(
         {
             "message": "Smart CloudOps AI - Flask Application",
             "status": "running",
-            "version": "1.0.0-phase4",
+            "version": "3.1.0-production",
             "features": {
                 "chatops": True,
                 "ml_anomaly_detection": ML_AVAILABLE,
@@ -409,7 +450,7 @@ def status():
                 "ml_models": {
                     "available": ML_AVAILABLE,
                     "status": (
-                        anomaly_detector.get_system_status()
+                        anomaly_detector.get_model_status()
                         if anomaly_detector
                         else None
                     ),
@@ -487,10 +528,24 @@ def api_info():
     })
 
 
-@app.route("/query", methods=["POST"])
+@app.route("/query", methods=["GET", "POST"])
 def query():
     """ChatOps query endpoint with AI integration."""
     try:
+        # For GET requests, return service info
+        if request.method == "GET":
+            return jsonify({
+                "status": "ready",
+                "message": "ChatOps AI Query Service",
+                "methods": ["POST"],
+                "description": "Send POST with 'query' field for AI-powered responses",
+                "example": {
+                    "query": "show system status",
+                    "context": "optional"
+                },
+                "timestamp": datetime.utcnow().isoformat()
+            })
+            
         data = request.get_json()
         if not data:
             return (
@@ -991,11 +1046,40 @@ def get_system_summary():
 
 # Phase 3: ML Anomaly Detection Endpoints
 
-
-@app.route("/anomaly", methods=["POST"])
+@app.route("/anomaly", methods=["GET", "POST"])
 def detect_anomaly():
     """Detect anomalies in real-time."""
     try:
+        # For GET requests, return status/info without authentication
+        if request.method == "GET":
+            if not ML_AVAILABLE:
+                return jsonify({
+                    "status": "error",
+                    "message": "ML models not available",
+                    "timestamp": datetime.utcnow().isoformat()
+                }), 503
+            
+            return jsonify({
+                "status": "ready",
+                "message": "ML Anomaly Detection Service",
+                "methods": ["POST"],
+                "endpoints": {
+                    "detect": "/anomaly (POST)",
+                    "batch": "/anomaly/batch (POST)",
+                    "status": "/anomaly/status (GET)",
+                    "train": "/anomaly/train (POST)"
+                },
+                "timestamp": datetime.utcnow().isoformat()
+            })
+        
+        # Import authentication here to avoid circular imports
+        from app.auth import require_auth
+        
+        # Check authentication for ML access
+        auth_response = require_auth('ml_query')(lambda: None)()
+        if auth_response is not None:
+            return auth_response
+        
         if not ML_AVAILABLE:
             return (
                 jsonify(
@@ -1137,7 +1221,7 @@ def ml_status():
                 503,
             )
 
-        status = anomaly_detector.get_system_status()
+        status = anomaly_detector.get_model_status()
         return jsonify(status)
 
     except Exception as e:
@@ -1156,10 +1240,10 @@ def train_model():
             )
 
         data = request.get_json() or {}
-        force_retrain = data.get("force_retrain", False)
+        training_data = data.get("training_data", [])
 
         # Train model
-        result = anomaly_detector.train_model(force_retrain=force_retrain)
+        result = anomaly_detector.train(training_data)
 
         # Update metrics
         status = result.get("status", "unknown")
@@ -1488,6 +1572,54 @@ def handle_value_error(error):
     )
 
 
+# Demo and Test Endpoints for Client
+@app.route("/demo", methods=["GET"])
+def demo():
+    """Demo endpoint showing all available services"""
+    return jsonify({
+        "service": "SmartCloudOps AI",
+        "version": "3.1.0",
+        "status": "operational",
+        "features": {
+            "authentication": "Enterprise JWT system",
+            "ml_anomaly": "IsolationForest ML detection",
+            "chatops": "AI-powered operations",
+            "monitoring": "Prometheus + Grafana",
+            "remediation": "Automated issue resolution"
+        },
+        "api_endpoints": {
+            "authentication": {
+                "login": "GET/POST /auth/login",
+                "profile": "GET /auth/profile",
+                "logout": "POST /auth/logout"
+            },
+            "ml_detection": {
+                "anomaly": "GET/POST /anomaly", 
+                "status": "GET /anomaly/status",
+                "batch": "POST /anomaly/batch"
+            },
+            "chatops": {
+                "query": "GET/POST /query",
+                "logs": "GET /logs",
+                "context": "GET /chatops/context"
+            },
+            "monitoring": {
+                "status": "GET /status",
+                "metrics": "GET /metrics",
+                "health": "GET /"
+            }
+        },
+        "test_instructions": {
+            "1": "GET /demo - This endpoint",
+            "2": "GET /auth/login - See login options", 
+            "3": "POST /auth/login with {'username':'admin','password':'admin123'}",
+            "4": "GET /anomaly - ML service info",
+            "5": "GET /query - ChatOps info",
+            "6": "GET /status - System status"
+        },
+        "timestamp": datetime.utcnow().isoformat()
+    })
+
 @app.errorhandler(Exception)
 def handle_generic_exception(error):
     """Handle any unhandled exceptions."""
@@ -1507,7 +1639,11 @@ def handle_generic_exception(error):
 
 
 # Register blueprints
-app.register_blueprint(beta_api)  # Add beta testing API
+if BETA_API_AVAILABLE and beta_api is not None:
+    app.register_blueprint(beta_api)  # Add beta testing API
+    logger.info("Beta API blueprint registered successfully")
+else:
+    logger.info("Beta API not available - skipping blueprint registration")
 
 
 # WSGI application object for Gunicorn

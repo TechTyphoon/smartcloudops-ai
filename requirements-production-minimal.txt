@@ -18,9 +18,15 @@ Flask-Migrate==4.1.0
 # Data Processing
 pandas==2.2.3
 numpy==2.0.1
+scikit-learn==1.5.2
 
 # System Monitoring
 psutil==6.1.1
+prometheus_client==0.21.1
+
+# AWS and Cloud Services
+boto3==1.35.58
+botocore==1.35.58
 
 # HTTP Client
 requests==2.32.4
@@ -28,6 +34,3 @@ requests==2.32.4
 # Configuration
 python-dotenv==1.0.1
 python-dateutil==2.9.0.post0
-
-# Monitoring
-prometheus-client==0.17.0
