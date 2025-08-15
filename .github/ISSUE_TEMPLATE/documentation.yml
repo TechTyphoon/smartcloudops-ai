@@ -1,0 +1,84 @@
+---
+name: 📚 Documentation Issue
+about: Report an issue with documentation or suggest improvements
+title: '[DOCS] '
+labels: ['documentation', 'needs-triage']
+assignees: ''
+---
+
+## 📖 **Documentation Issue**
+
+### 📍 **Location**
+Which documentation is affected?
+- [ ] README.md
+- [ ] API Documentation
+- [ ] Installation Guide
+- [ ] Configuration Guide
+- [ ] Architecture Documentation
+- [ ] Security Guide
+- [ ] Contributing Guide
+- [ ] Other: ___________
+
+**Specific File/Section**: [e.g., docs/API_REFERENCE.md, Section: Authentication]
+
+### 🐛 **Issue Type**
+- [ ] 📝 Incorrect or outdated information
+- [ ] ❓ Missing information
+- [ ] 🔀 Confusing or unclear explanation
+- [ ] 💔 Broken links or references
+- [ ] 🎨 Formatting or presentation issues
+- [ ] 🌍 Translation issues
+- [ ] ✨ Enhancement suggestion
+
+## 📋 **Current State**
+What does the documentation currently say? (copy relevant section)
+
+```markdown
+Current documentation text here...
+```
+
+## ✅ **Expected State**
+What should the documentation say instead?
+
+```markdown
+Improved documentation text here...
+```
+
+## 🎯 **Why This Matters**
+Explain why this documentation improvement is important:
+- User confusion it would resolve
+- Process it would streamline  
+- Errors it would prevent
+
+## 💡 **Suggested Improvement**
+If you have specific suggestions for improvement:
+
+### 📝 **Content Changes**
+- What information should be added/modified/removed
+- Better examples or use cases
+- Clearer explanations
+
+### 🎨 **Presentation Changes**
+- Better formatting or structure
+- Visual aids (diagrams, screenshots)
+- Navigation improvements
+
+## 👥 **Target Audience**
+Who would benefit from this documentation improvement?
+- [ ] 🆕 New users getting started
+- [ ] 👨‍💻 Developers integrating the system
+- [ ] 🔧 System administrators deploying
+- [ ] 🏢 Enterprise users
+- [ ] 🤝 Contributors
+
+## 📱 **Device/Context**
+Where did you encounter this documentation issue?
+- **Platform**: [e.g., GitHub web, mobile app, printed PDF]
+- **Browser**: [e.g., Chrome 96, Safari 15] (if applicable)
+- **Context**: [e.g., following quick start guide, API integration]
+
+## ✅ **Checklist**
+- [ ] I have searched existing issues to avoid duplicates
+- [ ] I have specified the exact location of the issue
+- [ ] I have provided clear suggestions for improvement
+- [ ] I have considered the target audience

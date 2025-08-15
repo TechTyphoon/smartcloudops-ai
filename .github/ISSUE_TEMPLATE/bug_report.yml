@@ -1,0 +1,58 @@
+---
+name: 🐛 Bug Report
+about: Create a report to help us improve SmartCloudOps AI
+title: '[BUG] '
+labels: ['bug', 'needs-triage']
+assignees: ''
+---
+
+## 🐛 **Bug Description**
+A clear and concise description of what the bug is.
+
+## 🔄 **Steps to Reproduce**
+Steps to reproduce the behavior:
+1. Deploy using '...'
+2. Navigate to '...'
+3. Execute command '...'
+4. See error
+
+## ✅ **Expected Behavior**
+A clear and concise description of what you expected to happen.
+
+## ❌ **Actual Behavior**
+A clear and concise description of what actually happened.
+
+## 📸 **Screenshots/Logs**
+If applicable, add screenshots or log outputs to help explain your problem.
+
+```
+Paste relevant log outputs here
+```
+
+## 🖥️ **Environment**
+Please complete the following information:
+- **OS**: [e.g., Ubuntu 20.04, Windows 10, macOS 12.1]
+- **Python Version**: [e.g., 3.9.7]
+- **Docker Version**: [e.g., 20.10.12]
+- **SmartCloudOps AI Version**: [e.g., v3.0.0]
+- **Deployment Method**: [e.g., Docker Compose, Kubernetes, Local]
+
+## 🔧 **Configuration**
+- **Docker Compose File**: [e.g., docker-compose.tier2.yml]
+- **Environment Variables**: List any custom env vars
+- **Custom Configuration**: Any modifications to default setup
+
+## 📋 **Additional Context**
+Add any other context about the problem here.
+
+## 🎯 **Priority**
+- [ ] 🔥 Critical (System down, security issue)
+- [ ] 🚨 High (Major functionality broken)
+- [ ] ⚠️ Medium (Minor functionality affected)
+- [ ] 📝 Low (Documentation, cosmetic issues)
+
+## ✅ **Checklist**
+- [ ] I have searched existing issues to avoid duplicates
+- [ ] I have provided all requested information
+- [ ] I have tested with the latest version
+- [ ] I have included relevant logs/screenshots
