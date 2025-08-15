@@ -55,6 +55,7 @@ except ImportError as e:
 # Import beta testing API - temporarily disabled for basic functionality
 try:
     from app.beta_api import beta_api
+
     BETA_API_AVAILABLE = True
 except ImportError as e:
     logging.warning(f"Beta API components not available: {e}")
@@ -209,6 +210,7 @@ except Exception:
 # Register authentication blueprint for enterprise security
 try:
     from app.auth_routes import auth_bp
+
     app.register_blueprint(auth_bp)
     logger.info("✅ Enterprise authentication system enabled")
 except ImportError as e:
@@ -248,7 +250,7 @@ REMEDIATION_FAILURE = Counter(
 
 # Initialize components
 config = _ConfigClass
-ai_handler = FlexibleAIHandler(provider=os.getenv('AI_PROVIDER', 'auto'))
+ai_handler = FlexibleAIHandler(provider=os.getenv("AI_PROVIDER", "auto"))
 log_retriever = LogRetriever()
 system_gatherer = SystemContextGatherer()
 
@@ -359,20 +361,20 @@ def after_request(response):
 
         # HSTS (only for HTTPS)
         if request.is_secure:
-            response.headers[
-                "Strict-Transport-Security"
-            ] = "max-age=31536000; includeSubDomains"
+            response.headers["Strict-Transport-Security"] = (
+                "max-age=31536000; includeSubDomains"
+            )
 
         # Feature Policy / Permissions Policy
-        response.headers[
-            "Permissions-Policy"
-        ] = "camera=(), microphone=(), geolocation=()"
+        response.headers["Permissions-Policy"] = (
+            "camera=(), microphone=(), geolocation=()"
+        )
 
         # Cache Control for sensitive endpoints
         if request.endpoint in ["query", "logs", "chatops"]:
-            response.headers[
-                "Cache-Control"
-            ] = "no-store, no-cache, must-revalidate, private"
+            response.headers["Cache-Control"] = (
+                "no-store, no-cache, must-revalidate, private"
+            )
             response.headers["Pragma"] = "no-cache"
             response.headers["Expires"] = "0"
 
@@ -388,14 +390,14 @@ def home():
         for potential_path in [
             "/app/templates/dashboard.html",
             "templates/dashboard.html",
-            "../templates/dashboard.html"
+            "../templates/dashboard.html",
         ]:
             if os.path.exists(potential_path):
                 template_path = potential_path
                 break
-        
+
         if template_path:
-            with open(template_path, 'r') as f:
+            with open(template_path, "r") as f:
                 return f.read()
         else:
             # Fallback to JSON if template not found
@@ -497,35 +499,37 @@ def api_status():
 @app.route("/api/info")
 def api_info():
     """API information endpoint matching production app."""
-    return jsonify({
-        "application": "Smart CloudOps AI",
-        "version": "3.0.0",
-        "phase": "4 - Container Orchestration",
-        "environment": "production",
-        "container_runtime": "Docker",
-        "orchestration": "Docker Compose",
-        "services": {
-            "app_server": "Gunicorn + Flask",
-            "database": "PostgreSQL 17.5",
-            "cache": "Redis 7.2",
-            "web_server": "Nginx 1.25",
-            "monitoring": "Prometheus + Grafana"
-        },
-        "ports": {
-            "http": "8080",
-            "https": "8443", 
-            "grafana": "13000",
-            "prometheus": "19090",
-            "postgres": "15432",
-            "redis": "16379"
-        },
-        "features": {
-            "chatops": True,
-            "ml_anomaly_detection": ML_AVAILABLE,
-            "auto_remediation": REMEDIATION_AVAILABLE,
-            "monitoring": True
+    return jsonify(
+        {
+            "application": "Smart CloudOps AI",
+            "version": "3.0.0",
+            "phase": "4 - Container Orchestration",
+            "environment": "production",
+            "container_runtime": "Docker",
+            "orchestration": "Docker Compose",
+            "services": {
+                "app_server": "Gunicorn + Flask",
+                "database": "PostgreSQL 17.5",
+                "cache": "Redis 7.2",
+                "web_server": "Nginx 1.25",
+                "monitoring": "Prometheus + Grafana",
+            },
+            "ports": {
+                "http": "8080",
+                "https": "8443",
+                "grafana": "13000",
+                "prometheus": "19090",
+                "postgres": "15432",
+                "redis": "16379",
+            },
+            "features": {
+                "chatops": True,
+                "ml_anomaly_detection": ML_AVAILABLE,
+                "auto_remediation": REMEDIATION_AVAILABLE,
+                "monitoring": True,
+            },
         }
-    })
+    )
 
 
 @app.route("/query", methods=["GET", "POST"])
@@ -534,18 +538,17 @@ def query():
     try:
         # For GET requests, return service info
         if request.method == "GET":
-            return jsonify({
-                "status": "ready",
-                "message": "ChatOps AI Query Service",
-                "methods": ["POST"],
-                "description": "Send POST with 'query' field for AI-powered responses",
-                "example": {
-                    "query": "show system status",
-                    "context": "optional"
-                },
-                "timestamp": datetime.utcnow().isoformat()
-            })
-            
+            return jsonify(
+                {
+                    "status": "ready",
+                    "message": "ChatOps AI Query Service",
+                    "methods": ["POST"],
+                    "description": "Send POST with 'query' field for AI-powered responses",
+                    "example": {"query": "show system status", "context": "optional"},
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
+
         data = request.get_json()
         if not data:
             return (
@@ -739,44 +742,44 @@ def chatops_help():
                     "endpoint": "/query",
                     "method": "POST",
                     "description": "Ask natural language questions about system status",
-                    "example": '{"query": "What is the current system status?"}'
+                    "example": '{"query": "What is the current system status?"}',
                 },
                 "logs": {
                     "endpoint": "/logs",
                     "method": "GET",
                     "description": "Retrieve system logs",
-                    "parameters": ["limit", "level", "search"]
+                    "parameters": ["limit", "level", "search"],
                 },
                 "context": {
                     "endpoint": "/chatops/context",
                     "method": "GET",
-                    "description": "Get comprehensive system context"
+                    "description": "Get comprehensive system context",
                 },
                 "analyze": {
                     "endpoint": "/chatops/analyze",
                     "method": "POST",
                     "description": "Analyze system metrics and provide insights",
-                    "example": '{"query": "analyze system performance"}'
+                    "example": '{"query": "analyze system performance"}',
                 },
                 "history": {
                     "endpoint": "/chatops/history",
                     "method": "GET",
-                    "description": "View ChatOps conversation history"
+                    "description": "View ChatOps conversation history",
                 },
                 "clear": {
                     "endpoint": "/chatops/clear",
                     "method": "POST",
-                    "description": "Clear ChatOps conversation history"
-                }
+                    "description": "Clear ChatOps conversation history",
+                },
             },
             "quick_examples": [
                 "What is the current CPU usage?",
                 "Show me recent error logs",
                 "Analyze system performance",
-                "Check for anomalies"
+                "Check for anomalies",
             ],
             "status": "ChatOps system is operational",
-            "version": "5.0"
+            "version": "5.0",
         }
 
         return jsonify(
@@ -792,7 +795,9 @@ def chatops_help():
         return (
             jsonify(
                 format_response(
-                    status="error", message="Failed to get help information", error=str(e)
+                    status="error",
+                    message="Failed to get help information",
+                    error=str(e),
                 )
             ),
             500,
@@ -807,11 +812,17 @@ def chatops_status():
         system_status = {
             "chatops_active": True,
             "ai_handler_status": "operational" if ai_handler else "disabled",
-            "context_manager_status": "operational" if advanced_context_manager else "disabled",
-            "conversation_history_size": len(getattr(ai_handler, 'conversation_history', [])) if ai_handler else 0,
+            "context_manager_status": (
+                "operational" if advanced_context_manager else "disabled"
+            ),
+            "conversation_history_size": (
+                len(getattr(ai_handler, "conversation_history", []))
+                if ai_handler
+                else 0
+            ),
             "last_query_time": datetime.now().isoformat(),
             "available_endpoints": 7,
-            "system_health": "healthy"
+            "system_health": "healthy",
         }
 
         return jsonify(
@@ -1046,6 +1057,7 @@ def get_system_summary():
 
 # Phase 3: ML Anomaly Detection Endpoints
 
+
 @app.route("/anomaly", methods=["GET", "POST"])
 def detect_anomaly():
     """Detect anomalies in real-time."""
@@ -1053,33 +1065,40 @@ def detect_anomaly():
         # For GET requests, return status/info without authentication
         if request.method == "GET":
             if not ML_AVAILABLE:
-                return jsonify({
-                    "status": "error",
-                    "message": "ML models not available",
-                    "timestamp": datetime.utcnow().isoformat()
-                }), 503
-            
-            return jsonify({
-                "status": "ready",
-                "message": "ML Anomaly Detection Service",
-                "methods": ["POST"],
-                "endpoints": {
-                    "detect": "/anomaly (POST)",
-                    "batch": "/anomaly/batch (POST)",
-                    "status": "/anomaly/status (GET)",
-                    "train": "/anomaly/train (POST)"
-                },
-                "timestamp": datetime.utcnow().isoformat()
-            })
-        
+                return (
+                    jsonify(
+                        {
+                            "status": "error",
+                            "message": "ML models not available",
+                            "timestamp": datetime.utcnow().isoformat(),
+                        }
+                    ),
+                    503,
+                )
+
+            return jsonify(
+                {
+                    "status": "ready",
+                    "message": "ML Anomaly Detection Service",
+                    "methods": ["POST"],
+                    "endpoints": {
+                        "detect": "/anomaly (POST)",
+                        "batch": "/anomaly/batch (POST)",
+                        "status": "/anomaly/status (GET)",
+                        "train": "/anomaly/train (POST)",
+                    },
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            )
+
         # Import authentication here to avoid circular imports
         from app.auth import require_auth
-        
+
         # Check authentication for ML access
-        auth_response = require_auth('ml_query')(lambda: None)()
+        auth_response = require_auth("ml_query")(lambda: None)()
         if auth_response is not None:
             return auth_response
-        
+
         if not ML_AVAILABLE:
             return (
                 jsonify(
@@ -1576,49 +1595,52 @@ def handle_value_error(error):
 @app.route("/demo", methods=["GET"])
 def demo():
     """Demo endpoint showing all available services"""
-    return jsonify({
-        "service": "SmartCloudOps AI",
-        "version": "3.1.0",
-        "status": "operational",
-        "features": {
-            "authentication": "Enterprise JWT system",
-            "ml_anomaly": "IsolationForest ML detection",
-            "chatops": "AI-powered operations",
-            "monitoring": "Prometheus + Grafana",
-            "remediation": "Automated issue resolution"
-        },
-        "api_endpoints": {
-            "authentication": {
-                "login": "GET/POST /auth/login",
-                "profile": "GET /auth/profile",
-                "logout": "POST /auth/logout"
+    return jsonify(
+        {
+            "service": "SmartCloudOps AI",
+            "version": "3.1.0",
+            "status": "operational",
+            "features": {
+                "authentication": "Enterprise JWT system",
+                "ml_anomaly": "IsolationForest ML detection",
+                "chatops": "AI-powered operations",
+                "monitoring": "Prometheus + Grafana",
+                "remediation": "Automated issue resolution",
             },
-            "ml_detection": {
-                "anomaly": "GET/POST /anomaly", 
-                "status": "GET /anomaly/status",
-                "batch": "POST /anomaly/batch"
+            "api_endpoints": {
+                "authentication": {
+                    "login": "GET/POST /auth/login",
+                    "profile": "GET /auth/profile",
+                    "logout": "POST /auth/logout",
+                },
+                "ml_detection": {
+                    "anomaly": "GET/POST /anomaly",
+                    "status": "GET /anomaly/status",
+                    "batch": "POST /anomaly/batch",
+                },
+                "chatops": {
+                    "query": "GET/POST /query",
+                    "logs": "GET /logs",
+                    "context": "GET /chatops/context",
+                },
+                "monitoring": {
+                    "status": "GET /status",
+                    "metrics": "GET /metrics",
+                    "health": "GET /",
+                },
             },
-            "chatops": {
-                "query": "GET/POST /query",
-                "logs": "GET /logs",
-                "context": "GET /chatops/context"
+            "test_instructions": {
+                "1": "GET /demo - This endpoint",
+                "2": "GET /auth/login - See login options",
+                "3": "POST /auth/login with {'username':'admin','password':'admin123'}",
+                "4": "GET /anomaly - ML service info",
+                "5": "GET /query - ChatOps info",
+                "6": "GET /status - System status",
             },
-            "monitoring": {
-                "status": "GET /status",
-                "metrics": "GET /metrics",
-                "health": "GET /"
-            }
-        },
-        "test_instructions": {
-            "1": "GET /demo - This endpoint",
-            "2": "GET /auth/login - See login options", 
-            "3": "POST /auth/login with {'username':'admin','password':'admin123'}",
-            "4": "GET /anomaly - ML service info",
-            "5": "GET /query - ChatOps info",
-            "6": "GET /status - System status"
-        },
-        "timestamp": datetime.utcnow().isoformat()
-    })
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+    )
+
 
 @app.errorhandler(Exception)
 def handle_generic_exception(error):

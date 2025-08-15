@@ -332,7 +332,7 @@ class FlexibleAIHandler:
             self.provider = LocalProvider()
             self.provider.initialize()
             return
-            
+
         if self.provider_name == "auto":
             # Try to detect available provider
             if os.getenv("OPENAI_API_KEY"):
@@ -365,7 +365,9 @@ class FlexibleAIHandler:
                     self.provider = LocalProvider()
                     self.provider.initialize()
         else:
-            logger.error(f"Unknown provider: {self.provider_name}, falling back to local")
+            logger.error(
+                f"Unknown provider: {self.provider_name}, falling back to local"
+            )
             self.provider_name = "local"
             self.provider = LocalProvider()
             self.provider.initialize()
