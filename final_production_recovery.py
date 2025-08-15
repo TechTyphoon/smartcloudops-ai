@@ -11,13 +11,16 @@ import requests
 import boto3
 from datetime import datetime
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
+
 
 class ProductionRecovery:
     def __init__(self):
-        self.ec2 = boto3.client('ec2', region_name='us-west-2')
-        
+        self.ec2 = boto3.client("ec2", region_name="us-west-2")
+
         # NEW STABLE ELASTIC IPs
         self.app_ip = "44.253.225.44"
         self.monitoring_ip = "54.186.188.202"
@@ -26,7 +29,7 @@ class ProductionRecovery:
 
     def create_comprehensive_user_data(self, server_type):
         """Create bulletproof user data scripts"""
-        
+
         if server_type == "app":
             return f"""#!/bin/bash
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
@@ -578,26 +581,25 @@ date
     def run_final_recovery(self):
         """Execute the final complete recovery"""
         logger.info("🚀 Starting Final Production Recovery")
-        
+
         # Update user data for both instances
         logger.info("📝 Updating application server user data...")
         try:
             app_user_data = self.create_comprehensive_user_data("app")
             self.ec2.modify_instance_attribute(
-                InstanceId=self.app_instance_id,
-                UserData={'Value': app_user_data}
+                InstanceId=self.app_instance_id, UserData={"Value": app_user_data}
             )
             logger.info("✅ Application server user data updated")
         except Exception as e:
             logger.error(f"❌ Failed to update app server user data: {e}")
             return False
-            
+
         logger.info("📝 Updating monitoring server user data...")
         try:
             monitoring_user_data = self.create_comprehensive_user_data("monitoring")
             self.ec2.modify_instance_attribute(
                 InstanceId=self.monitoring_instance_id,
-                UserData={'Value': monitoring_user_data}
+                UserData={"Value": monitoring_user_data},
             )
             logger.info("✅ Monitoring server user data updated")
         except Exception as e:
@@ -607,7 +609,9 @@ date
         # Reboot both instances to apply new user data
         logger.info("🔄 Rebooting instances to apply new configuration...")
         try:
-            self.ec2.reboot_instances(InstanceIds=[self.app_instance_id, self.monitoring_instance_id])
+            self.ec2.reboot_instances(
+                InstanceIds=[self.app_instance_id, self.monitoring_instance_id]
+            )
             logger.info("✅ Instances rebooted")
         except Exception as e:
             logger.error(f"❌ Failed to reboot instances: {e}")
@@ -624,26 +628,31 @@ date
     def verify_all_services(self):
         """Comprehensive verification of all services"""
         logger.info("🔍 Running comprehensive service verification...")
-        
+
         all_passed = True
-        
+
         # Test Application Server - Core Endpoints
         core_endpoints = [
             ("/health", "GET"),
-            ("/status", "GET"), 
+            ("/status", "GET"),
             ("/", "GET"),
             ("/logs", "GET"),
-            ("/metrics", "GET")
+            ("/metrics", "GET"),
         ]
-        
+
         for endpoint, method in core_endpoints:
             try:
                 if method == "GET":
-                    response = requests.get(f"http://{self.app_ip}:3000{endpoint}", timeout=15)
+                    response = requests.get(
+                        f"http://{self.app_ip}:3000{endpoint}", timeout=15
+                    )
                 else:
-                    response = requests.post(f"http://{self.app_ip}:3000{endpoint}", 
-                                           json={"query": "test"}, timeout=15)
-                
+                    response = requests.post(
+                        f"http://{self.app_ip}:3000{endpoint}",
+                        json={"query": "test"},
+                        timeout=15,
+                    )
+
                 if response.status_code == 200:
                     logger.info(f"✅ App Server {endpoint}: SUCCESS")
                 else:
@@ -653,7 +662,7 @@ date
                 logger.error(f"❌ App Server {endpoint}: FAILED - {e}")
                 all_passed = False
 
-        # Test Application Server - Advanced Endpoints  
+        # Test Application Server - Advanced Endpoints
         advanced_endpoints = [
             ("/query", "POST"),
             ("/anomaly/status", "GET"),
@@ -664,32 +673,39 @@ date
             ("/remediation/execute", "POST"),
             ("/chatops/smart-query", "POST"),
             ("/chatops/history", "GET"),
-            ("/chatops/context", "GET")
+            ("/chatops/context", "GET"),
         ]
-        
+
         for endpoint, method in advanced_endpoints:
             try:
                 if method == "GET":
-                    response = requests.get(f"http://{self.app_ip}:3000{endpoint}", timeout=15)
+                    response = requests.get(
+                        f"http://{self.app_ip}:3000{endpoint}", timeout=15
+                    )
                 else:
-                    test_data = {"query": "test"} if "query" in endpoint else {"test": "data"}
-                    response = requests.post(f"http://{self.app_ip}:3000{endpoint}", 
-                                           json=test_data, timeout=15)
-                
+                    test_data = (
+                        {"query": "test"} if "query" in endpoint else {"test": "data"}
+                    )
+                    response = requests.post(
+                        f"http://{self.app_ip}:3000{endpoint}",
+                        json=test_data,
+                        timeout=15,
+                    )
+
                 if response.status_code == 200:
                     logger.info(f"✅ App Server {endpoint}: SUCCESS")
                 else:
                     logger.warning(f"⚠️ App Server {endpoint}: {response.status_code}")
             except Exception as e:
                 logger.warning(f"⚠️ App Server {endpoint}: {e}")
-        
+
         # Test Monitoring Server
         monitoring_endpoints = [
             (f"http://{self.monitoring_ip}:9090/-/healthy", "Prometheus"),
             (f"http://{self.monitoring_ip}:9100/metrics", "Node Exporter"),
-            (f"http://{self.monitoring_ip}:3001/login", "Grafana")
+            (f"http://{self.monitoring_ip}:3001/login", "Grafana"),
         ]
-        
+
         for url, service in monitoring_endpoints:
             try:
                 response = requests.get(url, timeout=15)
@@ -701,24 +717,28 @@ date
             except Exception as e:
                 logger.error(f"❌ {service}: FAILED - {e}")
                 all_passed = False
-        
+
         return all_passed
 
     def print_final_status(self, success):
         """Print final deployment status"""
-        logger.info("="*70)
+        logger.info("=" * 70)
         if success:
             logger.info("🎉 SMART CLOUDOPS AI - PRODUCTION DEPLOYMENT SUCCESSFUL!")
-            logger.info("="*70)
+            logger.info("=" * 70)
             logger.info("📍 LIVE SERVICE URLS:")
             logger.info(f"   🌐 Flask ChatOps App:    http://{self.app_ip}:3000")
-            logger.info(f"   📊 Grafana Dashboard:    http://{self.monitoring_ip}:3001 (admin/admin)")
+            logger.info(
+                f"   📊 Grafana Dashboard:    http://{self.monitoring_ip}:3001 (admin/admin)"
+            )
             logger.info(f"   📈 Prometheus:           http://{self.monitoring_ip}:9090")
-            logger.info(f"   🔍 Node Exporter:        http://{self.monitoring_ip}:9100/metrics")
+            logger.info(
+                f"   🔍 Node Exporter:        http://{self.monitoring_ip}:9100/metrics"
+            )
             logger.info("")
             logger.info("✅ KEY FEATURES VERIFIED:")
             logger.info("   • ChatOps AI Integration")
-            logger.info("   • ML Anomaly Detection")  
+            logger.info("   • ML Anomaly Detection")
             logger.info("   • Auto-Remediation Engine")
             logger.info("   • Real-time Monitoring")
             logger.info("   • Complete API Endpoints")
@@ -728,14 +748,16 @@ date
             logger.info("👤 PERSONAL USE READY: YES")
         else:
             logger.error("❌ DEPLOYMENT INCOMPLETE - Some services failed verification")
-            
-        logger.info("="*70)
+
+        logger.info("=" * 70)
+
 
 def main():
     recovery = ProductionRecovery()
     success = recovery.run_final_recovery()
     recovery.print_final_status(success)
     return 0 if success else 1
+
 
 if __name__ == "__main__":
     exit(main())

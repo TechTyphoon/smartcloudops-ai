@@ -9,6 +9,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 class ProductionReadinessChecker:
     def __init__(self):
         self.project_root = Path.cwd()
@@ -18,10 +19,11 @@ class ProductionReadinessChecker:
     def check_testing_framework(self):
         """Check if tests are working"""
         print("🧪 Checking Testing Framework...")
-        
+
         try:
-            result = subprocess.run(['python', '-m', 'pytest', '--version'], 
-                                  capture_output=True, text=True)
+            result = subprocess.run(
+                ["python", "-m", "pytest", "--version"], capture_output=True, text=True
+            )
             if result.returncode != 0:
                 self.missing_components.append("pytest not installed")
             else:
@@ -31,8 +33,12 @@ class ProductionReadinessChecker:
 
         # Check if tests run
         try:
-            result = subprocess.run(['python', '-m', 'pytest', 'tests/', '-v', '--tb=short'], 
-                                  capture_output=True, text=True, timeout=30)
+            result = subprocess.run(
+                ["python", "-m", "pytest", "tests/", "-v", "--tb=short"],
+                capture_output=True,
+                text=True,
+                timeout=30,
+            )
             if "FAILED" in result.stdout or result.returncode != 0:
                 self.missing_components.append(f"Tests failing: {result.stdout}")
             else:
@@ -43,10 +49,12 @@ class ProductionReadinessChecker:
     def check_production_server(self):
         """Check production WSGI server setup"""
         print("⚡ Checking Production Server...")
-        
+
         # Check for gunicorn
         try:
-            result = subprocess.run(['gunicorn', '--version'], capture_output=True, text=True)
+            result = subprocess.run(
+                ["gunicorn", "--version"], capture_output=True, text=True
+            )
             if result.returncode != 0:
                 self.missing_components.append("gunicorn not installed")
             else:
@@ -61,12 +69,12 @@ class ProductionReadinessChecker:
     def check_database_integration(self):
         """Check database setup"""
         print("📊 Checking Database Integration...")
-        
+
         # Check for database packages
-        db_packages = ['psycopg2-binary', 'SQLAlchemy', 'alembic']
+        db_packages = ["psycopg2-binary", "SQLAlchemy", "alembic"]
         for package in db_packages:
             try:
-                __import__(package.replace('-', '_'))
+                __import__(package.replace("-", "_"))
                 print(f"✅ {package} available")
             except ImportError:
                 self.missing_components.append(f"{package} not installed")
@@ -78,11 +86,11 @@ class ProductionReadinessChecker:
     def check_security_features(self):
         """Check security implementations"""
         print("🔒 Checking Security Features...")
-        
-        security_packages = ['flask-limiter', 'flask-jwt-extended', 'cryptography']
+
+        security_packages = ["flask-limiter", "flask-jwt-extended", "cryptography"]
         for package in security_packages:
             try:
-                __import__(package.replace('-', '_'))
+                __import__(package.replace("-", "_"))
                 print(f"✅ {package} available")
             except ImportError:
                 self.missing_components.append(f"{package} not installed")
@@ -94,9 +102,9 @@ class ProductionReadinessChecker:
     def check_containerization(self):
         """Check Docker production setup"""
         print("🐳 Checking Containerization...")
-        
+
         # Check Docker files
-        docker_files = ['Dockerfile.production', 'docker-compose.production.yml']
+        docker_files = ["Dockerfile.production", "docker-compose.production.yml"]
         for file in docker_files:
             if (self.project_root / file).exists():
                 print(f"✅ {file} exists")
@@ -110,21 +118,21 @@ class ProductionReadinessChecker:
     def generate_fixes(self):
         """Generate fixes for missing components"""
         print("\n🛠️  Generating Production Fixes...")
-        
+
         fixes = {
             "install_production_deps": [
                 "pip install gunicorn psycopg2-binary SQLAlchemy alembic",
                 "pip install flask-limiter flask-jwt-extended cryptography",
                 "pip install prometheus-client grafana-api",
-                "pip install pytest pytest-cov pytest-mock"
+                "pip install pytest pytest-cov pytest-mock",
             ],
             "create_gunicorn_config": self._create_gunicorn_config(),
             "create_database_config": self._create_database_config(),
             "create_security_config": self._create_security_config(),
             "create_k8s_manifests": self._create_k8s_manifests(),
-            "create_production_tests": self._create_production_tests()
+            "create_production_tests": self._create_production_tests(),
         }
-        
+
         return fixes
 
     def _create_gunicorn_config(self):
@@ -242,36 +250,39 @@ class TestProductionEndpoints:
         """Run complete production readiness assessment"""
         print("🔍 Smart CloudOps AI - Production Readiness Assessment")
         print("=" * 60)
-        
+
         self.check_testing_framework()
         self.check_production_server()
         self.check_database_integration()
         self.check_security_features()
         self.check_containerization()
-        
+
         print(f"\n📋 Assessment Results:")
         print(f"❌ Missing Components: {len(self.missing_components)}")
-        
+
         if self.missing_components:
             print("\n🚨 Critical Issues Found:")
             for i, issue in enumerate(self.missing_components, 1):
                 print(f"  {i}. {issue}")
-        
+
         fixes = self.generate_fixes()
         print(f"\n🛠️  Available Fixes: {len(fixes)}")
-        
+
         return {
             "missing_components": self.missing_components,
             "fixes": fixes,
-            "production_ready": len(self.missing_components) == 0
+            "production_ready": len(self.missing_components) == 0,
         }
+
 
 if __name__ == "__main__":
     checker = ProductionReadinessChecker()
     result = checker.run_assessment()
-    
+
     if not result["production_ready"]:
-        print(f"\n⚠️  Project requires {len(result['missing_components'])} fixes before production deployment")
+        print(
+            f"\n⚠️  Project requires {len(result['missing_components'])} fixes before production deployment"
+        )
         print("Run the fixes to achieve production readiness!")
     else:
         print("\n✅ Project is production ready!")

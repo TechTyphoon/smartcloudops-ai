@@ -29,12 +29,12 @@ limit_request_field_size = 8192
 
 # Logging
 accesslog = "-"  # Log to stdout
-errorlog = "-"   # Log to stdout  
+errorlog = "-"  # Log to stdout
 loglevel = "info"
 access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s" %(D)s'
 
 # Process naming
-proc_name = 'smartcloudops_ai'
+proc_name = "smartcloudops_ai"
 
 # Server mechanics
 daemon = False
@@ -53,15 +53,18 @@ max_worker_restart = 3
 
 # Enable stats
 statsd_host = None
-statsd_prefix = ''
+statsd_prefix = ""
+
 
 def post_fork(server, worker):
     """Post fork hook."""
     server.log.info("Worker spawned (pid: %s)", worker.pid)
 
+
 def pre_fork(server, worker):
     """Pre fork hook."""
     pass
+
 
 def worker_exit(server, worker):
     """Worker exit hook."""

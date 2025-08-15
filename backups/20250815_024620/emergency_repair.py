@@ -19,31 +19,34 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 class EmergencyRepair:
     def __init__(self):
-        self.ec2 = boto3.client('ec2', region_name='us-west-2')
-        self.ec2_resource = boto3.resource('ec2', region_name='us-west-2')
-        
+        self.ec2 = boto3.client("ec2", region_name="us-west-2")
+        self.ec2_resource = boto3.resource("ec2", region_name="us-west-2")
+
         # Current instance IDs
-        self.app_instance_id = 'i-05ea4de88477a4d2e'
-        self.monitoring_instance_id = 'i-07c69200a0e2ce609'
-        
+        self.app_instance_id = "i-05ea4de88477a4d2e"
+        self.monitoring_instance_id = "i-07c69200a0e2ce609"
+
         # Target IPs
-        self.app_ip = '44.244.231.27'
-        self.monitoring_ip = '35.92.147.156'
-        
+        self.app_ip = "44.244.231.27"
+        self.monitoring_ip = "35.92.147.156"
+
     def check_instance_connectivity(self, instance_id, ip_address):
         """Check if instance is responding to HTTP or SSH"""
         logger.info(f"🔍 Checking connectivity to {instance_id} ({ip_address})")
-        
+
         # Test HTTP
         try:
             response = requests.get(f"http://{ip_address}:3000/health", timeout=10)
-            logger.info(f"✅ HTTP connection to {ip_address} successful: {response.status_code}")
+            logger.info(
+                f"✅ HTTP connection to {ip_address} successful: {response.status_code}"
+            )
             return True
         except:
             logger.warning(f"❌ HTTP connection to {ip_address} failed")
-        
+
         # Test SSH with user data script execution
         try:
             # Try to execute a simple command via user data (if supported)
@@ -52,7 +55,7 @@ class EmergencyRepair:
         except Exception as e:
             logger.error(f"❌ All connectivity tests failed for {instance_id}: {e}")
             return False
-    
+
     def create_user_data_script(self, instance_type="application"):
         """Create user data script for instance initialization"""
         if instance_type == "application":
@@ -337,43 +340,40 @@ curl -f http://localhost:3001/login || echo 'Grafana failed'
     def repair_instance(self, instance_id, instance_type="application"):
         """Repair instance by updating user data and rebooting"""
         logger.info(f"🔧 Repairing instance {instance_id} ({instance_type})")
-        
+
         try:
             # Stop the instance
             logger.info(f"🛑 Stopping instance {instance_id}")
             self.ec2.stop_instances(InstanceIds=[instance_id])
-            
+
             # Wait for instance to stop
-            waiter = self.ec2.get_waiter('instance_stopped')
+            waiter = self.ec2.get_waiter("instance_stopped")
             waiter.wait(InstanceIds=[instance_id])
             logger.info(f"✅ Instance {instance_id} stopped")
-            
+
             # Update user data
             user_data = self.create_user_data_script(instance_type)
-            
+
             logger.info(f"📝 Updating user data for {instance_id}")
             self.ec2.modify_instance_attribute(
-                InstanceId=instance_id,
-                UserData={
-                    'Value': user_data
-                }
+                InstanceId=instance_id, UserData={"Value": user_data}
             )
-            
+
             # Start the instance
             logger.info(f"🚀 Starting instance {instance_id}")
             self.ec2.start_instances(InstanceIds=[instance_id])
-            
+
             # Wait for instance to be running
-            waiter = self.ec2.get_waiter('instance_running')
+            waiter = self.ec2.get_waiter("instance_running")
             waiter.wait(InstanceIds=[instance_id])
             logger.info(f"✅ Instance {instance_id} is running")
-            
+
             # Wait additional time for user data script to complete
             logger.info("⏰ Waiting for startup scripts to complete...")
             time.sleep(120)
-            
+
             return True
-            
+
         except Exception as e:
             logger.error(f"❌ Failed to repair instance {instance_id}: {e}")
             return False
@@ -381,7 +381,7 @@ curl -f http://localhost:3001/login || echo 'Grafana failed'
     def verify_deployment(self):
         """Verify all services are working"""
         logger.info("🔍 Verifying complete deployment...")
-        
+
         # Test application server
         try:
             response = requests.get(f"http://{self.app_ip}:3000/health", timeout=30)
@@ -393,82 +393,103 @@ curl -f http://localhost:3001/login || echo 'Grafana failed'
         except Exception as e:
             logger.error(f"❌ Application server health check failed: {e}")
             return False
-        
+
         # Test additional endpoints
         endpoints_to_test = [
-            "/status", "/query", "/logs", "/anomaly/status", 
-            "/remediation/status", "/chatops/smart-query", "/metrics"
+            "/status",
+            "/query",
+            "/logs",
+            "/anomaly/status",
+            "/remediation/status",
+            "/chatops/smart-query",
+            "/metrics",
         ]
-        
+
         for endpoint in endpoints_to_test:
             try:
                 if endpoint in ["/query", "/chatops/smart-query"]:
-                    response = requests.post(f"http://{self.app_ip}:3000{endpoint}", 
-                                           json={"query": "test"}, timeout=10)
+                    response = requests.post(
+                        f"http://{self.app_ip}:3000{endpoint}",
+                        json={"query": "test"},
+                        timeout=10,
+                    )
                 else:
-                    response = requests.get(f"http://{self.app_ip}:3000{endpoint}", timeout=10)
-                
+                    response = requests.get(
+                        f"http://{self.app_ip}:3000{endpoint}", timeout=10
+                    )
+
                 if response.status_code == 200:
                     logger.info(f"✅ Endpoint {endpoint} working")
                 else:
-                    logger.warning(f"⚠️ Endpoint {endpoint} returned {response.status_code}")
+                    logger.warning(
+                        f"⚠️ Endpoint {endpoint} returned {response.status_code}"
+                    )
             except Exception as e:
                 logger.error(f"❌ Endpoint {endpoint} failed: {e}")
-        
+
         # Test monitoring server
         try:
-            response = requests.get(f"http://{self.monitoring_ip}:9090/-/healthy", timeout=30)
+            response = requests.get(
+                f"http://{self.monitoring_ip}:9090/-/healthy", timeout=30
+            )
             if response.status_code == 200:
                 logger.info("✅ Prometheus health check passed")
         except Exception as e:
             logger.error(f"❌ Prometheus health check failed: {e}")
-        
+
         try:
-            response = requests.get(f"http://{self.monitoring_ip}:9100/metrics", timeout=30)
+            response = requests.get(
+                f"http://{self.monitoring_ip}:9100/metrics", timeout=30
+            )
             if response.status_code == 200:
                 logger.info("✅ Node Exporter working")
         except Exception as e:
             logger.error(f"❌ Node Exporter failed: {e}")
-        
+
         try:
-            response = requests.get(f"http://{self.monitoring_ip}:3001/login", timeout=30)
+            response = requests.get(
+                f"http://{self.monitoring_ip}:3001/login", timeout=30
+            )
             if response.status_code == 200:
                 logger.info("✅ Grafana accessible")
         except Exception as e:
             logger.error(f"❌ Grafana failed: {e}")
-        
+
         return True
 
     def run_complete_repair(self):
         """Execute complete infrastructure repair"""
         logger.info("🚀 Starting Emergency Infrastructure Repair")
-        
+
         # Check current state
         app_ok = self.check_instance_connectivity(self.app_instance_id, self.app_ip)
-        monitoring_ok = self.check_instance_connectivity(self.monitoring_instance_id, self.monitoring_ip)
-        
+        monitoring_ok = self.check_instance_connectivity(
+            self.monitoring_instance_id, self.monitoring_ip
+        )
+
         if not app_ok:
             logger.info("🔧 Repairing application server...")
             if not self.repair_instance(self.app_instance_id, "application"):
                 logger.error("❌ Application server repair failed")
                 return False
-        
+
         if not monitoring_ok:
             logger.info("🔧 Repairing monitoring server...")
             if not self.repair_instance(self.monitoring_instance_id, "monitoring"):
                 logger.error("❌ Monitoring server repair failed")
                 return False
-        
+
         # Final verification
         logger.info("🔍 Running final verification...")
         time.sleep(60)  # Additional wait for services to fully start
-        
+
         return self.verify_deployment()
+
 
 if __name__ == "__main__":
     repair = EmergencyRepair()
     success = repair.run_complete_repair()
-    
+
     if success:
         logger.info("✅ Emergency repair completed successfully!")
         logger.info("📍 Service URLs:")

@@ -14,6 +14,7 @@ from pathlib import Path
 def run_command(command, description=""):
     """Run a shell command and handle errors."""
     import shlex
+
     print(f"🔧 {description}")
     try:
         # Parse command safely - split shell command into list
@@ -21,13 +22,13 @@ def run_command(command, description=""):
             cmd_list = shlex.split(command)
         else:
             cmd_list = command
-            
+
         result = subprocess.run(
-            cmd_list, 
+            cmd_list,
             shell=False,  # Security fix: Never use shell=True
-            capture_output=True, 
+            capture_output=True,
             text=True,
-            timeout=300  # Add timeout for security
+            timeout=300,  # Add timeout for security
         )
         if result.returncode == 0:
             print(f"✅ {description} - Success")
@@ -46,28 +47,28 @@ def run_command(command, description=""):
 def check_prerequisites():
     """Check if required tools are installed."""
     print("🔍 Checking prerequisites...")
-    
+
     required_tools = {
-        'python3': 'python3 --version',
-        'docker': 'docker --version',
-        'terraform': 'terraform --version',
-        'aws': 'aws --version',
-        'git': 'git --version'
+        "python3": "python3 --version",
+        "docker": "docker --version",
+        "terraform": "terraform --version",
+        "aws": "aws --version",
+        "git": "git --version",
     }
-    
+
     missing_tools = []
-    
+
     for tool, command in required_tools.items():
         if run_command(command, f"Checking {tool}"):
             continue
         else:
             missing_tools.append(tool)
-    
+
     if missing_tools:
         print(f"❌ Missing tools: {', '.join(missing_tools)}")
         print("Please install the missing tools before continuing.")
         return False
-    
+
     print("✅ All prerequisites are installed!")
     return True
 
@@ -75,11 +76,11 @@ def check_prerequisites():
 def setup_python_environment():
     """Set up Python virtual environment and install dependencies."""
     print("\n🐍 Setting up Python environment...")
-    
+
     # Create virtual environment
     if not run_command("python3 -m venv venv", "Creating virtual environment"):
         return False
-    
+
     # Determine activation script based on OS
     if platform.system() == "Windows":
         activate_script = "venv\\Scripts\\activate"
@@ -87,14 +88,16 @@ def setup_python_environment():
     else:
         activate_script = "source venv/bin/activate"
         pip_command = "venv/bin/pip"
-    
+
     # Install dependencies
     if not run_command(f"{pip_command} install --upgrade pip", "Upgrading pip"):
         return False
-    
-    if not run_command(f"{pip_command} install -r requirements.txt", "Installing Python dependencies"):
+
+    if not run_command(
+        f"{pip_command} install -r requirements.txt", "Installing Python dependencies"
+    ):
         return False
-    
+
     print(f"✅ Python environment setup complete!")
     print(f"💡 To activate the environment, run: {activate_script}")
     return True
@@ -103,14 +106,14 @@ def setup_python_environment():
 def setup_git_hooks():
     """Set up git hooks for code quality."""
     print("\n📝 Setting up git hooks...")
-    
+
     hooks_dir = Path(".git/hooks")
     if not hooks_dir.exists():
         print("❌ .git directory not found. Please initialize git repository first.")
         return False
-    
+
     pre_commit_hook = hooks_dir / "pre-commit"
-    
+
     hook_content = """#!/bin/bash
 # Pre-commit hook for Smart CloudOps AI
 
@@ -136,9 +139,9 @@ fi
 
 echo "✅ Pre-commit checks passed!"
 """
-    
+
     try:
-        with open(pre_commit_hook, 'w') as f:
+        with open(pre_commit_hook, "w") as f:
             f.write(hook_content)
         os.chmod(pre_commit_hook, 0o755)
         print("✅ Git hooks setup complete!")
@@ -151,7 +154,7 @@ echo "✅ Pre-commit checks passed!"
 def create_env_file():
     """Create a sample .env file."""
     print("\n⚙️ Creating sample .env file...")
-    
+
     env_content = """# Smart CloudOps AI Environment Variables
 # Copy this file to .env and update with your actual values
 
@@ -178,10 +181,10 @@ GRAFANA_PASSWORD=admin
 # Application Configuration
 LOG_LEVEL=INFO
 """
-    
+
     try:
-        if not os.path.exists('.env.example'):
-            with open('.env.example', 'w') as f:
+        if not os.path.exists(".env.example"):
+            with open(".env.example", "w") as f:
                 f.write(env_content)
             print("✅ Created .env.example file!")
             print("💡 Copy .env.example to .env and update with your actual values")
@@ -197,24 +200,24 @@ def main():
     """Main setup function."""
     print("🚀 Smart CloudOps AI - Development Environment Setup")
     print("=" * 50)
-    
+
     # Check prerequisites
     if not check_prerequisites():
         sys.exit(1)
-    
+
     # Setup Python environment
     if not setup_python_environment():
         print("❌ Failed to setup Python environment")
         sys.exit(1)
-    
+
     # Setup git hooks
     if not setup_git_hooks():
         print("⚠️  Git hooks setup failed, but continuing...")
-    
+
     # Create environment file
     if not create_env_file():
         print("⚠️  .env file creation failed, but continuing...")
-    
+
     print("\n🎉 Setup complete!")
     print("\n📋 Next steps:")
     print("1. Activate the virtual environment")

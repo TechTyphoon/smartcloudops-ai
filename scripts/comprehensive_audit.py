@@ -606,9 +606,7 @@ class SystemAuditor:
         overall_health = (
             "EXCELLENT"
             if security_score >= 80 and performance_compliant
-            else "GOOD"
-            if security_score >= 60
-            else "NEEDS_IMPROVEMENT"
+            else "GOOD" if security_score >= 60 else "NEEDS_IMPROVEMENT"
         )
 
         report = f"""# Comprehensive System Audit Report
