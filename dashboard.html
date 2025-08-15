@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart CloudOps AI - Production Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: #2c3e50; color: white; padding: 20px; text-align: center; margin-bottom: 20px; }
+        .section { background: white; padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .endpoint { margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 3px; }
+        .status-ok { background: #d4edda; border-color: #c3e6cb; }
+        .button { background: #3498db; color: white; padding: 10px 15px; border: none; cursor: pointer; margin: 5px; border-radius: 3px; }
+        .button:hover { background: #2980b9; }
+        .result { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 3px; white-space: pre-wrap; font-family: monospace; max-height: 200px; overflow-y: auto; }
+        .input-group { margin: 10px 0; }
+        .input-group input, .input-group textarea { width: 100%; padding: 8px; margin-top: 5px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .status-indicator { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+        .status-green { background: #28a745; }
+        .status-red { background: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Smart CloudOps AI Production Dashboard</h1>
+            <p>All endpoints operational and ready for testing</p>
+        </div>
+
+        <div class="section">
+            <h2>📊 System Status</h2>
+            <div id="system-status">Loading system status...</div>
+            <button class="button" onclick="loadSystemStatus()">Refresh Status</button>
+        </div>
+
+        <div class="grid">
+            <div class="section">
+                <h3>🔍 Health Check</h3>
+                <div class="endpoint status-ok">
+                    <strong>GET /health</strong>
+                    <span class="status-indicator status-green"></span>
+                    <button class="button" onclick="testHealth()">Test Health</button>
+                </div>
+                <div id="health-result" class="result" style="display:none;"></div>
+            </div>
+
+            <div class="section">
+                <h3>🤖 Anomaly Detection</h3>
+                <div class="input-group">
+                    <label>CPU Usage:</label>
+                    <input type="number" id="cpu-input" value="85" min="0" max="100">
+                </div>
+                <div class="input-group">
+                    <label>Memory Usage:</label>
+                    <input type="number" id="memory-input" value="75" min="0" max="100">
+                </div>
+                <button class="button" onclick="testAnomalyDetection()">Detect Anomalies</button>
+                <div id="anomaly-result" class="result" style="display:none;"></div>
+            </div>
+
+            <div class="section">
+                <h3>⚡ Auto-Remediation</h3>
+                <div class="input-group">
+                    <label>Action:</label>
+                    <select id="remediation-action">
+                        <option value="restart_service">Restart Service</option>
+                        <option value="scale_up">Scale Up</option>
+                        <option value="clear_cache">Clear Cache</option>
+                        <option value="rollback_config">Rollback Config</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Target:</label>
+                    <input type="text" id="remediation-target" value="web_server" placeholder="Target system">
+                </div>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="dry-run" checked> Dry Run (Test Mode)
+                    </label>
+                </div>
+                <button class="button" onclick="testRemediation()">Execute Remediation</button>
+                <div id="remediation-result" class="result" style="display:none;"></div>
+            </div>
+
+            <div class="section">
+                <h3>💬 ChatOps AI</h3>
+                <div class="input-group">
+                    <label>Ask Smart CloudOps AI:</label>
+                    <textarea id="chatops-query" rows="3" placeholder="What is the system health status?">What is the current system performance and any anomalies?</textarea>
+                </div>
+                <button class="button" onclick="testChatOps()">Analyze Query</button>
+                <div id="chatops-result" class="result" style="display:none;"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📈 Real-time Metrics</h2>
+            <div id="metrics-display">Loading metrics...</div>
+            <button class="button" onclick="loadMetrics()">Refresh Metrics</button>
+        </div>
+
+        <div class="section">
+            <h2>🔗 Direct API Links</h2>
+            <p><strong>GET Endpoints (click to test):</strong></p>
+            <ul>
+                <li><a href="/health" target="_blank">/health</a> - System health check</li>
+                <li><a href="/status" target="_blank">/status</a> - Comprehensive status</li>
+                <li><a href="/metrics" target="_blank">/metrics</a> - Prometheus metrics</li>
+                <li><a href="/anomaly/status" target="_blank">/anomaly/status</a> - ML model status</li>
+                <li><a href="/remediation/status" target="_blank">/remediation/status</a> - Remediation engine status</li>
+                <li><a href="/chatops/history" target="_blank">/chatops/history</a> - Conversation history</li>
+                <li><a href="/chatops/context" target="_blank">/chatops/context</a> - System context</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        async function makeRequest(url, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(url, options);
+                const result = await response.json();
+                return { success: response.ok, data: result, status: response.status };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function testHealth() {
+            const result = await makeRequest('/health');
+            const resultDiv = document.getElementById('health-result');
+            resultDiv.style.display = 'block';
+            
+            if (result.success) {
+                resultDiv.innerHTML = `✅ Status: ${result.data.status}\nVersion: ${result.data.version}\nUptime: ${result.data.uptime_seconds}s\n\n${JSON.stringify(result.data, null, 2)}`;
+                resultDiv.style.background = '#d4edda';
+            } else {
+                resultDiv.innerHTML = `❌ Error: ${result.error || 'Request failed'}`;
+                resultDiv.style.background = '#f8d7da';
+            }
+        }
+
+        async function testAnomalyDetection() {
+            const cpu = document.getElementById('cpu-input').value;
+            const memory = document.getElementById('memory-input').value;
+            
+            const data = {
+                metrics: [
+                    { cpu: parseFloat(cpu), memory: parseFloat(memory) }
+                ]
+            };
+            
+            const result = await makeRequest('/anomaly/batch', 'POST', data);
+            const resultDiv = document.getElementById('anomaly-result');
+            resultDiv.style.display = 'block';
+            
+            if (result.success) {
+                const anomalies = result.data.anomalies_found;
+                resultDiv.innerHTML = `✅ Analysis Complete!\nAnomalies Found: ${anomalies}\nProcessing Time: ${result.data.total_processing_time_ms}ms\n\n${JSON.stringify(result.data, null, 2)}`;
+                resultDiv.style.background = anomalies > 0 ? '#fff3cd' : '#d4edda';
+            } else {
+                resultDiv.innerHTML = `❌ Error: ${result.error || 'Request failed'}`;
+                resultDiv.style.background = '#f8d7da';
+            }
+        }
+
+        async function testRemediation() {
+            const action = document.getElementById('remediation-action').value;
+            const target = document.getElementById('remediation-target').value;
+            const dryRun = document.getElementById('dry-run').checked;
+            
+            const data = {
+                action: action,
+                target: target,
+                dry_run: dryRun,
+                priority: 'high'
+            };
+            
+            const result = await makeRequest('/remediation/execute', 'POST', data);
+            const resultDiv = document.getElementById('remediation-result');
+            resultDiv.style.display = 'block';
+            
+            if (result.success) {
+                resultDiv.innerHTML = `✅ Remediation ${result.data.status}!\nAction: ${result.data.action}\nExecution Time: ${result.data.execution_time_seconds}s\nResources Affected: ${result.data.details?.resources_affected || 0}\n\n${JSON.stringify(result.data, null, 2)}`;
+                resultDiv.style.background = result.data.status === 'success' ? '#d4edda' : '#fff3cd';
+            } else {
+                resultDiv.innerHTML = `❌ Error: ${result.error || 'Request failed'}`;
+                resultDiv.style.background = '#f8d7da';
+            }
+        }
+
+        async function testChatOps() {
+            const query = document.getElementById('chatops-query').value;
+            
+            const data = { query: query };
+            
+            const result = await makeRequest('/chatops/analyze', 'POST', data);
+            const resultDiv = document.getElementById('chatops-result');
+            resultDiv.style.display = 'block';
+            
+            if (result.success) {
+                resultDiv.innerHTML = `✅ Analysis Complete!\nIntent: ${result.data.intent_classification}\nConfidence: ${(result.data.confidence * 100).toFixed(1)}%\n\nResponse: ${result.data.response}\n\n${JSON.stringify(result.data, null, 2)}`;
+                resultDiv.style.background = '#d4edda';
+            } else {
+                resultDiv.innerHTML = `❌ Error: ${result.error || 'Request failed'}`;
+                resultDiv.style.background = '#f8d7da';
+            }
+        }
+
+        async function loadSystemStatus() {
+            const result = await makeRequest('/status');
+            const statusDiv = document.getElementById('system-status');
+            
+            if (result.success) {
+                const data = result.data;
+                statusDiv.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div><strong>CPU Usage:</strong> ${data.system_metrics.cpu_usage}%</div>
+                        <div><strong>Memory Usage:</strong> ${data.system_metrics.memory_usage}%</div>
+                        <div><strong>ML Accuracy:</strong> ${(data.ml_model.accuracy * 100).toFixed(1)}%</div>
+                        <div><strong>Remediation Success:</strong> ${(data.remediation.success_rate * 100).toFixed(1)}%</div>
+                        <div><strong>Anomalies Detected:</strong> ${data.ml_model.anomalies_detected}</div>
+                        <div><strong>Requests Handled:</strong> ${data.performance.requests_handled}</div>
+                    </div>
+                `;
+            } else {
+                statusDiv.innerHTML = `❌ Failed to load status: ${result.error}`;
+            }
+        }
+
+        async function loadMetrics() {
+            const result = await makeRequest('/metrics');
+            const metricsDiv = document.getElementById('metrics-display');
+            
+            if (result.success) {
+                // For metrics endpoint, the response is text format
+                fetch('/metrics').then(response => response.text()).then(text => {
+                    metricsDiv.innerHTML = `<pre>${text}</pre>`;
+                });
+            } else {
+                metricsDiv.innerHTML = `❌ Failed to load metrics: ${result.error}`;
+            }
+        }
+
+        // Load initial data
+        window.onload = function() {
+            loadSystemStatus();
+            loadMetrics();
+        };
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            loadSystemStatus();
+        }, 30000);
+    </script>
+</body>
+</html>

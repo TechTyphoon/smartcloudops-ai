@@ -18,7 +18,7 @@ docker ps --format "table {{.Names}}\t{{.Status}}" | grep cloudops | head -5
 
 # 2. System Health
 echo -e "\n${YELLOW}🏥 System Health:${NC}"
-health_status=$(curl -s http://localhost:3003/health | jq -r '.status')
+health_status=$(curl -s http://localhost:5000/health | jq -r '.status')
 if [ "$health_status" = "healthy" ]; then
     echo -e "${GREEN}✅ System Status: $health_status${NC}"
 else
@@ -27,7 +27,7 @@ fi
 
 # 3. ML System Status
 echo -e "\n${YELLOW}🤖 ML System Status:${NC}"
-ml_initialized=$(curl -s http://localhost:3003/anomaly/status | jq -r '.initialized')
+ml_initialized=$(curl -s http://localhost:5000/anomaly/status | jq -r '.initialized')
 if [ "$ml_initialized" = "true" ]; then
     echo -e "${GREEN}✅ ML System: Initialized${NC}"
 else
@@ -46,7 +46,7 @@ fi
 # 5. Quick ML Performance Test
 echo -e "\n${YELLOW}⚡ Quick ML Performance Test:${NC}"
 start_time=$(date +%s%N)
-ml_result=$(curl -s -X POST http://localhost:3003/anomaly \
+ml_result=$(curl -s -X POST http://localhost:5000/anomaly \
     -H "Content-Type: application/json" \
     -d '{
         "metrics": {
@@ -83,6 +83,6 @@ echo "- Logs saved to logs/daily_health.log"
 echo "- System ready for daily operations"
 echo ""
 echo "🚀 Your Smart CloudOps AI is ready for use!"
-echo "   Main App: http://localhost:3003"
+echo "   Main App: http://localhost:5000"
 echo "   Prometheus: http://localhost:9090"
 echo "   Grafana: http://localhost:3004"

@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 class BetaTestingFramework:
     """Comprehensive beta testing framework for Smart CloudOps AI."""
 
-    def __init__(self, base_url: str = "http://localhost:3003"):
+    def __init__(self, base_url: str = "http://localhost:5000"):
         self.base_url = base_url.rstrip("/")
         self.session = requests.Session()
         self.session.headers.update({"Content-Type": "application/json"})

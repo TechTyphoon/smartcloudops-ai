@@ -234,7 +234,7 @@ REMEDIATION_FAILURE = Counter(
 
 # Initialize components
 config = _ConfigClass
-ai_handler = FlexibleAIHandler()
+ai_handler = FlexibleAIHandler(provider=os.getenv('AI_PROVIDER', 'auto'))
 log_retriever = LogRetriever()
 system_gatherer = SystemContextGatherer()
 
@@ -440,6 +440,53 @@ def health():
     )
 
 
+# API endpoints with /api/ prefix for consistency
+@app.route("/api/health")
+def api_health():
+    """API health check endpoint."""
+    return health()
+
+
+@app.route("/api/status")
+def api_status():
+    """API status endpoint."""
+    return status()
+
+
+@app.route("/api/info")
+def api_info():
+    """API information endpoint matching production app."""
+    return jsonify({
+        "application": "Smart CloudOps AI",
+        "version": "3.0.0",
+        "phase": "4 - Container Orchestration",
+        "environment": "production",
+        "container_runtime": "Docker",
+        "orchestration": "Docker Compose",
+        "services": {
+            "app_server": "Gunicorn + Flask",
+            "database": "PostgreSQL 17.5",
+            "cache": "Redis 7.2",
+            "web_server": "Nginx 1.25",
+            "monitoring": "Prometheus + Grafana"
+        },
+        "ports": {
+            "http": "8080",
+            "https": "8443", 
+            "grafana": "13000",
+            "prometheus": "19090",
+            "postgres": "15432",
+            "redis": "16379"
+        },
+        "features": {
+            "chatops": True,
+            "ml_anomaly_detection": ML_AVAILABLE,
+            "auto_remediation": REMEDIATION_AVAILABLE,
+            "monitoring": True
+        }
+    })
+
+
 @app.route("/query", methods=["POST"])
 def query():
     """ChatOps query endpoint with AI integration."""
@@ -625,6 +672,111 @@ def clear_history():
 
 
 # Phase 5: Advanced ChatOps Endpoints
+
+
+@app.route("/chatops/help", methods=["GET"])
+def chatops_help():
+    """Get ChatOps help and available commands."""
+    try:
+        help_data = {
+            "available_commands": {
+                "query": {
+                    "endpoint": "/query",
+                    "method": "POST",
+                    "description": "Ask natural language questions about system status",
+                    "example": '{"query": "What is the current system status?"}'
+                },
+                "logs": {
+                    "endpoint": "/logs",
+                    "method": "GET",
+                    "description": "Retrieve system logs",
+                    "parameters": ["limit", "level", "search"]
+                },
+                "context": {
+                    "endpoint": "/chatops/context",
+                    "method": "GET",
+                    "description": "Get comprehensive system context"
+                },
+                "analyze": {
+                    "endpoint": "/chatops/analyze",
+                    "method": "POST",
+                    "description": "Analyze system metrics and provide insights",
+                    "example": '{"query": "analyze system performance"}'
+                },
+                "history": {
+                    "endpoint": "/chatops/history",
+                    "method": "GET",
+                    "description": "View ChatOps conversation history"
+                },
+                "clear": {
+                    "endpoint": "/chatops/clear",
+                    "method": "POST",
+                    "description": "Clear ChatOps conversation history"
+                }
+            },
+            "quick_examples": [
+                "What is the current CPU usage?",
+                "Show me recent error logs",
+                "Analyze system performance",
+                "Check for anomalies"
+            ],
+            "status": "ChatOps system is operational",
+            "version": "5.0"
+        }
+
+        return jsonify(
+            format_response(
+                status="success",
+                message="ChatOps help information retrieved",
+                data=help_data,
+            )
+        )
+
+    except Exception as e:
+        logger.error(f"Error getting ChatOps help: {e}")
+        return (
+            jsonify(
+                format_response(
+                    status="error", message="Failed to get help information", error=str(e)
+                )
+            ),
+            500,
+        )
+
+
+@app.route("/chatops/status", methods=["GET"])
+def chatops_status():
+    """Get ChatOps system status."""
+    try:
+        # Get system metrics for status
+        system_status = {
+            "chatops_active": True,
+            "ai_handler_status": "operational" if ai_handler else "disabled",
+            "context_manager_status": "operational" if advanced_context_manager else "disabled",
+            "conversation_history_size": len(getattr(ai_handler, 'conversation_history', [])) if ai_handler else 0,
+            "last_query_time": datetime.now().isoformat(),
+            "available_endpoints": 7,
+            "system_health": "healthy"
+        }
+
+        return jsonify(
+            format_response(
+                status="success",
+                message="ChatOps status retrieved successfully",
+                data={"system_status": system_status},
+            )
+        )
+
+    except Exception as e:
+        logger.error(f"Error getting ChatOps status: {e}")
+        return (
+            jsonify(
+                format_response(
+                    status="error", message="Failed to get ChatOps status", error=str(e)
+                )
+            ),
+            500,
+        )
 
 
 @app.route("/chatops/context", methods=["GET"])

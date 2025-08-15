@@ -1,0 +1,28 @@
+services:
+  # Main Flask Application
+  smartcloudops-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.production
+    ports:
+      - "3000:3000"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_PORT=3000
+      - PROMETHEUS_URL=${PROMETHEUS_URL}
+      - REQUIRE_APPROVAL=false
+      - MAX_ACTIONS_PER_HOUR=3
+      - COOLDOWN_MINUTES=10
+      - REMEDIATION_TAG_KEY=Name
+      - REMEDIATION_TAG_VALUE=smartcloudops-ai-application
+      - SSM_SERVICE_NAME=smartcloudops-app
+      - AWS_REGION=${AWS_REGION}
+      # Provision a managed DB in AWS for prod and set a secret DATABASE_URL via SSM/Secrets Manager
+      - DATABASE_URL=${DATABASE_URL}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s 

@@ -1,0 +1,311 @@
+version: '3.8'
+
+services:
+  # Core Application Stack
+  smartcloudops-app:
+    build: 
+      context: .
+      dockerfile: Dockerfile.production  
+    container_name: smartcloudops-main
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - PYTHONPATH=/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - smartcloudops
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Database Stack
+  postgres-main:
+    image: postgres:15-alpine
+    container_name: postgres-main-db
+    environment:
+      POSTGRES_DB: smartcloudops
+      POSTGRES_USER: cloudops
+      POSTGRES_PASSWORD: cloudops123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - smartcloudops
+
+  redis-cache:
+    image: redis:7-alpine
+    container_name: redis-cache-server
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - smartcloudops
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus-server
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - smartcloudops
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    restart: unless-stopped
+    networks:
+      - smartcloudops
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter-metrics
+    ports:
+      - "9100:9100"
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    restart: unless-stopped
+    networks:
+      - smartcloudops
+
+  # Load Balancer Stack
+  nginx-lb:
+    image: nginx:alpine
+    container_name: nginx-load-balancer
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - smartcloudops-app
+    restart: unless-stopped
+    networks:
+      - smartcloudops
+
+  # Logging Stack
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
+    container_name: elasticsearch-logs
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - elastic_data:/usr/share/elasticsearch/data
+    restart: unless-stopped
+    networks:
+      - smartcloudops
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.8.0
+    container_name: kibana-dashboard
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch-logs:9200
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+    networks:
+      - smartcloudops
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.8.0
+    container_name: logstash-processor
+    ports:
+      - "5044:5044"
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+    networks:
+      - smartcloudops
+
+  # Message Queue Stack
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    container_name: rabbitmq-queue
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: cloudops
+      RABBITMQ_DEFAULT_PASS: cloudops123
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+    networks:
+      - smartcloudops
+
+  # ML/AI Processing Stack
+  ml-processor:
+    build: 
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: ml-processing-engine
+    ports:
+      - "5001:5000"
+    environment:
+      - FLASK_ENV=production
+      - SERVICE_TYPE=ml_processor
+      - PYTHONPATH=/app
+    command: python -m app.ml_service
+    restart: unless-stopped
+    depends_on:
+      - redis-cache
+      - postgres-main
+    networks:
+      - smartcloudops
+
+  # API Gateway
+  api-gateway:
+    build: 
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: api-gateway-service
+    ports:
+      - "8080:5000"
+    environment:
+      - FLASK_ENV=production
+      - SERVICE_TYPE=api_gateway
+      - PYTHONPATH=/app
+    command: python -m app.gateway_service
+    restart: unless-stopped
+    networks:
+      - smartcloudops
+
+  # Background Workers
+  worker-1:
+    build: 
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: background-worker-1
+    environment:
+      - FLASK_ENV=production
+      - WORKER_ID=1
+      - PYTHONPATH=/app
+    command: python -m app.worker
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq
+      - redis-cache
+    networks:
+      - smartcloudops
+
+  worker-2:
+    build: 
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: background-worker-2
+    environment:
+      - FLASK_ENV=production
+      - WORKER_ID=2
+      - PYTHONPATH=/app
+    command: python -m app.worker
+    restart: unless-stopped
+    depends_on:
+      - rabbitmq
+      - redis-cache
+    networks:
+      - smartcloudops
+
+  # Health Monitoring
+  health-monitor:
+    build: 
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: health-monitoring-service
+    ports:
+      - "5002:5000"
+    environment:
+      - FLASK_ENV=production
+      - SERVICE_TYPE=health_monitor
+      - PYTHONPATH=/app
+    command: python continuous_health_monitor.py
+    restart: unless-stopped
+    networks:
+      - smartcloudops
+
+  # Security Scanner
+  security-scanner:
+    build: 
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: security-scanning-service
+    environment:
+      - FLASK_ENV=production
+      - SERVICE_TYPE=security_scanner
+      - PYTHONPATH=/app
+    command: python scripts/security_audit.py
+    restart: unless-stopped
+    networks:
+      - smartcloudops
+
+  # Load Testing Service
+  load-tester:
+    build: 
+      context: .
+      dockerfile: Dockerfile.production
+    container_name: load-testing-service
+    environment:
+      - FLASK_ENV=production
+      - SERVICE_TYPE=load_tester
+      - PYTHONPATH=/app
+    command: python scripts/load_testing.py
+    restart: unless-stopped
+    networks:
+      - smartcloudops
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+  elastic_data:
+  rabbitmq_data:
+
+networks:
+  smartcloudops:
+    driver: bridge
+    name: smartcloudops-network

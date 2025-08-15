@@ -34,7 +34,7 @@ class SystemAuditor:
             "compliance_check": {},
             "recommendations": [],
         }
-        self.base_url = "http://localhost:3003"
+        self.base_url = "http://localhost:5000"
 
     def run_comprehensive_audit(self) -> Dict[str, Any]:
         """Run complete system audit."""
