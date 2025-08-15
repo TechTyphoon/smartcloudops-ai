@@ -819,7 +819,7 @@ def system_info():
 @app.route("/debug/reset", methods=["POST"])
 def reset_counters():
     """Reset system counters (for testing purposes)"""
-    global system_metrics, ml_model_status, remediation_status, conversation_history, request_count
+    global ml_model_status, remediation_status, request_count
 
     # Reset counters while preserving essential data
     ml_model_status["anomalies_detected"] = 0

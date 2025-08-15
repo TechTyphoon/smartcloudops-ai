@@ -265,7 +265,6 @@ def get_real_flask_app_stats():
 
 def analyze_real_anomalies(metrics_data):
     """Perform real anomaly detection based on actual training data"""
-    global real_ml_results
 
     try:
         # Load training data statistics
@@ -323,7 +322,7 @@ def analyze_real_anomalies(metrics_data):
 
 def initialize_real_data():
     """Initialize all real data sources"""
-    global real_system_data, real_ml_results, real_health_data, real_security_data
+    global real_health_data, real_security_data, real_system_data
 
     logger.info("Loading all real data sources...")
 
@@ -348,7 +347,7 @@ def initialize_real_data():
 @app.route("/health")
 def health():
     """Real system health using actual system metrics"""
-    global request_count, real_system_data
+    global request_count
     request_count += 1
 
     # Get fresh system data
