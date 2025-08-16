@@ -478,11 +478,21 @@ class DataProcessor:
         return pd.DataFrame(data)
 
     def preprocess_data(self, data):
-        """Preprocess data for ML models."""
+        """Preprocess data for ML model"""
         if isinstance(data, dict):
-            data = [data]
-        df = pd.DataFrame(data)
-        return df
+            data = pd.DataFrame([data])
+        elif not isinstance(data, pd.DataFrame):
+            data = pd.DataFrame(data)
+        
+        # Handle missing values by filling with median for numeric columns
+        for col in data.select_dtypes(include=[np.number]).columns:
+            if data[col].isnull().any():
+                data[col] = data[col].fillna(data[col].median())
+        
+        # Fill any remaining NaN values with 0
+        data = data.fillna(0)
+        
+        return data
 
     def validate_data(self, data):
         """Validate data quality."""
@@ -513,21 +523,55 @@ class DataProcessor:
 
 
 class AnomalyModelTrainer:
-    """Model training utilities."""
-
-    def __init__(self):
+    """Machine Learning Model Trainer for anomaly detection"""
+    
+    def __init__(self, model_type='isolation_forest'):
+        self.model_type = model_type
         self.model = None
-
-    def train_model(self, data):
-        """Train anomaly detection model."""
-        return True
-
-    def save_model(self, path):
-        """Save trained model."""
-        return True
-
-    def load_model(self, path):
-        """Load trained model."""
+        self.feature_columns = []
+        self.scaler = None
+        
+    def prepare_features(self, data):
+        """Prepare features for training"""
+        if isinstance(data, dict):
+            data = pd.DataFrame([data])
+        elif not isinstance(data, pd.DataFrame):
+            data = pd.DataFrame(data)
+        
+        # Store feature columns
+        self.feature_columns = list(data.columns)
+        
+        # Basic feature preparation
+        feature_data = data.select_dtypes(include=[np.number])
+        return feature_data
+        
+    def create_model(self):
+        """Create ML model instance"""
+        from sklearn.ensemble import IsolationForest
+        from sklearn.preprocessing import StandardScaler
+        
+        self.model = IsolationForest(
+            contamination=0.1,
+            random_state=42,
+            n_estimators=100
+        )
+        self.scaler = StandardScaler()
+        return self.model
+        
+    def train(self, data):
+        """Train the anomaly detection model"""
+        if self.model is None:
+            self.create_model()
+            
+        # Prepare features
+        feature_data = self.prepare_features(data)
+        
+        # Scale features
+        scaled_data = self.scaler.fit_transform(feature_data)
+        
+        # Train model
+        self.model.fit(scaled_data)
+        
         return True
 
 
