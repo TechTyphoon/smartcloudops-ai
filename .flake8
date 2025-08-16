@@ -7,9 +7,18 @@ exclude =
     __pycache__,
     venv,
     .venv,
+    smartcloudops_env,
+    .formatvenv,
+    venv/,
+    env/,
+    ENV/,
+    env.bak/,
+    venv.bak/,
     build,
     dist,
-    *.egg-info
+    *.egg-info,
+    backups/,
+    logs/
 per-file-ignores =
     app/main.py:E402
     app/remediation/engine.py:E402
