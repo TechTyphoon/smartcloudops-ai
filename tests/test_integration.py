@@ -14,11 +14,10 @@ import pytest
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from ml_models.anomaly_detector import AnomalyDetector
-
 from app.chatops.ai_handler import FlexibleAIHandler
 from app.main import app
 from app.remediation.engine import RemediationEngine
+from ml_models.anomaly_detector import AnomalyDetector
 
 
 class TestCompleteWorkflow:
