@@ -71,6 +71,13 @@ class TestCompleteWorkflow:
             "model_exists": True,
             "status": "operational",
         }
+        detector.get_model_status.return_value = {
+            "is_trained": True,
+            "model_type": "IsolationForest",
+            "model_exists": True,
+            "status": "operational",
+            "initialized": True,
+        }
         return detector
 
     @pytest.fixture

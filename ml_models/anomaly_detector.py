@@ -462,17 +462,54 @@ class DataProcessor:
 
     def _generate_synthetic_data(self, start_time, end_time):
         """Generate synthetic data for testing."""
+        timestamps = pd.date_range(start_time, end_time, freq="1min")
+        n_points = len(timestamps)
+
         return pd.DataFrame(
             {
-                "timestamp": pd.date_range(start_time, end_time, freq="1min"),
-                "cpu_usage_avg": np.random.uniform(10, 90, 60),
-                "memory_usage_pct": np.random.uniform(20, 80, 60),
+                "timestamp": timestamps,
+                "cpu_usage_avg": np.random.uniform(10, 90, n_points),
+                "memory_usage_pct": np.random.uniform(20, 80, n_points),
             }
         )
 
     def process_data(self, data):
         """Process raw data into features."""
         return pd.DataFrame(data)
+
+    def preprocess_data(self, data):
+        """Preprocess data for ML models."""
+        if isinstance(data, dict):
+            data = [data]
+        df = pd.DataFrame(data)
+        return df
+
+    def validate_data(self, data):
+        """Validate data quality."""
+        if isinstance(data, dict):
+            data = [data]
+        df = pd.DataFrame(data)
+
+        issues = []
+
+        # Check if we have enough data points
+        if len(df) < 10:
+            issues.append("Insufficient data points (minimum 10 required)")
+
+        # Check for missing values
+        if df.isnull().any().any():
+            issues.append("Contains missing values")
+
+        is_valid = len(issues) == 0
+        return is_valid, issues
+
+    def _load_config(self):
+        """Load configuration for data processor."""
+        return {
+            "prometheus_url": "http://localhost:9090",
+            "lookback_hours": 168,
+            "feature_window": 60,
+        }
 
 
 class AnomalyModelTrainer:

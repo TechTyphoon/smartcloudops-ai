@@ -31,7 +31,7 @@ class TestDataProcessor:
         """Test data processor initialization."""
         # Mock the config to avoid hardcoded URL issues
         with patch(
-            "ml_models.data_processor.DataProcessor._load_config"
+            "ml_models.anomaly_detector.DataProcessor._load_config"
         ) as mock_config:
             mock_config.return_value = {
                 "data": {
