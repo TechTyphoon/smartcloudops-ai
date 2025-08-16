@@ -1687,7 +1687,8 @@ def get_port() -> int:
 if __name__ == "__main__":
     logger.info("Starting Smart CloudOps AI Flask Application (Phase 4)")
     debug_mode = os.getenv("FLASK_DEBUG", "false").lower() == "true"
-    host = os.getenv("FLASK_HOST", "0.0.0.0")  # Changed for container compatibility
+    # Use 127.0.0.1 by default for security, override with FLASK_HOST for containers
+    host = os.getenv("FLASK_HOST", "127.0.0.1")
     port = get_port()
 
     logger.info(f"Starting Smart CloudOps AI on {host}:{port}")

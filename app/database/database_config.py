@@ -58,7 +58,7 @@ def init_database(app):
         try:
             # Test connection using SQLAlchemy 2.0 syntax
             with db.engine.connect() as connection:
-                result = connection.execute(text("SELECT 1"))
+                connection.execute(text("SELECT 1"))
                 print(
                     f"✅ Database connection successful: {DatabaseConfig.POSTGRES_DB}"
                 )

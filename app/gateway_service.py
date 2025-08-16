@@ -5,6 +5,7 @@ Central entry point for all API requests
 """
 
 import logging
+import os
 
 import requests
 from flask import Flask, jsonify, request
@@ -42,4 +43,6 @@ def gateway(path):
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    # Use environment variable for host, default to localhost for security
+    host = os.getenv("FLASK_HOST", "127.0.0.1")
+    app.run(host=host, port=5000, debug=False)
