@@ -3,645 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartCloudOps AI - Live Dashboard</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>Smart CloudOps AI - Production Dashboard</title>
     <style>
-        :root {
-            --primary-color: #1e40af;
-            --secondary-color: #3b82f6;
-            --accent-color: #06b6d4;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --error-color: #ef4444;
-            --background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --text-primary: #1f2937;
-            --text-secondary: #6b7280;
-            --border: rgba(255, 255, 255, 0.2);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background: var(--background);
-            min-height: 100vh;
-            color: var(--text-primary);
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-            animation: fadeIn 1s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .header {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 3rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color), var(--success-color));
-        }
-
-        .header h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
-        }
-
-        .header .subtitle {
-            color: var(--text-secondary);
-            font-size: 1.25rem;
-            margin-bottom: 2rem;
-        }
-
-        .status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .status-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .status-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-        }
-
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .card-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-        }
-
-        .icon-running { background: linear-gradient(135deg, var(--success-color), #059669); }
-        .icon-chatops { background: linear-gradient(135deg, var(--accent-color), #0891b2); }
-        .icon-ml { background: linear-gradient(135deg, var(--primary-color), #1d4ed8); }
-        .icon-remediation { background: linear-gradient(135deg, var(--warning-color), #d97706); }
-
-        .feature-status {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.75rem 1rem;
-            margin: 0.5rem 0;
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.02);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .feature-name {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .status-enabled {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success-color);
-        }
-
-        .status-disabled {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--error-color);
-        }
-
-        .endpoints-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-        }
-
-        .endpoint-category {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
-        }
-
-        .category-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .endpoint-list {
-            list-style: none;
-        }
-
-        .endpoint-item {
-            padding: 0.75rem 1rem;
-            margin: 0.5rem 0;
-            background: rgba(0, 0, 0, 0.02);
-            border-radius: 12px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .endpoint-item:hover {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: var(--secondary-color);
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-        }
-
-        .endpoint-item:active {
-            transform: translateX(3px) scale(0.98);
-            background: rgba(59, 130, 246, 0.2);
-        }
-
-        .endpoint-path {
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        .live-indicator {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--success-color);
-            font-weight: 600;
-        }
-
-        .pulse-dot {
-            width: 12px;
-            height: 12px;
-            background: var(--success-color);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.1); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        .system-metrics {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .metric-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 1.5rem;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .metric-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 0.5rem;
-        }
-
-        .metric-label {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .refresh-btn {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
-        }
-
-        .refresh-btn:hover {
-            transform: scale(1.1) rotate(180deg);
-        }
-
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 { font-size: 2.5rem; }
-            .container { padding: 1rem; }
-            .status-grid, .endpoints-grid { grid-template-columns: 1fr; }
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { background: #2c3e50; color: white; padding: 20px; text-align: center; margin-bottom: 20px; }
+        .section { background: white; padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .endpoint { margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 3px; }
+        .status-ok { background: #d4edda; border-color: #c3e6cb; }
+        .button { background: #3498db; color: white; padding: 10px 15px; border: none; cursor: pointer; margin: 5px; border-radius: 3px; }
+        .button:hover { background: #2980b9; }
+        .result { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 3px; white-space: pre-wrap; font-family: monospace; max-height: 200px; overflow-y: auto; }
+        .input-group { margin: 10px 0; }
+        .input-group input, .input-group textarea { width: 100%; padding: 8px; margin-top: 5px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .status-indicator { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+        .status-green { background: #28a745; }
+        .status-red { background: #dc3545; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="live-indicator">
-                <div class="pulse-dot"></div>
-                <span>Live System</span>
+            <h1>🚀 Smart CloudOps AI Production Dashboard</h1>
+            <p>All endpoints operational and ready for testing</p>
+        </div>
+
+        <div class="section">
+            <h2>📊 System Status</h2>
+            <div id="system-status">Loading system status...</div>
+            <button class="button" onclick="loadSystemStatus()">Refresh Status</button>
+        </div>
+
+        <div class="grid">
+            <div class="section">
+                <h3>🔍 Health Check</h3>
+                <div class="endpoint status-ok">
+                    <strong>GET /health</strong>
+                    <span class="status-indicator status-green"></span>
+                    <button class="button" onclick="testHealth()">Test Health</button>
+                </div>
+                <div id="health-result" class="result" style="display:none;"></div>
             </div>
-            
-            <h1><i class="fas fa-cloud"></i> SmartCloudOps AI</h1>
-            <p class="subtitle">Intelligent Cloud Operations & Automation Platform</p>
-            
-            <div class="system-metrics" id="systemMetrics">
-                <div class="metric-card">
-                    <div class="metric-value" id="versionDisplay">v3.1.0</div>
-                    <div class="metric-label">Version</div>
+
+            <div class="section">
+                <h3>🤖 Anomaly Detection</h3>
+                <div class="input-group">
+                    <label>CPU Usage:</label>
+                    <input type="number" id="cpu-input" value="85" min="0" max="100">
                 </div>
-                <div class="metric-card">
-                    <div class="metric-value" id="statusDisplay">Running</div>
-                    <div class="metric-label">System Status</div>
+                <div class="input-group">
+                    <label>Memory Usage:</label>
+                    <input type="number" id="memory-input" value="75" min="0" max="100">
                 </div>
-                <div class="metric-card">
-                    <div class="metric-value" id="uptimeDisplay">Live</div>
-                    <div class="metric-label">Uptime</div>
+                <button class="button" onclick="testAnomalyDetection()">Detect Anomalies</button>
+                <div id="anomaly-result" class="result" style="display:none;"></div>
+            </div>
+
+            <div class="section">
+                <h3>⚡ Auto-Remediation</h3>
+                <div class="input-group">
+                    <label>Action:</label>
+                    <select id="remediation-action">
+                        <option value="restart_service">Restart Service</option>
+                        <option value="scale_up">Scale Up</option>
+                        <option value="clear_cache">Clear Cache</option>
+                        <option value="rollback_config">Rollback Config</option>
+                    </select>
                 </div>
-                <div class="metric-card">
-                    <div class="metric-value" id="endpointCount">16</div>
-                    <div class="metric-label">API Endpoints</div>
+                <div class="input-group">
+                    <label>Target:</label>
+                    <input type="text" id="remediation-target" value="web_server" placeholder="Target system">
                 </div>
+                <div class="input-group">
+                    <label>
+                        <input type="checkbox" id="dry-run" checked> Dry Run (Test Mode)
+                    </label>
+                </div>
+                <button class="button" onclick="testRemediation()">Execute Remediation</button>
+                <div id="remediation-result" class="result" style="display:none;"></div>
+            </div>
+
+            <div class="section">
+                <h3>💬 ChatOps AI</h3>
+                <div class="input-group">
+                    <label>Ask Smart CloudOps AI:</label>
+                    <textarea id="chatops-query" rows="3" placeholder="What is the system health status?">What is the current system performance and any anomalies?</textarea>
+                </div>
+                <button class="button" onclick="testChatOps()">Analyze Query</button>
+                <div id="chatops-result" class="result" style="display:none;"></div>
             </div>
         </div>
 
-        <div class="status-grid">
-            <div class="status-card">
-                <div class="card-header">
-                    <h3 class="card-title">System Status</h3>
-                    <div class="card-icon icon-running">
-                        <i class="fas fa-server"></i>
-                    </div>
-                </div>
-                <div id="systemStatus">
-                    <div class="feature-status">
-                        <span class="feature-name">Application Status</span>
-                        <span class="status-badge status-enabled" id="appStatus">Running</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="status-card">
-                <div class="card-header">
-                    <h3 class="card-title">Feature Status</h3>
-                    <div class="card-icon icon-chatops">
-                        <i class="fas fa-cogs"></i>
-                    </div>
-                </div>
-                <div id="featureStatus">
-                    <div class="feature-status">
-                        <span class="feature-name">ChatOps</span>
-                        <span class="status-badge status-enabled">Enabled</span>
-                    </div>
-                    <div class="feature-status">
-                        <span class="feature-name">Auto Remediation</span>
-                        <span class="status-badge status-enabled">Enabled</span>
-                    </div>
-                    <div class="feature-status">
-                        <span class="feature-name">ML Anomaly Detection</span>
-                        <span class="status-badge status-disabled">Disabled</span>
-                    </div>
-                </div>
-            </div>
+        <div class="section">
+            <h2>📈 Real-time Metrics</h2>
+            <div id="metrics-display">Loading metrics...</div>
+            <button class="button" onclick="loadMetrics()">Refresh Metrics</button>
         </div>
 
-        <h2 style="color: white; text-align: center; margin: 3rem 0 2rem; font-size: 2.5rem; font-weight: 700;">
-            <i class="fas fa-api"></i> API Endpoints
-        </h2>
-
-        <div class="endpoints-grid" id="endpointsGrid">
-            <div class="endpoint-category">
-                <h3 class="category-title">
-                    <i class="fas fa-comments"></i>
-                    ChatOps
-                </h3>
-                <ul class="endpoint-list">
-                    <li class="endpoint-item" onclick="testEndpoint('/query')">
-                        <span class="endpoint-path">/query</span>
-                    </li>
-                    <li class="endpoint-item" onclick="testEndpoint('/logs')">
-                        <span class="endpoint-path">/logs</span>
-                    </li>
-                    <li class="endpoint-item" onclick="testEndpoint('/chatops/history')">
-                        <span class="endpoint-path">/chatops/history</span>
-                    </li>
-                    <li class="endpoint-item" onclick="testEndpoint('/chatops/clear')">
-                        <span class="endpoint-path">/chatops/clear</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="endpoint-category">
-                <h3 class="category-title">
-                    <i class="fas fa-brain"></i>
-                    ML Anomaly Detection
-                </h3>
-                <ul class="endpoint-list">
-                    <li class="endpoint-item" onclick="testEndpoint('/anomaly')">
-                        <span class="endpoint-path">/anomaly</span>
-                    </li>
-                    <li class="endpoint-item" onclick="testEndpoint('/anomaly/batch')">
-                        <span class="endpoint-path">/anomaly/batch</span>
-                    </li>
-                    <li class="endpoint-item" onclick="testEndpoint('/anomaly/status')">
-                        <span class="endpoint-path">/anomaly/status</span>
-                    </li>
-                    <li class="endpoint-item" onclick="testEndpoint('/anomaly/train')">
-                        <span class="endpoint-path">/anomaly/train</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="endpoint-category">
-                <h3 class="category-title">
-                    <i class="fas fa-tools"></i>
-                    Remediation
-                </h3>
-                <ul class="endpoint-list">
-                    <li class="endpoint-item" onclick="testEndpoint('/remediation/status')">
-                        <span class="endpoint-path">/remediation/status</span>
-                    </li>
-                    <li class="endpoint-item" onclick="testEndpoint('/remediation/evaluate')">
-                        <span class="endpoint-path">/remediation/evaluate</span>
-                    </li>
-                    <li class="endpoint-item" onclick="testEndpoint('/remediation/execute')">
-                        <span class="endpoint-path">/remediation/execute</span>
-                    </li>
-                    <li class="endpoint-item" onclick="testEndpoint('/remediation/test')">
-                        <span class="endpoint-path">/remediation/test</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="endpoint-category">
-                <h3 class="category-title">
-                    <i class="fas fa-chart-line"></i>
-                    Monitoring
-                </h3>
-                <ul class="endpoint-list">
-                    <li class="endpoint-item" onclick="testEndpoint('/status')">
-                        <span class="endpoint-path">/status</span>
-                    </li>
-                    <li class="endpoint-item" onclick="testEndpoint('/metrics')">
-                        <span class="endpoint-path">/metrics</span>
-                    </li>
-                </ul>
-            </div>
+        <div class="section">
+            <h2>🔗 Direct API Links</h2>
+            <p><strong>GET Endpoints (click to test):</strong></p>
+            <ul>
+                <li><a href="/health" target="_blank">/health</a> - System health check</li>
+                <li><a href="/status" target="_blank">/status</a> - Comprehensive status</li>
+                <li><a href="/metrics" target="_blank">/metrics</a> - Prometheus metrics</li>
+                <li><a href="/anomaly/status" target="_blank">/anomaly/status</a> - ML model status</li>
+                <li><a href="/remediation/status" target="_blank">/remediation/status</a> - Remediation engine status</li>
+                <li><a href="/chatops/history" target="_blank">/chatops/history</a> - Conversation history</li>
+                <li><a href="/chatops/context" target="_blank">/chatops/context</a> - System context</li>
+            </ul>
         </div>
     </div>
 
-    <button class="refresh-btn" onclick="refreshData()" title="Refresh Data">
-        <i class="fas fa-sync-alt"></i>
-    </button>
-
     <script>
-        let refreshInterval;
-        let startTime = Date.now();
+        async function makeRequest(url, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(url, options);
+                const result = await response.json();
+                return { success: response.ok, data: result, status: response.status };
+            } catch (error) {
+                return { success: false, error: error.message };
+            }
+        }
 
-        // Feature icons mapping
-        const categoryIcons = {
-            'chatops': 'fas fa-comments',
-            'ml_anomaly_detection': 'fas fa-brain',
-            'remediation': 'fas fa-tools',
-            'monitoring': 'fas fa-chart-line'
+        async function testHealth() {
+            const result = await makeRequest('/health');
+            const resultDiv = document.getElementById('health-result');
+            resultDiv.style.display = 'block';
+            
+            if (result.success) {
+                resultDiv.innerHTML = `✅ Status: ${result.data.status}\nVersion: ${result.data.version}\nUptime: ${result.data.uptime_seconds}s\n\n${JSON.stringify(result.data, null, 2)}`;
+                resultDiv.style.background = '#d4edda';
+            } else {
+                resultDiv.innerHTML = `❌ Error: ${result.error || 'Request failed'}`;
+                resultDiv.style.background = '#f8d7da';
+            }
+        }
+
+        async function testAnomalyDetection() {
+            const cpu = document.getElementById('cpu-input').value;
+            const memory = document.getElementById('memory-input').value;
+            
+            const data = {
+                metrics: [
+                    { cpu: parseFloat(cpu), memory: parseFloat(memory) }
+                ]
+            };
+            
+            const result = await makeRequest('/anomaly/batch', 'POST', data);
+            const resultDiv = document.getElementById('anomaly-result');
+            resultDiv.style.display = 'block';
+            
+            if (result.success) {
+                const anomalies = result.data.anomalies_found;
+                resultDiv.innerHTML = `✅ Analysis Complete!\nAnomalies Found: ${anomalies}\nProcessing Time: ${result.data.total_processing_time_ms}ms\n\n${JSON.stringify(result.data, null, 2)}`;
+                resultDiv.style.background = anomalies > 0 ? '#fff3cd' : '#d4edda';
+            } else {
+                resultDiv.innerHTML = `❌ Error: ${result.error || 'Request failed'}`;
+                resultDiv.style.background = '#f8d7da';
+            }
+        }
+
+        async function testRemediation() {
+            const action = document.getElementById('remediation-action').value;
+            const target = document.getElementById('remediation-target').value;
+            const dryRun = document.getElementById('dry-run').checked;
+            
+            const data = {
+                action: action,
+                target: target,
+                dry_run: dryRun,
+                priority: 'high'
+            };
+            
+            const result = await makeRequest('/remediation/execute', 'POST', data);
+            const resultDiv = document.getElementById('remediation-result');
+            resultDiv.style.display = 'block';
+            
+            if (result.success) {
+                resultDiv.innerHTML = `✅ Remediation ${result.data.status}!\nAction: ${result.data.action}\nExecution Time: ${result.data.execution_time_seconds}s\nResources Affected: ${result.data.details?.resources_affected || 0}\n\n${JSON.stringify(result.data, null, 2)}`;
+                resultDiv.style.background = result.data.status === 'success' ? '#d4edda' : '#fff3cd';
+            } else {
+                resultDiv.innerHTML = `❌ Error: ${result.error || 'Request failed'}`;
+                resultDiv.style.background = '#f8d7da';
+            }
+        }
+
+        async function testChatOps() {
+            const query = document.getElementById('chatops-query').value;
+            
+            const data = { query: query };
+            
+            const result = await makeRequest('/chatops/analyze', 'POST', data);
+            const resultDiv = document.getElementById('chatops-result');
+            resultDiv.style.display = 'block';
+            
+            if (result.success) {
+                resultDiv.innerHTML = `✅ Analysis Complete!\nIntent: ${result.data.intent_classification}\nConfidence: ${(result.data.confidence * 100).toFixed(1)}%\n\nResponse: ${result.data.response}\n\n${JSON.stringify(result.data, null, 2)}`;
+                resultDiv.style.background = '#d4edda';
+            } else {
+                resultDiv.innerHTML = `❌ Error: ${result.error || 'Request failed'}`;
+                resultDiv.style.background = '#f8d7da';
+            }
+        }
+
+        async function loadSystemStatus() {
+            const result = await makeRequest('/status');
+            const statusDiv = document.getElementById('system-status');
+            
+            if (result.success) {
+                const data = result.data;
+                statusDiv.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div><strong>CPU Usage:</strong> ${data.system_metrics.cpu_usage}%</div>
+                        <div><strong>Memory Usage:</strong> ${data.system_metrics.memory_usage}%</div>
+                        <div><strong>ML Accuracy:</strong> ${(data.ml_model.accuracy * 100).toFixed(1)}%</div>
+                        <div><strong>Remediation Success:</strong> ${(data.remediation.success_rate * 100).toFixed(1)}%</div>
+                        <div><strong>Anomalies Detected:</strong> ${data.ml_model.anomalies_detected}</div>
+                        <div><strong>Requests Handled:</strong> ${data.performance.requests_handled}</div>
+                    </div>
+                `;
+            } else {
+                statusDiv.innerHTML = `❌ Failed to load status: ${result.error}`;
+            }
+        }
+
+        async function loadMetrics() {
+            const result = await makeRequest('/metrics');
+            const metricsDiv = document.getElementById('metrics-display');
+            
+            if (result.success) {
+                // For metrics endpoint, the response is text format
+                fetch('/metrics').then(response => response.text()).then(text => {
+                    metricsDiv.innerHTML = `<pre>${text}</pre>`;
+                });
+            } else {
+                metricsDiv.innerHTML = `❌ Failed to load metrics: ${result.error}`;
+            }
+        }
+
+        // Load initial data
+        window.onload = function() {
+            loadSystemStatus();
+            loadMetrics();
         };
 
-        // Load system data
-        async function loadSystemData() {
-            try {
-                document.body.classList.add('loading');
-                
-                // Fetch main system data with error handling
-                let data;
-                try {
-                    const response = await fetch('/api/system-info');
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
-                    data = await response.json();
-                    console.log('✅ API Response:', data);
-                } catch (fetchError) {
-                    console.warn('⚠️ API fetch failed, using fallback data:', fetchError);
-                    // Fallback data structure
-                    data = {
-                        version: "3.1.0-production",
-                        status: "running",
-                        message: "Smart CloudOps AI - Flask Application",
-                        features: {
-                            chatops: true,
-                            auto_remediation: true,
-                            ml_anomaly_detection: false
-                        },
-                        endpoints: {
-                            chatops: ["/query", "/logs", "/chatops/history", "/chatops/clear"],
-                            ml_anomaly_detection: ["/anomaly", "/anomaly/batch", "/anomaly/status", "/anomaly/train"],
-                            remediation: ["/remediation/status", "/remediation/evaluate", "/remediation/execute", "/remediation/test"],
-                            monitoring: ["/status", "/metrics"]
-                        }
-                    };
-                }
-                
-                // Update system metrics
-                document.getElementById('versionDisplay').textContent = data.version;
-                document.getElementById('statusDisplay').textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
-                
-                // Calculate uptime
-                const uptime = Math.floor((Date.now() - startTime) / 1000);
-                const hours = Math.floor(uptime / 3600);
-                const minutes = Math.floor((uptime % 3600) / 60);
-                document.getElementById('uptimeDisplay').textContent = `${hours}h ${minutes}m`;
-                
-                // Count endpoints
-                let totalEndpoints = 0;
-                Object.values(data.endpoints).forEach(endpoints => totalEndpoints += endpoints.length);
-                document.getElementById('endpointCount').textContent = totalEndpoints;
-                
-                // Update features
-                updateFeatures(data.features);
-                
-                // Update endpoints
-                updateEndpoints(data.endpoints);
-                
-                console.log('✅ System data loaded successfully');
-            } catch (error) {
-                console.error('❌ Failed to load system data:', error);
-                // Show error state but still display basic info
-                document.getElementById('versionDisplay').textContent = 'v3.1.0';
-                document.getElementById('statusDisplay').textContent = 'Running';
-                document.getElementById('uptimeDisplay').textContent = 'Live';
-                document.getElementById('endpointCount').textContent = '16+';
-            } finally {
-                document.body.classList.remove('loading');
-            }
-        }
-
-        function updateFeatures(features) {
-            const container = document.getElementById('featureStatus');
-            container.innerHTML = '';
-            
-            Object.entries(features).forEach(([feature, enabled]) => {
-                const featureDiv = document.createElement('div');
-                featureDiv.className = 'feature-status';
-                
-                const name = feature.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                const statusClass = enabled ? 'status-enabled' : 'status-disabled';
-                const statusText = enabled ? 'Enabled' : 'Disabled';
-                
-                featureDiv.innerHTML = `
-                    <span class="feature-name">${name}</span>
-                    <span class="status-badge ${statusClass}">${statusText}</span>
-                `;
-                
-                container.appendChild(featureDiv);
-            });
-        }
-
-        function updateEndpoints(endpoints) {
-            const container = document.getElementById('endpointsGrid');
-            container.innerHTML = '';
-            
-            Object.entries(endpoints).forEach(([category, endpointList]) => {
-                const categoryDiv = document.createElement('div');
-                categoryDiv.className = 'endpoint-category';
-                
-                const categoryName = category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-                const iconClass = categoryIcons[category] || 'fas fa-link';
-                
-                categoryDiv.innerHTML = `
-                    <h3 class="category-title">
-                        <i class="${iconClass}"></i>
-                        ${categoryName}
-                    </h3>
-                    <ul class="endpoint-list">
-                        ${endpointList.map(endpoint => `
-                            <li class="endpoint-item" onclick="testEndpoint('${endpoint}')">
-                                <span class="endpoint-path">${endpoint}</span>
-                            </li>
-                        `).join('')}
-                    </ul>
-                `;
-                
-                container.appendChild(categoryDiv);
-            });
-        }
-
-        function testEndpoint(endpoint) {
-            console.log('Testing endpoint:', endpoint);
-            const fullUrl = window.location.origin + endpoint;
-            
-            // For GET endpoints, open in new tab
-            if (endpoint.includes('/status') || endpoint.includes('/health') || 
-                endpoint.includes('/metrics') || endpoint.includes('/logs') ||
-                endpoint.includes('/history')) {
-                window.open(fullUrl, '_blank');
-            } 
-            // For API endpoints that need interaction, show a popup with instructions
-            else {
-                const message = `Endpoint: ${endpoint}\n\nFull URL: ${fullUrl}\n\nThis endpoint is available for:\n- API integrations\n- Testing with curl/Postman\n- Direct HTTP requests\n\nWould you like to open it in a new tab?`;
-                
-                if (confirm(message)) {
-                    window.open(fullUrl, '_blank');
-                }
-            }
-        }
-
-        function refreshData() {
-            loadSystemData();
-        }
-
-        // Initialize dashboard
-        document.addEventListener('DOMContentLoaded', function() {
-            loadSystemData();
-            
-            // Auto-refresh every 30 seconds
-            refreshInterval = setInterval(loadSystemData, 30000);
-        });
-
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', function() {
-            if (refreshInterval) clearInterval(refreshInterval);
-        });
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            loadSystemStatus();
+        }, 30000);
     </script>
 </body>
 </html>

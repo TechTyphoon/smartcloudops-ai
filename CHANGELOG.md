@@ -119,3 +119,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Basic CI/CD pipeline configuration
 - Docker development environment
 - Project documentation framework
+
+## [3.1.1] - 2025-08-16
+### Changed
+- 🧹 MAJOR REPOSITORY CLEANUP: Organized 200+ files into proper directory structure
+- 📁 Moved documentation to docs/archive/ (66 files archived)
+- 🗂️  Organized scripts into scripts/deploy/ and scripts/monitoring/
+- 📦 Moved database files to app/database/ module
+- 🧪 Consolidated test files in tests/ directory
+- ⚡ Removed 700MB+ terraform cache for faster clones
+- 🎯 Repository is now lean and production-ready for CI/CD
+
+### Removed
+- Redundant backup files (*.bak-*, *.old)
+- Duplicate docker-compose configurations
+- Emergency/temporary scripts
+- Orphaned file fragments
+
+### Added
+- Comprehensive .gitignore for better version control
+- Organized configs/ directory structure
+- Clean docs/ with archive preservation

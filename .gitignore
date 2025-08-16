@@ -1,117 +1,112 @@
-# Python
-__pycache__/
-*.py[cod]
+
+*~
+._*
 *$py.class
-*.so
-.Python
+.aws/
+# AWS
 build/
+*.ckpt
+*.cover
+.coverage
+.coverage.*
+# Coverage reports
+coverage.xml
+credentials/
+*.crt
+.cursor/
+data/
 develop-eggs/
 dist/
+# Docker
+.dockerignore
+docs/_build/
+# Documentation builds
 downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
+.DS_Store
+.DS_Store?
 *.egg
-MANIFEST
-
-# Virtual Environment
-venv/
+*.egg-info/
+.eggs/
+eggs/
+ehthumbs.db
+.env
 env/
 ENV/
 env.bak/
-venv.bak/
+.env.development.local
+# Environment Variables
+.env.local
+.env.production.local
+.env.test.local
 .formatvenv/
-.venv/
-
+generate_*.py
+*.h5
+htmlcov/
+.hypothesis/
 # IDE
-.vscode/
 .idea/
-*.swp
-*.swo
-*~
-
+# IDE and build artifacts
+.installed.cfg
+.ipynb_checkpoints/
+*.joblib
+# Jupyter Notebooks
+*.key
+lib/
+lib64/
+*.log
+logs/
+# Logs
+# Logs and data
+MANIFEST
+# ML Models
+ml_models/data/
+ml_models/models/
+ml_models/trained/
+models/
+npm-debug.log*
 # OS
-.DS_Store
-.DS_Store?
-._*
+parts/
+*.pem
+*.pkl
+__pycache__/
+*.py[cod]
+.pytest_cache/
+# Python
+.Python
+sdist/
+secrets/
+# Secrets and credentials
+site/
+smartcloudops_env/
+*.so
 .Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# Terraform
-*.tfstate
-*.tfstate.*
+*.swo
+*.swp
+*.temp
+# Temporary files
 .terraform/
+# Terraform
 .terraform.lock.hcl
+terraform/.terraform/
+terraform/terraform.tfstate*
 terraform.tfvars
+# Test data generation scripts (one-time use)
+test_*.py# CI Test 1755323616
 *.tfplan
 tfplan*
-
-# AWS
-.aws/
-
-# Environment Variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Logs
-logs/
-*.log
-npm-debug.log*
+*.tfstate
+*.tfstate.*
+Thumbs.db
+*.tmp
+.Trashes
+var/
+.venv/
+venv/
+venv.bak/
+# Virtual Environment
+# Virtual environments
+.vscode/
+wheels/
+# Workflow Test 1755324085
 yarn-debug.log*
 yarn-error.log*
-
-# Docker
-.dockerignore
-
-# ML Models
-*.pkl
-*.joblib
-*.h5
-*.ckpt
-models/
-ml_models/models/
-ml_models/data/
-
-# Jupyter Notebooks
-.ipynb_checkpoints/
-
-# Temporary files
-*.tmp
-*.temp
-
-# Secrets and credentials
-secrets/
-credentials/
-*.pem
-*.key
-*.crt
-
-# Coverage reports
-htmlcov/
-.coverage
-.coverage.*
-coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
-
-# Documentation builds
-docs/_build/
-site/
-
-# Test data generation scripts (one-time use)
-generate_*.py
-test_*.py# CI Test 1755323616
-# Workflow Test 1755324085

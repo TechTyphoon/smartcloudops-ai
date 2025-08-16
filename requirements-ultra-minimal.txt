@@ -1,6 +1,0 @@
-# Ultra-minimal requirements for basic Flask app
-Flask==2.2.5
-Flask-CORS==4.0.0
-gunicorn==22.0.0  # Fix for CVE-2024-6827
-requests==2.28.0
-setuptools>=78.1.2  # Fix for CVE-2025-47273 
