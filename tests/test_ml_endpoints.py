@@ -45,7 +45,7 @@ class TestMLEndpoints:
                 "model_exists": True,
                 "model_path": "models/anomaly_detector.pkl",
                 "status": "operational",
-                "config": {"contamination": 0.1}
+                "config": {"contamination": 0.1},
             }
             # Fix: Use train instead of train_model
             mock.train.return_value = {
