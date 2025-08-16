@@ -110,8 +110,8 @@ class RemediationEngine:
             }
 
             logger.info(
-                f"Anomaly evaluation: severity={severity}, score={
-                    anomaly_score:.3f}, needs_remediation={needs_remediation}"
+                f"Anomaly evaluation: severity={severity}, score="
+                f"{anomaly_score:.3f}, needs_remediation={needs_remediation}"
             )
             return evaluation
 
@@ -341,11 +341,8 @@ class RemediationEngine:
                     self.last_action_time = datetime.now()
 
                     logger.info(
-                        f"Executed action {
-                            action['action']}: {
-                            result.get(
-                                'status',
-                                'unknown')}"
+                        f"Executed action {action['action']}: "
+                        f"{result.get('status', 'unknown')}"
                     )
 
                 except Exception as e:

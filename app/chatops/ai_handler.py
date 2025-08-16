@@ -381,8 +381,7 @@ class FlexibleAIHandler:
             self._setup_gemini_provider()
         else:
             logger.error(
-                f"Unknown provider: {
-                    self.provider_name}, falling back to local"
+                f"Unknown provider: {self.provider_name}, falling back to local"
             )
             self.provider_name = "local"
             self._setup_local_provider()
@@ -639,8 +638,8 @@ Always respond in a professional, helpful manner focused on operational excellen
                 return {
                     "status": "error",
                     "error": "AI functionality not available",
-                    "message": f"No AI provider configured. Set {
-                        self.provider_name.upper()}_API_KEY environment variable.",
+                    "message": f"No AI provider configured. Set "
+                    f"{self.provider_name.upper()}_API_KEY environment variable.",
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 

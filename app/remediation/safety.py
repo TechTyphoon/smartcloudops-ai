@@ -225,8 +225,8 @@ class SafetyManager:
                     if action.get("priority") == "immediate":
                         return {
                             "safe": False,
-                            "reason": f'Dangerous action detected: {
-                                action["action"]} with immediate priority',
+                            "reason": f"Dangerous action detected: "
+                            f'{action["action"]} with immediate priority',
                         }
 
             return {"safe": True, "reason": "All actions appear safe"}
