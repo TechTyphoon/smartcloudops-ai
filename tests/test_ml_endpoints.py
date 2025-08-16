@@ -3,9 +3,11 @@
 Tests for ML anomaly detection endpoints
 """
 
-import pytest
 import json
 from unittest.mock import Mock, patch
+
+import pytest
+
 from app.main import app
 
 
@@ -50,9 +52,10 @@ class TestMLEndpoints:
 
     def test_detect_anomaly_success(self, client, mock_anomaly_detector):
         """Test successful anomaly detection."""
-        with patch("app.main.anomaly_detector", mock_anomaly_detector), patch(
-            "app.auth.require_auth"
-        ) as mock_auth:
+        with (
+            patch("app.main.anomaly_detector", mock_anomaly_detector),
+            patch("app.auth.require_auth") as mock_auth,
+        ):
             # Mock authentication to always pass
             mock_auth.return_value = lambda f: f
 
@@ -166,9 +169,10 @@ class TestMLEndpoints:
 
     def test_ml_endpoints_disabled(self, client):
         """Test ML endpoints when ML is disabled."""
-        with patch("app.main.ML_AVAILABLE", False), patch(
-            "app.auth.require_auth"
-        ) as mock_auth:
+        with (
+            patch("app.main.ML_AVAILABLE", False),
+            patch("app.auth.require_auth") as mock_auth,
+        ):
             # Mock authentication to always pass
             mock_auth.return_value = lambda f: f
 
