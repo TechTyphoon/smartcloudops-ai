@@ -54,7 +54,7 @@ class TestMLEndpoints:
         """Test successful anomaly detection."""
         with (
             patch("app.main.anomaly_detector", mock_anomaly_detector),
-            patch("app.main.require_auth") as mock_auth,
+            patch("app.auth.require_auth") as mock_auth,
         ):
             # Mock authentication to always pass
             mock_auth.return_value = lambda f: f
@@ -69,7 +69,7 @@ class TestMLEndpoints:
 
     def test_detect_anomaly_no_data(self, client):
         """Test anomaly detection with no data."""
-        with patch("app.main.require_auth") as mock_auth:
+        with patch("app.auth.require_auth") as mock_auth:
             # Mock authentication to always pass
             mock_auth.return_value = lambda f: f
 
@@ -81,7 +81,7 @@ class TestMLEndpoints:
 
     def test_detect_anomaly_no_metrics(self, client):
         """Test anomaly detection with no metrics."""
-        with patch("app.main.require_auth") as mock_auth:
+        with patch("app.auth.require_auth") as mock_auth:
             # Mock authentication to always pass
             mock_auth.return_value = lambda f: f
 
@@ -93,7 +93,7 @@ class TestMLEndpoints:
 
     def test_batch_detect_anomaly_success(self, client, mock_anomaly_detector):
         """Test successful batch anomaly detection."""
-        with patch("app.main.require_auth") as mock_auth:
+        with patch("app.auth.require_auth") as mock_auth:
             # Mock authentication to always pass
             mock_auth.return_value = lambda f: f
 
@@ -115,7 +115,7 @@ class TestMLEndpoints:
 
     def test_batch_detect_anomaly_no_data(self, client):
         """Test batch anomaly detection with no data."""
-        with patch("app.main.require_auth") as mock_auth:
+        with patch("app.auth.require_auth") as mock_auth:
             # Mock authentication to always pass
             mock_auth.return_value = lambda f: f
 
@@ -127,7 +127,7 @@ class TestMLEndpoints:
 
     def test_ml_status_success(self, client, mock_anomaly_detector):
         """Test successful ML status retrieval."""
-        with patch("app.main.require_auth") as mock_auth:
+        with patch("app.auth.require_auth") as mock_auth:
             # Mock authentication to always pass
             mock_auth.return_value = lambda f: f
 
@@ -140,7 +140,7 @@ class TestMLEndpoints:
 
     def test_train_model_success(self, client, mock_anomaly_detector):
         """Test successful model training."""
-        with patch("app.main.require_auth") as mock_auth:
+        with patch("app.auth.require_auth") as mock_auth:
             # Mock authentication to always pass
             mock_auth.return_value = lambda f: f
 
@@ -156,7 +156,7 @@ class TestMLEndpoints:
 
     def test_train_model_default(self, client, mock_anomaly_detector):
         """Test model training with default parameters."""
-        with patch("app.main.require_auth") as mock_auth:
+        with patch("app.auth.require_auth") as mock_auth:
             # Mock authentication to always pass
             mock_auth.return_value = lambda f: f
 
@@ -171,7 +171,7 @@ class TestMLEndpoints:
         """Test ML endpoints when ML is disabled."""
         with (
             patch("app.main.ML_AVAILABLE", False),
-            patch("app.main.require_auth") as mock_auth,
+            patch("app.auth.require_auth") as mock_auth,
         ):
             # Mock authentication to always pass
             mock_auth.return_value = lambda f: f
@@ -186,7 +186,7 @@ class TestMLEndpoints:
 
     def test_ml_endpoints_error_handling(self, client, mock_anomaly_detector):
         """Test error handling in ML endpoints."""
-        with patch("app.main.require_auth") as mock_auth:
+        with patch("app.auth.require_auth") as mock_auth:
             # Mock authentication to always pass
             mock_auth.return_value = lambda f: f
 
