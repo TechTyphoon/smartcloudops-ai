@@ -5,7 +5,6 @@ Dedicated microservice for ML operations
 """
 
 import logging
-import os
 
 from flask import Flask, jsonify, request
 

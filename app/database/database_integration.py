@@ -1,7 +1,6 @@
 # database_integration.py - Production Database Integration Layer
 # Smart CloudOps AI Database Service Layer
 
-import json
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
@@ -11,11 +10,10 @@ from models import (
     ChatOpsInteraction,
     HealthCheck,
     MLTrainingData,
-    RemediationAction,
     SecurityScan,
     SystemMetrics,
 )
-from sqlalchemy import and_, desc, func, or_
+from sqlalchemy import desc, func
 from sqlalchemy.exc import SQLAlchemyError
 
 

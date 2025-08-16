@@ -3,15 +3,13 @@
 Smart CloudOps AI - Notification Management
 """
 
-import json
 import logging
 import os
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Union
+from datetime import datetime
+from typing import Dict, List, Optional, Union
 
 import boto3
 import requests
-from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 
 logger = logging.getLogger(__name__)
 

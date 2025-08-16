@@ -19,17 +19,14 @@ class AIProvider(ABC):
     @abstractmethod
     def initialize(self, api_key: str) -> bool:
         """Initialize the AI provider."""
-        pass
 
     @abstractmethod
     def process_query(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, Any]:
         """Process a query with the AI provider."""
-        pass
 
     @abstractmethod
     def get_model_info(self) -> Dict[str, str]:
         """Get information about the current model."""
-        pass
 
 
 class OpenAIProvider(AIProvider):

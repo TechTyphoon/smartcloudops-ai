@@ -25,8 +25,6 @@ load_dotenv()
 class ConfigValidationError(Exception):
     """Custom exception for configuration validation errors."""
 
-    pass
-
 
 class Config:
     """Base configuration class with validation."""
