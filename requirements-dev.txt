@@ -1,12 +1,12 @@
 # requirements-dev.txt - Development and CI/CD Dependencies
 # Pin exact versions for CI consistency
 
-# Code Quality Tools
-black==24.4.2
-isort[colors]==5.13.2
-flake8==7.0.0
+# Code Quality & Security
+flake8==6.1.0
+black==23.11.0
+isort==5.12.0
 bandit==1.7.5
-safety==3.1.0
+safety==3.6.0
 
 # Testing
 pytest==8.2.0
