@@ -360,6 +360,14 @@ class AnomalyDetector:
             "version": "1.0",
         }
 
+    def get_system_status(self) -> Dict[str, Any]:
+        """Get system status for integration tests compatibility."""
+        return {
+            "initialized": True,
+            "model_exists": os.path.exists(self.model_path),
+            "status": "operational" if self.is_trained else "training_required",
+        }
+
 
 class TimeSeriesAnalyzer:
     """
