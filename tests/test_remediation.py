@@ -4,20 +4,21 @@ Smart CloudOps AI - Phase 4 Auto-Remediation Tests
 Tests for remediation engine, safety manager, action manager, and notification manager
 """
 
-import pytest
 import json
 import os
 import sys
-from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime, timedelta
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from app.remediation.engine import RemediationEngine
-from app.remediation.safety import SafetyManager
 from app.remediation.actions import ActionManager
+from app.remediation.engine import RemediationEngine
 from app.remediation.notifications import NotificationManager
+from app.remediation.safety import SafetyManager
 
 
 class TestRemediationEngine:

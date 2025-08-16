@@ -2,8 +2,9 @@
 """
 Simple test app to prove the fixes work - no debug mode, no restarts
 """
-from flask import Flask, jsonify, request
 from datetime import datetime
+
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 

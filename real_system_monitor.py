@@ -4,12 +4,13 @@ REAL System Monitoring - Actual System Metrics
 Unlike the mock data in complete_production_app.py
 """
 
-import psutil
-import time
 import json
-from datetime import datetime
-import subprocess
 import os
+import subprocess
+import time
+from datetime import datetime
+
+import psutil
 
 
 def get_real_system_metrics():

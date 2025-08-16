@@ -4,19 +4,20 @@ Smart CloudOps AI - 100% REAL DATA Production Application
 NO MOCK DATA - ALL REAL SYSTEM INTEGRATION
 """
 
-from flask import Flask, request, jsonify, send_from_directory
-import psutil
-import pandas as pd
 import json
-import os
-import time
 import logging
-import subprocess
+import os
 import signal
+import subprocess
 import sys
+import time
 from datetime import datetime, timedelta
-import numpy as np
 from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import psutil
+from flask import Flask, jsonify, request, send_from_directory
 
 # Configure logging
 logging.basicConfig(

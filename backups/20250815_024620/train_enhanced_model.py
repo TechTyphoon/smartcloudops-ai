@@ -4,10 +4,11 @@ Enhanced ML Model Training Script
 Train the anomaly detection model with real AWS data and enhanced parameters
 """
 
-import sys
-import os
 import logging
+import os
+import sys
 from datetime import datetime, timedelta
+
 import pandas as pd
 
 # Add the project root to the path

@@ -5,9 +5,9 @@ This script helps set up the development environment for the Smart CloudOps AI p
 """
 
 import os
+import platform
 import subprocess
 import sys
-import platform
 from pathlib import Path
 
 

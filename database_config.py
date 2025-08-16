@@ -3,8 +3,9 @@
 
 import os
 from datetime import datetime
-from flask_sqlalchemy import SQLAlchemy
+
 from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, text
 from sqlalchemy.pool import QueuePool
 

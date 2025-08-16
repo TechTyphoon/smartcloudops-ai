@@ -3,24 +3,20 @@
 Tests for ML Anomaly Detection Components
 """
 
-import pytest
-import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
-import tempfile
 import os
 import sys
+import tempfile
+from datetime import datetime, timedelta
 from unittest.mock import patch
+
+import numpy as np
+import pandas as pd
+import pytest
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from ml_models import (
-    AnomalyDetector,
-    DataProcessor,
-    AnomalyModelTrainer,
-    AnomalyInferenceEngine,
-)
+from ml_models import AnomalyDetector, AnomalyInferenceEngine, AnomalyModelTrainer, DataProcessor
 
 
 class TestDataProcessor:

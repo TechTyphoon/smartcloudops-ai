@@ -5,15 +5,16 @@ Anomaly Detection and Machine Learning Components
 """
 
 import logging
+import os
+import pickle
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
 import pandas as pd
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple, Any
 from sklearn.ensemble import IsolationForest
-from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-import pickle
-import os
+from sklearn.preprocessing import StandardScaler
 
 logger = logging.getLogger(__name__)
 

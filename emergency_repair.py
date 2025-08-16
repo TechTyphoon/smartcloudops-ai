@@ -4,13 +4,14 @@ Smart CloudOps AI - Emergency Infrastructure Repair & Deployment
 Repairs broken infrastructure and redeploys complete application stack
 """
 
-import boto3
 import json
 import logging
 import subprocess
 import time
-import requests
 from datetime import datetime
+
+import boto3
+import requests
 
 # Configure logging
 logging.basicConfig(

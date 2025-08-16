@@ -1,14 +1,15 @@
 """Tests for flexible AI handler supporting multiple providers."""
 
-import pytest
-import sys
 import os
+import sys
 from unittest.mock import Mock, patch
+
+import pytest
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from app.chatops.ai_handler import FlexibleAIHandler, OpenAIProvider, GeminiProvider
+from app.chatops.ai_handler import FlexibleAIHandler, GeminiProvider, OpenAIProvider
 
 
 class TestFlexibleAIHandler:

@@ -2,24 +2,25 @@
 Tests for ChatOps functionality.
 """
 
-import pytest
-import sys
-import os
 import json
-from unittest.mock import Mock, patch, MagicMock
+import os
+import sys
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+from app.chatops.ai_handler import FlexibleAIHandler
 from app.chatops.gpt_handler import GPTHandler
 from app.chatops.utils import (
-    SystemContextGatherer,
     LogRetriever,
-    validate_query_params,
+    SystemContextGatherer,
     format_response,
+    validate_query_params,
 )
 from app.main import app
-from app.chatops.ai_handler import FlexibleAIHandler
 
 
 class TestGPTHandler:

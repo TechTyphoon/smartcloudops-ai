@@ -3,19 +3,20 @@
 
 import json
 from datetime import datetime, timedelta
-from typing import List, Dict, Any, Optional
-from sqlalchemy import desc, func, and_, or_
-from sqlalchemy.exc import SQLAlchemyError
+from typing import Any, Dict, List, Optional
+
 from database_config import db
 from models import (
-    SystemMetrics,
-    MLTrainingData,
     AnomalyDetection,
-    RemediationAction,
     ChatOpsInteraction,
     HealthCheck,
+    MLTrainingData,
+    RemediationAction,
     SecurityScan,
+    SystemMetrics,
 )
+from sqlalchemy import and_, desc, func, or_
+from sqlalchemy.exc import SQLAlchemyError
 
 
 class DatabaseService:

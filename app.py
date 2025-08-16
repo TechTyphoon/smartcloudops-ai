@@ -6,6 +6,7 @@ Simple demonstration app for Phase 4 container orchestration
 
 import os
 import time
+
 from flask import Flask, jsonify, render_template_string
 
 # Initialize Flask app
@@ -173,14 +174,15 @@ if __name__ == "__main__":
 
 import json
 import logging
-import time
-import random
-import threading
 import os
+import random
 import signal
 import sys
+import threading
+import time
 from datetime import datetime, timedelta
-from flask import Flask, request, jsonify, send_from_directory
+
+from flask import Flask, jsonify, request, send_from_directory
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Configure logging

@@ -3,12 +3,13 @@
 Smart CloudOps AI - 30-Day Uptime Monitor
 Tracks uptime and logs to S3 every 5 minutes
 """
-import requests
 import json
-import boto3
-from datetime import datetime
-import time
 import sys
+import time
+from datetime import datetime
+
+import boto3
+import requests
 
 # Service endpoints
 SERVICES = {

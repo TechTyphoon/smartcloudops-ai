@@ -4,19 +4,21 @@ Integration tests for Smart CloudOps AI
 Tests complete workflow: ML -> ChatOps -> Auto-Remediation
 """
 
-import pytest
-import sys
-import os
 import json
+import os
+import sys
 from unittest.mock import Mock, patch
+
+import pytest
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from app.main import app
-from app.chatops.ai_handler import FlexibleAIHandler
-from app.remediation.engine import RemediationEngine
 from ml_models.anomaly_detector import AnomalyDetector
+
+from app.chatops.ai_handler import FlexibleAIHandler
+from app.main import app
+from app.remediation.engine import RemediationEngine
 
 
 class TestCompleteWorkflow:
@@ -345,8 +347,9 @@ class TestLoadTesting:
 
     def test_memory_usage_under_load(self, client):
         """Test memory usage under sustained load."""
-        import psutil
         import os
+
+        import psutil
 
         process = psutil.Process(os.getpid())
         initial_memory = process.memory_info().rss

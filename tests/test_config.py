@@ -3,8 +3,9 @@ Tests for configuration module
 Phase 1: Basic configuration tests
 """
 
-import sys
 import os
+import sys
+
 import pytest
 
 # Add the project root to Python path

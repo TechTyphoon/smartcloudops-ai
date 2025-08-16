@@ -6,12 +6,13 @@ This creates a proper working Flask app with all required endpoints
 
 import json
 import logging
+import os
+import random
+import threading
 import time
 from datetime import datetime, timedelta
-from flask import Flask, jsonify, request, render_template_string
-import threading
-import random
-import os
+
+from flask import Flask, jsonify, render_template_string, request
 
 app = Flask(__name__)
 

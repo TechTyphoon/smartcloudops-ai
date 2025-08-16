@@ -4,20 +4,16 @@ Security Fixes Validation Tests
 Tests to verify that all security vulnerabilities have been properly fixed.
 """
 
-import sys
-import os
 import json
+import os
+import sys
 
 # Add project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 # Import our security validation functions
 try:
-    from app.main import (
-        validate_string_input,
-        validate_numeric_input,
-        validate_json_input,
-    )
+    from app.main import validate_json_input, validate_numeric_input, validate_string_input
 except ImportError:
     print("⚠️ Could not import validation functions from app.main")
     print("This is expected if running outside of the Flask app context")

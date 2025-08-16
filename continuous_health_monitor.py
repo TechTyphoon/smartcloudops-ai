@@ -4,14 +4,15 @@ Smart CloudOps AI - Continuous Health Monitor
 Parallel background verification of all production endpoints
 """
 
-import time
-import requests
 import json
 import logging
-import threading
 import os
+import threading
+import time
 from datetime import datetime
+
 import boto3
+import requests
 from botocore.exceptions import ClientError
 
 # Configure logging

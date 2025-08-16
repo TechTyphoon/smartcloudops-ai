@@ -1,10 +1,11 @@
 # test_database_integration.py - Database Integration Tests
 # Smart CloudOps AI Database Integration Validation
 
-import pytest
-import requests
 import json
 from datetime import datetime
+
+import pytest
+import requests
 
 BASE_URL = "http://localhost:5000"
 
