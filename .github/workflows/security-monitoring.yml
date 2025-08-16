@@ -1,0 +1,168 @@
+name: Security & Compliance Monitoring
+
+on:
+  # Run security scans on schedule
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM UTC
+  # Allow manual security scans
+  workflow_dispatch:
+  # Scan on security-sensitive changes
+  push:
+    paths:
+      - 'requirements*.txt'
+      - 'Dockerfile*'
+      - 'app/**'
+      - '.github/workflows/**'
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  security-audit:
+    name: 🔒 Security Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+    - name: 📥 Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+        
+    - name: 📦 Install security tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit safety semgrep
+        pip install -r requirements.txt
+        
+    - name: 🔍 Advanced security scan (Semgrep)
+      run: |
+        echo "::group::Advanced security patterns"
+        semgrep --config=auto app/ --json --output=semgrep-results.json || true
+        semgrep --config=auto app/ --severity=ERROR
+        echo "::endgroup::"
+      continue-on-error: true
+        
+    - name: 🔒 Deep Bandit scan
+      run: |
+        echo "::group::Python security scan"
+        bandit -r app/ -f json -o bandit-deep.json
+        bandit -r app/ --severity-level low --confidence-level medium
+        echo "::endgroup::"
+        
+    - name: 🛡️ Comprehensive dependency check
+      run: |
+        echo "::group::Dependency vulnerabilities"
+        safety check --json --output=safety-comprehensive.json
+        safety check --full-report
+        echo "::endgroup::"
+        
+    - name: 🔍 Secret scanning
+      uses: gitleaks/gitleaks-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+        
+    - name: 📤 Upload security results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: comprehensive-security-scan-${{ github.run_number }}
+        path: |
+          semgrep-results.json
+          bandit-deep.json
+          safety-comprehensive.json
+        retention-days: 90
+
+  dependency-review:
+    name: 🔍 Dependency Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+    - name: 📥 Checkout
+      uses: actions/checkout@v4
+      
+    - name: 🔍 Dependency Review
+      uses: actions/dependency-review-action@v4
+      with:
+        fail-on-severity: moderate
+        allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC
+        
+  docker-security:
+    name: 🐳 Docker Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout
+      uses: actions/checkout@v4
+      
+    - name: 🏗️ Build Docker image
+      run: |
+        docker build -t security-scan:latest .
+        
+    - name: 🔍 Docker security scan
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'security-scan:latest'
+        format: 'sarif'
+        output: 'docker-security.sarif'
+        
+    - name: 📤 Upload Docker scan results
+      uses: github/codeql-action/upload-sarif@v3
+      if: always()
+      with:
+        sarif_file: 'docker-security.sarif'
+
+  infrastructure-security:
+    name: 🏗️ Infrastructure Security
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout
+      uses: actions/checkout@v4
+      
+    - name: 🔧 Setup tools
+      run: |
+        # Install terraform security scanners
+        curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+        sudo mv tfsec /usr/local/bin/
+        
+    - name: 🔍 Terraform security scan
+      run: |
+        echo "::group::Terraform security scan"
+        tfsec terraform/ --format=json --out=tfsec-results.json || true
+        tfsec terraform/
+        echo "::endgroup::"
+      continue-on-error: true
+        
+    - name: 🔍 Kubernetes security scan
+      run: |
+        echo "::group::Kubernetes manifests security"
+        # Install kubesec
+        wget https://github.com/controlplaneio/kubesec/releases/latest/download/kubesec_linux_amd64.tar.gz
+        tar -xzf kubesec_linux_amd64.tar.gz
+        
+        # Scan k8s manifests
+        for file in k8s/*.yaml; do
+          echo "Scanning $file"
+          ./kubesec scan "$file" || true
+        done
+        echo "::endgroup::"
+      continue-on-error: true
+        
+    - name: 📤 Upload infrastructure scan results  
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: infrastructure-security-${{ github.run_number }}
+        path: |
+          tfsec-results.json
+        retention-days: 90
