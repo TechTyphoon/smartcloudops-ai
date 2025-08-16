@@ -39,11 +39,13 @@ class TestMLEndpoints:
                 {"is_anomaly": True, "score": 0.85, "severity": "high"},
                 {"is_anomaly": False, "score": 0.15, "severity": "normal"},
             ]
-            # Fix: Use get_model_status instead of get_system_status
-            mock.get_model_status.return_value = {
+            # Fix: Use get_system_status for the status endpoint
+            mock.get_system_status.return_value = {
+                "initialized": True,
+                "model_exists": True,
+                "model_path": "models/anomaly_detector.pkl",
                 "status": "operational",
-                "model_loaded": True,
-                "last_training": "2024-01-01T00:00:00Z",
+                "config": {"contamination": 0.1}
             }
             # Fix: Use train instead of train_model
             mock.train.return_value = {
@@ -104,7 +106,7 @@ class TestMLEndpoints:
     def test_model_status(self, client, mock_anomaly_detector):
         """Test model status endpoint."""
         with patch("app.main.anomaly_detector", mock_anomaly_detector):
-            response = client.get("/ml/status")
+            response = client.get("/anomaly/status")
             assert response.status_code == 200
             result = response.get_json()
             assert result["status"] == "success"
