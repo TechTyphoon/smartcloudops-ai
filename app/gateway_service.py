@@ -4,9 +4,10 @@ API Gateway Service for Smart CloudOps AI
 Central entry point for all API requests
 """
 
-from flask import Flask, jsonify, request
-import requests
 import logging
+
+import requests
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)

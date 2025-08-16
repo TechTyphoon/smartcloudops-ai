@@ -4,15 +4,16 @@ Enterprise Authentication & Authorization System
 JWT-based authentication with role-based access control
 """
 
+import json
+import logging
 import os
-import jwt
-import bcrypt
 from datetime import datetime, timedelta
 from functools import wraps
-from flask import request, jsonify, current_app
-import logging
+
+import bcrypt
+import jwt
 import redis
-import json
+from flask import current_app, jsonify, request
 
 logger = logging.getLogger(__name__)
 

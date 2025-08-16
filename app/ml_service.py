@@ -4,9 +4,10 @@ ML Processing Service for Smart CloudOps AI
 Dedicated microservice for ML operations
 """
 
-from flask import Flask, jsonify, request
 import logging
 import os
+
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)

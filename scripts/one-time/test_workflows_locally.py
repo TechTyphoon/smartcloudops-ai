@@ -14,20 +14,21 @@ from typing import Dict, Tuple
 def run_command(cmd: str, description: str) -> Tuple[bool, str]:
     """Run a command securely and return success status and output."""
     import shlex
+
     try:
         # Parse command safely - split shell command into list
         if isinstance(cmd, str):
             cmd_list = shlex.split(cmd)
         else:
             cmd_list = cmd
-            
+
         result = subprocess.run(
-            cmd_list, 
+            cmd_list,
             shell=False,  # Security fix: Never use shell=True
-            capture_output=True, 
-            text=True, 
-            cwd='.',
-            timeout=300  # Add timeout for security
+            capture_output=True,
+            text=True,
+            cwd=".",
+            timeout=300,  # Add timeout for security
         )
         success = result.returncode == 0
         output = result.stdout + result.stderr
@@ -37,154 +38,171 @@ def run_command(cmd: str, description: str) -> Tuple[bool, str]:
     except Exception as e:
         return False, str(e)
 
+
 def test_python_workflow() -> Dict[str, bool]:
     """Test Python CI/CD workflow steps locally."""
     print("🐍 TESTING PYTHON WORKFLOW...")
     print("=" * 50)
-    
+
     results = {}
-    
+
     # Test 1: Python imports
     print("📦 Testing Python imports...")
-    sys.path.insert(0, '.')
+    sys.path.insert(0, ".")
     try:
         import scripts.health_check
         from app.config import get_config
+
         print("✅ Python imports successful")
-        results['imports'] = True
+        results["imports"] = True
     except Exception as e:
         print(f"❌ Python imports failed: {e}")
-        results['imports'] = False
-    
+        results["imports"] = False
+
     # Test 2: Configuration functionality
     print("⚙️ Testing configuration...")
     try:
-        config = get_config('development')
+        config = get_config("development")
         # Security fix: Replace assert with proper validation
         if config.APP_NAME != "Smart CloudOps AI":
             raise ValueError(f"Unexpected app name: {config.APP_NAME}")
         if config.DEBUG != True:
             raise ValueError(f"Debug mode not enabled: {config.DEBUG}")
         print("✅ Configuration tests passed")
-        results['config'] = True
+        results["config"] = True
     except Exception as e:
         print(f"❌ Configuration tests failed: {e}")
-        results['config'] = False
-    
+        results["config"] = False
+
     # Test 3: Syntax validation
     print("🔍 Testing Python syntax...")
-    python_files = ['app/__init__.py', 'app/config.py', 'scripts/health_check.py']
+    python_files = ["app/__init__.py", "app/config.py", "scripts/health_check.py"]
     syntax_ok = True
     for file in python_files:
-        success, output = run_command(f'python3 -m py_compile {file}', f'Compile {file}')
+        success, output = run_command(
+            f"python3 -m py_compile {file}", f"Compile {file}"
+        )
         if not success:
             print(f"❌ Syntax error in {file}: {output}")
             syntax_ok = False
-    
+
     if syntax_ok:
         print("✅ All Python files have valid syntax")
-        results['syntax'] = True
+        results["syntax"] = True
     else:
-        results['syntax'] = False
-    
+        results["syntax"] = False
+
     return results
+
 
 def test_terraform_workflow() -> Dict[str, bool]:
     """Test Terraform CI/CD workflow steps locally."""
     print("\n🏗️ TESTING TERRAFORM WORKFLOW...")
     print("=" * 50)
-    
+
     results = {}
-    
+
     # Test 1: Terraform formatting
     print("📝 Testing Terraform formatting...")
-    success, output = run_command('cd terraform && terraform fmt -check -recursive .', 'Terraform format check')
-    if success or 'main.tf' in output:  # fmt returns files that were formatted
+    success, output = run_command(
+        "cd terraform && terraform fmt -check -recursive .", "Terraform format check"
+    )
+    if success or "main.tf" in output:  # fmt returns files that were formatted
         print("✅ Terraform formatting correct")
-        results['formatting'] = True
+        results["formatting"] = True
     else:
         print(f"❌ Terraform formatting failed: {output}")
-        results['formatting'] = False
-    
+        results["formatting"] = False
+
     # Test 2: Terraform validation
     print("🔍 Testing Terraform validation...")
-    success, output = run_command('cd terraform && terraform validate', 'Terraform validate')
+    success, output = run_command(
+        "cd terraform && terraform validate", "Terraform validate"
+    )
     if success:
         print("✅ Terraform validation passed")
-        results['validation'] = True
+        results["validation"] = True
     else:
         print(f"❌ Terraform validation failed: {output}")
-        results['validation'] = False
-    
+        results["validation"] = False
+
     # Test 3: Terraform initialization (dry run)
     print("⚙️ Testing Terraform init (dry run)...")
-    success, output = run_command('cd terraform && terraform init -backend=false', 'Terraform init')
+    success, output = run_command(
+        "cd terraform && terraform init -backend=false", "Terraform init"
+    )
     if success:
         print("✅ Terraform initialization successful")
-        results['init'] = True
+        results["init"] = True
     else:
         print(f"❌ Terraform initialization failed: {output}")
-        results['init'] = False
-    
+        results["init"] = False
+
     return results
+
 
 def test_docker_workflow() -> Dict[str, bool]:
     """Test Docker build workflow locally."""
     print("\n🐳 TESTING DOCKER WORKFLOW...")
     print("=" * 50)
-    
+
     results = {}
-    
+
     # Test 1: Dockerfile syntax
     print("📝 Testing Dockerfile...")
-    if os.path.exists('Dockerfile'):
+    if os.path.exists("Dockerfile"):
         print("✅ Dockerfile exists")
-        results['dockerfile_exists'] = True
+        results["dockerfile_exists"] = True
     else:
         print("❌ Dockerfile missing")
-        results['dockerfile_exists'] = False
+        results["dockerfile_exists"] = False
         return results
-    
+
     # Test 2: Docker build
     print("🔨 Testing Docker build...")
-    success, output = run_command('docker build -t smartcloudops-test . --quiet', 'Docker build')
+    success, output = run_command(
+        "docker build -t smartcloudops-test . --quiet", "Docker build"
+    )
     if success:
         print("✅ Docker build successful")
-        results['build'] = True
-        
+        results["build"] = True
+
         # Clean up test image
-        run_command('docker rmi smartcloudops-test', 'Clean up test image')
+        run_command("docker rmi smartcloudops-test", "Clean up test image")
     else:
         print(f"❌ Docker build failed: {output}")
-        results['build'] = False
-    
+        results["build"] = False
+
     return results
+
 
 def test_security_workflow() -> Dict[str, bool]:
     """Test security scanning workflow locally."""
     print("\n🔒 TESTING SECURITY WORKFLOW...")
     print("=" * 50)
-    
+
     results = {}
-    
+
     # Test 1: Check if checkov is available
-    success, output = run_command('which checkov', 'Check checkov')
+    success, output = run_command("which checkov", "Check checkov")
     if success:
         print("🔍 Testing Terraform security with Checkov...")
-        success, output = run_command('cd terraform && checkov -d . --framework terraform --quiet', 'Checkov scan')
+        success, output = run_command(
+            "cd terraform && checkov -d . --framework terraform --quiet", "Checkov scan"
+        )
         if success:
             print("✅ Security scan passed")
-            results['checkov'] = True
+            results["checkov"] = True
         else:
             print(f"⚠️ Security scan found issues (this is expected in development)")
-            results['checkov'] = False
+            results["checkov"] = False
     else:
         print("⚠️ Checkov not available locally - will run on GitHub")
-        results['checkov'] = None
-    
+        results["checkov"] = None
+
     # Test 2: Basic file permissions
     print("🔐 Testing file permissions...")
-    executable_files = ['setup.py', 'verify_setup.py']
+    executable_files = ["setup.py", "verify_setup.py"]
     permissions_ok = True
     for file in executable_files:
         if os.path.exists(file):
@@ -193,36 +211,37 @@ def test_security_workflow() -> Dict[str, bool]:
             else:
                 print(f"⚠️ {file} is not executable")
                 permissions_ok = False
-    
-    results['permissions'] = permissions_ok
+
+    results["permissions"] = permissions_ok
     return results
+
 
 def main():
     """Run all workflow tests locally."""
     print("🧪 LOCAL GITHUB ACTIONS WORKFLOW TESTER")
     print("🎯 Testing all workflows before pushing to GitHub...")
     print("=" * 60)
-    
+
     # Run all tests
     python_results = test_python_workflow()
     terraform_results = test_terraform_workflow()
     docker_results = test_docker_workflow()
     security_results = test_security_workflow()
-    
+
     # Summary
     print("\n📊 WORKFLOW TEST SUMMARY")
     print("=" * 60)
-    
+
     all_results = {
-        'Python Workflow': python_results,
-        'Terraform Workflow': terraform_results,
-        'Docker Workflow': docker_results,
-        'Security Workflow': security_results
+        "Python Workflow": python_results,
+        "Terraform Workflow": terraform_results,
+        "Docker Workflow": docker_results,
+        "Security Workflow": security_results,
     }
-    
+
     total_tests = 0
     passed_tests = 0
-    
+
     for workflow, results in all_results.items():
         print(f"\n{workflow}:")
         for test, result in results.items():
@@ -234,18 +253,19 @@ def main():
                 print(f"  ❌ {test}: FAILED")
             else:
                 print(f"  ⚠️ {test}: SKIPPED")
-    
+
     success_rate = (passed_tests / total_tests) * 100 if total_tests > 0 else 0
-    
+
     print(f"\n🎯 OVERALL RESULTS:")
     print(f"📈 Success Rate: {passed_tests}/{total_tests} ({success_rate:.1f}%)")
-    
+
     if success_rate >= 80:
         print("🎉 LOCAL TESTS PASSED! Ready to push to GitHub! 🚀")
         return 0
     else:
         print("⚠️ Some tests failed. Fix issues before pushing to GitHub.")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

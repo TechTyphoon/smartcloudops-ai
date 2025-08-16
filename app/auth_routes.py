@@ -4,17 +4,18 @@ Enterprise Authentication Endpoints
 Login, logout, token refresh, user management
 """
 
-from flask import Blueprint, request, jsonify
-from datetime import datetime
 import logging
+from datetime import datetime
+
+from flask import Blueprint, jsonify, request
 
 from app.auth import (
+    ENTERPRISE_USERS,
     auth_manager,
     authenticate_user,
     get_user_by_id,
-    require_auth,
     require_admin,
-    ENTERPRISE_USERS,
+    require_auth,
 )
 
 logger = logging.getLogger(__name__)

@@ -4,9 +4,9 @@ Background Worker for Smart CloudOps AI
 Processes background tasks and jobs
 """
 
-import time
 import logging
 import os
+import time
 from datetime import datetime
 
 logging.basicConfig(level=logging.INFO)
