@@ -112,9 +112,8 @@ class SafetyManager:
                 remaining_time = cooldown_duration - time_since_last
                 return {
                     "safe": False,
-                    "reason": f"Cooldown period active. Wait {
-                        remaining_time.seconds //
-                        60} more minutes",
+                    "reason": f"Cooldown period active. Wait "
+                    f"{remaining_time.seconds // 60} more minutes",
                 }
 
             return {"safe": True, "reason": "Cooldown period passed"}
