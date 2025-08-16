@@ -8,7 +8,7 @@ import os
 import pytest
 
 # Add the project root to Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from app.config import Config, DevelopmentConfig, ProductionConfig, get_config
 
@@ -41,7 +41,7 @@ class TestConfig:
         dev_config = get_config("development")
         prod_config = get_config("production")
         default_config = get_config()
-        
+
         assert dev_config == DevelopmentConfig
         assert prod_config == ProductionConfig
         assert default_config == DevelopmentConfig
@@ -49,17 +49,17 @@ class TestConfig:
     def test_config_from_env(self):
         """Test configuration loading from environment variables."""
         # Set required environment variables for testing
-        os.environ['AI_PROVIDER'] = 'auto'
-        os.environ['OPENAI_API_KEY'] = 'test-key'
-        
+        os.environ["AI_PROVIDER"] = "auto"
+        os.environ["OPENAI_API_KEY"] = "test-key"
+
         try:
             env_config = Config.from_env()
             assert isinstance(env_config, dict)
-            assert 'ai_provider' in env_config
-            assert 'openai_api_key' in env_config
+            assert "ai_provider" in env_config
+            assert "openai_api_key" in env_config
         finally:
             # Clean up environment variables
-            if 'AI_PROVIDER' in os.environ:
-                del os.environ['AI_PROVIDER']
-            if 'OPENAI_API_KEY' in os.environ:
-                del os.environ['OPENAI_API_KEY']
+            if "AI_PROVIDER" in os.environ:
+                del os.environ["AI_PROVIDER"]
+            if "OPENAI_API_KEY" in os.environ:
+                del os.environ["OPENAI_API_KEY"]
