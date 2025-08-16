@@ -61,7 +61,7 @@ jobs:
     - name: 📐 Check import sorting (isort)
       run: |
         echo "::group::Import sorting check"
-        isort --check-only --diff --color .
+        isort --check-only --diff .
         echo "::endgroup::"
       continue-on-error: false
         

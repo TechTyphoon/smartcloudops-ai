@@ -1,9 +1,9 @@
 # requirements-dev.txt - Development and CI/CD Dependencies
 # Pin exact versions for CI consistency
 
-# Code Quality & Formatting (exact versions for consistency)
+# Code Quality Tools
 black==24.4.2
-isort==5.13.2
+isort[colors]==5.13.2
 flake8==7.0.0
 bandit==1.7.5
 safety==3.1.0
