@@ -18,8 +18,9 @@ class TestFlexibleAIHandler:
         """Test handler initialization without API keys."""
         with patch.dict(os.environ, {}, clear=True):
             handler = FlexibleAIHandler()
-            assert handler.provider is None
-            assert handler.provider_name == "auto"
+            # Now creates LocalProvider as fallback instead of None
+            assert handler.provider is not None
+            assert handler.provider_name == "local"
 
     def test_handler_init_with_openai_key(self):
         """Test handler initialization with OpenAI API key."""
