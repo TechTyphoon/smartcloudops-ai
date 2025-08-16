@@ -1245,14 +1245,8 @@ def ml_status():
                 503,
             )
 
-        system_status = anomaly_detector.get_system_status()
-        return jsonify(
-            {
-                "status": "success",
-                "message": "ML status retrieved successfully",
-                "data": {"system_status": system_status},
-            }
-        )
+        status = anomaly_detector.get_system_status()
+        return jsonify(status)
 
     except Exception as e:
         logger.error(f"Error getting ML status: {e}")

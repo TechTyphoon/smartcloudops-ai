@@ -109,8 +109,8 @@ class TestMLEndpoints:
             response = client.get("/anomaly/status")
             assert response.status_code == 200
             result = response.get_json()
-            assert result["status"] == "success"
-            assert "system_status" in result["data"]
+            assert result["initialized"] is True
+            assert result["status"] == "operational"
 
     def test_train_model_success(self, client, mock_anomaly_detector):
         """Test successful model training."""
