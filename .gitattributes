@@ -1,0 +1,42 @@
+# .gitattributes - Normalize line endings for consistent CI/CD
+# This prevents Black formatting mismatches between platforms
+
+# Ensure Python files use LF line endings
+*.py text eol=lf
+*.pyi text eol=lf
+
+# Configuration files
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.cfg text eol=lf
+*.ini text eol=lf
+*.conf text eol=lf
+
+# Documentation
+*.md text eol=lf
+*.rst text eol=lf
+*.txt text eol=lf
+
+# Shell scripts
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Docker files
+Dockerfile* text eol=lf
+*.dockerfile text eol=lf
+
+# Binary files should not be normalized
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar.gz binary
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
