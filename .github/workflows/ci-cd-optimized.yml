@@ -58,7 +58,7 @@ jobs:
         fetch-depth: 0  # Full history for proper change detection
         
     - name: 🔍 Detect changes
-      uses: dorny/paths-filter@v3
+      uses: dorny/paths-filter@v2
       id: changes
       with:
         filters: |
