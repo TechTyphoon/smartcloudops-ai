@@ -13,7 +13,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 # Import our security validation functions
 try:
-    from app.main import validate_json_input, validate_numeric_input, validate_string_input
+    from app.main import (
+        validate_json_input,
+        validate_numeric_input,
+        validate_string_input,
+    )
 except ImportError:
     print("⚠️ Could not import validation functions from app.main")
     print("This is expected if running outside of the Flask app context")
