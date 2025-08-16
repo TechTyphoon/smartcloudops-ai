@@ -35,12 +35,19 @@ def index():
     <head>
         <title>Smart CloudOps AI v3.0.0 - Production</title>
         <style>
-            body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
-            .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            body { font-family: Arial, sans-serif; margin: 40px; 
+                   background: #f5f5f5; }
+            .container { max-width: 800px; margin: 0 auto; background: white; 
+                        padding: 30px; border-radius: 10px; 
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
             .header { text-align: center; color: #2c3e50; margin-bottom: 30px; }
-            .status { background: #27ae60; color: white; padding: 15px; border-radius: 5px; text-align: center; margin: 20px 0; }
-            .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 20px 0; }
-            .stat-card { background: #ecf0f1; padding: 15px; border-radius: 5px; text-align: center; }
+            .status { background: #27ae60; color: white; padding: 15px; 
+                     border-radius: 5px; text-align: center; margin: 20px 0; }
+            .stats { display: grid; 
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+                    gap: 20px; margin: 20px 0; }
+            .stat-card { background: #ecf0f1; padding: 15px; border-radius: 5px; 
+                        text-align: center; }
             .stat-value { font-size: 2em; font-weight: bold; color: #2c3e50; }
             .stat-label { color: #7f8c8d; margin-top: 5px; }
             .footer { text-align: center; margin-top: 30px; color: #7f8c8d; }
@@ -52,11 +59,11 @@ def index():
                 <h1>🚀 Smart CloudOps AI v3.0.0</h1>
                 <h2>Production Container Orchestration - Phase 4 Complete!</h2>
             </div>
-            
+
             <div class="status">
                 ✅ System Status: {{ status.status.upper() }} - All Services Running
             </div>
-            
+
             <div class="stats">
                 <div class="stat-card">
                     <div class="stat-value">{{ status.version }}</div>
@@ -75,22 +82,26 @@ def index():
                     <div class="stat-label">Container Services</div>
                 </div>
             </div>
-            
-            <div style="background: #3498db; color: white; padding: 20px; border-radius: 5px; margin: 20px 0;">
+
+            <div style="background: #3498db; color: white; padding: 20px;
+                        border-radius: 5px; margin: 20px 0;">
                 <h3>🎯 Phase 4 Achievements:</h3>
                 <ul style="margin: 0;">
                     <li>✅ Multi-stage Docker container with security hardening</li>
-                    <li>✅ 6-service container orchestration (App, PostgreSQL, Redis, Nginx, Prometheus, Grafana)</li>
+                    <li>✅ 6-service container orchestration 
+                        (App, PostgreSQL, Redis, Nginx, Prometheus, Grafana)</li>
                     <li>✅ Production-ready deployment with SSL/TLS</li>
                     <li>✅ Health checks and monitoring integration</li>
                     <li>✅ Automated deployment scripts</li>
                     <li>✅ Kubernetes manifests and CI/CD pipeline</li>
                 </ul>
             </div>
-            
+
             <div class="footer">
-                <p>Running in Docker containers with Nginx load balancer, PostgreSQL database, Redis cache, and monitoring stack</p>
-                <p>Access: <strong>HTTP:</strong> :8080 | <strong>HTTPS:</strong> :8443 | <strong>Grafana:</strong> :13000 | <strong>Prometheus:</strong> :19090</p>
+                <p>Running in Docker containers with Nginx load balancer, 
+                   PostgreSQL database, Redis cache, and monitoring stack</p>
+                <p>Access: <strong>HTTP:</strong> :8080 | <strong>HTTPS:</strong> :8443 | 
+                   <strong>Grafana:</strong> :13000 | <strong>Prometheus:</strong> :19090</p>
             </div>
         </div>
     </body>
