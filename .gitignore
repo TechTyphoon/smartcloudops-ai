@@ -110,3 +110,18 @@ wheels/
 # Workflow Test 1755324085
 yarn-debug.log*
 yarn-error.log*
+
+# Enhanced security and cleanup rules
+.env.*
+backups/
+*.bak-*
+*.backup
+
+# Generated security reports (should be CI artifacts)
+bandit_report*.json
+security_report*.json
+
+# Legacy/example files
+examples/temp/
+examples/scratch/
+

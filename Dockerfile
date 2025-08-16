@@ -26,8 +26,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Copy application code
 COPY app/ ./app/
 COPY scripts/ ./scripts/
-COPY ml_models.py ./
-COPY models.py ./
+COPY ml_models/ ./ml_models/
 COPY templates/ ./templates/
 # Copy .env file if it exists (for CI/CD builds)
 COPY .env .env
