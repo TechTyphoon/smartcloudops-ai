@@ -440,26 +440,28 @@ def create_anomaly_detector(**kwargs) -> AnomalyDetector:
 
 class DataProcessor:
     """Data processing utilities for ML models."""
-    
+
     def __init__(self, prometheus_url="http://localhost:9090"):
         self.prometheus_url = prometheus_url
         self.features = [
             "cpu_usage_avg",
-            "cpu_usage_max", 
+            "cpu_usage_max",
             "memory_usage_pct",
             "disk_usage_pct",
             "network_bytes_total",
-            "request_rate"
+            "request_rate",
         ]
-        
+
     def _generate_synthetic_data(self, start_time, end_time):
         """Generate synthetic data for testing."""
-        return pd.DataFrame({
-            'timestamp': pd.date_range(start_time, end_time, freq='1min'),
-            'cpu_usage_avg': np.random.uniform(10, 90, 60),
-            'memory_usage_pct': np.random.uniform(20, 80, 60)
-        })
-        
+        return pd.DataFrame(
+            {
+                "timestamp": pd.date_range(start_time, end_time, freq="1min"),
+                "cpu_usage_avg": np.random.uniform(10, 90, 60),
+                "memory_usage_pct": np.random.uniform(20, 80, 60),
+            }
+        )
+
     def process_data(self, data):
         """Process raw data into features."""
         return pd.DataFrame(data)
@@ -467,18 +469,18 @@ class DataProcessor:
 
 class AnomalyModelTrainer:
     """Model training utilities."""
-    
+
     def __init__(self):
         self.model = None
-        
+
     def train_model(self, data):
         """Train anomaly detection model."""
         return True
-        
+
     def save_model(self, path):
         """Save trained model."""
         return True
-        
+
     def load_model(self, path):
         """Load trained model."""
         return True
@@ -486,18 +488,18 @@ class AnomalyModelTrainer:
 
 class AnomalyInferenceEngine:
     """Inference engine for anomaly detection."""
-    
+
     def __init__(self):
         self.model = None
-        
+
     def load_model(self, path):
         """Load model for inference."""
         return True
-        
+
     def predict(self, data):
         """Make predictions."""
         return {"anomaly": False, "score": 0.1}
-        
+
     def batch_predict(self, data_batch):
         """Make batch predictions."""
         return [{"anomaly": False, "score": 0.1} for _ in data_batch]
@@ -505,12 +507,12 @@ class AnomalyInferenceEngine:
 
 # Export main classes
 __all__ = [
-    "AnomalyDetector", 
-    "TimeSeriesAnalyzer", 
-    "DataProcessor", 
-    "AnomalyModelTrainer", 
-    "AnomalyInferenceEngine", 
-    "create_anomaly_detector"
+    "AnomalyDetector",
+    "TimeSeriesAnalyzer",
+    "DataProcessor",
+    "AnomalyModelTrainer",
+    "AnomalyInferenceEngine",
+    "create_anomaly_detector",
 ]
 
 

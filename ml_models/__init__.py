@@ -13,7 +13,7 @@ from .anomaly_detector import (
 
 __all__ = [
     "AnomalyDetector",
-    "TimeSeriesAnalyzer", 
+    "TimeSeriesAnalyzer",
     "DataProcessor",
     "AnomalyModelTrainer",
     "AnomalyInferenceEngine",
