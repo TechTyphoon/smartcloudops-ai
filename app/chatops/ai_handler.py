@@ -114,7 +114,9 @@ class LocalProvider(AIProvider):
         """Generate contextual responses based on query patterns."""
         # Check specific patterns first (most specific to least specific)
         if "anomaly" in query or "alert" in query or "detection" in query:
-            return """**Anomaly Analysis**: Recent HIGH severity anomaly detected (score: 0.633)
+            return (
+                """**Anomaly Analysis**: Recent HIGH severity anomaly detected """
+                """(score: 0.633)
 
 **Key Metrics**:
 - CPU Usage: 85.5% (threshold exceeded)
@@ -129,6 +131,7 @@ class LocalProvider(AIProvider):
 4. Review slow queries in database
 
 **Monitoring**: Continue observing metrics for next 30 minutes"""
+            )
 
         elif "recommendation" in query or "improve" in query or "optimization" in query:
             return """**System Optimization Recommendations**:
@@ -209,11 +212,12 @@ curl http://localhost:3003/health
 ```"""
 
         else:
-            return f"""**Smart CloudOps AI Assistant** - Local Mode
+            return (
+                f"""**Smart CloudOps AI Assistant** - Local Mode
 
 I can help you with:
 - **System Status**: Current health and performance metrics
-- **Anomaly Analysis**: Detailed investigation of detected issues  
+- **Anomaly Analysis**: Detailed investigation of detected issues
 - **Troubleshooting**: Step-by-step problem resolution
 - **Recommendations**: Performance and security improvements
 
@@ -225,7 +229,9 @@ I can help you with:
 - "recommendations" - Get optimization suggestions
 - "troubleshoot errors" - Debug common issues
 
-*Note: Running in local mode - for production use, configure OpenAI or Gemini API keys.*"""
+*Note: Running in local mode - for production use, configure OpenAI """
+                """or Gemini API keys.*"""
+            )
 
     def get_model_info(self) -> Dict[str, str]:
         """Get local model information."""
@@ -312,7 +318,8 @@ class FlexibleAIHandler:
         Initialize AI handler.
 
         Args:
-            provider: "openai", "gemini", or "auto" (detects based on available API keys)
+            provider: "openai", "gemini", or "auto" (detects based on
+                     available API keys)
         """
         self.provider_name = provider
         self.provider = None
@@ -322,58 +329,72 @@ class FlexibleAIHandler:
         # Initialize provider
         self._initialize_provider()
 
+    def _setup_local_provider(self):
+        """Set up local provider."""
+        self.provider = LocalProvider()
+        self.provider.initialize()
+
+    def _detect_auto_provider(self):
+        """Detect available provider automatically."""
+        if os.getenv("OPENAI_API_KEY"):
+            self.provider_name = "openai"
+        elif os.getenv("GEMINI_API_KEY"):
+            self.provider_name = "gemini"
+        else:
+            logger.warning("No AI provider API keys found, using local provider")
+            self.provider_name = "local"
+            self._setup_local_provider()
+
+    def _setup_openai_provider(self):
+        """Set up OpenAI provider."""
+        self.provider = OpenAIProvider()
+        api_key = os.getenv("OPENAI_API_KEY")
+        if api_key:
+            if not self.provider.initialize(api_key):
+                logger.warning("OpenAI provider failed, falling back to local")
+                self.provider_name = "local"
+                self._setup_local_provider()
+
+    def _setup_gemini_provider(self):
+        """Set up Gemini provider."""
+        self.provider = GeminiProvider()
+        api_key = os.getenv("GEMINI_API_KEY")
+        if api_key:
+            if not self.provider.initialize(api_key):
+                logger.warning("Gemini provider failed, falling back to local")
+                self.provider_name = "local"
+                self._setup_local_provider()
+
     def _initialize_provider(self):
         """Initialize the appropriate AI provider."""
         if self.provider_name == "local":
-            # Explicitly use local provider
-            self.provider = LocalProvider()
-            self.provider.initialize()
+            self._setup_local_provider()
             return
 
         if self.provider_name == "auto":
-            # Try to detect available provider
-            if os.getenv("OPENAI_API_KEY"):
-                self.provider_name = "openai"
-            elif os.getenv("GEMINI_API_KEY"):
-                self.provider_name = "gemini"
-            else:
-                logger.warning("No AI provider API keys found, using local provider")
-                self.provider_name = "local"
-                self.provider = LocalProvider()
-                self.provider.initialize()
-                return
+            self._detect_auto_provider()
+            return
 
         if self.provider_name == "openai":
-            self.provider = OpenAIProvider()
-            api_key = os.getenv("OPENAI_API_KEY")
-            if api_key:
-                if not self.provider.initialize(api_key):
-                    logger.warning("OpenAI provider failed, falling back to local")
-                    self.provider_name = "local"
-                    self.provider = LocalProvider()
-                    self.provider.initialize()
+            self._setup_openai_provider()
         elif self.provider_name == "gemini":
-            self.provider = GeminiProvider()
-            api_key = os.getenv("GEMINI_API_KEY")
-            if api_key:
-                if not self.provider.initialize(api_key):
-                    logger.warning("Gemini provider failed, falling back to local")
-                    self.provider_name = "local"
-                    self.provider = LocalProvider()
-                    self.provider.initialize()
+            self._setup_gemini_provider()
         else:
             logger.error(
-                f"Unknown provider: {self.provider_name}, falling back to local"
+                f"Unknown provider: {
+                    self.provider_name}, falling back to local"
             )
             self.provider_name = "local"
-            self.provider = LocalProvider()
-            self.provider.initialize()
+            self._setup_local_provider()
 
     def _get_system_prompt(self) -> str:
         """Get the system prompt for DevOps assistant role."""
-        return """You are a Senior DevOps Engineer and Cloud Operations expert. Your role is to assist with:
+        return (
+            """You are a Senior DevOps Engineer and Cloud Operations """
+            """expert. Your role is to assist with:
 
-1. **Infrastructure Analysis**: Analyze AWS resources, monitoring data, and system metrics
+1. **Infrastructure Analysis**: Analyze AWS resources, monitoring data, """
+            """and system metrics
 2. **Troubleshooting**: Help diagnose issues using logs, metrics, and system status
 3. **Best Practices**: Provide guidance on DevOps, security, and cloud operations
 4. **Automation**: Suggest improvements and automation opportunities
@@ -393,6 +414,7 @@ class FlexibleAIHandler:
 - Node Exporter for system metrics
 
 Always respond in a professional, helpful manner focused on operational excellence."""
+        )
 
     def sanitize_input(self, query: str) -> str:
         """Sanitize and validate user input with comprehensive security checks."""
@@ -617,7 +639,8 @@ Always respond in a professional, helpful manner focused on operational excellen
                 return {
                     "status": "error",
                     "error": "AI functionality not available",
-                    "message": f"No AI provider configured. Set {self.provider_name.upper()}_API_KEY environment variable.",
+                    "message": f"No AI provider configured. Set {
+                        self.provider_name.upper()}_API_KEY environment variable.",
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
@@ -660,7 +683,8 @@ Always respond in a professional, helpful manner focused on operational excellen
                     self.conversation_history = self.conversation_history[-20:]
 
                 logger.info(
-                    f"Successfully processed query with {self.provider_name}: {sanitized_query[:50]}..."
+                    f"Successfully processed query with {self.provider_name}: "
+                    f"{sanitized_query[:50]}..."
                 )
 
                 return {

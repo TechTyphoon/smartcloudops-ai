@@ -234,52 +234,57 @@ class IntelligentQueryProcessor:
             "ml_status": [r"ml", r"model", r"training", r"prediction"],
         }
 
-    def analyze_query(self, query: str) -> Dict[str, Any]:
-        """Analyze query to determine intent and required context."""
+    def _determine_intent(self, query_lower: str) -> str:
+        """Determine the intent from query patterns."""
         import re
 
-        query_lower = query.lower()
-        analysis = {
-            "intent": "general",
-            "required_context": [],
-            "priority": "normal",
-            "suggested_actions": [],
-        }
-
-        # Determine intent based on patterns
         for intent, patterns in self.query_patterns.items():
             for pattern in patterns:
                 if re.search(pattern, query_lower):
-                    analysis["intent"] = intent
-                    break
-            if analysis["intent"] != "general":
-                break
+                    return intent
+        return "general"
 
-        # Determine required context
-        if analysis["intent"] == "system_status":
-            analysis["required_context"] = ["system_health", "resource_usage"]
-        elif analysis["intent"] == "anomaly_check":
-            analysis["required_context"] = ["recent_anomalies", "active_alerts"]
-        elif analysis["intent"] == "resource_usage":
-            analysis["required_context"] = ["resource_usage"]
-        elif analysis["intent"] == "remediation_status":
-            analysis["required_context"] = ["remediation_status"]
-        elif analysis["intent"] == "ml_status":
-            analysis["required_context"] = ["ml_model_status"]
+    def _get_required_context(self, intent: str) -> List[str]:
+        """Get required context based on intent."""
+        context_map = {
+            "system_status": ["system_health", "resource_usage"],
+            "anomaly_check": ["recent_anomalies", "active_alerts"],
+            "resource_usage": ["resource_usage"],
+            "remediation_status": ["remediation_status"],
+            "ml_status": ["ml_model_status"],
+        }
+        return context_map.get(intent, [])
 
-        # Determine priority
+    def _determine_priority(self, query_lower: str) -> str:
+        """Determine query priority based on keywords."""
         if any(
             word in query_lower for word in ["urgent", "critical", "emergency", "down"]
         ):
-            analysis["priority"] = "high"
+            return "high"
         elif any(word in query_lower for word in ["important", "issue", "problem"]):
-            analysis["priority"] = "medium"
+            return "medium"
+        return "normal"
 
-        # Suggest actions
-        if analysis["intent"] == "anomaly_check":
-            analysis["suggested_actions"] = ["check_recent_anomalies", "review_alerts"]
-        elif analysis["intent"] == "resource_usage":
-            analysis["suggested_actions"] = ["get_resource_metrics", "check_thresholds"]
+    def _get_suggested_actions(self, intent: str) -> List[str]:
+        """Get suggested actions based on intent."""
+        action_map = {
+            "anomaly_check": ["check_recent_anomalies", "review_alerts"],
+            "resource_usage": ["get_resource_metrics", "check_thresholds"],
+        }
+        return action_map.get(intent, [])
+
+    def analyze_query(self, query: str) -> Dict[str, Any]:
+        """Analyze query to determine intent and required context."""
+        query_lower = query.lower()
+
+        intent = self._determine_intent(query_lower)
+
+        analysis = {
+            "intent": intent,
+            "required_context": self._get_required_context(intent),
+            "priority": self._determine_priority(query_lower),
+            "suggested_actions": self._get_suggested_actions(intent),
+        }
 
         return analysis
 
@@ -397,7 +402,7 @@ class LogRetriever:
                     {
                         "timestamp": (datetime.now() - timedelta(hours=i)).isoformat(),
                         "level": "INFO" if i % 2 == 0 else "WARNING",
-                        "message": f"Sample log entry {i+1}",
+                        "message": f"Sample log entry {i + 1}",
                         "source": "chatops",
                         "user_id": "test_user",
                     }

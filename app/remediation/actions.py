@@ -83,7 +83,10 @@ class ActionManager:
             )
 
             logger.info(
-                f"Action {action_type} completed with status: {result.get('status', 'unknown')}"
+                f"Action {action_type} completed with status: {
+                    result.get(
+                        'status',
+                        'unknown')}"
             )
             return result
 

@@ -45,7 +45,8 @@ class SafetyManager:
             self.ssm = None
 
         logger.info(
-            f"Safety manager initialized: max_actions_per_hour={max_actions_per_hour}, cooldown_minutes={cooldown_minutes}"
+            f"Safety manager initialized: max_actions_per_hour="
+            f"{max_actions_per_hour}, cooldown_minutes={cooldown_minutes}"
         )
 
     def check_safety_conditions(
@@ -111,7 +112,9 @@ class SafetyManager:
                 remaining_time = cooldown_duration - time_since_last
                 return {
                     "safe": False,
-                    "reason": f"Cooldown period active. Wait {remaining_time.seconds // 60} more minutes",
+                    "reason": f"Cooldown period active. Wait {
+                        remaining_time.seconds //
+                        60} more minutes",
                 }
 
             return {"safe": True, "reason": "Cooldown period passed"}
@@ -136,12 +139,18 @@ class SafetyManager:
             if current_count >= self.max_actions_per_hour:
                 return {
                     "safe": False,
-                    "reason": f"Rate limit exceeded. {current_count}/{self.max_actions_per_hour} actions in the last hour",
+                    "reason": (
+                        f"Rate limit exceeded. {current_count}/"
+                        f"{self.max_actions_per_hour} actions in the last hour"
+                    ),
                 }
 
             return {
                 "safe": True,
-                "reason": f"Rate limit OK. {current_count}/{self.max_actions_per_hour} actions in the last hour",
+                "reason": (
+                    f"Rate limit OK. {current_count}/"
+                    f"{self.max_actions_per_hour} actions in the last hour"
+                ),
             }
 
         except Exception as e:
@@ -162,13 +171,17 @@ class SafetyManager:
 
             if approval_required:
                 # For now, we'll auto-approve but log the requirement
-                # In a real implementation, this would trigger a manual approval workflow
+                # In a real implementation, this would trigger a manual approval
+                # workflow
                 logger.warning(
-                    f"Approval required for {severity} severity actions: {[a['action'] for a in actions]}"
+                    f"Approval required for {severity} severity actions: "
+                    f"{[a['action'] for a in actions]}"
                 )
                 return {
                     "safe": True,  # Auto-approved for demo
-                    "reason": "Auto-approved (would require manual approval in production)",
+                    "reason": (
+                        "Auto-approved (would require manual approval in production)"
+                    ),
                     "approval_required": True,
                 }
 
@@ -213,7 +226,8 @@ class SafetyManager:
                     if action.get("priority") == "immediate":
                         return {
                             "safe": False,
-                            "reason": f'Dangerous action detected: {action["action"]} with immediate priority',
+                            "reason": f'Dangerous action detected: {
+                                action["action"]} with immediate priority',
                         }
 
             return {"safe": True, "reason": "All actions appear safe"}

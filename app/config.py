@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 
 # Load .env file if it exists
@@ -62,10 +62,10 @@ class Config:
     SSM_SERVICE_NAME: str = "smartcloudops-app"
 
     @classmethod
-    def validate_config(cls, config_dict: Dict[str, Any]) -> None:
-        """Validate configuration values."""
-        errors = []
-
+    def _validate_ai_config(
+        cls, config_dict: Dict[str, Any], errors: List[str]
+    ) -> None:
+        """Validate AI provider configuration."""
         # Validate AI provider
         if config_dict.get("ai_provider") not in ["auto", "openai", "gemini"]:
             errors.append("AI_PROVIDER must be 'auto', 'openai', or 'gemini'")
@@ -82,7 +82,12 @@ class Config:
         ):
             errors.append("GEMINI_API_KEY is required when AI_PROVIDER is 'gemini'")
 
-        # Validate numeric values
+    @classmethod
+    def _validate_numeric_values(
+        cls, config_dict: Dict[str, Any], errors: List[str]
+    ) -> None:
+        """Validate numeric configuration values."""
+        # Validate tokens
         if (
             not isinstance(config_dict.get("openai_max_tokens", 500), int)
             or config_dict.get("openai_max_tokens", 500) <= 0
@@ -95,6 +100,7 @@ class Config:
         ):
             errors.append("GEMINI_MAX_TOKENS must be a positive integer")
 
+        # Validate temperature
         if (
             not isinstance(config_dict.get("openai_temperature", 0.3), (int, float))
             or not 0 <= config_dict.get("openai_temperature", 0.3) <= 2
@@ -107,7 +113,11 @@ class Config:
         ):
             errors.append("GEMINI_TEMPERATURE must be between 0 and 2")
 
-        # Validate remediation configuration
+    @classmethod
+    def _validate_remediation_config(
+        cls, config_dict: Dict[str, Any], errors: List[str]
+    ) -> None:
+        """Validate remediation configuration."""
         if (
             not isinstance(config_dict.get("max_actions_per_hour", 10), int)
             or config_dict.get("max_actions_per_hour", 10) <= 0
@@ -119,6 +129,15 @@ class Config:
             or config_dict.get("cooldown_minutes", 5) < 0
         ):
             errors.append("COOLDOWN_MINUTES must be a non-negative integer")
+
+    @classmethod
+    def validate_config(cls, config_dict: Dict[str, Any]) -> None:
+        """Validate configuration values."""
+        errors = []
+
+        cls._validate_ai_config(config_dict, errors)
+        cls._validate_numeric_values(config_dict, errors)
+        cls._validate_remediation_config(config_dict, errors)
 
         # Validate log level
         valid_log_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
@@ -176,8 +195,9 @@ class Config:
             ]
         ):
             config_dict["database_url"] = (
-                f"postgresql+psycopg://{config_dict['db_username']}:{config_dict['db_password']}@"
-                f"{config_dict['db_host']}:{config_dict['db_port']}/{config_dict['db_name']}"
+                f"postgresql+psycopg://{config_dict['db_username']}:"
+                f"{config_dict['db_password']}@{config_dict['db_host']}:"
+                f"{config_dict['db_port']}/{config_dict['db_name']}"
             )
 
         # Validate configuration

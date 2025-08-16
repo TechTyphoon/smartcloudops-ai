@@ -194,7 +194,9 @@ def require_auth(required_permission: str = None):
                             jsonify(
                                 {
                                     "error": "Permission denied",
-                                    "message": f"Requires {required_permission} permission",
+                                    "message": (
+                                        f"Requires {required_permission} permission"
+                                    ),
                                     "status": "forbidden",
                                 }
                             ),

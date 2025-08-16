@@ -46,7 +46,8 @@ class NotificationManager:
             )
             webhook = response["Parameter"]["Value"]
             logger.info(
-                "Loaded Slack webhook from SSM parameter: /smartcloudops/dev/slack/webhook"
+                "Loaded Slack webhook from SSM parameter: "
+                "/smartcloudops/dev/slack/webhook"
             )
             return webhook
         except Exception as e:
@@ -183,7 +184,8 @@ class NotificationManager:
     def send_remediation_notification(
         self, evaluation: Dict, execution_results: List[Dict]
     ) -> Dict:
-        """Send notification about remediation action with standardized return structure."""
+        """Send notification about remediation action with standardized
+        return structure."""
         try:
             if not self.slack_webhook_url:
                 logger.error(
@@ -383,30 +385,37 @@ class NotificationManager:
         }
         color = color_map.get(level, "#999999")
 
-        html = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="utf-8">
-            <title>SmartCloudOps AI Alert</title>
-        </head>
-        <body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4;">
-            <div style="max-width: 600px; margin: 0 auto; background-color: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-                <div style="background-color: {color}; color: white; padding: 20px; text-align: center;">
-                    <h1 style="margin: 0; font-size: 24px;">SmartCloudOps AI Alert</h1>
-                    <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">{level.upper()}</p>
-                </div>
-                <div style="padding: 30px;">
-                    <p style="font-size: 16px; line-height: 1.6; color: #333; margin: 0 0 20px 0;">{message}</p>
-                    <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-                    <p style="font-size: 12px; color: #999; margin: 0; text-align: center;">
-                        This is an automated message from SmartCloudOps AI. Please do not reply to this email.
-                    </p>
-                </div>
-            </div>
-        </body>
-        </html>
-        """
+        html = (
+            f"<!DOCTYPE html>"
+            f"<html>"
+            f"<head>"
+            f"<meta charset='utf-8'>"
+            f"<title>SmartCloudOps AI Alert</title>"
+            f"</head>"
+            f"<body style='font-family: Arial, sans-serif; margin: 0; padding: 20px; "
+            f"background-color: #f4f4f4;'>"
+            f"<div style='max-width: 600px; margin: 0 auto; background-color: white; "
+            f"border-radius: 8px; overflow: hidden; "
+            f"box-shadow: 0 2px 10px rgba(0,0,0,0.1);'>"
+            f"<div style='background-color: {color}; color: white; padding: 20px; "
+            f"text-align: center;'>"
+            f"<h1 style='margin: 0; font-size: 24px;'>SmartCloudOps AI Alert</h1>"
+            f"<p style='margin: 10px 0 0 0; font-size: 16px; "
+            f"opacity: 0.9;'>{level.upper()}</p>"
+            f"</div>"
+            f"<div style='padding: 30px;'>"
+            f"<p style='font-size: 16px; line-height: 1.6; color: #333; "
+            f"margin: 0 0 20px 0;'>{message}</p>"
+            f"<hr style='border: none; border-top: 1px solid #eee; margin: 30px 0;'>"
+            f"<p style='font-size: 12px; color: #999; margin: 0; text-align: center;'>"
+            f"This is an automated message from SmartCloudOps AI. "
+            f"Please do not reply to this email."
+            f"</p>"
+            f"</div>"
+            f"</div>"
+            f"</body>"
+            f"</html>"
+        )
         return html
 
     def _create_email_text(self, message: str, level: str) -> str:

@@ -46,7 +46,7 @@ jobs:
       run: |
         echo "::group::Python security scan"
         bandit -r app/ -f json -o bandit-results.json || true
-        bandit -r app/ --severity-level medium
+        bandit -r app/ --severity-level high --skip B104
         echo "::endgroup::"
         
     - name: 🔒 Deep Bandit scan

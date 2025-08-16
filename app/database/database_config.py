@@ -22,7 +22,10 @@ class DatabaseConfig:
     POSTGRES_DB = os.getenv("POSTGRES_DB", "smartcloudops_production")
 
     # SQLAlchemy Configuration
-    SQLALCHEMY_DATABASE_URI = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+    SQLALCHEMY_DATABASE_URI = (
+        f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@"
+        f"{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
     SQLALCHEMY_ENGINE_OPTIONS = {

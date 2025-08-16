@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 class GPTHandler:
-    """GPT handler for ChatOps queries with input sanitization and context management."""
+    """GPT handler for ChatOps queries with input sanitization and
+    context management."""
 
     def __init__(self, api_key: str = None):
         """Initialize GPT handler."""
@@ -39,9 +40,12 @@ class GPTHandler:
 
     def _get_system_prompt(self) -> str:
         """Get the system prompt for DevOps assistant role."""
-        return """You are a Senior DevOps Engineer and Cloud Operations expert. Your role is to assist with:
+        return (
+            """You are a Senior DevOps Engineer and Cloud Operations """
+            """expert. Your role is to assist with:
 
-1. **Infrastructure Analysis**: Analyze AWS resources, monitoring data, and system metrics
+1. **Infrastructure Analysis**: Analyze AWS resources, monitoring data, """
+            """and system metrics
 2. **Troubleshooting**: Help diagnose issues using logs, metrics, and system status
 3. **Best Practices**: Provide guidance on DevOps, security, and cloud operations
 4. **Automation**: Suggest improvements and automation opportunities
@@ -61,6 +65,7 @@ class GPTHandler:
 - Node Exporter for system metrics
 
 Always respond in a professional, helpful manner focused on operational excellence."""
+        )
 
     def sanitize_input(self, query: str) -> str:
         """Sanitize and validate user input."""
@@ -128,7 +133,10 @@ Always respond in a professional, helpful manner focused on operational excellen
                 return {
                     "status": "error",
                     "error": "GPT functionality not available",
-                    "message": "OpenAI API key not configured. Please set OPENAI_API_KEY environment variable.",
+                    "message": (
+                        "OpenAI API key not configured. Please set OPENAI_API_KEY "
+                        "environment variable."
+                    ),
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 

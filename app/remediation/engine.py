@@ -4,13 +4,9 @@ Smart CloudOps AI - Auto-Remediation Engine (Phase 4)
 Orchestrates anomaly detection, safety checks, and remediation actions
 """
 
+import logging
 import os
 import sys
-
-# Add the project root to Python path - MUST be first
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
-
-import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
@@ -18,6 +14,10 @@ from app.config import get_config
 from app.remediation.actions import ActionManager
 from app.remediation.notifications import NotificationManager
 from app.remediation.safety import SafetyManager
+
+# Add the project root to Python path - MUST be first
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+
 
 logger = logging.getLogger(__name__)
 
@@ -110,7 +110,8 @@ class RemediationEngine:
             }
 
             logger.info(
-                f"Anomaly evaluation: severity={severity}, score={anomaly_score:.3f}, needs_remediation={needs_remediation}"
+                f"Anomaly evaluation: severity={severity}, score={
+                    anomaly_score:.3f}, needs_remediation={needs_remediation}"
             )
             return evaluation
 
@@ -126,42 +127,133 @@ class RemediationEngine:
                 "error": str(e),
             }
 
+    def _analyze_cpu_metrics(self, metrics: Dict[str, Any], issues: List[str]) -> None:
+        """Analyze CPU metrics and add issues."""
+        cpu_usage = metrics.get("cpu_usage_avg", 0)
+        if cpu_usage > 90:
+            issues.append("high_cpu_usage")
+        elif cpu_usage > 80:
+            issues.append("elevated_cpu_usage")
+
+    def _analyze_memory_metrics(
+        self, metrics: Dict[str, Any], issues: List[str]
+    ) -> None:
+        """Analyze memory metrics and add issues."""
+        memory_usage = metrics.get("memory_usage_pct", 0)
+        if memory_usage > 95:
+            issues.append("critical_memory_usage")
+        elif memory_usage > 85:
+            issues.append("high_memory_usage")
+
+    def _analyze_disk_metrics(self, metrics: Dict[str, Any], issues: List[str]) -> None:
+        """Analyze disk metrics and add issues."""
+        disk_usage = metrics.get("disk_usage_pct", 0)
+        if disk_usage > 95:
+            issues.append("critical_disk_usage")
+        elif disk_usage > 85:
+            issues.append("high_disk_usage")
+
+    def _analyze_network_metrics(
+        self, metrics: Dict[str, Any], issues: List[str]
+    ) -> None:
+        """Analyze network metrics and add issues."""
+        if metrics.get("network_bytes_total", 0) > 1000000000:  # 1GB
+            issues.append("high_network_usage")
+
+    def _analyze_response_metrics(
+        self, metrics: Dict[str, Any], issues: List[str]
+    ) -> None:
+        """Analyze response time metrics and add issues."""
+        if metrics.get("response_time_p95", 0) > 5.0:  # 5 seconds
+            issues.append("slow_response_time")
+
     def _analyze_metrics(self, metrics: Dict[str, Any]) -> List[str]:
         """Analyze metrics to identify specific issues."""
         issues = []
 
         try:
-            # CPU analysis
-            if metrics.get("cpu_usage_avg", 0) > 90:
-                issues.append("high_cpu_usage")
-            elif metrics.get("cpu_usage_avg", 0) > 80:
-                issues.append("elevated_cpu_usage")
-
-            # Memory analysis
-            if metrics.get("memory_usage_pct", 0) > 95:
-                issues.append("critical_memory_usage")
-            elif metrics.get("memory_usage_pct", 0) > 85:
-                issues.append("high_memory_usage")
-
-            # Disk analysis
-            if metrics.get("disk_usage_pct", 0) > 95:
-                issues.append("critical_disk_usage")
-            elif metrics.get("disk_usage_pct", 0) > 85:
-                issues.append("high_disk_usage")
-
-            # Network analysis
-            if metrics.get("network_bytes_total", 0) > 1000000000:  # 1GB
-                issues.append("high_network_usage")
-
-            # Response time analysis
-            if metrics.get("response_time_p95", 0) > 5.0:  # 5 seconds
-                issues.append("slow_response_time")
+            self._analyze_cpu_metrics(metrics, issues)
+            self._analyze_memory_metrics(metrics, issues)
+            self._analyze_disk_metrics(metrics, issues)
+            self._analyze_network_metrics(metrics, issues)
+            self._analyze_response_metrics(metrics, issues)
 
         except Exception as e:
             logger.error(f"Error analyzing metrics: {e}")
             issues.append("metrics_analysis_error")
 
         return issues
+
+    def _add_critical_actions(
+        self, actions: List[Dict], issues: List[str], severity: str
+    ) -> None:
+        """Add critical severity actions."""
+        if "high_cpu_usage" in issues or "critical_memory_usage" in issues:
+            actions.append(
+                {
+                    "action": "restart_service",
+                    "priority": "immediate",
+                    "reason": f"Critical {severity} issue detected",
+                    "target": "application",
+                }
+            )
+
+        if "critical_disk_usage" in issues:
+            actions.append(
+                {
+                    "action": "cleanup_disk",
+                    "priority": "immediate",
+                    "reason": "Critical disk usage detected",
+                    "target": "system",
+                }
+            )
+
+    def _add_high_actions(
+        self, actions: List[Dict], issues: List[str], severity: str
+    ) -> None:
+        """Add high severity actions."""
+        if "elevated_cpu_usage" in issues or "high_memory_usage" in issues:
+            actions.append(
+                {
+                    "action": "scale_up",
+                    "priority": "high",
+                    "reason": f"High {severity} issue detected",
+                    "target": "resources",
+                }
+            )
+
+        if "high_disk_usage" in issues:
+            actions.append(
+                {
+                    "action": "cleanup_disk",
+                    "priority": "high",
+                    "reason": "High disk usage detected",
+                    "target": "system",
+                }
+            )
+
+    def _add_medium_actions(self, actions: List[Dict], issues: List[str]) -> None:
+        """Add medium severity actions."""
+        if "slow_response_time" in issues:
+            actions.append(
+                {
+                    "action": "optimize_performance",
+                    "priority": "medium",
+                    "reason": "Performance optimization needed",
+                    "target": "application",
+                }
+            )
+
+    def _add_monitoring_action(self, actions: List[Dict], severity: str) -> None:
+        """Add monitoring action for all severities."""
+        actions.append(
+            {
+                "action": "enhance_monitoring",
+                "priority": "low",
+                "reason": f"Enhanced monitoring for {severity} severity",
+                "target": "monitoring",
+            }
+        )
 
     def _get_recommended_actions(
         self, severity: str, issues: List[str], metrics: Dict[str, Any]
@@ -170,71 +262,14 @@ class RemediationEngine:
         actions = []
 
         try:
-            # Critical severity actions
             if severity == "critical":
-                if "high_cpu_usage" in issues or "critical_memory_usage" in issues:
-                    actions.append(
-                        {
-                            "action": "restart_service",
-                            "priority": "immediate",
-                            "reason": f"Critical {severity} issue detected",
-                            "target": "application",
-                        }
-                    )
-
-                if "critical_disk_usage" in issues:
-                    actions.append(
-                        {
-                            "action": "cleanup_disk",
-                            "priority": "immediate",
-                            "reason": "Critical disk usage detected",
-                            "target": "system",
-                        }
-                    )
-
-            # High severity actions
+                self._add_critical_actions(actions, issues, severity)
             elif severity == "high":
-                if "elevated_cpu_usage" in issues or "high_memory_usage" in issues:
-                    actions.append(
-                        {
-                            "action": "scale_up",
-                            "priority": "high",
-                            "reason": f"High {severity} issue detected",
-                            "target": "resources",
-                        }
-                    )
-
-                if "high_disk_usage" in issues:
-                    actions.append(
-                        {
-                            "action": "cleanup_disk",
-                            "priority": "high",
-                            "reason": "High disk usage detected",
-                            "target": "system",
-                        }
-                    )
-
-            # Medium severity actions
+                self._add_high_actions(actions, issues, severity)
             elif severity == "medium":
-                if "slow_response_time" in issues:
-                    actions.append(
-                        {
-                            "action": "optimize_performance",
-                            "priority": "medium",
-                            "reason": "Performance optimization needed",
-                            "target": "application",
-                        }
-                    )
+                self._add_medium_actions(actions, issues)
 
-            # Add monitoring action for all severities
-            actions.append(
-                {
-                    "action": "enhance_monitoring",
-                    "priority": "low",
-                    "reason": f"Enhanced monitoring for {severity} severity",
-                    "target": "monitoring",
-                }
-            )
+            self._add_monitoring_action(actions, severity)
 
         except Exception as e:
             logger.error(f"Error getting recommended actions: {e}")
@@ -306,7 +341,11 @@ class RemediationEngine:
                     self.last_action_time = datetime.now()
 
                     logger.info(
-                        f"Executed action {action['action']}: {result.get('status', 'unknown')}"
+                        f"Executed action {
+                            action['action']}: {
+                            result.get(
+                                'status',
+                                'unknown')}"
                     )
 
                 except Exception as e:

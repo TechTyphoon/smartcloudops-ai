@@ -4,18 +4,12 @@ Smart CloudOps AI - Main Application
 Phase 5: Production-Ready ML Integration & Auto-Remediation
 """
 
-import os
-import sys
-import time
-
-# Add the project root to Python path - MUST be first
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
 import json
 import logging
-
-# Security: Input validation utilities
+import os
 import re
+import sys
+import time
 from datetime import datetime
 from typing import Any, Dict, Union
 
@@ -33,6 +27,14 @@ from app.chatops.utils import (
     intelligent_query_processor,
     validate_query_params,
 )
+from app.config import get_config as _get_config
+
+# Add the project root to Python path - MUST be first
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+
+# Security: Input validation utilities
+
 
 # Import ML anomaly detection
 try:
@@ -198,7 +200,6 @@ def validate_json_input(data: Any) -> Dict:
 app = Flask(__name__)
 
 # Load environment and validated config
-from app.config import get_config as _get_config
 
 _env = os.getenv("FLASK_ENV", "development").lower()
 _ConfigClass = _get_config(_env)
@@ -294,7 +295,8 @@ if _app_config.get("database_url"):
         with db_engine.connect() as _conn:
             _conn.execute(text("SELECT 1"))
         logger.info(
-            f"Database connection established with pool_size={pool_size}, max_overflow={max_overflow}"
+            f"Database connection established with pool_size={pool_size}, "
+            f"max_overflow={max_overflow}"
         )
 
         # Ensure conversations table exists
@@ -341,7 +343,9 @@ def after_request(response):
         # Content Security Policy
         csp = os.getenv(
             "CONTENT_SECURITY_POLICY",
-            "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'",
+            "default-src 'self'; script-src 'self'; "
+            "style-src 'self' 'unsafe-inline'; img-src 'self' data:; "
+            "font-src 'self'",
         )
         response.headers["Content-Security-Policy"] = csp
 
@@ -543,7 +547,9 @@ def query():
                     "status": "ready",
                     "message": "ChatOps AI Query Service",
                     "methods": ["POST"],
-                    "description": "Send POST with 'query' field for AI-powered responses",
+                    "description": (
+                        "Send POST with 'query' field for AI-powered responses"
+                    ),
                     "example": {"query": "show system status", "context": "optional"},
                     "timestamp": datetime.utcnow().isoformat(),
                 }
@@ -958,7 +964,8 @@ def smart_query():
                     conn.execute(
                         text(
                             """
-                            INSERT INTO conversations (user_query, ai_response, context_json)
+                            INSERT INTO conversations (user_query, ai_response,
+                                                     context_json)
                             VALUES (:user_query, :ai_response, :context_json)
                             """
                         ),
@@ -1058,83 +1065,147 @@ def get_system_summary():
 # Phase 3: ML Anomaly Detection Endpoints
 
 
+def _get_anomaly_service_status():
+    """Get ML anomaly service status for GET requests."""
+    if not ML_AVAILABLE:
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "ML models not available",
+                    "timestamp": datetime.utcnow().isoformat(),
+                }
+            ),
+            503,
+        )
+
+    return jsonify(
+        {
+            "status": "ready",
+            "message": "ML Anomaly Detection Service",
+            "methods": ["POST"],
+            "endpoints": {
+                "detect": "/anomaly (POST)",
+                "batch": "/anomaly/batch (POST)",
+                "status": "/anomaly/status (GET)",
+                "train": "/anomaly/train (POST)",
+            },
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+    )
+
+
+def _validate_anomaly_input(data):
+    """Validate input data for anomaly detection."""
+    if not data:
+        return (
+            jsonify(
+                format_response(
+                    status="error",
+                    message="No data provided",
+                    error="Request body is required",
+                )
+            ),
+            400,
+        )
+
+    # Security: Validate JSON input structure
+    data = validate_json_input(data)
+
+    metrics = data.get("metrics", {})
+    if not metrics:
+        return (
+            jsonify(
+                format_response(
+                    status="error",
+                    message="No metrics provided",
+                    error="Metrics data is required",
+                )
+            ),
+            400,
+        )
+
+    return None  # Valid input
+
+
+def _validate_metrics(metrics):
+    """Validate and clean metrics data."""
+    validated_metrics = {}
+    for key, value in metrics.items():
+        if not isinstance(key, str):
+            raise ValueError(f"Metric key must be string, got {type(key).__name__}")
+
+        key = validate_string_input(key, max_length=100)
+        value = validate_numeric_input(value, min_val=-1e6, max_val=1e6)
+        validated_metrics[key] = value
+
+    return validated_metrics
+
+
+def _check_ml_authentication():
+    """Check authentication for ML access."""
+    try:
+        from app.auth import require_auth
+
+        # Check authentication for ML access
+        auth_response = require_auth("ml_query")(lambda: None)()
+        return auth_response
+    except ImportError as ie:
+        logger.warning(f"Authentication not available: {ie}")
+        # Continue without authentication in testing environments
+        return None
+
+
+def _process_anomaly_detection(metrics):
+    """Process the actual anomaly detection and return results."""
+    if not ML_AVAILABLE:
+        return (
+            jsonify(
+                format_response(
+                    status="error",
+                    message="ML models not available",
+                    error="ML functionality disabled",
+                )
+            ),
+            503,
+        )
+
+    # Detect anomaly
+    result = anomaly_detector.detect_anomaly(metrics)
+
+    # Update metrics
+    ML_PREDICTIONS.labels(model_type="anomaly_detector").inc()
+    if result.get("is_anomaly", False):
+        severity = result.get("severity", "unknown")
+        ML_ANOMALIES.labels(severity=severity).inc()
+
+    return jsonify(
+        format_response(
+            status="success", message="Anomaly detection completed", data=result
+        )
+    )
+
+
 @app.route("/anomaly", methods=["GET", "POST"])
 def detect_anomaly():
     """Detect anomalies in real-time."""
     try:
         # For GET requests, return status/info without authentication
         if request.method == "GET":
-            if not ML_AVAILABLE:
-                return (
-                    jsonify(
-                        {
-                            "status": "error",
-                            "message": "ML models not available",
-                            "timestamp": datetime.utcnow().isoformat(),
-                        }
-                    ),
-                    503,
-                )
+            return _get_anomaly_service_status()
 
-            return jsonify(
-                {
-                    "status": "ready",
-                    "message": "ML Anomaly Detection Service",
-                    "methods": ["POST"],
-                    "endpoints": {
-                        "detect": "/anomaly (POST)",
-                        "batch": "/anomaly/batch (POST)",
-                        "status": "/anomaly/status (GET)",
-                        "train": "/anomaly/train (POST)",
-                    },
-                    "timestamp": datetime.utcnow().isoformat(),
-                }
-            )
-
-        # First, do basic input validation before authentication
+        # Validate input data
         data = request.get_json()
-        if not data:
-            return (
-                jsonify(
-                    format_response(
-                        status="error",
-                        message="No data provided",
-                        error="Request body is required",
-                    )
-                ),
-                400,
-            )
+        validation_error = _validate_anomaly_input(data)
+        if validation_error:
+            return validation_error
 
-        # Security: Validate JSON input structure
         data = validate_json_input(data)
-
         metrics = data.get("metrics", {})
-        if not metrics:
-            return (
-                jsonify(
-                    format_response(
-                        status="error",
-                        message="No metrics provided",
-                        error="Metrics data is required",
-                    )
-                ),
-                400,
-            )
 
         # Security: Validate metrics values
         try:
-            validated_metrics = {}
-            for key, value in metrics.items():
-                if not isinstance(key, str):
-                    raise ValueError(
-                        f"Metric key must be string, got {type(key).__name__}"
-                    )
-
-                key = validate_string_input(key, max_length=100)
-                value = validate_numeric_input(value, min_val=-1e6, max_val=1e6)
-                validated_metrics[key] = value
-
-            metrics = validated_metrics
+            metrics = _validate_metrics(metrics)
         except ValueError as ve:
             logger.warning(f"Input validation error in anomaly detection: {ve}")
             return (
@@ -1146,44 +1217,13 @@ def detect_anomaly():
                 400,
             )
 
-        # Now check authentication after validation
-        try:
-            from app.auth import require_auth
+        # Check authentication
+        auth_response = _check_ml_authentication()
+        if auth_response is not None:
+            return auth_response
 
-            # Check authentication for ML access
-            auth_response = require_auth("ml_query")(lambda: None)()
-            if auth_response is not None:
-                return auth_response
-        except ImportError as ie:
-            logger.warning(f"Authentication not available: {ie}")
-            # Continue without authentication in testing environments
-
-        if not ML_AVAILABLE:
-            return (
-                jsonify(
-                    format_response(
-                        status="error",
-                        message="ML models not available",
-                        error="ML functionality disabled",
-                    )
-                ),
-                503,
-            )
-
-        # Detect anomaly
-        result = anomaly_detector.detect_anomaly(metrics)
-
-        # Update metrics
-        ML_PREDICTIONS.labels(model_type="anomaly_detector").inc()
-        if result.get("is_anomaly", False):
-            severity = result.get("severity", "unknown")
-            ML_ANOMALIES.labels(severity=severity).inc()
-
-        return jsonify(
-            format_response(
-                status="success", message="Anomaly detection completed", data=result
-            )
-        )
+        # Process anomaly detection
+        return _process_anomaly_detection(metrics)
 
     except ValueError as ve:
         logger.warning(f"Input validation error in anomaly detection: {ve}")
@@ -1536,7 +1576,9 @@ def method_not_allowed(error):
             {
                 "status": "error",
                 "message": "Method Not Allowed",
-                "error": f"The {request.method} method is not allowed for this endpoint",
+                "error": (
+                    f"The {request.method} method is not allowed for this endpoint"
+                ),
                 "timestamp": datetime.now().isoformat(),
             }
         ),
