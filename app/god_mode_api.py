@@ -8,8 +8,7 @@ import json
 import logging
 import time
 from dataclasses import asdict
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Dict
 
 from flask import Blueprint, jsonify, request
