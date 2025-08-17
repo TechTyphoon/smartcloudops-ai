@@ -6,20 +6,20 @@ Enterprise-grade APIs for ML versioning, centralized logging, real-time analytic
 
 import json
 import logging
-import os
 import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
 from dataclasses import asdict
+from datetime import datetime
+from datetime import timedelta
+from typing import Dict
 
-from flask import Blueprint, jsonify, request, current_app
+from flask import Blueprint, jsonify, request
 from prometheus_client import Counter, Histogram
 
 # Import GOD MODE systems
 try:
-    from ml_models.model_versioning import model_versioning, ModelVersion
-    from app.logging.centralized_logging import centralized_logging, CentralizedLogger
     from app.analytics.real_time_dashboard import analytics_dashboard
+    from app.logging.centralized_logging import CentralizedLogger, centralized_logging
+    from ml_models.model_versioning import ModelVersion, model_versioning
 
     GOD_MODE_AVAILABLE = True
 except ImportError as e:
@@ -601,9 +601,9 @@ def get_analytics_history():
         with analytics_dashboard.db_path.open() as conn:
             cursor = conn.execute(
                 """
-                SELECT * FROM system_metrics 
-                WHERE timestamp >= ? 
-                ORDER BY timestamp DESC 
+                SELECT * FROM system_metrics
+                WHERE timestamp >= ?
+                ORDER BY timestamp DESC
                 LIMIT ?
             """,
                 (cutoff_time.isoformat(), limit),

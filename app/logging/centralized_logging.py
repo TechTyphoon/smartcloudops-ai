@@ -10,15 +10,10 @@ import os
 import sys
 import threading
 import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Union
-from dataclasses import dataclass, asdict
-from queue import Queue, Empty
-import asyncio
-import aiofiles
-from concurrent.futures import ThreadPoolExecutor
-import socket
-import uuid
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from queue import Empty, Queue
+from typing import Any, Dict, List, Optional
 
 # Elasticsearch integration
 try:
@@ -32,9 +27,10 @@ except ImportError:
 try:
     from opentelemetry import trace
     from opentelemetry.exporter.jaeger.thrift import JaegerExporter
+
+    # from opentelemetry.instrumentation.flask import FlaskInstrumentor
     from opentelemetry.sdk.trace import TracerProvider
     from opentelemetry.sdk.trace.export import BatchSpanProcessor
-    from opentelemetry.instrumentation.flask import FlaskInstrumentor
 
     OPENTELEMETRY_AVAILABLE = True
 except ImportError:

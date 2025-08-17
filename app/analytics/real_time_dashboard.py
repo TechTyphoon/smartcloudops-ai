@@ -7,25 +7,26 @@ Advanced real-time monitoring with WebSocket support, predictive analytics, and 
 import asyncio
 import json
 import logging
+import sqlite3
 import threading
 import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Set
-from dataclasses import dataclass, asdict
 import uuid
-import websockets
-from websockets.server import serve
-import psutil
+from collections import defaultdict, deque
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from typing import Any, Dict, List, Set
+
 import numpy as np
 import pandas as pd
-from collections import defaultdict, deque
-import sqlite3
-from concurrent.futures import ThreadPoolExecutor
+import psutil
+import websockets
+from websockets.server import serve
 
 # Import our systems
 try:
     from app.logging.centralized_logging import centralized_logging
-    from ml_models.model_versioning import model_versioning
+
+    # from ml_models.model_versioning import model_versioning
 
     LOGGING_AVAILABLE = True
 except ImportError:
@@ -414,7 +415,7 @@ class RealTimeAnalyticsDashboard:
             with sqlite3.connect(self.db_path) as conn:
                 conn.execute(
                     """
-                    INSERT INTO system_metrics 
+                    INSERT INTO system_metrics
                     (timestamp, cpu_usage, memory_usage, disk_usage, network_io,
                      active_connections, response_time_avg, error_rate, throughput, queue_depth)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
