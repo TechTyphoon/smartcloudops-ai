@@ -10,7 +10,6 @@ import time
 from dataclasses import asdict
 from datetime import datetime, timedelta
 
-
 from flask import Blueprint, jsonify, request
 from prometheus_client import Counter, Histogram
 
