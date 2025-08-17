@@ -387,3 +387,14 @@ class DatabaseService:
 
 # Global database service instance
 db_service = DatabaseService()
+
+
+def get_db_connection():
+    """Get database connection for health checks"""
+    try:
+        # Test the database connection
+        db_service.session.execute("SELECT 1")
+        return True
+    except Exception as e:
+        print(f"Database connection failed: {e}")
+        return False

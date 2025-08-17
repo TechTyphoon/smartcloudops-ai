@@ -15,11 +15,11 @@ class DatabaseConfig:
     """Production-grade database configuration"""
 
     # PostgreSQL Connection Settings
-    POSTGRES_USER = os.getenv("POSTGRES_USER", "smartcloudops")
-    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "cloudops123")
+    POSTGRES_USER = os.getenv("POSTGRES_USER", "cloudops")
+    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "cloudops")
     POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
-    POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
-    POSTGRES_DB = os.getenv("POSTGRES_DB", "smartcloudops_production")
+    POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5434")
+    POSTGRES_DB = os.getenv("POSTGRES_DB", "cloudops")
 
     # SQLAlchemy Configuration
     SQLALCHEMY_DATABASE_URI = (

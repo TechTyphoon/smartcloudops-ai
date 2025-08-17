@@ -35,6 +35,16 @@ def create_app():
     # Load configuration
     _get_config()
 
+    # Initialize database
+    try:
+        from app.database.database_config import init_database
+        init_database(app)
+        logger.info("Database initialized successfully")
+    except ImportError as e:
+        logger.warning(f"Database module not available: {e}")
+    except Exception as e:
+        logger.warning(f"Database initialization failed: {e}")
+
     # Register blueprints
     try:
         from app.auth_routes import auth_bp
