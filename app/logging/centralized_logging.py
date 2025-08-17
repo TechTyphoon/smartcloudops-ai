@@ -159,7 +159,7 @@ class CentralizedLoggingSystem:
         try:
             # Create tracer provider
             trace.set_tracer_provider(TracerProvider())
-            tracer = trace.get_tracer(__name__)
+            # tracer = trace.get_tracer(__name__)
 
             # Setup Jaeger exporter
             jaeger_exporter = JaegerExporter(
@@ -241,7 +241,7 @@ class CentralizedLoggingSystem:
         # Add to queue
         try:
             self.log_queue.put_nowait(log_entry)
-        except:
+        except Exception:
             # Queue full, log to stderr as fallback
             print(f"LOG QUEUE FULL: {log_entry}", file=sys.stderr)
 
