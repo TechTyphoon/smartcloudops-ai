@@ -4,11 +4,8 @@ ChatOps Module for Smart CloudOps AI
 Extracted from main.py for modularity
 """
 
-import json
 import logging
-import os
 from datetime import datetime
-from typing import Any, Dict, List, Optional
 
 from flask import Blueprint, jsonify, request
 
@@ -24,10 +21,8 @@ try:
     from app.chatops.utils import (
         LogRetriever,
         SystemContextGatherer,
-        advanced_context_manager,
         conversation_manager,
         format_response,
-        intelligent_query_processor,
         validate_query_params,
     )
 

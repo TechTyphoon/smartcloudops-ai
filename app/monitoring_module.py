@@ -4,13 +4,11 @@ Monitoring Module for Smart CloudOps AI
 Extracted from main.py for modularity
 """
 
-import json
 import logging
 import os
-import psutil
 from datetime import datetime
-from typing import Dict, Any
 
+import psutil
 from flask import Blueprint, jsonify, request
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 

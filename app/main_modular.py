@@ -16,7 +16,6 @@ try:
 except ImportError:
     # Fallback for direct execution
     import sys
-    import os
 
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
     from app.config import get_config as _get_config
@@ -34,7 +33,7 @@ def create_app():
     CORS(app)
 
     # Load configuration
-    config = _get_config()
+    _get_config()
 
     # Register blueprints
     try:
@@ -105,7 +104,7 @@ def create_app():
                     "enhanced_ml": "/enhanced-ml",
                 },
                 "health_check": "/monitoring/health",
-                "status": "/monitoring/status",
+                "status_endpoint": "/monitoring/status",
             }
         )
 

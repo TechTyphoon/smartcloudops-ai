@@ -7,7 +7,7 @@ Extracted from main.py for modularity
 import logging
 import os
 from datetime import datetime, timedelta
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional
 
 import jwt
 from flask import Blueprint, jsonify, request

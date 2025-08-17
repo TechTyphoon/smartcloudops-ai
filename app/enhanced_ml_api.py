@@ -296,12 +296,16 @@ def get_feature_status():
             },
             "multi_metric_correlation": {
                 "enabled": config.get("enable_multi_metric_correlation", False),
-                "description": "Cross-metric correlation analysis for complex anomaly detection",
+                "description": (
+                    "Cross-metric correlation analysis for complex anomaly detection"
+                ),
                 "endpoints": ["/api/v1/ml/multi-metric-anomaly"],
             },
             "failure_prediction": {
                 "enabled": config.get("enable_failure_prediction", False),
-                "description": "Predictive failure analysis with time horizon forecasting",
+                "description": (
+                    "Predictive failure analysis with time horizon forecasting"
+                ),
                 "endpoints": ["/api/v1/ml/failure-prediction"],
             },
             "anomaly_explanation": {
@@ -352,7 +356,9 @@ def demo_endpoints():
                 {
                     "service": "Phase 1: Enhanced ML Features",
                     "version": "1.0.0",
-                    "description": "Advanced anomaly detection and predictive analytics",
+                    "description": (
+                        "Advanced anomaly detection and predictive analytics"
+                    ),
                     "capabilities": [
                         "Multi-metric correlation analysis",
                         "Predictive failure detection",

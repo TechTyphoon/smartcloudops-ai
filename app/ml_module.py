@@ -4,14 +4,11 @@ ML Module for Smart CloudOps AI
 Extracted from main.py for modularity
 """
 
-import json
 import logging
 import os
 from datetime import datetime
-from typing import Any, Dict, List, Optional
 
 import numpy as np
-import pandas as pd
 from flask import Blueprint, jsonify, request
 
 # Configure logging
