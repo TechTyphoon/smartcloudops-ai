@@ -38,6 +38,12 @@ class Config:
     PROMETHEUS_ENABLED: bool = True
     METRICS_PORT: int = 9090
 
+    # Phase 1: Enhanced Anomaly Detection Features
+    ENABLE_ENHANCED_ANOMALY: bool = False
+    ENABLE_MULTI_METRIC_CORRELATION: bool = False
+    ENABLE_FAILURE_PREDICTION: bool = False
+    ENABLE_ANOMALY_EXPLANATION: bool = False
+
     # ChatOps configuration (Phase 2)
     AI_PROVIDER: str = "auto"  # "openai", "gemini", or "auto"
     OPENAI_API_KEY: str = ""
@@ -166,6 +172,23 @@ class Config:
             "gemini_temperature": float(os.getenv("GEMINI_TEMPERATURE", "0.3")),
             "log_level": os.getenv("LOG_LEVEL", "INFO"),
             "log_dir": os.getenv("LOG_DIR", "logs"),
+            # Phase 1: Enhanced Anomaly Detection Features
+            "enable_enhanced_anomaly": os.getenv(
+                "ENABLE_ENHANCED_ANOMALY", "false"
+            ).lower()
+            == "true",
+            "enable_multi_metric_correlation": os.getenv(
+                "ENABLE_MULTI_METRIC_CORRELATION", "false"
+            ).lower()
+            == "true",
+            "enable_failure_prediction": os.getenv(
+                "ENABLE_FAILURE_PREDICTION", "false"
+            ).lower()
+            == "true",
+            "enable_anomaly_explanation": os.getenv(
+                "ENABLE_ANOMALY_EXPLANATION", "false"
+            ).lower()
+            == "true",
             # Database
             "database_url": os.getenv("DATABASE_URL", ""),
             "db_host": os.getenv("DB_HOST", ""),

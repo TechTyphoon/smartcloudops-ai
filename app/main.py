@@ -1714,6 +1714,15 @@ if BETA_API_AVAILABLE and beta_api is not None:
 else:
     logger.info("Beta API not available - skipping blueprint registration")
 
+# Register Phase 1: Enhanced ML API
+try:
+    from app.enhanced_ml_api import enhanced_ml_bp
+
+    app.register_blueprint(enhanced_ml_bp)
+    logger.info("Phase 1: Enhanced ML API blueprint registered successfully")
+except ImportError as e:
+    logger.warning(f"Enhanced ML API not available: {e}")
+
 
 # WSGI application object for Gunicorn
 def get_port() -> int:

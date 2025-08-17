@@ -436,6 +436,451 @@ class AnomalyDetector:
             "features": dict(zip(feature_names, importance_scores)),
         }
 
+    # ============================================
+    # PHASE 1: ENHANCED ANOMALY DETECTION FEATURES
+    # ============================================
+
+    def detect_multi_metric_anomaly(self, metrics_dict: Dict[str, List[Dict]]) -> Dict[str, Any]:
+        """
+        Advanced multi-metric correlation analysis for anomaly detection.
+        Analyzes relationships between different metrics to detect complex anomalies.
+        
+        Args:
+            metrics_dict: Dictionary of metric types and their time series data
+            Example: {
+                'cpu': [{'value': 75, 'timestamp': '2025-08-17T10:00:00Z'}, ...],
+                'memory': [{'value': 80, 'timestamp': '2025-08-17T10:00:00Z'}, ...],
+                'disk': [{'value': 90, 'timestamp': '2025-08-17T10:00:00Z'}, ...]
+            }
+            
+        Returns:
+            Dict containing correlation analysis results and anomaly detection
+        """
+        try:
+            logger.info("Performing multi-metric correlation analysis")
+            
+            # Convert metrics to DataFrame for correlation analysis
+            correlation_data = {}
+            timestamps = []
+            
+            for metric_type, metric_series in metrics_dict.items():
+                if not metric_series:
+                    continue
+                    
+                values = [m.get('value', 0) for m in metric_series]
+                correlation_data[metric_type] = values
+                
+                if not timestamps and metric_series:
+                    timestamps = [m.get('timestamp', '') for m in metric_series]
+            
+            if len(correlation_data) < 2:
+                return {
+                    "status": "insufficient_data",
+                    "message": "Need at least 2 metric types for correlation analysis",
+                    "correlation_matrix": {},
+                    "anomalies": []
+                }
+            
+            # Calculate correlation matrix
+            df = pd.DataFrame(correlation_data)
+            correlation_matrix = df.corr().to_dict()
+            
+            # Detect correlation anomalies
+            anomalies = []
+            strong_correlations = []
+            
+            for i, col1 in enumerate(df.columns):
+                for j, col2 in enumerate(df.columns):
+                    if i < j:  # Avoid duplicate pairs
+                        corr_value = correlation_matrix[col1][col2]
+                        if abs(corr_value) > 0.7:  # Strong correlation threshold
+                            strong_correlations.append({
+                                'metrics': [col1, col2],
+                                'correlation': float(corr_value),
+                                'type': 'positive' if corr_value > 0 else 'negative'
+                            })
+            
+            # Look for sudden correlation breaks (anomalies)
+            window_size = min(10, len(df) // 2)
+            if window_size >= 3:
+                recent_corr = df.tail(window_size).corr()
+                historical_corr = df.head(-window_size).corr() if len(df) > window_size else df.corr()
+                
+                for col1 in df.columns:
+                    for col2 in df.columns:
+                        if col1 != col2:
+                            recent_val = recent_corr.loc[col1, col2]
+                            historical_val = historical_corr.loc[col1, col2]
+                            
+                            if abs(recent_val - historical_val) > 0.5:  # Significant correlation change
+                                anomalies.append({
+                                    'type': 'correlation_break',
+                                    'metrics': [col1, col2],
+                                    'historical_correlation': float(historical_val),
+                                    'recent_correlation': float(recent_val),
+                                    'deviation': float(abs(recent_val - historical_val)),
+                                    'severity': 'high' if abs(recent_val - historical_val) > 0.8 else 'medium',
+                                    'timestamp': timestamps[-1] if timestamps else datetime.now().isoformat()
+                                })
+            
+            result = {
+                "status": "success",
+                "analysis_type": "multi_metric_correlation",
+                "metrics_analyzed": list(correlation_data.keys()),
+                "correlation_matrix": correlation_matrix,
+                "strong_correlations": strong_correlations,
+                "anomalies": anomalies,
+                "anomaly_count": len(anomalies),
+                "analysis_timestamp": datetime.now().isoformat()
+            }
+            
+            logger.info(f"Multi-metric analysis completed: {len(anomalies)} anomalies detected")
+            return result
+            
+        except Exception as e:
+            logger.error(f"Multi-metric anomaly detection failed: {e}")
+            return {
+                "status": "error",
+                "error": str(e),
+                "anomalies": []
+            }
+
+    def predict_failure_probability(self, metrics: Dict[str, Any], time_horizon: int = 3600) -> Dict[str, Any]:
+        """
+        Predictive failure detection using trend analysis and ML models.
+        Predicts the probability of system failure within the specified time horizon.
+        
+        Args:
+            metrics: Current system metrics
+            time_horizon: Prediction window in seconds (default: 1 hour)
+            
+        Returns:
+            Dict containing failure probability and contributing factors
+        """
+        try:
+            logger.info(f"Predicting failure probability for {time_horizon}s horizon")
+            
+            if not self.is_trained:
+                # Use rule-based prediction when ML model isn't trained
+                return self._rule_based_failure_prediction(metrics, time_horizon)
+            
+            # Prepare current metrics
+            current_features = self.prepare_features([metrics])
+            if current_features.empty:
+                return {
+                    "status": "insufficient_data",
+                    "failure_probability": 0.0,
+                    "confidence": 0.0
+                }
+            
+            # Scale features
+            current_scaled = self.scaler.transform(current_features)
+            
+            # Get anomaly score
+            anomaly_score = self.model.decision_function(current_scaled)[0]
+            anomaly_prediction = self.model.predict(current_scaled)[0]
+            
+            # Calculate failure probability based on anomaly score
+            # More negative scores indicate higher anomaly likelihood
+            normalized_score = max(0, min(1, (0.5 - anomaly_score) / 1.0))
+            
+            # Risk factors analysis
+            risk_factors = []
+            cpu_usage = metrics.get('cpu_usage_percent', 0)
+            memory_usage = metrics.get('memory_usage_percent', 0)
+            disk_usage = metrics.get('disk_usage_percent', 0)
+            
+            if cpu_usage > 90:
+                risk_factors.append({
+                    'factor': 'high_cpu_usage',
+                    'value': cpu_usage,
+                    'impact': 'critical',
+                    'weight': 0.4
+                })
+            elif cpu_usage > 80:
+                risk_factors.append({
+                    'factor': 'elevated_cpu_usage',
+                    'value': cpu_usage,
+                    'impact': 'high',
+                    'weight': 0.3
+                })
+            
+            if memory_usage > 95:
+                risk_factors.append({
+                    'factor': 'critical_memory_usage',
+                    'value': memory_usage,
+                    'impact': 'critical',
+                    'weight': 0.5
+                })
+            elif memory_usage > 85:
+                risk_factors.append({
+                    'factor': 'high_memory_usage',
+                    'value': memory_usage,
+                    'impact': 'high',
+                    'weight': 0.3
+                })
+            
+            if disk_usage > 95:
+                risk_factors.append({
+                    'factor': 'critical_disk_usage',
+                    'value': disk_usage,
+                    'impact': 'critical',
+                    'weight': 0.4
+                })
+            
+            # Calculate weighted risk score
+            total_weight = sum(rf['weight'] for rf in risk_factors)
+            risk_score = min(1.0, total_weight)
+            
+            # Combine anomaly score and risk score
+            failure_probability = min(1.0, (normalized_score * 0.6) + (risk_score * 0.4))
+            
+            # Determine confidence based on model training and data quality
+            confidence = 0.8 if self.is_trained else 0.5
+            
+            # Time horizon adjustment
+            time_factor = min(1.0, time_horizon / 3600)  # Scale based on 1-hour baseline
+            adjusted_probability = failure_probability * time_factor
+            
+            result = {
+                "status": "success",
+                "failure_probability": float(adjusted_probability),
+                "confidence": float(confidence),
+                "time_horizon_seconds": time_horizon,
+                "anomaly_score": float(anomaly_score),
+                "is_anomaly": bool(anomaly_prediction == -1),
+                "risk_factors": risk_factors,
+                "risk_score": float(risk_score),
+                "recommendation": self._get_failure_recommendation(adjusted_probability),
+                "prediction_timestamp": datetime.now().isoformat()
+            }
+            
+            logger.info(f"Failure prediction completed: {adjusted_probability:.3f} probability")
+            return result
+            
+        except Exception as e:
+            logger.error(f"Failure prediction failed: {e}")
+            return {
+                "status": "error",
+                "error": str(e),
+                "failure_probability": 0.0,
+                "confidence": 0.0
+            }
+
+    def get_anomaly_explanation(self, anomaly_result: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Explainable AI for detected anomalies.
+        Provides human-readable explanations for why an anomaly was detected.
+        
+        Args:
+            anomaly_result: Result from detect_anomaly() method
+            
+        Returns:
+            Dict containing detailed explanation of the anomaly
+        """
+        try:
+            if not anomaly_result.get('is_anomaly', False):
+                return {
+                    "status": "not_anomaly",
+                    "explanation": "No anomaly detected in the provided data",
+                    "factors": []
+                }
+            
+            factors = []
+            severity = anomaly_result.get('severity', 'unknown')
+            anomaly_score = anomaly_result.get('anomaly_score', 0)
+            
+            # Analyze individual metrics for explanation
+            metrics = anomaly_result.get('metrics', {})
+            
+            # CPU analysis
+            cpu_usage = metrics.get('cpu_usage_percent', 0)
+            if cpu_usage > 95:
+                factors.append({
+                    'metric': 'cpu_usage_percent',
+                    'value': cpu_usage,
+                    'explanation': f'Critical CPU usage at {cpu_usage}% (>95% threshold)',
+                    'impact': 'critical',
+                    'normal_range': '0-80%'
+                })
+            elif cpu_usage > 85:
+                factors.append({
+                    'metric': 'cpu_usage_percent',
+                    'value': cpu_usage,
+                    'explanation': f'High CPU usage at {cpu_usage}% (>85% threshold)',
+                    'impact': 'high',
+                    'normal_range': '0-80%'
+                })
+            
+            # Memory analysis
+            memory_usage = metrics.get('memory_usage_percent', 0)
+            if memory_usage > 90:
+                factors.append({
+                    'metric': 'memory_usage_percent',
+                    'value': memory_usage,
+                    'explanation': f'Critical memory usage at {memory_usage}% (>90% threshold)',
+                    'impact': 'critical',
+                    'normal_range': '0-80%'
+                })
+            elif memory_usage > 80:
+                factors.append({
+                    'metric': 'memory_usage_percent',
+                    'value': memory_usage,
+                    'explanation': f'High memory usage at {memory_usage}% (>80% threshold)',
+                    'impact': 'high',
+                    'normal_range': '0-80%'
+                })
+            
+            # Disk analysis
+            disk_usage = metrics.get('disk_usage_percent', 0)
+            if disk_usage > 95:
+                factors.append({
+                    'metric': 'disk_usage_percent',
+                    'value': disk_usage,
+                    'explanation': f'Critical disk usage at {disk_usage}% (>95% threshold)',
+                    'impact': 'critical',
+                    'normal_range': '0-85%'
+                })
+            elif disk_usage > 85:
+                factors.append({
+                    'metric': 'disk_usage_percent',
+                    'value': disk_usage,
+                    'explanation': f'High disk usage at {disk_usage}% (>85% threshold)',
+                    'impact': 'high',
+                    'normal_range': '0-85%'
+                })
+            
+            # Load average analysis
+            load_avg = metrics.get('load_avg_1min', 0)
+            if load_avg > 4:
+                factors.append({
+                    'metric': 'load_avg_1min',
+                    'value': load_avg,
+                    'explanation': f'Very high system load at {load_avg} (>4.0 threshold)',
+                    'impact': 'high',
+                    'normal_range': '0-2.0'
+                })
+            elif load_avg > 2:
+                factors.append({
+                    'metric': 'load_avg_1min',
+                    'value': load_avg,
+                    'explanation': f'Elevated system load at {load_avg} (>2.0 threshold)',
+                    'impact': 'medium',
+                    'normal_range': '0-2.0'
+                })
+            
+            # Overall explanation
+            if severity == 'critical':
+                overall_explanation = "Critical system anomaly detected with multiple risk factors"
+            elif severity == 'high':
+                overall_explanation = "High-severity anomaly with significant resource constraints"
+            elif severity == 'medium':
+                overall_explanation = "Medium-severity anomaly with elevated resource usage"
+            else:
+                overall_explanation = "System anomaly detected with unusual metric patterns"
+            
+            # Recommendations
+            recommendations = self._generate_anomaly_recommendations(factors)
+            
+            result = {
+                "status": "success",
+                "explanation": overall_explanation,
+                "severity": severity,
+                "anomaly_score": anomaly_score,
+                "contributing_factors": factors,
+                "factor_count": len(factors),
+                "recommendations": recommendations,
+                "explanation_timestamp": datetime.now().isoformat()
+            }
+            
+            logger.info(f"Anomaly explanation generated with {len(factors)} factors")
+            return result
+            
+        except Exception as e:
+            logger.error(f"Anomaly explanation failed: {e}")
+            return {
+                "status": "error",
+                "error": str(e),
+                "explanation": "Unable to generate explanation",
+                "factors": []
+            }
+
+    def _rule_based_failure_prediction(self, metrics: Dict[str, Any], time_horizon: int) -> Dict[str, Any]:
+        """Rule-based failure prediction when ML model isn't available"""
+        cpu = metrics.get('cpu_usage_percent', 0)
+        memory = metrics.get('memory_usage_percent', 0)
+        disk = metrics.get('disk_usage_percent', 0)
+        
+        # Critical thresholds
+        critical_score = 0
+        if cpu > 95: critical_score += 0.4
+        if memory > 95: critical_score += 0.4
+        if disk > 95: critical_score += 0.3
+        
+        # High thresholds
+        high_score = 0
+        if cpu > 85: high_score += 0.2
+        if memory > 85: high_score += 0.2
+        if disk > 85: high_score += 0.1
+        
+        failure_probability = min(1.0, critical_score + (high_score * 0.5))
+        
+        return {
+            "status": "success",
+            "failure_probability": float(failure_probability),
+            "confidence": 0.6,  # Lower confidence for rule-based
+            "time_horizon_seconds": time_horizon,
+            "method": "rule_based",
+            "prediction_timestamp": datetime.now().isoformat()
+        }
+
+    def _get_failure_recommendation(self, probability: float) -> str:
+        """Get recommendation based on failure probability"""
+        if probability > 0.8:
+            return "IMMEDIATE ACTION REQUIRED: System failure highly likely"
+        elif probability > 0.6:
+            return "HIGH PRIORITY: Take preventive action to avoid potential failure"
+        elif probability > 0.4:
+            return "MEDIUM PRIORITY: Monitor closely and consider optimization"
+        elif probability > 0.2:
+            return "LOW PRIORITY: System stable but watch for trends"
+        else:
+            return "NORMAL: System operating within expected parameters"
+
+    def _generate_anomaly_recommendations(self, factors: List[Dict]) -> List[str]:
+        """Generate actionable recommendations based on anomaly factors"""
+        recommendations = []
+        
+        for factor in factors:
+            metric = factor['metric']
+            impact = factor['impact']
+            
+            if metric == 'cpu_usage_percent':
+                if impact == 'critical':
+                    recommendations.append("Scale out horizontally or upgrade CPU resources immediately")
+                else:
+                    recommendations.append("Optimize CPU-intensive processes or consider resource scaling")
+            
+            elif metric == 'memory_usage_percent':
+                if impact == 'critical':
+                    recommendations.append("Add memory resources or restart memory-leaking processes")
+                else:
+                    recommendations.append("Monitor memory usage trends and optimize application memory")
+            
+            elif metric == 'disk_usage_percent':
+                if impact == 'critical':
+                    recommendations.append("Clean up disk space immediately or expand storage")
+                else:
+                    recommendations.append("Schedule disk cleanup and consider storage expansion")
+            
+            elif metric == 'load_avg_1min':
+                recommendations.append("Reduce concurrent processes or scale compute resources")
+        
+        if not recommendations:
+            recommendations.append("Monitor system metrics for pattern analysis")
+        
+        return recommendations
+
 
 class TimeSeriesAnalyzer:
     """

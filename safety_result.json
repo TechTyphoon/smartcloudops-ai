@@ -1,0 +1,29 @@
+Safety 3.6.0 scanning /home/reddy/Desktop/CloudOps
+2025-08-16 18:53:45 UTC
+
+Account: Mahendra Reddy, techtyphoon.html@gmail.com 
+ Git branch: main
+ Environment: Stage.development
+ Scan policy: None, using Safety CLI default policies
+
+Python detected. Found 3 Python pyproject.toml files, 1 Python requirement file and 3 Python 
+environments
+
+✅ pyproject.toml: No issues found.
+
+✅ smartcloudops_env/lib/python3.13/site-packages/pandas/pyproject.toml: No issues found.
+
+✅ github_test/lib/python3.13/site-packages/pandas/pyproject.toml: No issues found.
+
+✅ requirements.txt: No issues found.
+
+✅ smartcloudops_env/pyvenv.cfg: No issues found.
+
+✅ test_security/pyvenv.cfg: No issues found.
+
+✅ github_test/pyvenv.cfg: No issues found.
+
+Tested 525 dependencies for security issues using default Safety CLI policies
+64 vulnerabilities found, 64 ignored due to policy.
+0 fixes suggested, resolving 0 vulnerabilities.
+
