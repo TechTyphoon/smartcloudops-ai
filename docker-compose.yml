@@ -8,7 +8,7 @@ services:
     env_file:
       - .env
     environment:
-      - FLASK_ENV=development
+      - FLASK_ENV=production
       - FLASK_PORT=5000
       - PROMETHEUS_URL=http://prometheus:9090
       - REQUIRE_APPROVAL=false
@@ -22,6 +22,10 @@ services:
       - DATABASE_URL=${DATABASE_URL:-postgresql+psycopg://cloudops:${POSTGRES_PASSWORD:-cloudops}@localhost:5434/cloudops}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - DISABLE_AWS_SERVICES=true
+      - DISABLE_ELASTICSEARCH=true
+      - USE_LOCAL_STORAGE=true
+      - FLASK_DEBUG=false
     deploy:
       resources:
         limits:

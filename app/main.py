@@ -217,6 +217,15 @@ try:
 except ImportError as e:
     logger.warning(f"⚠️ Authentication system not available: {e}")
 
+# Register GOD MODE API blueprint
+try:
+    from app.god_mode_api import init_god_mode_api
+
+    init_god_mode_api(app)
+    logger.info("✅ GOD MODE API system enabled")
+except ImportError as e:
+    logger.warning(f"⚠️ GOD MODE API system not available: {e}")
+
 # Prometheus metrics
 REQUEST_COUNT = Counter(
     "flask_requests_total", "Total Flask HTTP requests", ["method", "endpoint"]
@@ -1144,6 +1153,12 @@ def _validate_metrics(metrics):
 
 def _check_ml_authentication():
     """Check authentication for ML access."""
+    # For development/testing, allow access without authentication
+    # In production, this should be enabled
+    if os.getenv("FLASK_ENV", "development").lower() == "development":
+        logger.info("Development mode: ML authentication bypassed")
+        return None
+
     try:
         from app.auth import require_auth
 
@@ -1638,7 +1653,24 @@ def handle_value_error(error):
     )
 
 
-# Demo and Test Endpoints for Client
+# Register blueprints first to avoid conflicts
+if BETA_API_AVAILABLE and beta_api is not None:
+    app.register_blueprint(beta_api)  # Add beta testing API
+    logger.info("Beta API blueprint registered successfully")
+else:
+    logger.info("Beta API not available - skipping blueprint registration")
+
+# Register Phase 1: Enhanced ML API
+try:
+    from app.enhanced_ml_api import enhanced_ml_bp
+
+    app.register_blueprint(enhanced_ml_bp)
+    logger.info("Phase 1: Enhanced ML API blueprint registered successfully")
+except ImportError as e:
+    logger.warning(f"Enhanced ML API not available: {e}")
+
+
+# Demo and Test Endpoints for Client (defined after blueprints to avoid conflicts)
 @app.route("/demo", methods=["GET"])
 def demo():
     """Demo endpoint showing all available services"""
@@ -1707,21 +1739,7 @@ def handle_generic_exception(error):
     )
 
 
-# Register blueprints
-if BETA_API_AVAILABLE and beta_api is not None:
-    app.register_blueprint(beta_api)  # Add beta testing API
-    logger.info("Beta API blueprint registered successfully")
-else:
-    logger.info("Beta API not available - skipping blueprint registration")
-
-# Register Phase 1: Enhanced ML API
-try:
-    from app.enhanced_ml_api import enhanced_ml_bp
-
-    app.register_blueprint(enhanced_ml_bp)
-    logger.info("Phase 1: Enhanced ML API blueprint registered successfully")
-except ImportError as e:
-    logger.warning(f"Enhanced ML API not available: {e}")
+# Blueprints already registered above to avoid conflicts
 
 
 # WSGI application object for Gunicorn

@@ -8,6 +8,7 @@ gunicorn==23.0.0
 PyJWT==2.10.1
 bcrypt==4.1.2
 cryptography==45.0.5
+redis==5.0.1  # Added for authentication system
 
 # Security fix for CVE-2025-47273
 setuptools>=78.1.2
@@ -62,3 +63,25 @@ isort==5.12.0
 
 # Development
 watchdog==3.0.0
+
+# GOD MODE: Advanced Features
+elasticsearch==8.11.0  # For centralized logging
+# logstash is a separate service, not a Python package
+# kibana is a separate service, not a Python package
+celery==5.3.4  # For async task processing
+flower==2.0.1  # For Celery monitoring
+websockets==12.0  # For real-time communication
+fastapi==0.104.1  # For high-performance APIs
+uvicorn==0.24.0  # ASGI server
+pydantic==2.5.0  # Data validation
+httpx==0.25.2  # Async HTTP client
+aiofiles==23.2.1  # Async file operations
+asyncio-mqtt==0.16.1  # MQTT client for IoT
+influxdb-client==1.38.0  # Time-series database
+# OpenTelemetry packages temporarily disabled due to version conflicts
+# opentelemetry-api==1.21.0  # Observability
+# opentelemetry-sdk==1.21.0  # Observability SDK
+# opentelemetry-instrumentation-flask==0.42b0  # Flask instrumentation
+# opentelemetry-instrumentation-requests==0.42b0  # Requests instrumentation
+# opentelemetry-exporter-jaeger==1.21.0  # Jaeger exporter
+# opentelemetry-exporter-prometheus==0.57b0  # Prometheus exporter

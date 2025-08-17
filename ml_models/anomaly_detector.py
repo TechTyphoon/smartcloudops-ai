@@ -352,6 +352,10 @@ class AnomalyDetector:
             logger.error(f"Failed to load model: {e}")
             return False
 
+    def load_model(self) -> bool:
+        """Public method to load model - compatibility with main.py"""
+        return self._load_model()
+
     def get_model_status(self) -> Dict[str, Any]:
         """Get current model status and information."""
         return {
