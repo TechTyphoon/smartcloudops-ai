@@ -28,8 +28,9 @@ COPY app/ ./app/
 COPY scripts/ ./scripts/
 COPY ml_models/ ./ml_models/
 COPY templates/ ./templates/
-# Copy real environment configuration
-COPY .env .env
+# Copy environment configuration (if available)
+# Note: .env file is optional for Docker builds
+COPY .env* ./
 
 # Create non-root user for security
 RUN adduser --disabled-password --gecos '' appuser \

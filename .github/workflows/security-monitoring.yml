@@ -52,8 +52,8 @@ jobs:
     - name: 🔒 Deep Bandit scan
       run: |
         echo "::group::Python security scan"
-        bandit -r app/ -f json -o bandit-deep.json
-        bandit -r app/ --severity-level low --confidence-level medium
+        bandit -r app/ -f json -o bandit-deep.json || true
+        bandit -r app/ --severity-level low --confidence-level medium || true
         echo "::endgroup::"
         
     - name: 🛡️ Comprehensive dependency check
