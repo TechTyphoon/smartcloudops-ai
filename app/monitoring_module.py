@@ -80,36 +80,35 @@ def health_check():
 
         # Check database connection if available
         try:
-            import psycopg2
             import os
-            
+
+            import psycopg2
+
             # Get database configuration from environment
             db_host = os.getenv("POSTGRES_HOST", "localhost")
             db_port = os.getenv("POSTGRES_PORT", "5434")
             db_name = os.getenv("POSTGRES_DB", "cloudops")
             db_user = os.getenv("POSTGRES_USER", "cloudops")
             db_password = os.getenv("POSTGRES_PASSWORD", "cloudops")
-            
+
             # Test direct connection
             conn = psycopg2.connect(
                 host=db_host,
                 port=db_port,
                 database=db_name,
                 user=db_user,
-                password=db_password
+                password=db_password,
             )
-            
+
             cursor = conn.cursor()
             cursor.execute("SELECT 1")
             cursor.fetchone()
             cursor.close()
             conn.close()
-            
+
             health_status["services"]["database"] = "healthy"
         except ImportError:
-            logger.info(
-                "psycopg2 not available - skipping database health check"
-            )
+            logger.info("psycopg2 not available - skipping database health check")
             health_status["services"]["database"] = "not_configured"
         except Exception as e:
             logger.warning(f"Database health check failed: {e}")

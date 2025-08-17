@@ -38,6 +38,7 @@ def create_app():
     # Initialize database
     try:
         from app.database.database_config import init_database
+
         init_database(app)
         logger.info("Database initialized successfully")
     except ImportError as e:
