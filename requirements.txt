@@ -47,6 +47,7 @@ psycopg[binary]==3.2.9
 # Logging & Utilities
 structlog==23.2.0
 click==8.1.7
+psutil==6.1.0
 
 # Testing
 pytest==7.4.3

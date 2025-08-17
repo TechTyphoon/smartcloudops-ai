@@ -19,9 +19,17 @@ services:
       - SSM_SERVICE_NAME=smartcloudops-app
       - AWS_REGION=ap-south-1
       - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
-      - DATABASE_URL=postgresql+psycopg://cloudops:cloudops@postgres:5432/cloudops
+      - DATABASE_URL=${DATABASE_URL:-postgresql+psycopg://cloudops:${POSTGRES_PASSWORD:-cloudops}@postgres:5432/cloudops}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
     volumes:
       - ./app:/app/app
       - ./scripts:/app/scripts
@@ -89,13 +97,21 @@ services:
     image: postgres:15-alpine
     container_name: postgres-database
     environment:
-      - POSTGRES_USER=cloudops
-      - POSTGRES_PASSWORD=cloudops
-      - POSTGRES_DB=cloudops
+      - POSTGRES_USER=${POSTGRES_USER:-cloudops}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-cloudops}
+      - POSTGRES_DB=${POSTGRES_DB:-cloudops}
     ports:
       - "5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
     networks:
       - cloudops-network
 
