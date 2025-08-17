@@ -133,7 +133,6 @@ jobs:
       run: |
         # Install terraform security scanners
         curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
-        sudo mv tfsec /usr/local/bin/
         
     - name: 🔍 Terraform security scan
       run: |
