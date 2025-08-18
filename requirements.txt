@@ -47,6 +47,7 @@ psycopg[binary]==3.2.9
 
 # Logging & Utilities
 structlog==23.2.0
+python-json-logger==2.0.7
 click==8.1.7
 psutil==6.1.0
 flask-migrate==4.1.0

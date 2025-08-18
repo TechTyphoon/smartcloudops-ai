@@ -151,7 +151,7 @@ class AuthManager:
 
 
 # Global auth manager instance
-auth_manager = AuthManager(secret_key="your-super-secret-enterprise-key-change-this")
+auth_manager = AuthManager(secret_key=os.getenv("AUTH_SECRET_KEY", "change-me-in-prod"))
 
 
 def require_auth(required_permission: str = None):

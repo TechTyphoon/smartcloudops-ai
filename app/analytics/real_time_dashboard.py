@@ -7,6 +7,7 @@ Advanced real-time monitoring with WebSocket support, predictive analytics, and 
 import asyncio
 import json
 import logging
+import os
 import sqlite3
 import threading
 import time
@@ -84,7 +85,7 @@ class RealTimeAnalyticsDashboard:
 
     def __init__(
         self,
-        host: str = "0.0.0.0",
+        host: str = os.getenv("APP_HOST", "0.0.0.0"),
         port: int = 8081,
         update_interval: float = 1.0,
         max_clients: int = 100,

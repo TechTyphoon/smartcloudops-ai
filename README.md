@@ -199,6 +199,15 @@ FLASK_PORT=5000
 REDIS_URL=redis://localhost:6379
 PROMETHEUS_URL=http://localhost:9090
 
+# Security Configuration (REQUIRED)
+AUTH_SECRET_KEY=your-auth-secret-key-change-this-in-production
+JWT_SECRET_KEY=your-jwt-secret-key
+APP_HOST=0.0.0.0
+
+# API Keys
+OPENAI_API_KEY=your-openai-api-key
+GEMINI_API_KEY=your-gemini-api-key
+
 # Security Settings
 SECURITY_AUDIT_ENABLED=true
 SECURITY_COMPLIANCE_LEVEL=80
@@ -213,6 +222,13 @@ PROMETHEUS_RETENTION=15d
 - **[Kubernetes Configuration](k8s/)**
 - **[Prometheus Configuration](prometheus.yml)**
 - **[Grafana Dashboards](grafana-dashboards/)**
+
+### 🔒 **Security Notes**
+- **All secrets are now handled via `.env` files** - No hardcoded secrets in the codebase
+- **Environment variables** are used for all sensitive configuration
+- **Copy `.env.example` to `.env`** and customize for your environment
+- **Never commit `.env` files** to version control
+- **Test files contain intentional security patterns** for validation testing only
 
 ---
 

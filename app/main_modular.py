@@ -240,7 +240,7 @@ if __name__ == "__main__":
     logger.info("Starting Smart CloudOps AI Modular Application")
     debug_mode = os.getenv("FLASK_DEBUG", "false").lower() == "true"
     host = os.getenv(
-        "FLASK_HOST", "0.0.0.0"
+        "APP_HOST", "0.0.0.0"
     )  # Changed default for container compatibility
     port = get_port()
 

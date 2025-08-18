@@ -71,6 +71,8 @@ class TestGPTHandler:
 
     def test_sanitize_input_dangerous_patterns(self, gpt_handler):
         """Test input sanitization with dangerous patterns."""
+        # NOTE: These are intentionally dangerous patterns for testing input sanitization
+        # They are safe in this test context as they are never executed
         dangerous_inputs = [
             "system('rm -rf /')",
             "eval('dangerous code')",

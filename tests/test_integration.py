@@ -265,7 +265,8 @@ class TestCompleteWorkflow:
     def test_security_in_workflow(self, client):
         """Test security aspects of the workflow."""
 
-        # Test with potentially malicious input
+        # NOTE: These are intentionally malicious patterns for testing security validation
+        # They are safe in this test context as they are never executed
         malicious_queries = [
             {"query": "system('rm -rf /')"},
             {"query": "import os; os.system('ls')"},
