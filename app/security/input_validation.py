@@ -4,8 +4,8 @@ Security: Input Validation Module
 Centralized input validation for security and data integrity
 """
 
-import re
 import logging
+import re
 from typing import Any, Dict, Union
 
 logger = logging.getLogger(__name__)

@@ -20,9 +20,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 # Import modular components
 from app.config import get_config as _get_config
 from app.database import db_manager
-from app.logging import setup_logging, get_logger, log_request_info, log_error
+from app.logging import get_logger, log_error, log_request_info, setup_logging
 from app.monitoring import metrics
-from app.security import validate_string_input, validate_json_input
+from app.security import validate_json_input, validate_string_input
 
 # Import ML components
 try:

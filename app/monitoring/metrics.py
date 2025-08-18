@@ -5,7 +5,8 @@ Centralized metrics collection for application monitoring
 """
 
 import logging
-from prometheus_client import Counter, Histogram, Gauge, Summary
+
+from prometheus_client import Counter, Gauge, Histogram, Summary
 
 logger = logging.getLogger(__name__)
 
