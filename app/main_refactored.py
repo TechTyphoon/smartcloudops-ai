@@ -8,8 +8,7 @@ import os
 import sys
 import time
 from datetime import datetime
-from functools import wraps
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from flask import Flask, jsonify, request
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
@@ -29,7 +28,7 @@ try:
     from ml_models import AnomalyDetector
 
     ML_AVAILABLE = True
-except ImportError as e:
+except ImportError:
     ML_AVAILABLE = False
 
 # Import remediation components
@@ -37,7 +36,7 @@ try:
     from app.remediation.engine import RemediationEngine
 
     REMEDIATION_AVAILABLE = True
-except ImportError as e:
+except ImportError:
     REMEDIATION_AVAILABLE = False
 
 # Import ChatOps components
@@ -46,11 +45,10 @@ try:
     from app.chatops.utils import (
         LogRetriever,
         SystemContextGatherer,
-        validate_query_params,
     )
 
     CHATOPS_AVAILABLE = True
-except ImportError as e:
+except ImportError:
     CHATOPS_AVAILABLE = False
 
 # Setup logging
