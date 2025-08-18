@@ -418,7 +418,7 @@ class RealTimeAnalyticsDashboard:
                 conn.execute(
                     """
                     INSERT INTO system_metrics
-                    (timestamp, cpu_usage, memory_usage, disk_usage, 
+                    (timestamp, cpu_usage, memory_usage, disk_usage,
                      network_io, active_connections, response_time_avg, 
                      error_rate, throughput, queue_depth)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -526,7 +526,8 @@ class RealTimeAnalyticsDashboard:
             with sqlite3.connect(self.db_path) as conn:
                 conn.execute(
                     """
-                    INSERT INTO alerts (id, timestamp, severity, category, message, details)
+                    INSERT INTO alerts (id, timestamp, severity, category,
+                    message, details)
                     VALUES (?, ?, ?, ?, ?, ?)
                 """,
                     (
@@ -628,7 +629,7 @@ class RealTimeAnalyticsDashboard:
             with sqlite3.connect(self.db_path) as conn:
                 conn.execute(
                     """
-                    INSERT INTO insights (id, timestamp, insight_type, 
+                    INSERT INTO insights (id, timestamp, insight_type,
                     confidence, message, data, actionable)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                 """,
