@@ -42,10 +42,7 @@ except ImportError:
 # Import ChatOps components
 try:
     from app.chatops.ai_handler import FlexibleAIHandler
-    from app.chatops.utils import (
-        LogRetriever,
-        SystemContextGatherer,
-    )
+    from app.chatops.utils import LogRetriever, SystemContextGatherer
 
     CHATOPS_AVAILABLE = True
 except ImportError:
