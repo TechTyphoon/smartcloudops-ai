@@ -71,7 +71,8 @@ def setup_logging(
     # Create formatters
     if enable_json:
         json_formatter = CustomJsonFormatter(
-            "%(timestamp)s %(level)s %(name)s %(module)s %(function)s %(line)s %(message)s"
+            "%(timestamp)s %(level)s %(name)s %(module)s %(function)s "
+            "%(line)s %(message)s"
         )
         console_formatter = json_formatter
     else:

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 GOD MODE: Advanced API Endpoints
-Enterprise-grade APIs for ML versioning, centralized logging, real-time analytics, and advanced features
+Enterprise-grade APIs for ML versioning, centralized logging, real-time analytics,
+and advanced features
 """
 
 import json
@@ -368,7 +369,8 @@ def rollback_model():
         return jsonify(
             {
                 "status": "success" if success else "error",
-                "message": f"Model rolled back from {deployment_id} to {rollback_version_id}",
+                "message": f"Model rolled back from {deployment_id} to "
+                f"{rollback_version_id}",
                 "data": {
                     "deployment_id": deployment_id,
                     "rollback_version_id": rollback_version_id,

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 GOD MODE: Centralized Logging System with ELK Stack Integration
-Enterprise-grade logging with structured data, real-time processing, and advanced analytics
+Enterprise-grade logging with structured data, real-time processing,
+and advanced analytics
 """
 
 import json
