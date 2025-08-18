@@ -419,7 +419,7 @@ class RealTimeAnalyticsDashboard:
                     """
                     INSERT INTO system_metrics
                     (timestamp, cpu_usage, memory_usage, disk_usage,
-                     network_io, active_connections, response_time_avg, 
+                     network_io, active_connections, response_time_avg,
                      error_rate, throughput, queue_depth)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
