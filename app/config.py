@@ -15,11 +15,11 @@ def load_dotenv():
     env_path = Path(__file__).parent.parent / ".env"
     if env_path.exists():
         try:
-        with open(env_path, "r") as f:
+            with open(env_path, "r") as f:
                 for line_num, line in enumerate(f, 1):
-                line = line.strip()
-                if line and not line.startswith("#") and "=" in line:
-                    key, value = line.split("=", 1)
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        key, value = line.split("=", 1)
                         key = key.strip()
                         value = value.strip().strip('"').strip("'")
                         
@@ -28,7 +28,7 @@ def load_dotenv():
                             if len(value) < 16:
                                 logger.warning(f"Warning: {key} in .env file is too short (line {line_num})")
                         
-                    os.environ[key] = value
+                        os.environ[key] = value
                         
         except Exception as e:
             logger.error(f"Error loading .env file: {e}")
@@ -195,7 +195,7 @@ class Config:
         # Validate OpenAI configuration
         if ai_provider == "openai":
             if not config_dict.get("openai_api_key"):
-            errors.append("OPENAI_API_KEY is required when AI_PROVIDER is 'openai'")
+                errors.append("OPENAI_API_KEY is required when AI_PROVIDER is 'openai'")
             else:
                 # Validate API key format
                 if not config_dict["openai_api_key"].startswith("sk-"):
@@ -204,7 +204,7 @@ class Config:
         # Validate Gemini configuration
         if ai_provider == "gemini":
             if not config_dict.get("gemini_api_key"):
-            errors.append("GEMINI_API_KEY is required when AI_PROVIDER is 'gemini'")
+                errors.append("GEMINI_API_KEY is required when AI_PROVIDER is 'gemini'")
 
         # Validate model parameters
         openai_tokens = config_dict.get("openai_max_tokens", 500)

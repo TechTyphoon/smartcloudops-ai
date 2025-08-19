@@ -26,16 +26,16 @@ try:
     redis_port = int(os.getenv("REDIS_PORT", "6379"))
     redis_db = int(os.getenv("REDIS_DB", "1"))
     redis_password = os.getenv("REDIS_PASSWORD")
-    
+
     redis_client = redis.Redis(
-        host=redis_host, 
-        port=redis_port, 
-        db=redis_db, 
+        host=redis_host,
+        port=redis_port,
+        db=redis_db,
         password=redis_password,
         decode_responses=True,
         socket_connect_timeout=5,
         socket_timeout=5,
-        retry_on_timeout=True
+        retry_on_timeout=True,
     )
     # Test connection
     redis_client.ping()
@@ -56,49 +56,62 @@ class AuthManager:
             # Generate a secure key if none provided
             self.secret_key = secrets.token_urlsafe(64)
             logger.warning("No JWT_SECRET_KEY provided, generated temporary key")
-        
+
         # Validate secret key strength
         if len(self.secret_key) < 32:
             raise ValueError("JWT_SECRET_KEY must be at least 32 characters long")
-        
+
         self.algorithm = algorithm
-        self.token_expiry = timedelta(hours=int(os.getenv("JWT_ACCESS_TOKEN_EXPIRY_HOURS", "24")))
-        self.refresh_expiry = timedelta(days=int(os.getenv("JWT_REFRESH_TOKEN_EXPIRY_DAYS", "7")))
+        self.token_expiry = timedelta(
+            hours=int(os.getenv("JWT_ACCESS_TOKEN_EXPIRY_HOURS", "24"))
+        )
+        self.refresh_expiry = timedelta(
+            days=int(os.getenv("JWT_REFRESH_TOKEN_EXPIRY_DAYS", "7"))
+        )
 
         # Enterprise user roles and permissions
         self.roles = {
             "admin": {
-                "permissions": ["read", "write", "admin", "ml_train", "system_config", "user_management"],
+                "permissions": [
+                    "read",
+                    "write",
+                    "admin",
+                    "ml_train",
+                    "system_config",
+                    "user_management",
+                ],
                 "description": "Full system access",
-                "level": 4
+                "level": 4,
             },
             "operator": {
                 "permissions": ["read", "write", "ml_query", "remediation_execute"],
                 "description": "Operations and monitoring",
-                "level": 3
+                "level": 3,
             },
             "analyst": {
                 "permissions": ["read", "ml_query", "ml_train", "remediation_view"],
                 "description": "ML analysis and training",
-                "level": 2
+                "level": 2,
             },
             "viewer": {
                 "permissions": ["read"],
                 "description": "Read-only access",
-                "level": 1
+                "level": 1,
             },
         }
 
         # Rate limiting configuration
         self.max_login_attempts = int(os.getenv("MAX_LOGIN_ATTEMPTS", "5"))
-        self.lockout_duration = timedelta(minutes=int(os.getenv("LOCKOUT_DURATION_MINUTES", "15")))
+        self.lockout_duration = timedelta(
+            minutes=int(os.getenv("LOCKOUT_DURATION_MINUTES", "15"))
+        )
 
     def hash_password(self, password: str) -> str:
         """Hash password using bcrypt with secure configuration."""
         try:
             # Validate password strength
             validator.validate_password(password, min_length=8)
-            
+
             # Use high cost factor for enterprise security
             cost_factor = int(os.getenv("BCRYPT_COST_FACTOR", "12"))
             salt = bcrypt.gensalt(rounds=cost_factor)
@@ -115,7 +128,7 @@ class AuthManager:
         try:
             if not password or not hashed:
                 return False
-            
+
             # Use constant time comparison to prevent timing attacks
             return bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8"))
         except Exception as e:
@@ -123,12 +136,12 @@ class AuthManager:
             return False
 
     def generate_tokens(
-        self, 
-        user_id: str, 
-        username: str, 
-        role: str, 
+        self,
+        user_id: str,
+        username: str,
+        role: str,
         tenant_id: Optional[str] = None,
-        additional_claims: Optional[Dict] = None
+        additional_claims: Optional[Dict] = None,
     ) -> Dict[str, str]:
         """Generate JWT access and refresh tokens with security best practices."""
         try:
@@ -136,10 +149,10 @@ class AuthManager:
             user_id = validator.validate_string(user_id, max_length=100)
             username = validator.validate_string(username, max_length=100)
             role = validator.validate_string(role, max_length=50)
-            
+
             if tenant_id:
                 tenant_id = validator.validate_string(tenant_id, max_length=100)
-            
+
             now = datetime.utcnow()
             jti = secrets.token_urlsafe(32)  # Unique token ID
 
@@ -176,14 +189,10 @@ class AuthManager:
 
             # Generate tokens
             access_token = jwt.encode(
-                access_payload, 
-                self.secret_key, 
-                algorithm=self.algorithm
+                access_payload, self.secret_key, algorithm=self.algorithm
             )
             refresh_token = jwt.encode(
-                refresh_payload, 
-                self.secret_key, 
-                algorithm=self.algorithm
+                refresh_payload, self.secret_key, algorithm=self.algorithm
             )
 
             # Store refresh token in Redis for revocation capability
@@ -192,7 +201,7 @@ class AuthManager:
                     redis_client.setex(
                         f"refresh_token:{refresh_payload['jti']}",
                         int(self.refresh_expiry.total_seconds()),
-                        user_id
+                        user_id,
                     )
                 except Exception as e:
                     logger.warning(f"Failed to store refresh token in Redis: {e}")
@@ -202,7 +211,7 @@ class AuthManager:
                 "access_token": access_token,
                 "refresh_token": refresh_token,
                 "token_type": "Bearer",
-                "expires_in": int(self.token_expiry.total_seconds())
+                "expires_in": int(self.token_expiry.total_seconds()),
             }
 
         except Exception as e:
@@ -224,13 +233,15 @@ class AuthManager:
                     "verify_signature": True,
                     "verify_exp": True,
                     "verify_iat": True,
-                    "require": ["exp", "iat", "iss", "aud", "type"]
-                }
+                    "require": ["exp", "iat", "iss", "aud", "type"],
+                },
             )
 
             # Validate token type
             if payload.get("type") != token_type:
-                logger.warning(f"Token type mismatch: expected {token_type}, got {payload.get('type')}")
+                logger.warning(
+                    f"Token type mismatch: expected {token_type}, got {payload.get('type')}"
+                )
                 return None
 
             # Validate issuer and audience
@@ -290,7 +301,7 @@ class AuthManager:
                 user_id=user["id"],
                 username=user["username"],
                 role=user["role"],
-                tenant_id=user.get("tenant_id")
+                tenant_id=user.get("tenant_id"),
             )
 
         except Exception as e:
@@ -302,7 +313,7 @@ class AuthManager:
         try:
             payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
             jti = payload.get("jti")
-            
+
             if not jti:
                 return False
 
@@ -311,7 +322,7 @@ class AuthManager:
                 # Blacklist until token expires
                 exp = payload.get("exp", 0)
                 ttl = max(0, exp - int(datetime.utcnow().timestamp()))
-                
+
                 if ttl > 0:
                     redis_client.setex(f"blacklist:{jti}", ttl, "revoked")
                     logger.info(f"Token {jti} blacklisted")
@@ -339,7 +350,7 @@ class AuthManager:
         try:
             user_id = payload.get("user_id")
             role = payload.get("role")
-            
+
             if not user_id or not role:
                 return False
 
@@ -362,7 +373,9 @@ class AuthManager:
             logger.error(f"User permissions validation failed: {e}")
             return False
 
-    def check_permission(self, user_permissions: List[str], required_permission: str) -> bool:
+    def check_permission(
+        self, user_permissions: List[str], required_permission: str
+    ) -> bool:
         """Check if user has required permission."""
         return required_permission in user_permissions
 
@@ -380,51 +393,59 @@ ENTERPRISE_USERS = {
     "admin": {
         "id": "admin-001",
         "username": "admin",
-        "password_hash": bcrypt.hashpw("admin123".encode("utf-8"), bcrypt.gensalt(12)).decode("utf-8"),
+        "password_hash": bcrypt.hashpw(
+            "admin123".encode("utf-8"), bcrypt.gensalt(12)
+        ).decode("utf-8"),
         "role": "admin",
         "email": "admin@smartcloudops.ai",
         "tenant_id": "enterprise-001",
         "created_at": datetime.utcnow(),
         "last_login": None,
         "failed_attempts": 0,
-        "locked_until": None
+        "locked_until": None,
     },
     "operator": {
         "id": "operator-001",
         "username": "operator",
-        "password_hash": bcrypt.hashpw("operator123".encode("utf-8"), bcrypt.gensalt(12)).decode("utf-8"),
+        "password_hash": bcrypt.hashpw(
+            "operator123".encode("utf-8"), bcrypt.gensalt(12)
+        ).decode("utf-8"),
         "role": "operator",
         "email": "operator@smartcloudops.ai",
         "tenant_id": "enterprise-001",
         "created_at": datetime.utcnow(),
         "last_login": None,
         "failed_attempts": 0,
-        "locked_until": None
+        "locked_until": None,
     },
     "analyst": {
         "id": "analyst-001",
         "username": "analyst",
-        "password_hash": bcrypt.hashpw("analyst123".encode("utf-8"), bcrypt.gensalt(12)).decode("utf-8"),
+        "password_hash": bcrypt.hashpw(
+            "analyst123".encode("utf-8"), bcrypt.gensalt(12)
+        ).decode("utf-8"),
         "role": "analyst",
         "email": "analyst@smartcloudops.ai",
         "tenant_id": "enterprise-001",
         "created_at": datetime.utcnow(),
         "last_login": None,
         "failed_attempts": 0,
-        "locked_until": None
+        "locked_until": None,
     },
     "viewer": {
         "id": "viewer-001",
         "username": "viewer",
-        "password_hash": bcrypt.hashpw("viewer123".encode("utf-8"), bcrypt.gensalt(12)).decode("utf-8"),
+        "password_hash": bcrypt.hashpw(
+            "viewer123".encode("utf-8"), bcrypt.gensalt(12)
+        ).decode("utf-8"),
         "role": "viewer",
         "email": "viewer@smartcloudops.ai",
         "tenant_id": "enterprise-001",
         "created_at": datetime.utcnow(),
         "last_login": None,
         "failed_attempts": 0,
-        "locked_until": None
-    }
+        "locked_until": None,
+    },
 }
 
 
@@ -458,13 +479,17 @@ def authenticate_user(username: str, password: str) -> Optional[Dict]:
         if not auth_manager.verify_password(password, user["password_hash"]):
             # Increment failed attempts
             user["failed_attempts"] = user.get("failed_attempts", 0) + 1
-            
+
             # Lock account if too many failed attempts
             if user["failed_attempts"] >= auth_manager.max_login_attempts:
                 user["locked_until"] = datetime.utcnow() + auth_manager.lockout_duration
-                logger.warning(f"Account locked for user {username} due to too many failed attempts")
-            
-            logger.warning(f"Authentication failed: invalid password for user {username}")
+                logger.warning(
+                    f"Account locked for user {username} due to too many failed attempts"
+                )
+
+            logger.warning(
+                f"Authentication failed: invalid password for user {username}"
+            )
             return None
 
         # Reset failed attempts on successful login
@@ -485,16 +510,20 @@ def authenticate_user(username: str, password: str) -> Optional[Dict]:
 
 def require_auth(f):
     """Decorator to require authentication."""
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
         try:
             # Get token from Authorization header
             auth_header = request.headers.get("Authorization")
             if not auth_header or not auth_header.startswith("Bearer "):
-                return jsonify({"error": "Missing or invalid authorization header"}), 401
+                return (
+                    jsonify({"error": "Missing or invalid authorization header"}),
+                    401,
+                )
 
             token = auth_header.split(" ")[1]
-            
+
             # Verify token
             payload = auth_manager.verify_token(token)
             if not payload:
@@ -513,6 +542,7 @@ def require_auth(f):
 
 def require_permission(permission: str):
     """Decorator to require specific permission."""
+
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
@@ -522,7 +552,7 @@ def require_permission(permission: str):
                     return jsonify({"error": "Authentication required"}), 401
 
                 user_permissions = request.user.get("permissions", [])
-                
+
                 # Check permission
                 if not auth_manager.check_permission(user_permissions, permission):
                     return jsonify({"error": "Insufficient permissions"}), 403
@@ -534,11 +564,13 @@ def require_permission(permission: str):
                 return jsonify({"error": "Permission check failed"}), 403
 
         return decorated_function
+
     return decorator
 
 
 def require_admin(f):
     """Decorator to require admin role."""
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
         try:

@@ -98,7 +98,7 @@ class LocalProvider(AIProvider):
 
             # Generate contextual responses based on query content
             response_data = self._generate_enhanced_response(user_message.lower())
-            
+
             return {
                 "status": "success",
                 "response": response_data["response"],
@@ -107,7 +107,8 @@ class LocalProvider(AIProvider):
                 "suggestions": response_data.get("suggestions", []),
                 "confidence": response_data.get("confidence", 0.95),
                 "query_type": response_data.get("query_type", "general"),
-                "tokens_used": len(user_message.split()) + len(response_data["response"].split())
+                "tokens_used": len(user_message.split())
+                + len(response_data["response"].split()),
             }
 
             return {
@@ -124,63 +125,102 @@ class LocalProvider(AIProvider):
     def _generate_enhanced_response(self, query: str) -> Dict[str, Any]:
         """Generate enhanced contextual responses with suggestions."""
         import random
-        
+
         demo_responses = {
             "system_status": [
                 {
                     "response": "**Current System Status**: ✅ All systems operational\n\n**Infrastructure Health**:\n- Flask Application: Running (Port 5000)\n- PostgreSQL Database: Connected\n- Prometheus Monitoring: Active (9090)\n- Grafana Dashboard: Accessible (13000)\n- Node Exporter: Collecting metrics (9100)\n\n**ML System Status**:\n- Anomaly Detection: Functional\n- Model: IsolationForest loaded (6 features)\n- Last prediction: No anomalies detected\n\n**Recommendations**:\n1. Monitor system metrics in Grafana\n2. Check application logs for any warnings\n3. Review performance trends",
-                    "suggestions": ["View detailed metrics", "Check system logs", "Monitor performance trends", "Review recent alerts"]
+                    "suggestions": [
+                        "View detailed metrics",
+                        "Check system logs",
+                        "Monitor performance trends",
+                        "Review recent alerts",
+                    ],
                 },
                 {
                     "response": "**System Health Report**: 🟢 Excellent\n\n**Core Services**:\n- Backend API: Healthy (Response time: 45ms)\n- Database: Connected (Active connections: 3)\n- Monitoring: Active (Metrics collected: 1,247)\n- ML Pipeline: Operational (Model accuracy: 94.2%)\n\n**Performance Metrics**:\n- CPU Usage: 23.4% (Normal)\n- Memory Usage: 67.8% (Optimal)\n- Disk Usage: 41.2% (Good)\n- Network: 12.5 Mbps (Stable)\n\n**Security Status**:\n- All endpoints secured\n- Rate limiting active\n- No security alerts",
-                    "suggestions": ["View performance dashboard", "Check security logs", "Monitor resource usage", "Review system alerts"]
-                }
+                    "suggestions": [
+                        "View performance dashboard",
+                        "Check security logs",
+                        "Monitor resource usage",
+                        "Review system alerts",
+                    ],
+                },
             ],
             "anomaly_detection": [
                 {
                     "response": "**Anomaly Detection Report**: 🔍 Analysis Complete\n\n**Current Status**:\n- No anomalies detected in the last 24 hours\n- Model confidence: 96.8%\n- False positive rate: 2.1%\n\n**Monitored Metrics**:\n- CPU utilization patterns\n- Memory consumption trends\n- Disk I/O performance\n- Network traffic analysis\n- Application response times\n\n**Recommendations**:\n1. Continue monitoring for pattern changes\n2. Review historical data for trends\n3. Consider model retraining in 7 days",
-                    "suggestions": ["Investigate detected anomalies", "View historical patterns", "Adjust detection sensitivity", "Generate anomaly report"]
+                    "suggestions": [
+                        "Investigate detected anomalies",
+                        "View historical patterns",
+                        "Adjust detection sensitivity",
+                        "Generate anomaly report",
+                    ],
                 },
                 {
                     "response": "**Anomaly Alert**: ⚠️ Potential Issue Detected\n\n**Detection Details**:\n- Severity: Medium\n- Confidence: 87.3%\n- Affected metric: CPU usage spike\n- Duration: 15 minutes\n\n**Analysis**:\n- Unusual CPU pattern detected\n- Possible cause: Background process\n- Impact: Minimal (system still responsive)\n\n**Recommended Actions**:\n1. Investigate background processes\n2. Monitor for escalation\n3. Check application logs",
-                    "suggestions": ["Investigate background processes", "Monitor CPU trends", "Check application logs", "Review system alerts"]
-                }
+                    "suggestions": [
+                        "Investigate background processes",
+                        "Monitor CPU trends",
+                        "Check application logs",
+                        "Review system alerts",
+                    ],
+                },
             ],
             "performance_optimization": [
                 {
                     "response": "**Performance Optimization Analysis**: 🚀 Recommendations\n\n**Current Performance**:\n- Overall Score: 8.7/10\n- Response Time: 45ms (Excellent)\n- Throughput: 1,247 req/min (Good)\n- Error Rate: 0.02% (Excellent)\n\n**Optimization Opportunities**:\n1. Database query optimization (Potential 15% improvement)\n2. Cache hit rate enhancement (Potential 20% improvement)\n3. Load balancing fine-tuning (Potential 10% improvement)\n\n**Immediate Actions**:\n- Enable query result caching\n- Optimize database indexes\n- Implement connection pooling",
-                    "suggestions": ["Apply optimization recommendations", "Monitor performance improvements", "Review resource usage", "Schedule optimization tasks"]
+                    "suggestions": [
+                        "Apply optimization recommendations",
+                        "Monitor performance improvements",
+                        "Review resource usage",
+                        "Schedule optimization tasks",
+                    ],
                 }
             ],
             "security_analysis": [
                 {
                     "response": "**Security Analysis Report**: 🛡️ All Clear\n\n**Security Status**:\n- Overall Score: 9.2/10\n- Authentication: Secure\n- Authorization: Properly configured\n- Data encryption: Active\n- Rate limiting: Enabled\n\n**Recent Security Events**:\n- No suspicious activities detected\n- All login attempts legitimate\n- No failed authentication attempts\n- API usage within normal limits\n\n**Recommendations**:\n1. Continue monitoring for unusual patterns\n2. Regular security audits (next due: 7 days)\n3. Keep security patches updated",
-                    "suggestions": ["Review security logs", "Check access patterns", "Update security policies", "Run security audit"]
+                    "suggestions": [
+                        "Review security logs",
+                        "Check access patterns",
+                        "Update security policies",
+                        "Run security audit",
+                    ],
                 }
-            ]
+            ],
         }
-        
+
         # Determine response type based on query
-        if any(word in query for word in ["status", "health", "operational", "running"]):
+        if any(
+            word in query for word in ["status", "health", "operational", "running"]
+        ):
             response_type = "system_status"
-        elif any(word in query for word in ["anomaly", "anomalies", "detect", "issue", "problem"]):
+        elif any(
+            word in query
+            for word in ["anomaly", "anomalies", "detect", "issue", "problem"]
+        ):
             response_type = "anomaly_detection"
-        elif any(word in query for word in ["performance", "optimize", "speed", "fast"]):
+        elif any(
+            word in query for word in ["performance", "optimize", "speed", "fast"]
+        ):
             response_type = "performance_optimization"
-        elif any(word in query for word in ["security", "secure", "threat", "vulnerability"]):
+        elif any(
+            word in query for word in ["security", "secure", "threat", "vulnerability"]
+        ):
             response_type = "security_analysis"
         else:
             response_type = "system_status"
-        
+
         # Get random response from appropriate category
         responses = demo_responses.get(response_type, demo_responses["system_status"])
         selected_response = random.choice(responses)
-        
+
         return {
             "response": selected_response["response"],
             "suggestions": selected_response["suggestions"],
             "confidence": random.uniform(0.85, 0.98),
-            "query_type": response_type
+            "query_type": response_type,
         }
 
     def _generate_response(self, query: str) -> str:
