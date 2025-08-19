@@ -199,6 +199,10 @@ def validate_json_input(data: Any) -> Dict:
 # Create Flask app
 app = Flask(__name__)
 
+# Enable CORS for frontend integration
+from flask_cors import CORS
+CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:3000"], supports_credentials=True)
+
 # Load environment and validated config
 
 _env = os.getenv("FLASK_ENV", "development").lower()

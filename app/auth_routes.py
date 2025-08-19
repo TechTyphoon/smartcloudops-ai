@@ -133,7 +133,7 @@ def login():
 
 
 @auth_bp.route("/logout", methods=["POST"])
-@require_auth()
+@require_auth
 def logout():
     """Enterprise logout with token revocation"""
     try:
@@ -241,7 +241,7 @@ def refresh_token():
 
 
 @auth_bp.route("/profile", methods=["GET"])
-@require_auth()
+@require_auth
 def get_profile():
     """Get current user profile"""
     try:
@@ -325,7 +325,7 @@ def list_users():
 
 
 @auth_bp.route("/validate", methods=["GET"])
-@require_auth()
+@require_auth
 def validate_token():
     """Validate current token and return user info"""
     return jsonify(
@@ -340,7 +340,7 @@ def validate_token():
 
 # Enterprise roles and permissions info
 @auth_bp.route("/roles", methods=["GET"])
-@require_auth()
+@require_auth
 def get_roles():
     """Get available roles and permissions"""
     return jsonify(
