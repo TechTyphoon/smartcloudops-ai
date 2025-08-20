@@ -287,7 +287,7 @@ else:
 
 # Initialize database connection with production-grade pooling
 db_engine = None
-if _app_config.get("database_url"):
+if hasattr(_app_config, "DATABASE_URL") and _app_config.DATABASE_URL:
     try:
         # Production-grade connection pooling configuration
         pool_size = int(os.getenv("DATABASE_POOL_SIZE", "20"))
@@ -296,7 +296,7 @@ if _app_config.get("database_url"):
         pool_recycle = int(os.getenv("DATABASE_POOL_RECYCLE", "3600"))
 
         db_engine = create_engine(
-            _app_config["database_url"],
+            _app_config.DATABASE_URL,
             pool_size=pool_size,  # Base connections
             max_overflow=max_overflow,  # Burst capacity
             pool_timeout=pool_timeout,  # Connection timeout

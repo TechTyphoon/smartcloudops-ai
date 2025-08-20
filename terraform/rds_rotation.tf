@@ -36,7 +36,7 @@ resource "aws_iam_role" "rds_rotation_role" {
 
 resource "aws_iam_role_policy_attachment" "rds_rotation_policy" {
   role       = aws_iam_role.rds_rotation_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSSecretsManagerRotationLambdaBasic"
+  policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
 }
 
 # Additional IAM policy for VPC and Secrets Manager access

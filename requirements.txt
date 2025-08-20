@@ -1,56 +1,172 @@
-# Core Flask Application
+# Core Framework
 Flask==3.1.1
-Flask-CORS==4.0.2
 Werkzeug==3.1.3
 gunicorn==23.0.0
+fastapi==0.116.1  # Updated to fix CVE-2024-24762
+uvicorn==0.24.0
 
-# Enterprise Security & Authentication
+# Database & ORM
+SQLAlchemy==2.0.23
+psycopg2-binary>=2.9.9
+alembic==1.12.1
+
+# Authentication & Security
 PyJWT==2.10.1
-bcrypt==4.1.2
-cryptography==45.0.5
-redis==5.0.1  # Added for authentication system
-
-# Security fix for CVE-2025-47273
-setuptools>=78.1.2
-
-# NumPy compatibility fix for Prophet
-numpy<2.0.0  # Required for Prophet compatibility
+bcrypt==4.0.1
+python-dotenv==1.0.0
+cryptography<42,>=41.0.5
 
 # AI/ML Libraries
-openai>=1.68.2
-google-generativeai>=0.3.0
-litellm==1.74.15
-scikit-learn>=1.4.0  # Updated for Python 3.13 compatibility
-pandas>=2.2.0  # Updated for Python 3.13 compatibility
-# numpy>=1.26.0  # Updated for Python 3.13 compatibility - Moved above for Prophet compatibility
-scipy>=1.12.0  # Updated for Python 3.13 compatibility
-
-# Anomaly Detection
-prophet==1.1.4  # Re-enabled with NumPy compatibility fix
+openai==1.3.7
+google-generativeai==0.3.2
+scikit-learn==1.7.1
+pandas>=2.1.0
+numpy>=1.26.0
+joblib==1.3.2
 
 # Monitoring & Metrics
 prometheus-client==0.19.0
-prometheus-api-client==0.6.0
-requests==2.32.4
+psutil==5.9.6
+redis==5.0.1
 
 # AWS Integration
 boto3==1.34.0
 botocore==1.34.0
 
-# Configuration & Environment
-python-dotenv==1.0.0
-pyyaml==6.0.1
+# HTTP & API
+requests==2.32.4
+httpx==0.25.2
 
-# Database
-SQLAlchemy==2.0.32
-psycopg[binary]==3.2.9
+# Data Processing
+pydantic>=2.6.0
+python-multipart==0.0.20
 
-# Logging & Utilities
-structlog==23.2.0
-python-json-logger==2.0.7
+# Utilities
+python-dateutil==2.8.2
+pytz==2023.3
 click==8.1.7
-psutil==6.1.0
-flask-migrate==4.1.0
+
+# Development & Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+black==25.1.0
+flake8==6.1.0
+mypy==1.7.1
+
+# Logging
+structlog==23.2.0
+
+# Configuration
+pydantic-settings==2.1.0
+
+# CORS
+flask-cors==6.0.1
+
+# Rate Limiting
+flask-limiter==3.5.0
+
+# Caching
+flask-caching==2.3.1
+
+# Health Checks
+healthcheck==1.3.3
+
+# Environment Management
+python-decouple==3.8
+
+# Async Support
+asyncio-mqtt==0.16.1
+
+# JSON Schema
+jsonschema==4.20.0
+
+# Time Handling
+arrow==1.3.0
+
+# File Processing
+python-magic==0.4.27
+
+# Compression
+# gzip==0.0.1  # Removed - package doesn't exist
+
+# URL Parsing
+urllib3<2.1,>=1.25.4
+
+# SSL/TLS
+pyOpenSSL==23.3.0
+
+# System Information
+psutil==5.9.6
+
+# Network Utilities
+netifaces==0.11.0
+
+# Process Management
+supervisor==4.2.5
+
+# Configuration Management
+configparser==6.0.0
+
+# Text Processing
+markdown==3.5.1
+
+# Email
+# smtplib==0.0.1  # Removed - package doesn't exist
+
+# WebSocket Support
+websockets==12.0
+
+# GraphQL (if needed)
+graphene==3.3
+
+# API Documentation
+flask-restx==1.3.0
+
+# Background Tasks
+celery==5.3.4
+
+# Message Queuing
+redis==5.0.1
+
+# Serialization
+marshmallow==3.20.1
+
+# Validation
+cerberus==1.3.5
+
+# Time Zones
+pytz==2023.3
+
+# Data Validation
+voluptuous==0.14.2
+
+# HTTP Status Codes
+# http-status==0.1.0  # Removed - package doesn't exist
+
+# Environment Variables
+python-dotenv==1.0.0
+
+# JSON Web Tokens
+PyJWT==2.10.1
+
+# Password Hashing
+bcrypt==4.0.1
+
+# API Rate Limiting
+flask-limiter==3.5.0
+
+# CORS Support
+flask-cors==6.0.1
+
+# Health Checks
+healthcheck==1.3.3
+
+# Logging
+structlog==23.2.0
+
+# Configuration Management
+pydantic-settings==2.1.0
 
 # Testing
 pytest==7.4.3
@@ -60,29 +176,7 @@ pytest-mock==3.12.0
 # Code Quality
 black==25.1.0
 flake8==6.1.0
-isort==5.12.0
+mypy==1.7.1
 
-# Development
-watchdog==3.0.0
-
-# GOD MODE: Advanced Features
-elasticsearch==8.11.0  # For centralized logging
-# logstash is a separate service, not a Python package
-# kibana is a separate service, not a Python package
-celery==5.3.4  # For async task processing
-flower==2.0.1  # For Celery monitoring
-websockets==12.0  # For real-time communication
-fastapi==0.104.1  # For high-performance APIs
-uvicorn==0.24.0  # ASGI server
-pydantic==2.5.0  # Data validation
-httpx==0.25.2  # Async HTTP client
-aiofiles==23.2.1  # Async file operations
-asyncio-mqtt==0.16.1  # MQTT client for IoT
-influxdb-client==1.38.0  # Time-series database
-# OpenTelemetry packages temporarily disabled due to version conflicts
-# opentelemetry-api==1.21.0  # Observability
-# opentelemetry-sdk==1.21.0  # Observability SDK
-# opentelemetry-instrumentation-flask==0.42b0  # Flask instrumentation
-# opentelemetry-instrumentation-requests==0.42b0  # Requests instrumentation
-# opentelemetry-exporter-jaeger==1.21.0  # Jaeger exporter
-# opentelemetry-exporter-prometheus==0.57b0  # Prometheus exporter
+# Development Tools
+pre-commit==3.5.0

@@ -79,7 +79,7 @@ cd smartcloudops-ai
 ### 2️⃣ **Deploy with Docker Compose**
 ```bash
 # Complete 5-container stack
-docker-compose -f docker-compose.tier2.yml up -d
+docker-compose up -d
 
 # Verify deployment
 docker ps
@@ -164,7 +164,7 @@ python scripts/comprehensive_audit.py
 ### 🐳 **Docker Compose (Recommended)**
 ```bash
 # Production stack
-docker-compose -f docker-compose.tier2.yml up -d
+docker-compose up -d
 ```
 
 ### ☸️ **Kubernetes**
@@ -218,10 +218,10 @@ PROMETHEUS_RETENTION=15d
 ```
 
 ### ⚙️ **Advanced Configuration**
-- **[Docker Compose Configuration](docker-compose.tier2.yml)**
+- **[Docker Compose Configuration](docker-compose.yml)**
 - **[Kubernetes Configuration](k8s/)**
-- **[Prometheus Configuration](prometheus.yml)**
-- **[Grafana Dashboards](grafana-dashboards/)**
+- **[Prometheus Configuration](configs/monitoring/prometheus.yml)**
+- **[Grafana Dashboards](configs/monitoring/dashboards/)**
 
 ### 🔒 **Security Notes**
 - **All secrets are now handled via `.env` files** - No hardcoded secrets in the codebase
@@ -237,7 +237,7 @@ PROMETHEUS_RETENTION=15d
 ### 🔬 **Comprehensive Testing Suite**
 ```bash
 # Run all tests
-./scripts/beta_testing.py
+python -m pytest tests/
 
 # Security audit
 python scripts/security_audit.py
@@ -389,6 +389,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 *SmartCloudOps AI v3.0.0 - Enterprise-Ready • Production-Tested • Community-Driven*
 
 </div>
-# Trigger GitHub Actions - Sat Aug 16 10:48:48 AM IST 2025
-# Workflow Test - Sat Aug 16 11:17:32 AM IST 2025
-# Test trigger for workflow validation

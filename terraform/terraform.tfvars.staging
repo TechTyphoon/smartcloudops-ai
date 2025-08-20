@@ -1,0 +1,17 @@
+# SSH Key Configuration - Use environment variable for security
+public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC..."
+
+# Monitoring Configuration
+prometheus_retention_days = 15
+grafana_admin_password    = "REPLACE_ME"
+
+# Application Configuration
+flask_debug    = true
+openai_api_key = "REPLACE_ME"
+
+# Database Configuration
+db_password = "REPLACE_ME"
+
+# AWS Configuration
+aws_region = "us-west-2"
+environment = "staging"

@@ -111,8 +111,17 @@ resource "aws_lb_listener" "http_plain" {
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.app_tg.arn
+    type = "forward"
+    forward {
+      target_group {
+        arn    = aws_lb_target_group.app_tg_green.arn
+        weight = 1
+      }
+      stickiness {
+        enabled  = false
+        duration = 0
+      }
+    }
   }
 }
 
@@ -125,8 +134,17 @@ resource "aws_lb_listener" "https" {
   certificate_arn   = aws_acm_certificate_validation.app_cert_validation[0].certificate_arn
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.app_tg.arn
+    type = "forward"
+    forward {
+      target_group {
+        arn    = aws_lb_target_group.app_tg_green.arn
+        weight = 1
+      }
+      stickiness {
+        enabled  = false
+        duration = 0
+      }
+    }
   }
 }
 
@@ -176,7 +194,10 @@ resource "aws_ssm_parameter" "db_url" {
 
 resource "random_password" "db_password" {
   length  = 20
-  special = true
+  special = false
+  upper   = true
+  lower   = true
+  numeric = true
 }
 
 # Validation: Recommend Secrets Manager for production

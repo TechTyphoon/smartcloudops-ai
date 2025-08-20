@@ -103,6 +103,13 @@ variable "public_key" {
   default     = ""
 }
 
+variable "ssh_public_key" {
+  description = "SSH public key for EC2 instances (from environment variable)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
 # Monitoring Configuration
 variable "prometheus_retention_days" {
   description = "Days to retain Prometheus data"
@@ -111,9 +118,9 @@ variable "prometheus_retention_days" {
 }
 
 variable "grafana_admin_password" {
-  description = "Admin password for Grafana"
+  description = "Admin password for Grafana (from environment variable)"
   type        = string
-  default     = "admin"
+  default     = ""
   sensitive   = true
 }
 

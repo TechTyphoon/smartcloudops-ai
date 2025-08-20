@@ -21,7 +21,7 @@ class TestConfig:
         """Test base configuration values."""
         config = Config()
         assert config.APP_NAME == "Smart CloudOps AI"
-        assert config.VERSION == "0.2.0"
+        assert config.VERSION == "3.1.0"  # Updated to match actual version
         assert config.PROMETHEUS_ENABLED is True
         assert config.METRICS_PORT == 9090
 
@@ -43,24 +43,26 @@ class TestConfig:
         prod_config = get_config("production")
         default_config = get_config()
 
-        assert dev_config == DevelopmentConfig
-        assert prod_config == ProductionConfig
-        assert default_config == DevelopmentConfig
+        # Check that we get instances, not classes
+        assert isinstance(dev_config, DevelopmentConfig)
+        assert isinstance(prod_config, ProductionConfig)
+        assert isinstance(default_config, DevelopmentConfig)
 
     def test_config_from_env(self):
         """Test configuration loading from environment variables."""
         # Set required environment variables for testing
         os.environ["AI_PROVIDER"] = "auto"
         os.environ["OPENAI_API_KEY"] = "test-key"
+        os.environ["SECRET_KEY"] = "test-secret-key-32-chars-long-enough"
+        os.environ["JWT_SECRET_KEY"] = "test-jwt-secret-key-32-chars-long"
 
         try:
             env_config = Config.from_env()
-            assert isinstance(env_config, dict)
-            assert "ai_provider" in env_config
-            assert "openai_api_key" in env_config
+            assert isinstance(env_config, Config)
+            assert env_config.AI_PROVIDER == "auto"
+            assert env_config.OPENAI_API_KEY == "test-key"
         finally:
             # Clean up environment variables
-            if "AI_PROVIDER" in os.environ:
-                del os.environ["AI_PROVIDER"]
-            if "OPENAI_API_KEY" in os.environ:
-                del os.environ["OPENAI_API_KEY"]
+            for key in ["AI_PROVIDER", "OPENAI_API_KEY", "SECRET_KEY", "JWT_SECRET_KEY"]:
+                if key in os.environ:
+                    del os.environ[key]

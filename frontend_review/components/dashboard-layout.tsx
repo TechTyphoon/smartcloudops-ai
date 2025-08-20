@@ -38,7 +38,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex">
       <Sidebar 
         isCollapsed={sidebarCollapsed} 
         onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -48,9 +48,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
       <div 
         className={cn(
-          "transition-all duration-300 ease-in-out",
-          // Desktop layout
-          "lg:ml-16 lg:ml-64",
+          "flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out",
+          // Desktop layout - proper margin based on sidebar state
           sidebarCollapsed ? "lg:ml-16" : "lg:ml-64",
           // Mobile layout - no margin when sidebar is hidden
           "ml-0"
@@ -58,10 +57,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       >
         <Header onMobileMenuToggle={handleMobileMenuToggle} />
 
-        <main className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1920px] mx-auto">
-          {/* Responsive container for ultra-wide screens */}
-          <div className="w-full">
-            {children}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          <div className="max-w-7xl mx-auto w-full">
+            <div className="space-y-6">
+              {children}
+            </div>
           </div>
         </main>
       </div>

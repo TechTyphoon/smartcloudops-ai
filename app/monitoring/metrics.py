@@ -5,29 +5,50 @@ Centralized metrics collection for application monitoring
 """
 
 import logging
+import threading
 
-from prometheus_client import Counter, Gauge, Histogram, Summary
+from prometheus_client import (
+    Counter,
+    Gauge,
+    Histogram,
+    Summary,
+    CollectorRegistry,
+    REGISTRY,
+)
 
 logger = logging.getLogger(__name__)
+
+# Global lock for thread-safe singleton
+_metrics_lock = threading.Lock()
+_metrics_instance = None
 
 
 class MetricsCollector:
     """Centralized metrics collector for SmartCloudOps.AI"""
 
-    def __init__(self):
-        """Initialize all Prometheus metrics"""
+    def __init__(self, registry=None):
+        """Initialize all Prometheus metrics with optional custom registry"""
+        self.registry = registry or CollectorRegistry()
+
+        # Use custom registry to avoid conflicts
+        self._init_metrics()
+
+    def _init_metrics(self):
+        """Initialize all Prometheus metrics with custom registry"""
 
         # HTTP Request Metrics
         self.request_count = Counter(
             "flask_requests_total",
             "Total Flask HTTP requests",
             ["method", "endpoint", "status_code"],
+            registry=self.registry,
         )
 
         self.request_latency = Histogram(
             "flask_request_duration_seconds",
             "Flask HTTP request latency",
             ["method", "endpoint"],
+            registry=self.registry,
         )
 
         # ML Metrics
@@ -35,18 +56,21 @@ class MetricsCollector:
             "ml_predictions_total",
             "Total ML predictions made",
             ["model_type", "status"],
+            registry=self.registry,
         )
 
         self.ml_anomalies = Counter(
             "ml_anomalies_detected",
             "Total anomalies detected",
             ["severity", "model_type"],
+            registry=self.registry,
         )
 
         self.ml_training_runs = Counter(
             "ml_training_runs_total",
             "Total model training runs",
             ["status", "model_type"],
+            registry=self.registry,
         )
 
         # Remediation Metrics
@@ -54,46 +78,65 @@ class MetricsCollector:
             "remediation_actions_total",
             "Total remediation actions executed",
             ["action_type", "severity", "status"],
+            registry=self.registry,
         )
 
         self.remediation_success = Counter(
             "remediation_success_total",
             "Successful remediation actions",
             ["action_type"],
+            registry=self.registry,
         )
 
         self.remediation_failure = Counter(
             "remediation_failure_total",
             "Failed remediation actions",
             ["action_type", "reason"],
+            registry=self.registry,
         )
 
         # System Health Metrics
         self.system_health = Gauge(
-            "system_health_score", "Overall system health score (0-100)", ["component"]
+            "system_health_score",
+            "Overall system health score (0-100)",
+            ["component"],
+            registry=self.registry,
         )
 
         self.active_connections = Gauge(
-            "active_connections", "Number of active connections", ["connection_type"]
+            "active_connections",
+            "Number of active connections",
+            ["connection_type"],
+            registry=self.registry,
         )
 
         self.error_rate = Gauge(
             "error_rate_percentage",
             "Error rate as percentage",
             ["endpoint", "error_type"],
+            registry=self.registry,
         )
 
         # Performance Metrics
         self.response_time_summary = Summary(
-            "response_time_seconds", "Response time summary", ["endpoint"]
+            "response_time_seconds",
+            "Response time summary",
+            ["endpoint"],
+            registry=self.registry,
         )
 
         self.memory_usage = Gauge(
-            "memory_usage_bytes", "Memory usage in bytes", ["component"]
+            "memory_usage_bytes",
+            "Memory usage in bytes",
+            ["component"],
+            registry=self.registry,
         )
 
         self.cpu_usage = Gauge(
-            "cpu_usage_percentage", "CPU usage percentage", ["component"]
+            "cpu_usage_percentage",
+            "CPU usage percentage",
+            ["component"],
+            registry=self.registry,
         )
 
         # GOD MODE Metrics
@@ -101,30 +144,44 @@ class MetricsCollector:
             "god_mode_requests_total",
             "Total GOD MODE API requests",
             ["endpoint", "method", "status"],
+            registry=self.registry,
         )
 
         self.god_mode_latency = Histogram(
             "god_mode_request_duration_seconds",
             "GOD MODE API request latency",
             ["endpoint"],
+            registry=self.registry,
         )
 
         # Authentication Metrics
         self.auth_attempts = Counter(
-            "auth_attempts_total", "Total authentication attempts", ["method", "status"]
+            "auth_attempts_total",
+            "Total authentication attempts",
+            ["method", "status"],
+            registry=self.registry,
         )
 
         self.auth_failures = Counter(
-            "auth_failures_total", "Total authentication failures", ["reason"]
+            "auth_failures_total",
+            "Total authentication failures",
+            ["reason"],
+            registry=self.registry,
         )
 
         # Database Metrics
         self.db_connections = Gauge(
-            "database_connections", "Number of database connections", ["status"]
+            "database_connections",
+            "Number of database connections",
+            ["status"],
+            registry=self.registry,
         )
 
         self.db_query_duration = Histogram(
-            "database_query_duration_seconds", "Database query duration", ["query_type"]
+            "database_query_duration_seconds",
+            "Database query duration",
+            ["query_type"],
+            registry=self.registry,
         )
 
         logger.info("Metrics collector initialized successfully")
@@ -218,5 +275,18 @@ class MetricsCollector:
             logger.error(f"Failed to record GOD MODE metrics: {e}")
 
 
-# Global metrics instance
-metrics = MetricsCollector()
+# Global metrics instance with singleton pattern
+def get_metrics():
+    """Get or create the global metrics instance (singleton pattern)"""
+    global _metrics_instance
+
+    if _metrics_instance is None:
+        with _metrics_lock:
+            if _metrics_instance is None:
+                _metrics_instance = MetricsCollector()
+
+    return _metrics_instance
+
+
+# Initialize global metrics instance
+metrics = get_metrics()

@@ -23,11 +23,12 @@ RUN apt-get update \
         && apt-get clean
 
 # Copy requirements first for better Docker layer caching
-COPY requirements.txt requirements-production.txt ./
+COPY requirements.txt ./
 
-# Install Python dependencies with security scanning
+# Install Python dependencies with security scanning (as root)
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt \
+    && pip install --no-cache-dir --verbose -r requirements.txt \
+    && pip list \
     && pip install --no-cache-dir safety \
     && safety check --bare --output json > /tmp/security-report.json || true
 
@@ -46,6 +47,8 @@ RUN mkdir -p logs
 RUN adduser --disabled-password --gecos '' appuser \
     && chown -R appuser:appuser /app \
     && chmod +x start.sh
+
+# Switch to non-root user
 USER appuser
 
 # Expose port

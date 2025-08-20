@@ -1,143 +1,139 @@
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Brain, Cloud, Zap, Shield, ArrowRight } from "lucide-react"
-import { cn } from "@/lib/utils"
+import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { 
+  Brain, 
+  Zap, 
+  Shield, 
+  TrendingUp, 
+  ArrowRight, 
+  Play,
+  BarChart3
+} from 'lucide-react';
 
-export function WelcomeHero() {
-  const features = [
-    {
-      icon: Brain,
-      title: "AI Intelligence",
-      description: "Advanced AI-driven insights and automated decision making for your cloud infrastructure.",
-      color: "chart-1",
-      gradient: "from-chart-1/20 to-chart-1/10"
-    },
-    {
-      icon: Cloud,
-      title: "Cloud Operations",
-      description: "Comprehensive monitoring and management of multi-cloud environments at enterprise scale.",
-      color: "chart-2",
-      gradient: "from-chart-2/20 to-chart-2/10"
-    },
-    {
-      icon: Zap,
-      title: "Real-time Analytics",
-      description: "Live performance metrics and instant alerting for proactive infrastructure management.",
-      color: "chart-5",
-      gradient: "from-chart-5/20 to-chart-5/10"
-    },
-    {
-      icon: Shield,
-      title: "Enterprise Security",
-      description: "Fortune 500-grade security controls with compliance monitoring and threat detection.",
-      color: "primary",
-      gradient: "from-primary/20 to-primary/10"
-    }
-  ]
-
+const WelcomeHero: React.FC = () => {
   return (
-    <div className="space-y-8 lg:space-y-12">
+    <div className="space-y-12 lg:space-y-16">
       {/* Hero Section */}
-      <div className="text-center space-y-6">
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="p-4 rounded-2xl bg-primary/10 border border-primary/20 shadow-lg">
-            <Brain className="h-10 w-10 text-primary" aria-hidden="true" />
+      <div className="text-center space-y-8">
+        {/* Logo and Title */}
+        <div className="flex items-center justify-center gap-4 mb-8">
+          <div className="p-3 rounded-xl bg-primary/10 border border-primary/20">
+            <Brain className="h-12 w-12 text-primary" />
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent leading-tight">
-            SmartCloudOps AI
-          </h1>
+          <div className="text-left">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              SmartCloudOps AI
+            </h1>
+            <p className="text-lg sm:text-xl text-muted-foreground mt-2">
+              AI-Powered CloudOps Intelligence Platform
+            </p>
+          </div>
         </div>
 
-        <div className="max-w-3xl mx-auto space-y-4">
-          <p className="text-xl sm:text-2xl text-muted-foreground leading-relaxed">
-            AI-Powered CloudOps Intelligence Platform
-          </p>
-          <p className="text-base sm:text-lg text-muted-foreground/80 leading-relaxed">
+        {/* Description */}
+        <div className="max-w-4xl mx-auto space-y-6">
+          <p className="text-xl sm:text-2xl lg:text-3xl text-muted-foreground leading-relaxed font-medium">
             Transform your cloud operations with intelligent automation, real-time monitoring, and predictive analytics
           </p>
+          <p className="text-base sm:text-lg lg:text-xl text-muted-foreground/80 leading-relaxed max-w-3xl mx-auto">
+            Streamline your infrastructure management with AI-driven insights and automated remediation
+          </p>
         </div>
 
-        <div className="flex items-center justify-center gap-4 flex-wrap">
-          <Badge variant="secondary" className="text-sm px-6 py-3 text-base">
-            Enterprise Cloud Operations Platform
-          </Badge>
-          <Badge variant="outline" className="text-sm px-6 py-3 text-base">
-            AI-Powered Intelligence
+        {/* Status Badge */}
+        <div className="flex justify-center">
+          <Badge variant="secondary" className="font-medium">
+            <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+            All Systems Operational
           </Badge>
         </div>
       </div>
 
-      {/* Features Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-        {features.map((feature, index) => {
-          const Icon = feature.icon
-          return (
-            <Card 
-              key={feature.title}
-              className={cn(
-                "glass-card p-6 transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-xl group",
-                "focus-within:scale-105 focus-within:shadow-xl focus-within:ring-2 focus-within:ring-ring"
-              )}
-              tabIndex={0}
-              role="article"
-              aria-labelledby={`feature-${index}-title`}
-              aria-describedby={`feature-${index}-description`}
-            >
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className={cn(
-                    "p-3 rounded-xl border shadow-sm transition-all duration-300 group-hover:scale-110",
-                    `bg-gradient-to-br ${feature.gradient}`,
-                    `border-${feature.color}/30`
-                  )}>
-                    <Icon className={cn("h-6 w-6", `text-${feature.color}`)} aria-hidden="true" />
-                  </div>
-                  <h3 
-                    id={`feature-${index}-title`}
-                    className="font-semibold text-lg leading-tight"
-                  >
-                    {feature.title}
-                  </h3>
-                </div>
-                
-                <p 
-                  id={`feature-${index}-description`}
-                  className="text-sm text-muted-foreground leading-relaxed"
-                >
-                  {feature.description}
-                </p>
+      {/* Feature Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <Card className="group hover:shadow-lg transition-all duration-300 border-border/50 hover:border-primary/30 bg-card/50 hover:bg-card">
+          <CardContent className="p-6 text-center space-y-4">
+            <div className="w-12 h-12 mx-auto rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+              <Zap className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-2">AI Automation</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Intelligent workflows that adapt to your infrastructure patterns
+              </p>
+            </div>
+          </CardContent>
+        </Card>
 
-                <div className="flex items-center gap-2 text-sm text-primary font-medium group-hover:gap-3 transition-all duration-300">
-                  <span>Learn more</span>
-                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                </div>
-              </div>
-            </Card>
-          )
-        })}
+        <Card className="group hover:shadow-lg transition-all duration-300 border-border/50 hover:border-primary/30 bg-card/50 hover:bg-card">
+          <CardContent className="p-6 text-center space-y-4">
+            <div className="w-12 h-12 mx-auto rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+              <BarChart3 className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-2">Real-time Monitoring</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Comprehensive visibility across all your cloud resources
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="group hover:shadow-lg transition-all duration-300 border-border/50 hover:border-primary/30 bg-card/50 hover:bg-card">
+          <CardContent className="p-6 text-center space-y-4">
+            <div className="w-12 h-12 mx-auto rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+              <Shield className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-2">Security First</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Proactive threat detection and automated security responses
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="group hover:shadow-lg transition-all duration-300 border-border/50 hover:border-primary/30 bg-card/50 hover:bg-card">
+          <CardContent className="p-6 text-center space-y-4">
+            <div className="w-12 h-12 mx-auto rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+              <TrendingUp className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-foreground mb-2">Predictive Analytics</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Forecast issues before they impact your operations
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Call to Action */}
-      <div className="text-center space-y-6 pt-8">
+      <div className="text-center space-y-8">
         <div className="max-w-2xl mx-auto space-y-4">
-          <h2 className="text-2xl sm:text-3xl font-bold">
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
             Ready to Transform Your Cloud Operations?
           </h2>
-          <p className="text-muted-foreground leading-relaxed">
-            Experience the future of cloud management with AI-powered insights and automated remediation
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            Get started with intelligent automation and real-time monitoring today.
           </p>
         </div>
         
-        <div className="flex items-center justify-center gap-4 flex-wrap">
-          <button className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors duration-200 enterprise-focus">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-white px-8 py-3">
             Get Started
-            <ArrowRight className="h-4 w-4" />
-          </button>
-          <button className="inline-flex items-center gap-2 px-6 py-3 border border-border bg-background text-foreground rounded-lg font-medium hover:bg-muted transition-colors duration-200 enterprise-focus">
-            View Demo
-          </button>
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
+          <Button variant="outline" size="lg" className="px-8 py-3">
+            <Play className="mr-2 h-5 w-5" />
+            Learn More
+          </Button>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
+
+export default WelcomeHero;
