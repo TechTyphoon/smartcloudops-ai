@@ -169,7 +169,7 @@ class AuthManager:
                 "exp": now + self.token_expiry,
                 "type": "access",
                 "iss": "smartcloudops-ai",  # Issuer
-                "aud": "smartcloudops-frontend",  # Audience
+                "aud": "smartcloudops-backend",  # Audience
             }
 
             # Add additional claims if provided
@@ -184,7 +184,7 @@ class AuthManager:
                 "exp": now + self.refresh_expiry,
                 "type": "refresh",
                 "iss": "smartcloudops-ai",
-                "aud": "smartcloudops-frontend",
+                "aud": "smartcloudops-backend",
             }
 
             # Generate tokens
@@ -249,7 +249,7 @@ class AuthManager:
                 logger.warning("Invalid token issuer")
                 return None
 
-            if payload.get("aud") != "smartcloudops-frontend":
+            if payload.get("aud") != "smartcloudops-backend":
                 logger.warning("Invalid token audience")
                 return None
 

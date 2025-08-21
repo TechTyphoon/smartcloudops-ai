@@ -1,28 +1,4 @@
 services:
-  # Frontend Next.js Application
-  smartcloudops-frontend:
-    build:
-      context: ./frontend_review
-      dockerfile: Dockerfile
-    container_name: smartcloudops-frontend
-    ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://smartcloudops-main:5000
-      - NODE_ENV=production
-    depends_on:
-      - smartcloudops-main
-    networks:
-      - cloudops-network
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-        reservations:
-          cpus: '0.25'
-          memory: 256M
-
   # Main Flask Application
   smartcloudops-main:
     build: .
@@ -54,7 +30,7 @@ services:
       - DISABLE_ELASTICSEARCH=true
       - USE_LOCAL_STORAGE=true
       - FLASK_DEBUG=false
-      - CORS_ORIGINS=http://localhost:3000,http://smartcloudops-frontend:3000
+      - CORS_ORIGINS=http://localhost:3000
       - CORS_SUPPORTS_CREDENTIALS=true
       - SECURITY_HEADERS_ENABLED=true
       - RATE_LIMIT_ENABLED=true

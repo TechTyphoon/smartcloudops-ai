@@ -199,7 +199,7 @@ def validate_json_input(data: Any) -> Dict:
 # Create Flask app
 app = Flask(__name__)
 
-# Enable CORS for frontend integration
+# Enable CORS for API integration
 from flask_cors import CORS
 
 CORS(
