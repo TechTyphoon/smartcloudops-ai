@@ -2,7 +2,7 @@ name: Infrastructure CI/CD
 
 on:
   push:
-    branches: [ main, dev, infra/terraform ]
+    branches: [ main, develop ]
     paths:
       - 'terraform/**'
   pull_request:

@@ -32,7 +32,6 @@ env:
   PYTHON_VERSION: "3.11"
   # Use the clean app structure we just created
   APP_PATH: ./app
-  EXAMPLES_PATH: ./examples
   
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -77,8 +76,6 @@ jobs:
           docs:
             - 'docs/**'
             - '*.md'
-          examples:
-            - 'examples/**'
         
     - name: 🐍 Setup Python
       uses: actions/setup-python@v5
@@ -113,7 +110,7 @@ jobs:
         # Focus ONLY on app directory for production code quality
         flake8 ${{ env.APP_PATH }} --count --statistics \
                --max-line-length=88 --max-complexity=15 \
-               --exclude=scripts,examples \
+               --exclude=scripts \
                --ignore=W503,E203,C901,W504
         echo "::endgroup::"
         

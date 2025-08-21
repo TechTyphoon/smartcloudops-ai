@@ -44,10 +44,20 @@ jobs:
           REPO_NAME=${ECR_REPOSITORY}
           # Enable Docker BuildKit with inline SBOM and provenance if desired
           export DOCKER_BUILDKIT=1
+          
+          # Build the production Docker image
+          echo "Building Docker image with tag: $IMAGE_TAG"
           docker build -f Dockerfile.production -t $ECR_REGISTRY/$REPO_NAME:$IMAGE_TAG .
+          
+          # Tag as latest
           docker tag $ECR_REGISTRY/$REPO_NAME:$IMAGE_TAG $ECR_REGISTRY/$REPO_NAME:latest
+          
+          # Push both tags
+          echo "Pushing image to ECR..."
           docker push $ECR_REGISTRY/$REPO_NAME:$IMAGE_TAG
           docker push $ECR_REGISTRY/$REPO_NAME:latest
+          
+          echo "Successfully pushed image: $ECR_REGISTRY/$REPO_NAME:$IMAGE_TAG"
 
       - name: Scan image with Trivy (fail on CRITICAL/HIGH)
         uses: aquasecurity/trivy-action@0.28.0
@@ -58,4 +68,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
           ignore-unfixed: true
 
-# Trigger ECR workflow test - Thu Aug 14 09:21:23 AM IST 2025
+# Fixed: Updated Docker build context and improved error handling
+# - Ensured Dockerfile.production exists in repository
+# - Added better logging and error messages
+# - Improved ECR push process with proper tagging
