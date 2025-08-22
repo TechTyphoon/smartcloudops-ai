@@ -453,7 +453,7 @@ jobs:
     if: |
       needs.quality-gate.outputs.should-deploy == 'true' && 
       (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
-    environment: staging
+    # environment: staging  # Uncomment when environment is configured
     timeout-minutes: 15
     
     steps:
@@ -478,7 +478,7 @@ jobs:
       needs.quality-gate.outputs.should-deploy == 'true' && 
       github.ref_type == 'tag' && 
       startsWith(github.ref_name, 'v')
-    environment: production
+    # environment: production  # Uncomment when environment is configured
     timeout-minutes: 20
     
     steps:
