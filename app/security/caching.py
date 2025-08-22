@@ -14,6 +14,8 @@ from typing import Any, Dict, List, Optional, Union, Callable
 import redis
 import pickle
 
+from flask import current_app
+
 logger = logging.getLogger(__name__)
 
 
@@ -241,7 +243,30 @@ class CacheManager:
 
 
 # Global cache manager instance
-cache_manager = CacheManager()
+cache_manager = None
+
+
+def init_cache_manager(redis_url: str = None, cache_type: str = "memory"):
+    """Initialize the cache manager."""
+    global cache_manager
+
+    if cache_type == "redis" and redis_url:
+        from .redis_cache import RedisCacheManager
+
+        cache_manager = RedisCacheManager(redis_url)
+    else:
+        from .memory_cache import MemoryCacheManager
+
+        cache_manager = MemoryCacheManager()
+
+    logger.info(f"Initialized {cache_type} cache manager")
+
+
+def get_cache_manager():
+    """Get the global cache manager instance."""
+    if cache_manager is None:
+        init_cache_manager()
+    return cache_manager
 
 
 def cache(
@@ -250,28 +275,22 @@ def cache(
     key_func: Optional[Callable] = None,
     condition: Optional[Callable] = None,
 ):
-    """
-    Decorator for caching function results.
-
-    Args:
-        ttl: Time to live in seconds
-        namespace: Cache namespace
-        key_func: Custom function to generate cache key
-        condition: Function to determine if result should be cached
-    """
+    """Generic cache decorator with configurable TTL and namespace."""
 
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
+            cache_manager = get_cache_manager()
+
             # Generate cache key
             if key_func:
                 cache_key = key_func(*args, **kwargs)
             else:
-                # Default key generation
+                # Default key generation using SHA-256 for security
                 key_parts = [func.__name__]
                 key_parts.extend([str(arg) for arg in args])
                 key_parts.extend([f"{k}:{v}" for k, v in sorted(kwargs.items())])
-                cache_key = hashlib.md5(":".join(key_parts).encode()).hexdigest()
+                cache_key = hashlib.sha256(":".join(key_parts).encode()).hexdigest()
 
             # Try to get from cache
             cached_result = cache_manager.get(cache_key, namespace)
@@ -311,7 +330,7 @@ def cache_by_user(ttl: Optional[int] = None, namespace: str = "user"):
         key_parts = [f"user:{user_id}"]
         key_parts.extend([str(arg) for arg in args])
         key_parts.extend([f"{k}:{v}" for k, v in sorted(kwargs.items())])
-        return hashlib.md5(":".join(key_parts).encode()).hexdigest()
+        return hashlib.sha256(":".join(key_parts).encode()).hexdigest()
 
     return cache(ttl, namespace, key_func)
 
@@ -327,7 +346,7 @@ def cache_by_ip(ttl: Optional[int] = None, namespace: str = "ip"):
         key_parts = [f"ip:{ip}"]
         key_parts.extend([str(arg) for arg in args])
         key_parts.extend([f"{k}:{v}" for k, v in sorted(kwargs.items())])
-        return hashlib.md5(":".join(key_parts).encode()).hexdigest()
+        return hashlib.sha256(":".join(key_parts).encode()).hexdigest()
 
     return cache(ttl, namespace, key_func)
 

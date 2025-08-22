@@ -10,12 +10,13 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# Install system dependencies with security updates
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     gcc \
     g++ \
     libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
 # Create virtual environment
 RUN python -m venv /opt/venv
@@ -38,12 +39,14 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     FLASK_ENV=production \
     FLASK_APP=app.main:app
 
-# Install runtime dependencies
-RUN apt-get update && apt-get install -y \
+# Install runtime dependencies with security updates
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     libpq5 \
     curl \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/* \
-    && apt-get clean
+    && apt-get clean \
+    && update-ca-certificates
 
 # Copy virtual environment from builder stage
 COPY --from=builder /opt/venv /opt/venv
@@ -60,7 +63,15 @@ COPY start.sh .
 
 # Create necessary directories with proper permissions
 RUN mkdir -p /app/logs /app/data /tmp \
-    && chown -R appuser:appuser /app /tmp
+    && chown -R appuser:appuser /app /tmp \
+    && chmod +x start.sh
+
+# Security: Remove unnecessary files and set proper permissions
+RUN find /app -type f -name "*.pyc" -delete \
+    && find /app -type d -name "__pycache__" -delete \
+    && chmod 755 /app \
+    && chmod 644 /app/*.py \
+    && chmod 644 /app/*.conf.py
 
 # Switch to non-root user
 USER appuser
@@ -71,6 +82,10 @@ EXPOSE 5000
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:5000/health || exit 1
+
+# Security: Set read-only root filesystem where possible
+# Note: This requires the application to write only to /tmp, /app/logs, /app/data
+VOLUME ["/app/logs", "/app/data"]
 
 # Start application
 CMD ["gunicorn", "--config", "gunicorn.conf.py", "app.main:app"]

@@ -7,7 +7,7 @@ JWT-based authentication with role-based access control
 import logging
 import os
 import secrets
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 from typing import Dict, List, Optional, Union
 
@@ -153,7 +153,7 @@ class AuthManager:
             if tenant_id:
                 tenant_id = validator.validate_string(tenant_id, max_length=100)
 
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             jti = secrets.token_urlsafe(32)  # Unique token ID
 
             # Access token payload
@@ -321,7 +321,7 @@ class AuthManager:
             if redis_client:
                 # Blacklist until token expires
                 exp = payload.get("exp", 0)
-                ttl = max(0, exp - int(datetime.utcnow().timestamp()))
+                ttl = max(0, exp - int(datetime.now(timezone.utc).timestamp()))
 
                 if ttl > 0:
                     redis_client.setex(f"blacklist:{jti}", ttl, "revoked")
@@ -399,7 +399,7 @@ ENTERPRISE_USERS = {
         "role": "admin",
         "email": "admin@smartcloudops.ai",
         "tenant_id": "enterprise-001",
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "last_login": None,
         "failed_attempts": 0,
         "locked_until": None,
@@ -413,7 +413,7 @@ ENTERPRISE_USERS = {
         "role": "operator",
         "email": "operator@smartcloudops.ai",
         "tenant_id": "enterprise-001",
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "last_login": None,
         "failed_attempts": 0,
         "locked_until": None,
@@ -427,7 +427,7 @@ ENTERPRISE_USERS = {
         "role": "analyst",
         "email": "analyst@smartcloudops.ai",
         "tenant_id": "enterprise-001",
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "last_login": None,
         "failed_attempts": 0,
         "locked_until": None,
@@ -441,7 +441,7 @@ ENTERPRISE_USERS = {
         "role": "viewer",
         "email": "viewer@smartcloudops.ai",
         "tenant_id": "enterprise-001",
-        "created_at": datetime.utcnow(),
+        "created_at": datetime.now(timezone.utc),
         "last_login": None,
         "failed_attempts": 0,
         "locked_until": None,
@@ -471,7 +471,10 @@ def authenticate_user(username: str, password: str) -> Optional[Dict]:
             return None
 
         # Check if account is locked
-        if user.get("locked_until") and datetime.utcnow() < user["locked_until"]:
+        if (
+            user.get("locked_until")
+            and datetime.now(timezone.utc) < user["locked_until"]
+        ):
             logger.warning(f"Account locked for user {username}")
             return None
 
@@ -482,7 +485,9 @@ def authenticate_user(username: str, password: str) -> Optional[Dict]:
 
             # Lock account if too many failed attempts
             if user["failed_attempts"] >= auth_manager.max_login_attempts:
-                user["locked_until"] = datetime.utcnow() + auth_manager.lockout_duration
+                user["locked_until"] = (
+                    datetime.now(timezone.utc) + auth_manager.lockout_duration
+                )
                 logger.warning(
                     f"Account locked for user {username} due to too many failed attempts"
                 )
@@ -495,7 +500,7 @@ def authenticate_user(username: str, password: str) -> Optional[Dict]:
         # Reset failed attempts on successful login
         user["failed_attempts"] = 0
         user["locked_until"] = None
-        user["last_login"] = datetime.utcnow()
+        user["last_login"] = datetime.now(timezone.utc)
 
         logger.info(f"Successful authentication for user {username}")
         return user
