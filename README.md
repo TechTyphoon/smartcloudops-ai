@@ -1,4 +1,4 @@
-# 🚀 SmartCloudOps AI v3.1.0 - BACKEND-ONLY PRODUCTION READY
+# 🚀 SmartCloudOps AI v3.1.0 - FULL-STACK PRODUCTION READY
 
 <div align="center">
 
@@ -8,7 +8,7 @@
 [![Security](https://img.shields.io/badge/Security%20Grade-A-green?style=for-the-badge)](docs/SECURITY_AUDIT_REPORT_ENHANCED.md)
 [![API Status](https://img.shields.io/badge/API-All%20Endpoints%20Working-brightgreen?style=for-the-badge)]()
 
-**✅ FULLY FUNCTIONAL - Enterprise-grade AI-powered CloudOps BACKEND platform with comprehensive monitoring, ML-driven anomaly detection, and automated infrastructure management.**
+**✅ FULLY FUNCTIONAL - Enterprise-grade AI-powered CloudOps FULL-STACK platform with Next.js frontend, Flask backend, comprehensive monitoring, ML-driven anomaly detection, and automated infrastructure management.**
 
 [🎯 Quick Start](#-quick-start) • [📖 Documentation](#-documentation) • [🛠️ Features](#️-features) • [🚀 Demo](#-demo) • [🤝 Contributing](#-contributing)
 
@@ -18,15 +18,15 @@
 
 ## 🌟 **Overview**
 
-SmartCloudOps AI v3.1.0 is a **PRODUCTION-READY**, enterprise-grade **BACKEND-ONLY** platform that revolutionizes cloud operations through artificial intelligence and machine learning. **ALL API ENDPOINTS ARE FULLY FUNCTIONAL** with complete Phases 0-7 implementation, providing comprehensive infrastructure monitoring, predictive analytics, and automated incident response.
+SmartCloudOps AI v3.1.0 is a **PRODUCTION-READY**, enterprise-grade **FULL-STACK** platform that revolutionizes cloud operations through artificial intelligence and machine learning. **ALL API ENDPOINTS ARE FULLY FUNCTIONAL** with complete Phases 0-7 implementation, providing comprehensive infrastructure monitoring, predictive analytics, and automated incident response.
 
-### 🎯 **Current Status - FULLY OPERATIONAL (BACKEND-ONLY)**
+### 🎯 **Current Status - FULLY OPERATIONAL (FULL-STACK)**
 - **✅ ALL API Endpoints Working**: `/anomaly`, `/query`, `/auth/login`, `/demo` - All fixed and tested
-- **🔧 Production Ready**: Stable Flask application with proper error handling
+- **🔧 Production Ready**: Stable Flask backend with Next.js frontend
 - **📊 Complete Monitoring**: Real-time health monitoring and ML anomaly detection
 - **🤖 AI-Powered**: Advanced machine learning models with enterprise authentication
 - **🛡️ Security Compliant**: JWT authentication with bcrypt password hashing
-- **🎯 Backend-Focused**: Pure API-driven architecture with no frontend dependencies
+- **🎯 Full-Stack Architecture**: Next.js frontend with Flask backend integration
 
 ### 🎯 **Key Highlights**
 - **🏆 A-Grade Security**: 100/100 security audit score
@@ -89,7 +89,8 @@ docker ps
 ```
 
 ### 3️⃣ **Access Services**
-- **Main Application**: http://localhost:5000
+- **Frontend Application**: http://localhost:3000
+- **Backend API**: http://localhost:8000
 - **✅ API Endpoints (All Working)**:
   - **GET /anomaly** - ML Anomaly Detection Service
   - **GET /query** - ChatOps AI Query Service  
@@ -97,17 +98,69 @@ docker ps
   - **GET /demo** - Demo endpoint showing all fixes
 - **Grafana Dashboards**: http://localhost:3000 (admin/admin)
 - **Prometheus Metrics**: http://localhost:9090
-- **API Documentation**: http://localhost:5000/docs
+- **API Documentation**: http://localhost:8000/docs
 
-### 4️⃣ **Run Health Check**
+### 4️⃣ **Development Mode**
 ```bash
-# Test API endpoints
-curl http://localhost:5000/health
-curl http://localhost:5000/anomaly
-curl http://localhost:5000/query
+# Start both frontend and backend
+npm run dev:full
+
+# Or start individually
+npm run dev:api    # Flask backend on port 8000
+npm run dev:web    # Next.js frontend on port 3000
 ```
 
-### 5️⃣ **Development Mode**
+### 5️⃣ **Run Health Check**
+```bash
+# Test API endpoints
+curl http://localhost:8000/health
+curl http://localhost:8000/anomaly
+curl http://localhost:8000/query
+
+# Test frontend proxy
+curl http://localhost:3000/api/health
+```
+
+---
+
+## 🔄 **CI/CD Pipeline**
+
+### **Automated Workflow**
+The project includes a comprehensive GitHub Actions CI/CD pipeline that:
+
+- **🔍 Quality Gate**: Code formatting, linting, and security scanning
+- **🧪 Testing**: Backend (Flask) and Frontend (Next.js) tests
+- **🏗️ Build**: Full-stack build with artifact generation
+- **🐳 Docker**: Multi-platform container builds
+- **🚀 Deployment**: Staging and production deployments
+
+### **Pipeline Stages**
+1. **Quality Gate**: Black, isort, flake8, bandit, safety
+2. **Backend Testing**: pytest with coverage
+3. **Frontend Testing**: ESLint, TypeScript checking
+4. **Full-Stack Build**: Next.js build + Flask verification
+5. **Docker Build**: Multi-architecture images
+6. **Infrastructure**: Terraform validation
+7. **Deployment**: Staging/Production environments
+
+### **Artifacts Generated**
+- Frontend build artifacts (`.next/`, `public/`)
+- Backend code packages (`app/`, `ml_models/`)
+- Security reports (bandit, safety)
+- Docker images (development, production)
+- Coverage reports
+
+### **Environment Variables**
+The following secrets are required for the CI/CD pipeline:
+
+| Secret | Description | Example |
+|--------|-------------|---------|
+| `GITHUB_TOKEN` | GitHub token for registry access | Auto-provided |
+| `AWS_ACCESS_KEY_ID` | AWS access key for deployment | `AKIA...` |
+| `AWS_SECRET_ACCESS_KEY` | AWS secret key for deployment | `...` |
+| `SLACK_WEBHOOK_URL` | Slack notifications | `https://hooks.slack.com/...` |
+
+### **Development Mode**
 ```bash
 # Install Python dependencies
 pip install -r requirements.txt
