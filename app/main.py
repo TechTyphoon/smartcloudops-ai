@@ -405,28 +405,23 @@ def after_request(response):
 
 @app.route("/")
 def home():
-    """Serve the beautiful web dashboard"""
-    try:
-        # Check if we're in the app directory, if not look in parent
-        template_path = None
-        for potential_path in [
-            "/app/templates/dashboard.html",
-            "templates/dashboard.html",
-            "../templates/dashboard.html",
-        ]:
-            if os.path.exists(potential_path):
-                template_path = potential_path
-                break
-
-        if template_path:
-            with open(template_path, "r") as f:
-                return f.read()
-        else:
-            # Fallback to JSON if template not found
-            return jsonify({"error": "Dashboard template not found"})
-    except Exception as e:
-        logger.error(f"Error serving dashboard: {e}")
-        return jsonify({"error": "Dashboard unavailable"})
+    """API-only endpoint - frontend removed for custom integration"""
+    return jsonify(
+        {
+            "message": "SmartCloudOps AI - Backend API Server",
+            "status": "running",
+            "version": "3.1.0-production",
+            "note": "Frontend removed - use your own frontend integration",
+            "api_endpoints": {
+                "health": "/health",
+                "status": "/status",
+                "metrics": "/metrics",
+                "anomaly": "/anomaly",
+                "remediation": "/remediation/status",
+                "chatops": "/chatops/analyze",
+            },
+        }
+    )
 
 
 @app.route("/api/system-info")
@@ -1754,12 +1749,12 @@ def handle_generic_exception(error):
 # WSGI application object for Gunicorn
 def get_port() -> int:
     """Get standardized port across all environments."""
-    port = os.getenv("FLASK_PORT", "3003")
+    port = os.getenv("FLASK_PORT", "8000")
     try:
         return int(port)
     except ValueError:
-        logger.warning(f"Invalid port '{port}', using default 3003")
-        return 3003
+        logger.warning(f"Invalid port '{port}', using default 8000")
+        return 8000
 
 
 if __name__ == "__main__":

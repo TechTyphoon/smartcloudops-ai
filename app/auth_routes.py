@@ -61,14 +61,23 @@ def login():
             )
 
         username = data.get("username", "").strip()
+        email = data.get("email", "").strip()
         password = data.get("password", "")
+
+        # Support both username and email login
+        if email and not username:
+            # Find user by email
+            for user in ENTERPRISE_USERS.values():
+                if user.get("email") == email:
+                    username = user["username"]
+                    break
 
         if not username or not password:
             return (
                 jsonify(
                     {
                         "error": "Invalid credentials",
-                        "message": "Username and password required",
+                        "message": "Username/email and password required",
                         "status": "error",
                     }
                 ),

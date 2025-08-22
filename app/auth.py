@@ -389,13 +389,15 @@ auth_manager = AuthManager()
 
 
 # Enterprise user database (replace with actual database)
+# Using consistent salt for demo purposes - in production, use database-stored hashes
+DEMO_SALT = bcrypt.gensalt(12)
 ENTERPRISE_USERS = {
     "admin": {
         "id": "admin-001",
         "username": "admin",
-        "password_hash": bcrypt.hashpw(
-            "admin123".encode("utf-8"), bcrypt.gensalt(12)
-        ).decode("utf-8"),
+        "password_hash": bcrypt.hashpw("admin123".encode("utf-8"), DEMO_SALT).decode(
+            "utf-8"
+        ),
         "role": "admin",
         "email": "admin@smartcloudops.ai",
         "tenant_id": "enterprise-001",
@@ -407,9 +409,9 @@ ENTERPRISE_USERS = {
     "operator": {
         "id": "operator-001",
         "username": "operator",
-        "password_hash": bcrypt.hashpw(
-            "operator123".encode("utf-8"), bcrypt.gensalt(12)
-        ).decode("utf-8"),
+        "password_hash": bcrypt.hashpw("operator123".encode("utf-8"), DEMO_SALT).decode(
+            "utf-8"
+        ),
         "role": "operator",
         "email": "operator@smartcloudops.ai",
         "tenant_id": "enterprise-001",
@@ -421,9 +423,9 @@ ENTERPRISE_USERS = {
     "analyst": {
         "id": "analyst-001",
         "username": "analyst",
-        "password_hash": bcrypt.hashpw(
-            "analyst123".encode("utf-8"), bcrypt.gensalt(12)
-        ).decode("utf-8"),
+        "password_hash": bcrypt.hashpw("analyst123".encode("utf-8"), DEMO_SALT).decode(
+            "utf-8"
+        ),
         "role": "analyst",
         "email": "analyst@smartcloudops.ai",
         "tenant_id": "enterprise-001",
@@ -435,9 +437,9 @@ ENTERPRISE_USERS = {
     "viewer": {
         "id": "viewer-001",
         "username": "viewer",
-        "password_hash": bcrypt.hashpw(
-            "viewer123".encode("utf-8"), bcrypt.gensalt(12)
-        ).decode("utf-8"),
+        "password_hash": bcrypt.hashpw("viewer123".encode("utf-8"), DEMO_SALT).decode(
+            "utf-8"
+        ),
         "role": "viewer",
         "email": "viewer@smartcloudops.ai",
         "tenant_id": "enterprise-001",

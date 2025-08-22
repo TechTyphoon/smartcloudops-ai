@@ -102,7 +102,7 @@ class InputValidator:
     COMMAND_INJECTION_PATTERNS = [
         r";\s*$",  # Command separator
         r"&\s*$",  # Background execution
-        r"|\s*$",  # Pipe
+        r"\|",  # Pipe (escaped)
         r"`.*`",  # Command substitution
         r"\$\(.*\)",  # Command substitution
         r"&&\s*$",  # Logical AND
