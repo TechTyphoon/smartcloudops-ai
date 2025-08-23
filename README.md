@@ -170,6 +170,11 @@ smartcloudops-ai/
 ├── k8s/                      # Kubernetes manifests
 ├── ml_models/                # ML model definitions
 ├── scripts/                  # Utility scripts
+│   ├── deployment/           # Deployment scripts
+│   ├── monitoring/           # Monitoring scripts
+│   ├── testing/              # Testing scripts
+│   ├── security/             # Security scripts
+│   └── utils/                # Utility scripts
 ├── terraform/                # Infrastructure as Code
 ├── tests/                    # Test suite
 ├── docker-compose.yml        # Docker orchestration
@@ -180,12 +185,31 @@ smartcloudops-ai/
 
 ---
 
+## 🔄 CI/CD Pipeline
+
+### Active Workflows
+- **🔄 main.yml** - Primary CI/CD pipeline with quality gates, testing, and deployment
+- **🏗️ infrastructure.yml** - Infrastructure validation and Terraform operations
+- **🔒 security.yml** - Security scanning and compliance checks
+- **⚙️ reusable.yml** - Reusable workflow components
+
+### Pipeline Stages
+1. **Quality Gate** - Code quality, security scanning, change detection
+2. **Testing** - Unit tests, integration tests, coverage reporting
+3. **Build** - Docker image building and security scanning
+4. **Infrastructure** - Terraform validation and planning
+5. **Deployment** - Conditional deployment to staging/production
+
+---
+
 ## 📖 Documentation
 
 - **[Installation Guide](INSTALLATION.md)** - Detailed setup instructions
 - **[Usage Guide](USAGE.md)** - Comprehensive usage examples
 - **[API Reference](docs/API_REFERENCE.md)** - Complete API documentation
 - **[Architecture](docs/ARCHITECTURE.md)** - System design and components
+- **[Deployment Guide](docs/DEPLOYMENT.md)** - Production deployment instructions
+- **[Security Guide](docs/SECURITY_HARDENING_GUIDE.md)** - Security best practices
 - **[Contributing](CONTRIBUTING.md)** - Development guidelines
 - **[Changelog](CHANGELOG.md)** - Version history and updates
 
@@ -227,6 +251,9 @@ pytest --cov=app
 # Run specific test categories
 pytest tests/unit/
 pytest tests/integration/
+
+# Run local test suite
+./scripts/testing/test-local.sh
 ```
 
 ### Code Quality
@@ -240,6 +267,9 @@ flake8 app/ tests/
 
 # Type checking
 mypy app/
+
+# Quick lint fix
+./scripts/utils/quick-lint-fix.sh
 ```
 
 ---
@@ -253,6 +283,9 @@ docker-compose -f docker-compose.yml up -d
 
 # With custom environment
 docker-compose --env-file .env.production up -d
+
+# Deploy complete stack
+./scripts/deployment/deploy_complete_stack.sh
 ```
 
 ### Kubernetes Deployment
@@ -262,6 +295,9 @@ kubectl apply -f k8s/
 
 # Check deployment status
 kubectl get pods -n smartcloudops
+
+# Deploy with scripts
+./scripts/deployment/deploy_k8s_stack.sh
 ```
 
 ### Terraform Infrastructure
@@ -285,6 +321,7 @@ terraform apply
 - **Rate Limiting**: API protection against abuse
 - **Audit Logging**: Complete action tracking
 - **Security Scanning**: Automated vulnerability detection
+- **Secret Management**: Secure credential handling
 
 ---
 
@@ -321,6 +358,18 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 - **ML Operations**: Model performance and predictions
 - **Security**: Authentication and authorization events
 
+### Health Monitoring
+```bash
+# Health check
+python scripts/testing/health_check.py
+
+# Continuous monitoring
+python scripts/monitoring/continuous_health_monitor.py
+
+# System monitoring
+python scripts/monitoring/real_system_monitor.py
+```
+
 ---
 
 ## 🆘 Support
@@ -335,6 +384,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 - Check the [Troubleshooting Guide](docs/troubleshooting.md)
 - Review application logs: `docker-compose logs smartcloudops-main`
 - Verify service health: `curl http://localhost:5000/health`
+- Run health checks: `python scripts/testing/health_check.py`
 
 ---
 

@@ -132,62 +132,13 @@ except:
         fi
     fi
     
-    # Step 2: Frontend Tests
-    print_status "Running frontend tests..."
-    cd smartcloudops-ai
+    # Step 2: Frontend Tests (Skipped - Backend Only)
+    print_status "Frontend tests skipped (backend-only project)"
+    frontend_exit=0
     
-    # Install dependencies
-    if [ -f "package-lock.json" ]; then
-        npm ci --silent
-    elif [ -f "pnpm-lock.yaml" ]; then
-        pnpm install --silent
-    else
-        npm install --silent
-    fi
-    
-    # Run linting
-    if npm run lint; then
-        print_success "Frontend linting passed"
-    else
-        print_error "Frontend linting failed"
-        frontend_exit=1
-    fi
-    
-    # Run type checking
-    if npm run typecheck; then
-        print_success "Frontend type checking passed"
-    else
-        print_error "Frontend type checking failed"
-        frontend_exit=1
-    fi
-    
-    cd ..
-    
-    # Step 3: E2E Tests (only if backend and frontend passed)
-    if [ $backend_exit -eq 0 ] && [ $frontend_exit -eq 0 ]; then
-        print_status "Running E2E tests..."
-        
-        # Install Playwright if not already installed
-        cd smartcloudops-ai
-        if ! npx playwright --version >/dev/null 2>&1; then
-            print_status "Installing Playwright..."
-            npx playwright install --with-deps
-        fi
-        
-        # Run E2E tests
-        if npx playwright test --reporter=line; then
-            print_success "E2E tests passed"
-            e2e_exit=0
-        else
-            print_error "E2E tests failed"
-            e2e_exit=1
-        fi
-        
-        cd ..
-    else
-        print_warning "Skipping E2E tests due to backend or frontend failures"
-        e2e_exit=1
-    fi
+    # Step 3: E2E Tests (Skipped - Backend Only)
+    print_status "E2E tests skipped (backend-only project)"
+    e2e_exit=0
     
     # Final summary
     echo
@@ -204,12 +155,7 @@ except:
     if [ -f "coverage.xml" ]; then
         print_status "  - Backend coverage: coverage.xml, htmlcov/"
     fi
-    if [ -d "smartcloudops-ai/test-results" ]; then
-        print_status "  - E2E results: smartcloudops-ai/test-results/"
-    fi
-    if [ -d "smartcloudops-ai/playwright-report" ]; then
-        print_status "  - Playwright report: smartcloudops-ai/playwright-report/"
-    fi
+
     
     # Calculate overall exit code
     overall_exit=$((backend_exit + frontend_exit + e2e_exit))

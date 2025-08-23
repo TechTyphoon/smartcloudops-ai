@@ -160,6 +160,9 @@ isort app/ tests/
 
 # Lint code
 flake8 app/ tests/
+
+# Quick lint fix
+./scripts/utils/quick-lint-fix.sh
 ```
 
 #### Code Style Examples
@@ -372,6 +375,9 @@ pytest -n auto
 
 # Generate coverage report
 pytest --cov=app --cov-report=term-missing
+
+# Run local test suite
+./scripts/testing/test-local.sh
 ```
 
 #### Test Configuration

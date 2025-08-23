@@ -71,16 +71,14 @@ test-backend: ## Run backend tests with coverage
 	$(PYTEST) tests/backend/ --cov=app --cov-report=xml --cov-report=html --maxfail=1
 
 test-frontend: ## Run frontend lint and type checks
-	@echo "🎨 Running frontend tests..."
-	cd smartcloudops-ai && npm run lint && npm run typecheck
+	@echo "🎨 Frontend tests not available (backend-only project)"
 
 test-e2e: ## Run E2E tests with Playwright
-	@echo "🌐 Running E2E tests..."
-	cd smartcloudops-ai && npx playwright test --reporter=line
+	@echo "🌐 E2E tests not available (backend-only project)"
 
-test-all: ## Run full test suite (backend + frontend + e2e)
+test-all: ## Run full test suite (backend only)
 	@echo "🚀 Running full test suite..."
-	./scripts/test-local.sh
+	./scripts/testing/test-local.sh
 
 test-fast: ## Run tests in parallel (fast)
 	@echo "⚡ Running tests in parallel..."

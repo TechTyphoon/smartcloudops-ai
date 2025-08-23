@@ -1,21 +1,14 @@
 {
-  "name": "smartcloudops-ai-fullstack",
+  "name": "smartcloudops-ai-backend",
   "version": "1.0.0",
-  "description": "Smart CloudOps AI - Full Stack Application",
+  "description": "Smart CloudOps AI - Backend Application",
   "scripts": {
     "dev:api": "cd . && . venv/bin/activate && FLASK_PORT=8000 FLASK_HOST=127.0.0.1 python -m flask --app app.main run --host=127.0.0.1 --port=8000",
-    "dev:web": "cd smartcloudops-ai && npm run dev",
-    "dev:full": "concurrently -k -n api,web -c green,blue \"npm:dev:api\" \"npm:dev:web\"",
     "build:api": "echo \"Backend build completed (Python Flask)\"",
-    "build:web": "cd smartcloudops-ai && npm run build",
-    "build:full": "npm run build:api && npm run build:web",
-    "install:all": "cd smartcloudops-ai && npm install --legacy-peer-deps && cd .. && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt",
-    "test:smoke": "curl -sf http://localhost:3000/api/health && echo \" - Health check passed\" && curl -s -X POST http://localhost:3000/api/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"admin@smartcloudops.ai\",\"password\":\"admin123\"}' && echo \" - Auth test completed\""
+    "install:all": "python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt",
+    "test:smoke": "curl -sf http://localhost:5000/health && echo \" - Health check passed\""
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
-  },
-  "workspaces": [
-    "smartcloudops-ai"
-  ]
+  }
 }

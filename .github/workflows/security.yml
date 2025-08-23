@@ -13,13 +13,32 @@ on:
       - 'Dockerfile*'
       - 'app/**'
       - '.github/workflows/**'
+      - 'terraform/**'
+      - 'k8s/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'requirements*.txt'
+      - 'Dockerfile*'
+      - 'app/**'
+      - 'terraform/**'
+      - 'k8s/**'
 
 permissions:
   contents: read
   security-events: write
   actions: read
+  pull-requests: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/smartcloudops
+  PYTHON_VERSION: "3.11"
 
 jobs:
+  # =====================================================
+  # 🔒 COMPREHENSIVE SECURITY AUDIT
+  # =====================================================
   security-audit:
     name: 🔒 Security Audit
     runs-on: ubuntu-latest
@@ -34,7 +53,9 @@ jobs:
     - name: 🐍 Setup Python
       uses: actions/setup-python@v5
       with:
-        python-version: "3.11"
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+        cache-dependency-path: 'requirements*.txt'
         
     - name: 📦 Install security tools
       run: |
@@ -52,7 +73,7 @@ jobs:
         
     - name: 🔒 Deep Bandit scan
       run: |
-        echo "::group::Python security scan"
+        echo "::group::Deep Python security scan"
         bandit -r app/ -f json -o bandit-deep.json || true
         bandit -r app/ --severity-level low --confidence-level medium || echo "Deep security scan issues found, but continuing..."
         echo "::endgroup::"
@@ -83,6 +104,9 @@ jobs:
           safety-comprehensive.json
         retention-days: 90
 
+  # =====================================================
+  # 🔍 DEPENDENCY REVIEW
+  # =====================================================
   dependency-review:
     name: 🔍 Dependency Review
     runs-on: ubuntu-latest
@@ -98,6 +122,9 @@ jobs:
         fail-on-severity: moderate
         allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC
         
+  # =====================================================
+  # 🐳 DOCKER SECURITY SCAN
+  # =====================================================
   docker-security:
     name: 🐳 Docker Security Scan
     runs-on: ubuntu-latest
@@ -132,6 +159,9 @@ jobs:
       with:
         sarif_file: 'docker-security.sarif'
 
+  # =====================================================
+  # 🏗️ INFRASTRUCTURE SECURITY
+  # =====================================================
   infrastructure-security:
     name: 🏗️ Infrastructure Security
     runs-on: ubuntu-latest
@@ -184,5 +214,36 @@ jobs:
       with:
         name: infrastructure-security-${{ github.run_number }}
         path: |
+          tfsec-results.json
+        retention-days: 90
+
+  # =====================================================
+  # 📊 SECURITY SUMMARY & NOTIFICATION
+  # =====================================================
+  security-summary:
+    name: 📊 Security Summary
+    runs-on: ubuntu-latest
+    needs: [security-audit, dependency-review, docker-security, infrastructure-security]
+    if: always()
+    
+    steps:
+    - name: 📊 Generate security summary
+      run: |
+        echo "::group::Security Scan Summary"
+        echo "Security Audit: ${{ needs.security-audit.result }}"
+        echo "Dependency Review: ${{ needs.dependency-review.result }}"
+        echo "Docker Security: ${{ needs.docker-security.result }}"
+        echo "Infrastructure Security: ${{ needs.infrastructure-security.result }}"
+        echo "::endgroup::"
+        
+    - name: 📤 Upload security summary
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: security-summary-${{ github.run_number }}
+        path: |
+          bandit-results.json
+          safety-comprehensive.json
+          docker-security.sarif
           tfsec-results.json
         retention-days: 90

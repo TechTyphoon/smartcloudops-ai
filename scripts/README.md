@@ -1,352 +1,238 @@
-# SmartCloudOps AI - Utility Scripts
+# 📁 SmartCloudOps AI Scripts
 
-This directory contains utility scripts for deployment, monitoring, health checks, and operational tasks for SmartCloudOps AI.
+This directory contains utility scripts for development, deployment, monitoring, and testing of the SmartCloudOps AI platform.
 
-## 📁 Scripts Structure
+## 📂 Directory Structure
 
 ```
 scripts/
-├── 📁 deploy/                    # Deployment scripts
-│   ├── deploy_complete_stack.sh # Complete stack deployment
-│   ├── deploy_k8s_stack.sh      # Kubernetes deployment
-│   ├── deploy-local-production.sh # Local production setup
-│   ├── deploy_monitoring_server.sh # Monitoring stack deployment
-│   └── deploy_production_stack.sh # Production deployment
-├── 📁 monitoring/                # Monitoring scripts
-│   ├── continuous_health_monitor.py # Continuous health monitoring
-│   ├── continuous_monitor.sh    # Continuous monitoring shell script
-│   ├── daily_status.sh          # Daily status report
-│   ├── real_system_monitor.py   # Real-time system monitoring
-│   └── uptime_monitor.py        # Uptime monitoring
-├── 📄 cleanup.sh                # Cleanup utilities
-├── 📄 deploy_flask_app.py       # Flask app deployment
-├── 📄 deploy_production.sh      # Production deployment script
-├── 📄 env_manager.py            # Environment management
-├── 📄 health_check.py           # Health check utilities
-├── 📄 morning_check.sh          # Morning health check
-├── 📄 production_validation.py  # Production validation
-├── 📄 quick-lint-fix.sh         # Quick linting fixes
-├── 📄 setup.py                  # Setup utilities
-├── 📄 start_app.py              # Application startup
-├── 📄 test-local.sh             # Local testing script
-├── 📄 validate_before_commit.sh # Pre-commit validation
-└── 📄 verify_setup.py           # Setup verification
+├── deployment/          # Deployment and infrastructure scripts
+├── monitoring/          # System monitoring and health checks
+├── testing/            # Testing and validation scripts
+├── security/           # Security and compliance scripts
+├── utils/              # Utility and helper scripts
+└── README.md           # This file
 ```
 
 ## 🚀 Quick Start
 
-### Essential Scripts
+### Development
 ```bash
 # Start the application
-./scripts/start_app.py
+./scripts/utils/start_app.py
 
 # Health check
-./scripts/health_check.py
+./scripts/testing/health_check.py
 
-# Deploy complete stack
-./scripts/deploy/deploy_complete_stack.sh
-
-# Morning health check
-./scripts/morning_check.sh
+# Verify setup
+./scripts/testing/verify_setup.py
 ```
 
-### Development Scripts
-```bash
-# Quick lint fix
-./scripts/quick-lint-fix.sh
-
-# Validate before commit
-./scripts/validate_before_commit.sh
-
-# Test locally
-./scripts/test-local.sh
-```
-
-## 📋 Script Categories
-
-### Deployment Scripts (`deploy/`)
-- **Complete Stack**: Deploy entire SmartCloudOps AI stack
-- **Kubernetes**: Deploy to Kubernetes cluster
-- **Production**: Production environment deployment
-- **Monitoring**: Monitoring stack deployment
-- **Local Production**: Local production-like setup
-
-### Monitoring Scripts (`monitoring/`)
-- **Health Monitoring**: Continuous health checks
-- **System Monitoring**: Real-time system metrics
-- **Uptime Monitoring**: Service uptime tracking
-- **Daily Reports**: Automated daily status reports
-
-### Utility Scripts
-- **Health Checks**: Application and service health
-- **Environment Management**: Environment setup and configuration
-- **Setup Verification**: Verify installation and configuration
-- **Cleanup**: System cleanup utilities
-
-## 🔧 Script Usage
-
-### Deployment Scripts
-
-#### Complete Stack Deployment
+### Deployment
 ```bash
 # Deploy complete stack
-./scripts/deploy/deploy_complete_stack.sh
+./scripts/deployment/deploy_complete_stack.sh
 
-# Deploy with custom environment
-./scripts/deploy/deploy_complete_stack.sh --env production
-```
-
-#### Kubernetes Deployment
-```bash
-# Deploy to Kubernetes
-./scripts/deploy/deploy_k8s_stack.sh
-
-# Deploy with specific namespace
-./scripts/deploy/deploy_k8s_stack.sh --namespace smartcloudops
-```
-
-#### Production Deployment
-```bash
 # Deploy to production
-./scripts/deploy/deploy_production_stack.sh
+./scripts/deployment/deploy_production_stack.sh --env production
+
+# Deploy to Kubernetes
+./scripts/deployment/deploy_k8s_stack.sh
+
+# Deploy to Kubernetes with namespace
+./scripts/deployment/deploy_k8s_stack.sh --namespace smartcloudops
+
+# Deploy production stack
+./scripts/deployment/deploy_production_stack.sh
 
 # Deploy with blue-green strategy
-./scripts/deploy/deploy_production_stack.sh --strategy blue-green
+./scripts/deployment/deploy_production_stack.sh --strategy blue-green
 ```
 
-### Monitoring Scripts
-
-#### Health Monitoring
+### Monitoring
 ```bash
-# Start continuous health monitoring
+# Continuous health monitoring
 python scripts/monitoring/continuous_health_monitor.py
 
 # Monitor specific services
 python scripts/monitoring/continuous_health_monitor.py --services app,database,redis
-```
 
-#### System Monitoring
-```bash
-# Start real-time system monitoring
+# Real-time system monitoring
 python scripts/monitoring/real_system_monitor.py
 
 # Monitor with custom thresholds
 python scripts/monitoring/real_system_monitor.py --cpu-threshold 80 --memory-threshold 85
-```
 
-#### Daily Status Report
-```bash
-# Generate daily status report
+# Daily status report
 ./scripts/monitoring/daily_status.sh
 
-# Send report via email
+# Daily status with email
 ./scripts/monitoring/daily_status.sh --email admin@company.com
 ```
 
-### Utility Scripts
-
-#### Health Checks
+### Testing
 ```bash
-# Run health check
-python scripts/health_check.py
+# Health check
+python scripts/testing/health_check.py
 
-# Check specific components
-python scripts/health_check.py --components app,database,redis,prometheus
+# Health check with components
+python scripts/testing/health_check.py --components app,database,redis,prometheus
+
+# Environment setup
+python scripts/utils/env_manager.py setup
+
+# Environment validation
+python scripts/utils/env_manager.py validate
+
+# Environment update
+python scripts/utils/env_manager.py update
+
+# Verify setup
+python scripts/testing/verify_setup.py
+
+# Verify setup with components
+python scripts/testing/verify_setup.py --components app,database,monitoring
 ```
 
-#### Environment Management
+### Utilities
 ```bash
-# Setup environment
-python scripts/env_manager.py setup
+# Quick lint fix
+./scripts/utils/quick-lint-fix.sh
 
-# Validate environment
-python scripts/env_manager.py validate
+# Validate before commit
+./scripts/utils/validate_before_commit.sh
 
-# Update environment
-python scripts/env_manager.py update
+# Morning check
+./scripts/utils/morning_check.sh
+
+# Cleanup
+./scripts/utils/cleanup.sh
 ```
 
-#### Setup Verification
-```bash
-# Verify complete setup
-python scripts/verify_setup.py
+## 🔧 Advanced Usage
 
-# Verify specific components
-python scripts/verify_setup.py --components app,database,monitoring
-```
-
-## 📊 Monitoring and Alerting
-
-### Health Check Metrics
-- **Application Health**: Flask app status and performance
-- **Database Health**: PostgreSQL connection and performance
-- **Redis Health**: Redis connection and memory usage
-- **Monitoring Health**: Prometheus and Grafana status
-- **System Health**: CPU, memory, disk usage
-
-### Alerting Configuration
+### Continuous Monitoring Setup
 ```bash
 # Configure alerts
 python scripts/monitoring/continuous_health_monitor.py --configure-alerts
 
-# Set alert thresholds
+# Monitor with custom configuration
 python scripts/monitoring/continuous_health_monitor.py \
-  --cpu-threshold 80 \
-  --memory-threshold 85 \
-  --disk-threshold 90
+    --services app,database,redis,prometheus \
+    --interval 30 \
+    --log-level INFO
 ```
 
-### Notification Channels
-- **Email**: SMTP-based email notifications
-- **Slack**: Slack webhook notifications
-- **Teams**: Microsoft Teams notifications
-- **Webhook**: Custom webhook notifications
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-1. **Deployment Failures**
-   ```bash
-   # Check deployment logs
-   ./scripts/deploy/deploy_complete_stack.sh --debug
-   
-   # Validate configuration
-   python scripts/verify_setup.py --validate-config
-   ```
-
-2. **Health Check Failures**
-   ```bash
-   # Run detailed health check
-   python scripts/health_check.py --verbose
-   
-   # Check specific service
-   python scripts/health_check.py --service app --debug
-   ```
-
-3. **Monitoring Issues**
-   ```bash
-   # Check monitoring status
-   python scripts/monitoring/continuous_health_monitor.py --status
-   
-   # Restart monitoring
-   python scripts/monitoring/continuous_health_monitor.py --restart
-   ```
-
-### Debug Mode
+### Production Validation
 ```bash
-# Enable debug mode for all scripts
-export DEBUG=1
-export LOG_LEVEL=DEBUG
+# Validate configuration
+python scripts/testing/verify_setup.py --validate-config
 
-# Run script with debug output
-python scripts/health_check.py --debug
+# Health check with verbose output
+python scripts/testing/health_check.py --verbose
+
+# Health check specific service with debug
+python scripts/testing/health_check.py --service app --debug
 ```
 
-## 🔄 Automation
-
-### Cron Jobs
+### Monitoring Management
 ```bash
-# Add to crontab for automated monitoring
-# Daily health check at 9 AM
-0 9 * * * /path/to/smartcloudops-ai/scripts/morning_check.sh
+# Check monitoring status
+python scripts/monitoring/continuous_health_monitor.py --status
 
-# Continuous monitoring every 5 minutes
-*/5 * * * * /path/to/smartcloudops-ai/scripts/monitoring/continuous_monitor.sh
-
-# Daily status report at 6 PM
-0 18 * * * /path/to/smartcloudops-ai/scripts/monitoring/daily_status.sh
+# Restart monitoring
+python scripts/monitoring/continuous_health_monitor.py --restart
 ```
 
-### CI/CD Integration
+### Troubleshooting
 ```bash
-# Pre-deployment validation
-./scripts/validate_before_commit.sh
+# Health check with debug
+python scripts/testing/health_check.py --debug
 
 # Post-deployment verification
-python scripts/verify_setup.py --post-deployment
+python scripts/testing/verify_setup.py --post-deployment
 
-# Health check after deployment
-python scripts/health_check.py --post-deployment
+# Post-deployment health check
+python scripts/testing/health_check.py --post-deployment
 ```
 
-## 📈 Performance Monitoring
-
-### Performance Metrics
-- **Response Time**: API response times
-- **Throughput**: Requests per second
-- **Error Rate**: Error percentage
-- **Resource Usage**: CPU, memory, disk usage
-- **Database Performance**: Query times, connections
-
-### Performance Alerts
+### Monitoring with Alerts
 ```bash
-# Set performance thresholds
+# Monitor with custom configuration
 python scripts/monitoring/continuous_health_monitor.py \
-  --response-time-threshold 500 \
-  --error-rate-threshold 5 \
-  --throughput-threshold 100
+    --services app,database,redis,prometheus \
+    --interval 30 \
+    --log-level INFO \
+    --alert-webhook https://hooks.slack.com/services/YOUR/WEBHOOK/URL
 ```
 
-## 🔒 Security
+## 📋 Cron Jobs
 
-### Security Checks
+For production environments, set up these cron jobs:
+
 ```bash
-# Run security audit
-python scripts/security_audit.py
+# Morning health check (9 AM daily)
+0 9 * * * /path/to/project/scripts/utils/morning_check.sh
 
-# Check for vulnerabilities
-python scripts/security_audit.py --vulnerabilities
+# Continuous monitoring (every 5 minutes)
+*/5 * * * * /path/to/project/scripts/monitoring/continuous_monitor.sh
 
-# Validate security configuration
-python scripts/verify_setup.py --security
+# Daily status report (6 PM daily)
+0 18 * * * /path/to/project/scripts/monitoring/daily_status.sh
 ```
 
-### Access Control
-- **Script Permissions**: Proper file permissions
-- **Environment Variables**: Secure credential management
-- **Network Security**: Secure communication channels
-- **Audit Logging**: Comprehensive audit trails
+## 🔍 Script Details
 
-## 📚 Best Practices
+### Deployment Scripts
+- **deploy_complete_stack.sh**: Deploy the entire application stack
+- **deploy_production_stack.sh**: Production deployment with safety checks
+- **deploy_k8s_stack.sh**: Kubernetes deployment
+- **deploy_monitoring_server.sh**: Monitoring infrastructure deployment
+- **deploy_flask_app.py**: Flask application deployment
 
-### Script Development
-- **Error Handling**: Comprehensive error handling
-- **Logging**: Proper logging and debugging
-- **Documentation**: Clear documentation and usage
-- **Testing**: Thorough testing of scripts
-- **Security**: Security best practices
+### Monitoring Scripts
+- **continuous_health_monitor.py**: Continuous health monitoring
+- **real_system_monitor.py**: Real-time system monitoring
+- **uptime_monitor.py**: Uptime monitoring
+- **continuous_monitor.sh**: Shell-based continuous monitoring
+- **daily_status.sh**: Daily status reporting
 
-### Script Usage
-- **Environment**: Use appropriate environment
-- **Permissions**: Check script permissions
-- **Dependencies**: Ensure dependencies are installed
-- **Backup**: Backup before running scripts
-- **Monitoring**: Monitor script execution
+### Testing Scripts
+- **test-local.sh**: Local testing suite
+- **health_check.py**: Health check utilities
+- **verify_setup.py**: Setup verification
+- **production_validation.py**: Production validation
 
-### Script Maintenance
-- **Regular Updates**: Keep scripts updated
-- **Version Control**: Track script changes
-- **Testing**: Test scripts regularly
-- **Documentation**: Maintain documentation
-- **Security**: Regular security reviews
+### Utility Scripts
+- **start_app.py**: Application startup
+- **setup.py**: Environment setup
+- **env_manager.py**: Environment management
+- **cleanup.sh**: Cleanup utilities
+- **quick-lint-fix.sh**: Quick linting fixes
+- **validate_before_commit.sh**: Pre-commit validation
+- **morning_check.sh**: Morning health checks
 
-## 🤝 Contributing
+## 🛠️ Development
 
 ### Adding New Scripts
-1. **Follow Naming Convention**: Use descriptive names
-2. **Add Documentation**: Document script purpose and usage
-3. **Include Error Handling**: Comprehensive error handling
-4. **Add Tests**: Include tests for new scripts
-5. **Security Review**: Review security implications
+1. Place scripts in the appropriate directory
+2. Add documentation to this README
+3. Ensure proper error handling
+4. Add logging for debugging
+5. Test thoroughly
 
-### Script Review Checklist
-- [ ] Script is properly documented
-- [ ] Error handling is comprehensive
-- [ ] Security considerations addressed
-- [ ] Tests are included
-- [ ] Performance impact considered
+### Script Standards
+- Use Python 3.8+ for Python scripts
+- Use bash for shell scripts
+- Include proper error handling
+- Add logging and verbose output options
+- Follow the existing naming conventions
+- Include help/usage information
 
----
+## 📞 Support
 
-**SmartCloudOps AI v3.3.0** - Utility Scripts
+For issues with scripts:
+1. Check the script's help output: `./script.sh --help`
+2. Review the logs for error messages
+3. Verify environment configuration
+4. Check dependencies and permissions

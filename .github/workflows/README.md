@@ -39,7 +39,7 @@ This document outlines the required GitHub Secrets and Variables for all workflo
 
 ## 🚀 Workflow Descriptions
 
-### 1. ci-cd-optimized.yml
+### 1. main.yml
 **Purpose**: Main CI/CD pipeline for application code
 **Triggers**: Push to main/develop, PRs, tags, manual
 **Features**:
@@ -50,16 +50,16 @@ This document outlines the required GitHub Secrets and Variables for all workflo
 - Infrastructure validation
 - Conditional deployments
 
-### 2. ecr-build-push.yml
-**Purpose**: Build and push Docker images to AWS ECR
-**Triggers**: Push to main, manual
+### 2. infrastructure.yml
+**Purpose**: Infrastructure as Code validation
+**Triggers**: Terraform changes, PRs
 **Features**:
-- AWS ECR authentication
-- Docker image building
-- Image vulnerability scanning
-- Automatic tagging
+- Terraform format checking
+- Terraform validation
+- Terraform planning (with AWS credentials)
+- Infrastructure security scanning (Checkov)
 
-### 3. security-monitoring.yml
+### 3. security.yml
 **Purpose**: Comprehensive security scanning
 **Triggers**: Scheduled (weekly), manual, security-sensitive changes
 **Features**:
@@ -69,14 +69,14 @@ This document outlines the required GitHub Secrets and Variables for all workflo
 - Docker image security scanning
 - Infrastructure security scanning (tfsec, kubesec)
 
-### 4. ci-infra.yml
-**Purpose**: Infrastructure as Code validation
-**Triggers**: Terraform changes, PRs
+### 4. reusable.yml
+**Purpose**: Reusable workflow components
+**Triggers**: Called by other workflows
 **Features**:
-- Terraform format checking
-- Terraform validation
-- Terraform planning (with AWS credentials)
-- Infrastructure security scanning (Checkov)
+- Python environment setup
+- Code quality checks
+- Security scanning
+- Shared utilities
 
 ## 🔧 Setup Instructions
 
@@ -100,89 +100,53 @@ AWS_REGION=us-west-2
 ECR_REPOSITORY=smartcloudops-ai-app
 ```
 
-### 3. Verify File Structure
-Ensure all required files exist:
-```bash
-# Check Dockerfiles
-ls -la Dockerfile*
+## 📊 Workflow Status
 
-# Check requirements files
-ls -la requirements*.txt
+### Active Workflows
+- ✅ **main.yml** - Primary CI/CD pipeline
+- ✅ **infrastructure.yml** - Infrastructure validation
+- ✅ **security.yml** - Security scanning
+- ✅ **reusable.yml** - Reusable components
 
-# Check test directories
-ls -la tests/unit/ tests/integration/
-
-# Check infrastructure files
-ls -la terraform/ k8s/
+### Workflow Dependencies
+```
+Code Changes → main.yml → Quality Gate → Tests → Build → Deploy
+Infra Changes → infrastructure.yml → Terraform Validate → Plan → Apply
+Security Changes → security.yml → Security Scan → Compliance Check
 ```
 
-## 🐛 Troubleshooting
+## 🔍 Troubleshooting
 
 ### Common Issues
+1. **Workflow Failures**: Check logs for specific error messages
+2. **Permission Issues**: Verify GitHub secrets and variables
+3. **Build Failures**: Check Docker and dependency issues
+4. **Test Failures**: Review test output and fix failing tests
 
-1. **Docker Build Failures**
-   - Ensure Dockerfile.production exists
-   - Check for syntax errors in Dockerfile
-   - Verify all dependencies are available
+### Debug Mode
+- Enable debug logging in workflows
+- Check workflow run logs
+- Verify environment variables
+- Test locally before pushing
 
-2. **Terraform Validation Failures**
-   - Run `terraform fmt` locally to fix formatting
-   - Check for syntax errors in .tf files
-   - Verify AWS credentials are correct
+## 📈 Performance
 
-3. **Test Failures**
-   - Ensure all test dependencies are in requirements-dev.txt
-   - Check that test files follow pytest conventions
-   - Verify test data and fixtures are available
-
-4. **Security Scan Failures**
-   - Review Bandit and Safety reports
-   - Fix high-severity security issues
-   - Update vulnerable dependencies
-
-### Debug Commands
-
-```bash
-# Test Docker build locally
-docker build -f Dockerfile.production -t test-image .
-
-# Test Terraform locally
-cd terraform
-terraform init
-terraform validate
-terraform plan
-
-# Run tests locally
-pip install -r requirements-dev.txt
-pytest tests/ -v
-
-# Run security scans locally
-bandit -r app/
-safety scan
-```
-
-## 📊 Monitoring Workflow Status
-
-All workflows include comprehensive logging and artifact uploads:
-- Security scan results are uploaded as artifacts
-- Test coverage reports are generated
-- Docker scan results are uploaded to GitHub Security
-- Infrastructure plans are commented on PRs
-
-## 🔄 Workflow Optimization
-
-The workflows are designed to:
-- Run in parallel where possible
+### Optimization Tips
 - Use caching for dependencies
-- Fail fast on critical issues
-- Continue on non-critical issues
-- Provide detailed feedback and artifacts
+- Parallel job execution
+- Conditional job execution
+- Efficient Docker builds
+- Minimal workflow triggers
 
-## 📝 Best Practices
+## 🔒 Security
 
-1. **Always test locally before pushing**
-2. **Keep dependencies updated**
-3. **Review security scan results regularly**
-4. **Monitor workflow execution times**
-5. **Use feature branches for development**
-6. **Tag releases for production deployments**
+### Best Practices
+- Use least privilege permissions
+- Scan for secrets and vulnerabilities
+- Regular dependency updates
+- Secure credential management
+- Audit workflow access
+
+---
+
+**SmartCloudOps AI v3.3.0** - Workflow Configuration
