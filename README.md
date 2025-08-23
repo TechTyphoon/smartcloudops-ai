@@ -1,455 +1,365 @@
-# 🚀 SmartCloudOps AI v3.1.0 - FULL-STACK PRODUCTION READY
+# 🚀 SmartCloudOps AI - Enterprise AI-Powered Cloud Operations Platform
 
 <div align="center">
 
-![SmartCloudOps AI Logo](https://img.shields.io/badge/SmartCloudOps-AI%20v3.1.0-blue?style=for-the-badge&logo=docker)
-[![GitHub release](https://img.shields.io/github/v/release/TechTyphoon/smartcloudops-ai?style=for-the-badge)](https://github.com/TechTyphoon/smartcloudops-ai/releases)
+![SmartCloudOps AI](https://img.shields.io/badge/SmartCloudOps-AI%20v3.3.0-blue?style=for-the-badge&logo=robot)
 [![License](https://img.shields.io/github/license/TechTyphoon/smartcloudops-ai?style=for-the-badge)](LICENSE)
-[![Security](https://img.shields.io/badge/Security%20Grade-A-green?style=for-the-badge)](docs/SECURITY_AUDIT_REPORT_ENHANCED.md)
-[![API Status](https://img.shields.io/badge/API-All%20Endpoints%20Working-brightgreen?style=for-the-badge)]()
+[![Python](https://img.shields.io/badge/Python-3.8+-blue?style=for-the-badge&logo=python)](https://python.org)
+[![Flask](https://img.shields.io/badge/Flask-3.1.1-green?style=for-the-badge&logo=flask)](https://flask.palletsprojects.com/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue?style=for-the-badge&logo=docker)](https://docker.com)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-blue?style=for-the-badge&logo=kubernetes)](https://kubernetes.io/)
+[![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-orange?style=for-the-badge&logo=prometheus)](https://prometheus.io/)
+[![Grafana](https://img.shields.io/badge/Grafana-Dashboards-orange?style=for-the-badge&logo=grafana)](https://grafana.com/)
 
-**✅ FULLY FUNCTIONAL - Enterprise-grade AI-powered CloudOps FULL-STACK platform with Next.js frontend, Flask backend, comprehensive monitoring, ML-driven anomaly detection, and automated infrastructure management.**
+**Enterprise-grade AI-powered CloudOps platform with real-time monitoring, ML-driven anomaly detection, and automated incident response.**
 
-[🎯 Quick Start](#-quick-start) • [📖 Documentation](#-documentation) • [🛠️ Features](#️-features) • [🚀 Demo](#-demo) • [🤝 Contributing](#-contributing)
+[🚀 Quick Start](#-quick-start) • [📖 Documentation](#-documentation) • [🏗️ Architecture](#️-architecture) • [🔧 API Reference](#-api-reference) • [🤝 Contributing](#-contributing)
 
 </div>
 
 ---
 
-## 🌟 **Overview**
+## 🌟 Overview
 
-SmartCloudOps AI v3.1.0 is a **PRODUCTION-READY**, enterprise-grade **FULL-STACK** platform that revolutionizes cloud operations through artificial intelligence and machine learning. **ALL API ENDPOINTS ARE FULLY FUNCTIONAL** with complete Phases 0-7 implementation, providing comprehensive infrastructure monitoring, predictive analytics, and automated incident response.
+SmartCloudOps AI is a production-ready, enterprise-grade platform that revolutionizes cloud operations through artificial intelligence and machine learning. Built with Flask, Prometheus, Grafana, and advanced ML models, it provides comprehensive infrastructure monitoring, predictive analytics, and automated incident response.
 
-### 🎯 **Current Status - FULLY OPERATIONAL (FULL-STACK)**
-- **✅ ALL API Endpoints Working**: `/anomaly`, `/query`, `/auth/login`, `/demo` - All fixed and tested
-- **🔧 Production Ready**: Stable Flask backend with Next.js frontend
-- **📊 Complete Monitoring**: Real-time health monitoring and ML anomaly detection
-- **🤖 AI-Powered**: Advanced machine learning models with enterprise authentication
-- **🛡️ Security Compliant**: JWT authentication with bcrypt password hashing
-- **🎯 Full-Stack Architecture**: Next.js frontend with Flask backend integration
-
-### 🎯 **Key Highlights**
-- **🏆 A-Grade Security**: 100/100 security audit score
-- **⚡ High Performance**: ML response times ~20ms
-- **🔧 Production Ready**: 80% security compliance
-- **📊 Complete Monitoring**: 5-container observability stack
-- **🤖 AI-Powered**: Advanced anomaly detection and prediction
-- **🎯 API-First Design**: RESTful APIs for seamless integration
+### ✨ Key Features
+- **🤖 AI-Powered Anomaly Detection** - ML models with ~20ms inference times
+- **📊 Real-time Monitoring** - Prometheus + Grafana observability stack
+- **🔄 Automated Remediation** - Intelligent incident response and recovery
+- **💬 ChatOps Integration** - Natural language operations interface
+- **🛡️ Enterprise Security** - JWT authentication, role-based access control
+- **☁️ Cloud-Native** - Docker, Kubernetes, and multi-cloud support
+- **📈 Performance Analytics** - Custom metrics and predictive insights
 
 ---
 
-## 🛠️ **Features**
-
-### 🔍 **Core Capabilities**
-- **Real-time Infrastructure Monitoring** with Prometheus & Grafana
-- **ML-Powered Anomaly Detection** with predictive analytics
-- **Automated Incident Response** with ChatOps integration
-- **Container Orchestration** with Docker Compose & Kubernetes
-- **Security Compliance** with continuous audit framework
-- **Performance Analytics** with custom metrics and alerting
-- **RESTful API Architecture** for seamless integration
-
-### 🏗️ **Architecture Components**
-- **Flask Application Server** - Core API and backend services
-- **Prometheus** - Metrics collection and storage
-- **Grafana** - Visualization and dashboards
-- **Node Exporter** - System metrics collection
-- **Redis Cache** - Performance optimization
-- **PostgreSQL** - Data persistence (optional)
-
-### 🔒 **Security Features**
-- **A-Grade Security Posture** (100/100 audit score)
-- **Comprehensive Vulnerability Scanning**
-- **Automated Security Compliance Checks**
-- **Secure Container Configuration**
-- **Network Security Policies**
-
----
-
-## 🚀 **Quick Start**
+## 🚀 Quick Start
 
 ### Prerequisites
-- Docker & Docker Compose
-- Python 3.8+
-- Git
+- **Docker & Docker Compose** (v20.10+)
+- **Python 3.8+** (for development)
+- **4GB+ RAM** (8GB recommended)
 
-### 1️⃣ **Clone Repository**
+### 1. Clone & Deploy
 ```bash
 git clone https://github.com/TechTyphoon/smartcloudops-ai.git
 cd smartcloudops-ai
-```
 
-### 2️⃣ **Deploy with Docker Compose**
-```bash
-# Complete 5-container stack
-docker-compose up -d
-
-# Verify deployment
-docker ps
-```
-
-### 3️⃣ **Access Services**
-- **Frontend Application**: http://localhost:3000
-- **Backend API**: http://localhost:8000
-- **✅ API Endpoints (All Working)**:
-  - **GET /anomaly** - ML Anomaly Detection Service
-  - **GET /query** - ChatOps AI Query Service  
-  - **GET /auth/login** - Enterprise Login Service
-  - **GET /demo** - Demo endpoint showing all fixes
-- **Grafana Dashboards**: http://localhost:3000 (admin/admin)
-- **Prometheus Metrics**: http://localhost:9090
-- **API Documentation**: http://localhost:8000/docs
-
-### 4️⃣ **Development Mode**
-```bash
-# Start both frontend and backend
-npm run dev:full
-
-# Or start individually
-npm run dev:api    # Flask backend on port 8000
-npm run dev:web    # Next.js frontend on port 3000
-```
-
-### 5️⃣ **Run Health Check**
-```bash
-# Test API endpoints
-curl http://localhost:8000/health
-curl http://localhost:8000/anomaly
-curl http://localhost:8000/query
-
-# Test frontend proxy
-curl http://localhost:3000/api/health
-```
-
----
-
-## 🔄 **CI/CD Pipeline**
-
-### **Automated Workflow**
-The project includes a comprehensive GitHub Actions CI/CD pipeline that:
-
-- **🔍 Quality Gate**: Code formatting, linting, and security scanning
-- **🧪 Testing**: Backend (Flask) and Frontend (Next.js) tests
-- **🏗️ Build**: Full-stack build with artifact generation
-- **🐳 Docker**: Multi-platform container builds
-- **🚀 Deployment**: Staging and production deployments
-
-### **Pipeline Stages**
-1. **Quality Gate**: Black, isort, flake8, bandit, safety
-2. **Backend Testing**: pytest with coverage
-3. **Frontend Testing**: ESLint, TypeScript checking
-4. **Full-Stack Build**: Next.js build + Flask verification
-5. **Docker Build**: Multi-architecture images
-6. **Infrastructure**: Terraform validation
-7. **Deployment**: Staging/Production environments
-
-### **Artifacts Generated**
-- Frontend build artifacts (`.next/`, `public/`)
-- Backend code packages (`app/`, `ml_models/`)
-- Security reports (bandit, safety)
-- Docker images (development, production)
-- Coverage reports
-
-### **Environment Variables**
-The following secrets are required for the CI/CD pipeline:
-
-| Secret | Description | Example |
-|--------|-------------|---------|
-| `GITHUB_TOKEN` | GitHub token for registry access | Auto-provided |
-| `AWS_ACCESS_KEY_ID` | AWS access key for deployment | `AKIA...` |
-| `AWS_SECRET_ACCESS_KEY` | AWS secret key for deployment | `...` |
-| `SLACK_WEBHOOK_URL` | Slack notifications | `https://hooks.slack.com/...` |
-
-### **Development Mode**
-```bash
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Run Flask development server
-python app/main.py
-```
-
----
-
-## 📊 **Demo & Screenshots**
-
-### 🎥 **Live Demo**
-> 🚧 **Coming Soon**: Hosted demo environment at `demo.smartcloudops.ai`
-
-### 📸 **Dashboard Preview**
-```
-┌─────────────────────────────────────────────────┐
-│  SmartCloudOps AI Dashboard                    │
-├─────────────────────────────────────────────────┤
-│  🟢 System Health: HEALTHY                     │
-│  📊 Containers: 5/5 Running                    │
-│  ⚡ Response Time: 18ms                        │
-│  🔒 Security Score: A (100/100)                │
-│  📈 Uptime: 99.9%                             │
-└─────────────────────────────────────────────────┘
-```
-
----
-
-## 📖 **Documentation**
-
-### 📚 **Complete Documentation Suite**
-- **[🚀 Getting Started Guide](docs/GETTING_STARTED.md)**
-- **[🏗️ Architecture Overview](docs/ARCHITECTURE.md)**
-- **[🔧 API Reference](docs/API_REFERENCE.md)**
-- **[🔒 Security Guide](docs/SECURITY_AUDIT_REPORT_ENHANCED.md)**
-- **[📊 Monitoring Setup](docs/MONITORING_GUIDE.md)**
-- **[🐳 Docker Deployment](docs/DOCKER_GUIDE.md)**
-- **[☸️ Kubernetes Guide](docs/KUBERNETES_GUIDE.md)**
-
-### 📋 **Phase Documentation**
-- **[Phase 0-7 Complete Audit](COMPREHENSIVE_PROJECT_AUDIT_REPORT.md)**
-- **[Production Readiness Report](FINAL_DEPLOYMENT_READINESS_REPORT.md)**
-- **[Executive Summary](EXECUTIVE_PRESENTATION.md)**
-- **[Phase 6 Perfection Report](PHASE_6_PERFECTION_REPORT.md)**
-- **[Phase 7 Audit Complete](PHASE_7_AUDIT_COMPLETE.md)**
-
----
-
-## 🏆 **Performance Metrics**
-
-| Metric | Value | Target | Status |
-|--------|-------|--------|--------|
-| **Response Time** | ~20ms | <50ms | ✅ Exceeds |
-| **Security Score** | 100/100 | >90 | ✅ Perfect |
-| **Uptime** | 99.9% | >99.5% | ✅ Exceeds |
-| **Container Health** | 5/5 | 5/5 | ✅ Perfect |
-| **Compliance** | 80% | >75% | ✅ Exceeds |
-
----
-
-## 🛠️ **Installation Options**
-
-### 🐳 **Docker Compose (Recommended)**
-```bash
-# Production stack
+# Deploy complete production stack
 docker-compose up -d
 ```
 
-### ☸️ **Kubernetes**
+### 2. Access Services
+- **🏠 Application**: http://localhost:5000
+- **📊 Grafana**: http://localhost:13000 (admin/admin)
+- **📈 Prometheus**: http://localhost:9090
+- **🔧 API Docs**: http://localhost:5000/api/docs
+
+### 3. Verify Deployment
 ```bash
-# Deploy to Kubernetes cluster
-kubectl apply -f k8s/
+# Health check
+curl http://localhost:5000/health
+
+# Expected: {"status": "healthy", "version": "3.3.0"}
 ```
 
-### 🐍 **Python Virtual Environment**
-```bash
-# Local development
-python3 -m venv smartcloudops_env
-source smartcloudops_env/bin/activate
-pip install -r requirements.txt
-python app.py
-```
-
-### 🌥️ **Cloud Deployment**
-- **AWS**: Use `deploy_production_stack.sh`
-- **Azure**: Use `deploy_k8s_stack.sh`
-- **GCP**: Use Kubernetes manifests in `k8s/`
+🎉 **Ready!** Your SmartCloudOps AI platform is now running.
 
 ---
 
-## 🔧 **Configuration**
+## 🏗️ Architecture
 
-### 📝 **Environment Variables**
-```bash
-# Core Configuration
-FLASK_ENV=production
-FLASK_PORT=5000
-REDIS_URL=redis://localhost:6379
-PROMETHEUS_URL=http://localhost:9090
-
-# Security Configuration (REQUIRED)
-AUTH_SECRET_KEY=your-auth-secret-key-change-this-in-production
-JWT_SECRET_KEY=your-jwt-secret-key
-APP_HOST=0.0.0.0
-
-# API Keys
-OPENAI_API_KEY=your-openai-api-key
-GEMINI_API_KEY=your-gemini-api-key
-
-# Security Settings
-SECURITY_AUDIT_ENABLED=true
-SECURITY_COMPLIANCE_LEVEL=80
-
-# Monitoring Configuration
-GRAFANA_ADMIN_PASSWORD=secure_password
-PROMETHEUS_RETENTION=15d
-```
-
-### ⚙️ **Advanced Configuration**
-- **[Docker Compose Configuration](docker-compose.yml)**
-- **[Kubernetes Configuration](k8s/)**
-- **[Prometheus Configuration](configs/monitoring/prometheus.yml)**
-- **[Grafana Dashboards](configs/monitoring/dashboards/)**
-
-### 🔒 **Security Notes**
-- **All secrets are now handled via `.env` files** - No hardcoded secrets in the codebase
-- **Environment variables** are used for all sensitive configuration
-- **Copy `.env.example` to `.env`** and customize for your environment
-- **Never commit `.env` files** to version control
-- **Test files contain intentional security patterns** for validation testing only
-
----
-
-## 🧪 **Testing**
-
-### 🔬 **Comprehensive Testing Suite**
-```bash
-# Run all tests
-python -m pytest tests/
-
-# Security audit
-python scripts/security_audit.py
-
-# Performance testing
-python scripts/comprehensive_audit.py
-
-# Morning health check
-./scripts/morning_check.sh
-```
-
-### 📊 **Test Coverage**
-- **Unit Tests**: Core functionality
-- **Integration Tests**: API endpoints
-- **Security Tests**: Vulnerability scanning
-- **Performance Tests**: Load testing
-- **Health Checks**: System monitoring
-
----
-
-## 🏗️ **Architecture**
-
-### 🔄 **System Architecture**
+### System Components
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                 SmartCloudOps AI v3.0.0                │
+│                 SmartCloudOps AI v3.3.0                │
 ├─────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌──────────────┐  ┌─────────────────┐│
 │  │ Flask App   │  │ Prometheus   │  │ Grafana         ││
-│  │ Port: 5000  │  │ Port: 9090   │  │ Port: 3000      ││
+│  │ Port: 5000  │  │ Port: 9090   │  │ Port: 13000     ││
 │  │ AI/ML API   │  │ Metrics      │  │ Dashboards      ││
 │  └─────────────┘  └──────────────┘  └─────────────────┘│
 │                                                         │
-│  ┌─────────────┐  ┌──────────────┐                     │
-│  │ Node Export │  │ Redis Cache  │                     │
-│  │ Port: 9100  │  │ Port: 6379   │                     │
-│  │ System Metrics│ │ Performance  │                     │
-│  └─────────────┘  └──────────────┘                     │
+│  ┌─────────────┐  ┌──────────────┐  ┌─────────────────┐│
+│  │ Node Export │  │ Redis Cache  │  │ PostgreSQL      ││
+│  │ Port: 9100  │  │ Port: 6379   │  │ Port: 5434      ││
+│  │ System Metrics│ │ Performance  │  │ Data Storage    ││
+│  └─────────────┘  └──────────────┘  └─────────────────┘│
 └─────────────────────────────────────────────────────────┘
 ```
 
-### 📊 **Data Flow**
-1. **Metrics Collection**: Node Exporter → Prometheus
-2. **Application Metrics**: Flask App → Prometheus  
-3. **Visualization**: Prometheus → Grafana
-4. **Caching**: Redis → Flask App
-5. **ML Processing**: Flask App → AI Models → Predictions
+### Technology Stack
+- **Backend**: Flask 3.1.1, Python 3.8+
+- **Database**: PostgreSQL 17, Redis 7
+- **Monitoring**: Prometheus, Grafana, Node Exporter
+- **ML/AI**: Scikit-learn, OpenAI, Google Generative AI
+- **Security**: JWT, bcrypt, role-based access control
+- **Deployment**: Docker, Kubernetes, Terraform
 
 ---
 
-## 🤝 **Contributing**
+## 🔧 API Reference
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+### Core Endpoints
 
-### 🎯 **Ways to Contribute**
-- **🐛 Bug Reports**: Submit issues with detailed reproduction steps
-- **✨ Feature Requests**: Propose new capabilities
-- **📝 Documentation**: Improve guides and tutorials
-- **🔧 Code Contributions**: Submit pull requests
-- **🧪 Testing**: Help with test coverage
-- **🎨 UI/UX**: Improve user experience
-
-### 📋 **Development Setup**
+#### Health & Status
 ```bash
-# Fork and clone the repository
-git clone https://github.com/YourUsername/smartcloudops-ai.git
-cd smartcloudops-ai
+GET /health                    # Application health check
+GET /status                    # Detailed system status
+GET /metrics                   # Prometheus metrics
+```
 
-# Create development branch
-git checkout -b feature/your-feature-name
+#### Authentication
+```bash
+POST /auth/login              # User authentication
+POST /auth/register           # User registration
+GET  /auth/verify             # Token verification
+```
 
-# Set up development environment
-python3 -m venv dev_env
-source dev_env/bin/activate
-pip install -r requirements-dev.txt
+#### AI & ML Services
+```bash
+POST /anomaly                 # ML anomaly detection
+GET  /anomaly                 # Get anomaly history
+POST /query                   # ChatOps AI queries
+GET  /query                   # Query history
+```
 
-# Run tests
-python -m pytest tests/
+#### Monitoring & Remediation
+```bash
+GET  /remediation/actions     # List remediation actions
+POST /remediation/trigger     # Trigger remediation
+GET  /monitoring/metrics      # System metrics
+```
+
+### Example Usage
+
+```bash
+# Health check
+curl http://localhost:5000/health
+
+# Authenticate
+curl -X POST http://localhost:5000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "admin123"}'
+
+# AI Query
+curl -X POST http://localhost:5000/query \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{"query": "What is the current system status?"}'
 ```
 
 ---
 
-## 📈 **Roadmap**
+## 📁 Project Structure
 
-### 🎯 **Phase 8: Advanced Features** (Q4 2025)
-- **🤖 Advanced AI/ML**: Deep learning models
-- **🏢 Enterprise Integration**: SSO, LDAP
-- **🔍 Advanced Monitoring**: Distributed tracing
-- **📊 Custom Analytics**: Business metrics
-
-### 🌐 **Phase 9: Global Scale** (Q1 2026)
-- **☁️ Cloud-Native**: Service mesh integration
-- **👨‍💻 Developer Tools**: VS Code extension
-- **🛒 Marketplace**: Plugin ecosystem
-- **🌍 Multi-Region**: Global deployment
-
----
-
-## 🏆 **Awards & Recognition**
-
-- **🥇 Open Source Excellence**: Phase 7 Complete Implementation
-- **🛡️ Security Excellence**: A-Grade Security Audit (100/100)
-- **⚡ Performance Award**: Sub-20ms ML Response Times
-- **📊 Monitoring Excellence**: Complete Observability Stack
-
----
-
-## 📞 **Support**
-
-### 🆘 **Getting Help**
-- **📖 Documentation**: Check our comprehensive guides
-- **💬 Discussions**: Join GitHub Discussions
-- **🐛 Issues**: Report bugs or request features
-- **📧 Contact**: enterprise@smartcloudops.ai
-
-### 🔗 **Links**
-- **🌐 Website**: [smartcloudops.ai](https://smartcloudops.ai) *(Coming Soon)*
-- **📊 Demo**: [demo.smartcloudops.ai](https://demo.smartcloudops.ai) *(Coming Soon)*
-- **📚 Docs**: [docs.smartcloudops.ai](https://docs.smartcloudops.ai) *(Coming Soon)*
-- **💬 Community**: [Discord Server](https://discord.gg/smartcloudops) *(Coming Soon)*
+```
+smartcloudops-ai/
+├── app/                      # Main Flask application
+│   ├── api/                  # REST API endpoints
+│   ├── auth/                 # Authentication modules
+│   ├── chatops/              # ChatOps integration
+│   ├── mlops/                # ML operations
+│   ├── monitoring/           # Monitoring services
+│   ├── remediation/          # Auto-remediation engine
+│   ├── security/             # Security modules
+│   └── main.py              # Application entry point
+├── configs/                  # Configuration files
+├── docs/                     # Documentation
+├── k8s/                      # Kubernetes manifests
+├── ml_models/                # ML model definitions
+├── scripts/                  # Utility scripts
+├── terraform/                # Infrastructure as Code
+├── tests/                    # Test suite
+├── docker-compose.yml        # Docker orchestration
+├── Dockerfile               # Container definition
+├── requirements.txt          # Python dependencies
+└── README.md                # This file
+```
 
 ---
 
-## 📄 **License**
+## 📖 Documentation
+
+- **[Installation Guide](INSTALLATION.md)** - Detailed setup instructions
+- **[Usage Guide](USAGE.md)** - Comprehensive usage examples
+- **[API Reference](docs/API_REFERENCE.md)** - Complete API documentation
+- **[Architecture](docs/ARCHITECTURE.md)** - System design and components
+- **[Contributing](CONTRIBUTING.md)** - Development guidelines
+- **[Changelog](CHANGELOG.md)** - Version history and updates
+
+---
+
+## 🛠️ Development
+
+### Local Development Setup
+
+```bash
+# Clone repository
+git clone https://github.com/TechTyphoon/smartcloudops-ai.git
+cd smartcloudops-ai
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up environment
+cp env.example .env
+# Edit .env with your configuration
+
+# Run development server
+python app/main.py
+```
+
+### Testing
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=app
+
+# Run specific test categories
+pytest tests/unit/
+pytest tests/integration/
+```
+
+### Code Quality
+
+```bash
+# Format code
+black app/ tests/
+
+# Lint code
+flake8 app/ tests/
+
+# Type checking
+mypy app/
+```
+
+---
+
+## 🚀 Deployment
+
+### Docker Deployment
+```bash
+# Production deployment
+docker-compose -f docker-compose.yml up -d
+
+# With custom environment
+docker-compose --env-file .env.production up -d
+```
+
+### Kubernetes Deployment
+```bash
+# Deploy to Kubernetes
+kubectl apply -f k8s/
+
+# Check deployment status
+kubectl get pods -n smartcloudops
+```
+
+### Terraform Infrastructure
+```bash
+# Initialize Terraform
+cd terraform
+terraform init
+
+# Deploy infrastructure
+terraform plan
+terraform apply
+```
+
+---
+
+## 🔒 Security
+
+- **Authentication**: JWT-based with refresh tokens
+- **Authorization**: Role-based access control (RBAC)
+- **Input Validation**: Comprehensive request sanitization
+- **Rate Limiting**: API protection against abuse
+- **Audit Logging**: Complete action tracking
+- **Security Scanning**: Automated vulnerability detection
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Development Workflow
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Code Standards
+- Follow PEP 8 style guidelines
+- Write comprehensive tests
+- Update documentation
+- Ensure security best practices
+
+---
+
+## 📊 Monitoring & Observability
+
+### Metrics Available
+- **System Metrics**: CPU, Memory, Disk, Network
+- **Application Metrics**: Request rates, response times, error rates
+- **Business Metrics**: User activity, feature usage
+- **Custom Metrics**: ML model performance, remediation actions
+
+### Dashboards
+- **System Overview**: Real-time system health
+- **Application Performance**: API performance and errors
+- **ML Operations**: Model performance and predictions
+- **Security**: Authentication and authorization events
+
+---
+
+## 🆘 Support
+
+### Getting Help
+- **Documentation**: Check our comprehensive docs
+- **Issues**: [GitHub Issues](https://github.com/TechTyphoon/smartcloudops-ai/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/TechTyphoon/smartcloudops-ai/discussions)
+- **Enterprise Support**: enterprise@smartcloudops.ai
+
+### Troubleshooting
+- Check the [Troubleshooting Guide](docs/troubleshooting.md)
+- Review application logs: `docker-compose logs smartcloudops-main`
+- Verify service health: `curl http://localhost:5000/health`
+
+---
+
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🙏 **Acknowledgments**
+## 🙏 Acknowledgments
 
-- **Contributors**: All amazing developers who made this possible
-- **Community**: Users who provided feedback and testing
-- **Open Source**: Built on shoulders of giants (Flask, Prometheus, Grafana, Docker)
-- **Cloud Providers**: AWS, Azure, GCP for infrastructure support
+- **Flask Community** - Web framework
+- **Prometheus** - Monitoring and alerting
+- **Grafana** - Visualization and dashboards
+- **Scikit-learn** - Machine learning library
+- **OpenAI** - AI capabilities
 
 ---
 
 <div align="center">
 
-**⭐ If SmartCloudOps AI helped you, please give it a star! ⭐**
+**Made with ❤️ by the SmartCloudOps AI Team**
 
-[![Star History Chart](https://api.star-history.com/svg?repos=TechTyphoon/smartcloudops-ai&type=Date)](https://star-history.com/#TechTyphoon/smartcloudops-ai&Date)
-
-**Made with ❤️ by the SmartCloudOps Team**
-
----
-
-*SmartCloudOps AI v3.0.0 - Enterprise-Ready • Production-Tested • Community-Driven*
+[![GitHub stars](https://img.shields.io/github/stars/TechTyphoon/smartcloudops-ai?style=social)](https://github.com/TechTyphoon/smartcloudops-ai/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/TechTyphoon/smartcloudops-ai?style=social)](https://github.com/TechTyphoon/smartcloudops-ai/network)
+[![GitHub issues](https://img.shields.io/github/issues/TechTyphoon/smartcloudops-ai)](https://github.com/TechTyphoon/smartcloudops-ai/issues)
 
 </div>

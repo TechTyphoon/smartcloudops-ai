@@ -1,8 +1,0 @@
-{
-  "success_count": 32,
-  "warnings": [
-    "\u26a0\ufe0f  WARNING: .env file exists (should not be committed)"
-  ],
-  "errors": [],
-  "overall_success": true
-}

@@ -66,6 +66,22 @@ test: ## Run all tests with coverage
 	@echo "🧪 Running all tests..."
 	$(PYTEST) --maxfail=3 --tb=short
 
+test-backend: ## Run backend tests with coverage
+	@echo "🧪 Running backend tests..."
+	$(PYTEST) tests/backend/ --cov=app --cov-report=xml --cov-report=html --maxfail=1
+
+test-frontend: ## Run frontend lint and type checks
+	@echo "🎨 Running frontend tests..."
+	cd smartcloudops-ai && npm run lint && npm run typecheck
+
+test-e2e: ## Run E2E tests with Playwright
+	@echo "🌐 Running E2E tests..."
+	cd smartcloudops-ai && npx playwright test --reporter=line
+
+test-all: ## Run full test suite (backend + frontend + e2e)
+	@echo "🚀 Running full test suite..."
+	./scripts/test-local.sh
+
 test-fast: ## Run tests in parallel (fast)
 	@echo "⚡ Running tests in parallel..."
 	$(PYTEST) -n auto --maxfail=1

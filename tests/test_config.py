@@ -63,6 +63,11 @@ class TestConfig:
             assert env_config.OPENAI_API_KEY == "test-key"
         finally:
             # Clean up environment variables
-            for key in ["AI_PROVIDER", "OPENAI_API_KEY", "SECRET_KEY", "JWT_SECRET_KEY"]:
+            for key in [
+                "AI_PROVIDER",
+                "OPENAI_API_KEY",
+                "SECRET_KEY",
+                "JWT_SECRET_KEY",
+            ]:
                 if key in os.environ:
                     del os.environ[key]

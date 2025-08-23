@@ -1,127 +1,255 @@
-
-*~
-._*
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
 *$py.class
-.aws/
-# AWS
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
 build/
-*.ckpt
-*.cover
-.coverage
-.coverage.*
-# Coverage reports
-coverage.xml
-credentials/
-*.crt
-.cursor/
-data/
 develop-eggs/
 dist/
-# Docker
-.dockerignore
-docs/_build/
-# Documentation builds
 downloads/
-.DS_Store
-.DS_Store?
-*.egg
-*.egg-info/
-.eggs/
 eggs/
-ehthumbs.db
-.env
-env/
-ENV/
-env.bak/
-.env.development.local
-# Environment Variables
-.env.local
-.env.production.local
-.env.test.local
-.formatvenv/
-generate_*.py
-*.h5
-htmlcov/
-.hypothesis/
-# IDE
-.idea/
-# IDE and build artifacts
-.installed.cfg
-.ipynb_checkpoints/
-*.joblib
-# Jupyter Notebooks
-*.key
+.eggs/
 lib/
 lib64/
-*.log
-logs/
-# Logs
-# Logs and data
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 MANIFEST
-# ML Models
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Cursor
+.cursor/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.tmp
+*.temp
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# AWS
+.aws/
+credentials/
+*.pem
+*.crt
+*.key
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan*
+.terraform.lock.hcl
+terraform.tfvars
+
+# Docker
+.dockerignore
+
+# Logs
+logs/
+*.log
+
+# Data and ML Models
+data/
 ml_models/data/
 ml_models/models/
 ml_models/trained/
 models/
-npm-debug.log*
-# OS
-parts/
-*.pem
 *.pkl
-__pycache__/
-*.py[cod]
-.pytest_cache/
-# Python
-.Python
-sdist/
-secrets/
-# Secrets and credentials
-site/
-smartcloudops_env/
-*.so
-.Spotlight-V100
-*.swo
-*.swp
-*.temp
+*.joblib
+*.h5
+*.ckpt
+
+# Analytics
+analytics/
+*.db
+
+# Security reports (CI artifacts)
+bandit-results.json
+security_report*.json
+workflow_validation_report.json
+
 # Temporary files
-.terraform/
-# Terraform
-.terraform.lock.hcl
-terraform/.terraform/
-terraform/terraform.tfstate*
-terraform.tfvars
-# Test data generation scripts (one-time use)
-test_*.py# CI Test 1755323616
-*.tfplan
-tfplan*
-*.tfstate
-*.tfstate.*
-Thumbs.db
+*.bak
+*.backup
 *.tmp
-.Trashes
-var/
-.venv/
-venv/
-venv.bak/
-# Virtual Environment
-# Virtual environments
-.vscode/
-wheels/
-# Workflow Test 1755324085
+*.temp
+
+# Node.js (if any frontend components remain)
+node_modules/
+npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.npm
+.eslintcache
+.next/
+out/
 
-# Enhanced security and cleanup rules
-.env.*
-backups/
-*.bak-*
-*.backup
+# TypeScript
+*.tsbuildinfo
 
-# Generated security reports (should be CI artifacts)
-bandit_report*.json
-security_report*.json
-
-# Legacy/example files
-examples/temp/
-examples/scratch/
+# Package managers
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 

@@ -142,6 +142,9 @@ class Config:
     CACHE_TTL_SECONDS: int = 300
     CACHE_MAX_SIZE: int = 1000
 
+    # Testing configuration
+    TEST_MODE: bool = False
+
     @classmethod
     def _validate_security_config(
         cls, config_dict: Dict[str, Any], errors: List[str]
@@ -210,8 +213,8 @@ class Config:
     ) -> None:
         """Validate AI provider configuration."""
         ai_provider = config_dict.get("ai_provider", "auto")
-        if ai_provider not in ["auto", "openai", "gemini"]:
-            errors.append("AI_PROVIDER must be 'auto', 'openai', or 'gemini'")
+        if ai_provider not in ["auto", "openai", "gemini", "local"]:
+            errors.append("AI_PROVIDER must be 'auto', 'openai', 'gemini', or 'local'")
 
         # Validate OpenAI configuration
         if ai_provider == "openai":
@@ -440,6 +443,9 @@ class Config:
         config_dict["cache_ttl_seconds"] = int(os.getenv("CACHE_TTL_SECONDS", "300"))
         config_dict["cache_max_size"] = int(os.getenv("CACHE_MAX_SIZE", "1000"))
 
+        # Testing configuration
+        config_dict["test_mode"] = os.getenv("TEST_MODE", "false").lower() == "true"
+
         # Validate configuration
         errors = cls.validate_config(config_dict)
         if errors:
@@ -531,6 +537,7 @@ class TestingConfig(Config):
 
     DEBUG = True
     TESTING = True
+    TEST_MODE = True
     LOG_LEVEL = "DEBUG"
     LOG_JSON = False
 
@@ -540,6 +547,12 @@ class TestingConfig(Config):
     DATABASE_MAX_OVERFLOW = 0
     RATE_LIMIT_ENABLED = False
     CACHE_ENABLED = False
+
+    # Disable external services in test mode
+    AI_PROVIDER = "local"
+    DISABLE_AWS_SERVICES = True
+    DISABLE_ELASTICSEARCH = True
+    USE_LOCAL_STORAGE = True
 
 
 class ProductionConfig(Config):

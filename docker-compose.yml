@@ -36,6 +36,8 @@ services:
       - RATE_LIMIT_ENABLED=true
       - CACHE_ENABLED=true
       - AI_PROVIDER=local
+      - DISABLE_ELASTICSEARCH=true
+      - DISABLE_AWS_SERVICES=true
     deploy:
       resources:
         limits:
