@@ -1,0 +1,246 @@
+version: '3.8'
+
+services:
+  # Frontend Demo Application
+  frontend-demo:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: smartcloudops-frontend-demo
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=demo
+      - NEXT_PUBLIC_API_URL=http://localhost:5000
+      - NEXT_PUBLIC_WS_URL=ws://localhost:5000
+      - NEXT_PUBLIC_DEMO_MODE=true
+      - NEXT_PUBLIC_DEMO_USER=demo@smartcloudops.ai
+    volumes:
+      - ./demo/config/frontend.env:/app/.env.local
+    depends_on:
+      - backend-demo
+    restart: unless-stopped
+    labels:
+      - "demo.service=frontend"
+      - "demo.description=Next.js frontend with demo data"
+
+  # Backend Demo API
+  backend-demo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: smartcloudops-backend-demo
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app/main.py
+      - FLASK_ENV=demo
+      - FLASK_DEBUG=1
+      - SECRET_KEY=demo-secret-key-not-for-production
+      - DATABASE_URL=postgresql://demo:demo@postgres-demo:5432/smartcloudops_demo
+      - REDIS_URL=redis://redis-demo:6379/0
+      - LOG_LEVEL=INFO
+      - DEMO_MODE=true
+      - PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus
+      # AI/ML Demo Keys (replace with actual keys)
+      - OPENAI_API_KEY=demo-openai-key
+      - HUGGINGFACE_API_KEY=demo-hf-key
+      # Demo notifications
+      - SLACK_BOT_TOKEN=demo-slack-token
+      - EMAIL_SMTP_HOST=maildev
+      - EMAIL_SMTP_PORT=1025
+      - EMAIL_USERNAME=demo
+      - EMAIL_PASSWORD=demo
+    volumes:
+      - ./demo/data:/app/demo_data
+      - ./demo/logs:/app/logs
+      - ./demo/config/backend.env:/app/.env
+    depends_on:
+      - postgres-demo
+      - redis-demo
+      - maildev-demo
+    restart: unless-stopped
+    labels:
+      - "demo.service=backend"
+      - "demo.description=Flask API with demo data and scenarios"
+
+  # PostgreSQL Demo Database
+  postgres-demo:
+    image: postgres:15
+    container_name: smartcloudops-postgres-demo
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=smartcloudops_demo
+      - POSTGRES_USER=demo
+      - POSTGRES_PASSWORD=demo
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=en_US.UTF-8 --lc-ctype=en_US.UTF-8
+    volumes:
+      - postgres_demo_data:/var/lib/postgresql/data
+      - ./demo/sql/init-demo-db.sql:/docker-entrypoint-initdb.d/init-demo-db.sql
+      - ./demo/sql/demo-data.sql:/docker-entrypoint-initdb.d/demo-data.sql
+    restart: unless-stopped
+    labels:
+      - "demo.service=database"
+      - "demo.description=PostgreSQL with demo data preloaded"
+
+  # Redis Demo Cache
+  redis-demo:
+    image: redis:7-alpine
+    container_name: smartcloudops-redis-demo
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --appendfsync everysec
+    volumes:
+      - redis_demo_data:/data
+      - ./demo/config/redis.conf:/usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+    labels:
+      - "demo.service=cache"
+      - "demo.description=Redis cache for demo sessions"
+
+  # Prometheus Demo Monitoring
+  prometheus-demo:
+    image: prom/prometheus:latest
+    container_name: smartcloudops-prometheus-demo
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=7d'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+    volumes:
+      - ./demo/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./demo/config/alert-rules.yml:/etc/prometheus/alert-rules.yml
+      - prometheus_demo_data:/prometheus
+    depends_on:
+      - backend-demo
+    restart: unless-stopped
+    labels:
+      - "demo.service=monitoring"
+      - "demo.description=Prometheus monitoring with demo metrics"
+
+  # Grafana Demo Dashboards
+  grafana-demo:
+    image: grafana/grafana:latest
+    container_name: smartcloudops-grafana-demo
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=demo
+      - GF_SECURITY_ADMIN_PASSWORD=demo
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_USERS_ALLOW_ORG_CREATE=false
+    volumes:
+      - grafana_demo_data:/var/lib/grafana
+      - ./demo/config/grafana/provisioning:/etc/grafana/provisioning
+      - ./demo/config/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus-demo
+    restart: unless-stopped
+    labels:
+      - "demo.service=visualization"
+      - "demo.description=Grafana with demo dashboards"
+
+  # MailDev for Demo Email Testing
+  maildev-demo:
+    image: maildev/maildev
+    container_name: smartcloudops-maildev-demo
+    ports:
+      - "1080:1080"  # Web interface
+      - "1025:1025"  # SMTP server
+    environment:
+      - MAILDEV_WEB_PORT=1080
+      - MAILDEV_SMTP_PORT=1025
+    restart: unless-stopped
+    labels:
+      - "demo.service=email"
+      - "demo.description=Email testing service for demo notifications"
+
+  # Demo Data Generator
+  data-generator-demo:
+    build:
+      context: .
+      dockerfile: demo/Dockerfile.generator
+    container_name: smartcloudops-data-generator-demo
+    environment:
+      - API_URL=http://backend-demo:5000
+      - GENERATION_INTERVAL=30
+      - DEMO_MODE=true
+    volumes:
+      - ./demo/data/generated:/app/generated
+      - ./demo/scripts/generators:/app/generators
+    depends_on:
+      - backend-demo
+    restart: unless-stopped
+    labels:
+      - "demo.service=generator"
+      - "demo.description=Generates realistic demo data and scenarios"
+
+  # Load Testing Service
+  load-tester-demo:
+    image: loadimpact/k6:latest
+    container_name: smartcloudops-load-tester-demo
+    volumes:
+      - ./demo/scripts/load-tests:/scripts
+    command: run --vus 10 --duration 30s /scripts/demo-load-test.js
+    depends_on:
+      - backend-demo
+    restart: "no"
+    profiles:
+      - load-testing
+    labels:
+      - "demo.service=testing"
+      - "demo.description=K6 load testing for demo performance"
+
+  # Demo Health Monitor
+  health-monitor-demo:
+    build:
+      context: .
+      dockerfile: demo/Dockerfile.monitor
+    container_name: smartcloudops-health-monitor-demo
+    environment:
+      - MONITOR_INTERVAL=10
+      - BACKEND_URL=http://backend-demo:5000
+      - FRONTEND_URL=http://frontend-demo:3000
+      - PROMETHEUS_URL=http://prometheus-demo:9090
+    volumes:
+      - ./demo/logs/health:/app/logs
+    depends_on:
+      - backend-demo
+      - frontend-demo
+      - prometheus-demo
+    restart: unless-stopped
+    labels:
+      - "demo.service=monitoring"
+      - "demo.description=Health monitoring for demo environment"
+
+volumes:
+  postgres_demo_data:
+    driver: local
+    labels:
+      - "demo.volume=database"
+  
+  redis_demo_data:
+    driver: local
+    labels:
+      - "demo.volume=cache"
+  
+  prometheus_demo_data:
+    driver: local
+    labels:
+      - "demo.volume=metrics"
+  
+  grafana_demo_data:
+    driver: local
+    labels:
+      - "demo.volume=dashboards"
+
+networks:
+  default:
+    name: smartcloudops-demo-network
+    labels:
+      - "demo.network=main"
