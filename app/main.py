@@ -157,6 +157,39 @@ def create_app() -> Flask:
     config = get_config()
     app.config.update(config.to_dict())
 
+    # Setup observability first (import here to avoid circular imports)
+    try:
+        from app.observability.logging_config import setup_logging, get_logger
+        from app.observability.middleware import setup_observability_middleware
+        from app.observability.metrics import metrics_collector
+        
+        # Setup structured logging
+        setup_logging(
+            log_level=getattr(config, 'LOG_LEVEL', 'INFO'),
+            log_format=getattr(config, 'LOG_FORMAT', 'json')
+        )
+        
+        # Get logger for this module
+        logger = get_logger(__name__)
+        logger.info("Starting SmartCloudOps AI application", extra={'version': '3.3.0'})
+        
+        # Setup observability middleware
+        setup_observability_middleware(
+            app,
+            enable_request_logging=True,
+            enable_metrics=True,
+            enable_tracing=getattr(config, 'ENABLE_TRACING', True)
+        )
+        
+        # Initialize metrics with app info
+        metrics_collector.update_health_status('healthy')
+        print("✅ Observability features initialized successfully")
+        
+    except Exception as e:
+        print(f"⚠️ Observability setup failed: {e}")
+        # Continue without observability
+        logger = logging.getLogger(__name__)
+
     # Enable CORS
     cors_origins = getattr(config, "CORS_ORIGINS", ["http://localhost:3000"])
     CORS(app, origins=cors_origins)
