@@ -52,7 +52,7 @@ class ModelVersion:
 class ModelRegistry:
     """Model registry and lifecycle management"""
 
-    def __init__(self, registry_dir: str = "mlops/modelsf"):
+    def __init__(self, registry_dir: str = "mlops/models"):
         self.registry_dir = registry_dir
         self.ensure_registry_dir()
         self.current_models = {}
@@ -73,14 +73,14 @@ class ModelRegistry:
             try:
                 with open(metadata_file, "r") as f:
                     registry_data = json.load(f)
-                    self.model_versions = registry_data.get("model_versionsf", {})
-                    self.current_models = registry_data.get("current_modelsf", {})
+                    self.model_versions = registry_data.get("model_versions", {})
+                    self.current_models = registry_data.get("current_models", {})
                 logger.info("Loaded existing model registry")
             except Exception as e:
-                logger.error(f"Error loading registry: {e}")
+                logger.error("Error loading registry: {e}")
 
     def save_registry(self):
-        """Save model registry to disk""f"
+        """Save model registry to disk"""
         registry_data = {
             "model_versions": self.model_versions,
             "current_models": self.current_models,
@@ -112,7 +112,7 @@ class ModelRegistry:
 
         # Save model and scaler
         model_path = os.path.join(model_dir, "model.pkl")
-        scaler_path = os.path.join(model_dir, "scaler.pklf")
+        scaler_path = os.path.join(model_dir, "scaler.pkl")
 
         joblib.dump(model, model_path)
         joblib.dump(scaler, scaler_path)
@@ -172,19 +172,19 @@ class ModelRegistry:
         # Increment the latest version
         latest = max(version_numbers)
         latest[2] += 1  # Increment patch version
-        return f"v{latest[0]}.{latest[1]}.{latest[2]}"
+        return "v{latest[0]}.{latest[1]}.{latest[2]}"
 
     def get_model(self, model_type: str, version: str = None) -> Tuple[Any, Any]:
         """Get model and scaler by type and version"""
         if model_type not in self.model_versions:
-            raise ValueError(f"Model type {model_type} not found in registry")
+            raise ValueError("Model type {model_type} not found in registry")
 
         if version is None:
             # Get the latest production version
             version = self.get_latest_production_version(model_type)
 
         if version not in self.model_versions[model_type]:
-            raise ValueError(f"Version {version} not found for model type {model_type}")
+            raise ValueError("Version {version} not found for model type {model_type}")
 
         model_info = self.model_versions[model_type][version]
         model_path = model_info["model_path"]
@@ -198,7 +198,7 @@ class ModelRegistry:
     def get_latest_production_version(self, model_type: str) -> str:
         """Get the latest production version of a model"""
         if model_type not in self.model_versions:
-            raise ValueError(f"Model type {model_type} not found in registry")
+            raise ValueError("Model type {model_type} not found in registry")
 
         production_versions = []
         for version, info in self.model_versions[model_type].items():
@@ -206,7 +206,7 @@ class ModelRegistry:
                 production_versions.append((version, info["trained_at"]))
 
         if not production_versions:
-            raise ValueError(f"No production version found for model type {model_type}")
+            raise ValueError("No production version found for model type {model_type}")
 
         # Return the most recently trained production version
         latest = max(production_versions, key=lambda x: x[1])
@@ -218,7 +218,7 @@ class ModelRegistry:
             model_type not in self.model_versions
             or version not in self.model_versions[model_type]
         ):
-            raise ValueError(f"Model {model_type} version {version} not found")
+            raise ValueError("Model {model_type} version {version} not found")
 
         model_info = self.model_versions[model_type][version]
         model_info["stage"] = stage.value
@@ -229,7 +229,7 @@ class ModelRegistry:
             self.current_models[model_type] = version
 
         self.save_registry()
-        logger.info(f"Promoted model {model_type} version {version} to {stage.value}")
+        logger.info("Promoted model {model_type} version {version} to {stage.value}")
 
     def deprecate_model(self, model_type: str, version: str):
         """Deprecate a model version"""
@@ -237,7 +237,7 @@ class ModelRegistry:
             model_type not in self.model_versions
             or version not in self.model_versions[model_type]
         ):
-            raise ValueError(f"Model {model_type} version {version} not found")
+            raise ValueError("Model {model_type} version {version} not found")
 
         model_info = self.model_versions[model_type][version]
         model_info["status"] = ModelStatus.DEPRECATED.value
@@ -247,10 +247,10 @@ class ModelRegistry:
             del self.current_models[model_type]
 
         self.save_registry()
-        logger.info(f"Deprecated model {model_type} version {version}")
+        logger.info("Deprecated model {model_type} version {version}")
 
     def list_models(self, model_type: str = None) -> Dict[str, Any]:
-        """List all models or models of a specific type""f"
+        """List all models or models of a specific type"""
         if model_type:
             if model_type not in self.model_versions:
                 return {}
@@ -264,7 +264,7 @@ class ModelRegistry:
             model_type not in self.model_versions
             or version not in self.model_versions[model_type]
         ):
-            raise ValueError(f"Model {model_type} version {version} not found")
+            raise ValueError("Model {model_type} version {version} not found")
 
         return self.model_versions[model_type][version]["metrics"]
 
@@ -276,15 +276,15 @@ class ModelRegistry:
             model_type not in self.model_versions
             or version not in self.model_versions[model_type]
         ):
-            raise ValueError(f"Model {model_type} version {version} not found")
+            raise ValueError("Model {model_type} version {version} not found")
 
         self.model_versions[model_type][version]["metrics"].update(new_metrics)
         self.save_registry()
-        logger.info(f"Updated metrics for model {model_type} version {version}")
+        logger.info("Updated metrics for model {model_type} version {version}")
 
 
 class ABTesting:
-    """A/B testing for anomaly detection models""f"
+    """A/B testing for anomaly detection models"""
 
     def __init__(self, registry: ModelRegistry):
         self.registry = registry
@@ -300,7 +300,7 @@ class ABTesting:
         duration_days: int = 7,
     ) -> str:
         """Start an A/B testing experiment"""
-        experiment_id = f"exp_{datetime.now().strftime('%Y%m%d_%H%M%Sf')}"
+        experiment_id = "exp_{datetime.now().strftime('%Y%m%d_%H%M%Sf')}"
 
         experiment = {
             "experiment_id": experiment_id,
@@ -311,9 +311,9 @@ class ABTesting:
             "start_time": datetime.now().isoformat(),
             "end_time": (datetime.now() + timedelta(days=duration_days)).isoformat(),
             "status": "active",
-            "resultsf": {
+            "results": {
                 "model_a": {"predictions": 0, "anomalies_detected": 0, "accuracy": 0.0},
-                "model_bf": {"predictions": 0, "anomalies_detected": 0, "accuracy": 0.0},
+                "model_b": {"predictions": 0, "anomalies_detected": 0, "accuracy": 0.0},
             },
         }
 
@@ -325,7 +325,7 @@ class ABTesting:
     def get_model_for_prediction(self, experiment_id: str) -> str:
         """Get model to use for prediction based on traffic split"""
         if experiment_id not in self.active_experiments:
-            raise ValueError(f"Experiment {experiment_id} not found")
+            raise ValueError("Experiment {experiment_id} not found")
 
         experiment = self.active_experiments[experiment_id]
 
@@ -358,7 +358,7 @@ class ABTesting:
     def end_experiment(self, experiment_id: str) -> Dict[str, Any]:
         """End an A/B testing experiment and return results"""
         if experiment_id not in self.active_experiments:
-            raise ValueError(f"Experiment {experiment_id} not found")
+            raise ValueError("Experiment {experiment_id} not found")
 
         experiment = self.active_experiments[experiment_id]
         experiment["status"] = "completed"
@@ -382,7 +382,7 @@ class ABTesting:
         winner = (
             experiment["model_a"]
             if model_a_rate > model_b_rate
-            else experiment["model_bf"]
+            else experiment["model_b"]
         )
 
         results = {
@@ -398,7 +398,7 @@ class ABTesting:
 
 
 class DriftDetector:
-    """Detect data and model drift""f"
+    """Detect data and model drift"""
 
     def __init__(self, registry: ModelRegistry):
         self.registry = registry
@@ -411,7 +411,7 @@ class DriftDetector:
     def detect_data_drift(
         self, current_data: np.ndarray, reference_data: np.ndarray
     ) -> Dict[str, Any]:
-        """Detect data drift using statistical tests""f"
+        """Detect data drift using statistical tests"""
         drift_results = {}
 
         for i in range(current_data.shape[1]):
@@ -431,7 +431,7 @@ class DriftDetector:
             drift_score = (mean_drift + std_drift) / 2
             drift_detected = drift_score > self.drift_thresholds["data_drift"]
 
-            drift_results[f"feature_{i}"] = {
+            drift_results["feature_{i}"] = {
                 "drift_score": drift_score,
                 "drift_detected": drift_detected,
                 "current_mean": current_mean,
@@ -445,7 +445,7 @@ class DriftDetector:
     def detect_model_drift(
         self, model_type: str, version: str, current_metrics: Dict[str, float]
     ) -> Dict[str, Any]:
-        """Detect model performance drift""f"
+        """Detect model performance drift"""
         try:
             reference_metrics = self.registry.get_model_metrics(model_type, version)
 
@@ -460,7 +460,7 @@ class DriftDetector:
                             reference_value - current_value
                         ) / reference_value
                         drift_detected = (
-                            drift_score > self.drift_thresholds["model_driftf"]
+                            drift_score > self.drift_thresholds["model_drift"]
                         )
 
                         drift_results[metric_name] = {
@@ -473,7 +473,7 @@ class DriftDetector:
             return drift_results
 
         except Exception as e:
-            logger.error("Error detecting model drift: {e}f")
+            logger.error("Error detecting model drift: {e}")
             return {}
 
     def should_retrain(self, drift_results: Dict[str, Any]) -> bool:

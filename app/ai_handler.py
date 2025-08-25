@@ -54,7 +54,7 @@ class AIHandler:
 
         # Get random response from appropriate category
         responses = self.demo_responses.get(
-            response_type, self.demo_responses["system_statusf"]
+            response_type, self.demo_responses["system_status"]
         )
         response = random.choice(responses)
 
@@ -70,7 +70,7 @@ class AIHandler:
         }
 
     def _generate_suggestions(self, response_type: str) -> list:
-        """Generate contextual suggestions based on response type""f"
+        """Generate contextual suggestions based on response type"""
         suggestion_sets = {
             "system_status": [
                 "View detailed metrics",

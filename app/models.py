@@ -133,7 +133,7 @@ class Feedback(Base):
 class SystemMetrics(Base):
     """System metrics model for storing historical metrics data."""
 
-    __tablename__ = "system_metricsf"
+    __tablename__ = "system_metrics"
 
     id = Column(Integer, primary_key=True)
     metric_name = Column(String(100), nullable=False)
@@ -173,7 +173,7 @@ class AuditLog(Base):
 
 # Model serialization helpers
 def model_to_dict(model_instance):
-    """Convert SQLAlchemy model instance to dictionary.""f"
+    """Convert SQLAlchemy model instance to dictionary."""
     if model_instance is None:
         return None
 

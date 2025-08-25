@@ -20,14 +20,14 @@ class CacheManager:
         """Initialize cache manager."""
         self.redis_client = redis_client
         self.default_ttl = default_ttl
-        self.cache_prefix = "smartcloudops:cache:f"
+        self.cache_prefix = "smartcloudops:cache:"
 
         # Cache statistics
         self.stats = {"hits": 0, "misses": 0, "sets": 0, "deletes": 0, "errors": 0}
 
     def _generate_key(self, key: str, namespace: str = "default") -> str:
         """Generate cache key with namespace."""
-        return f"{self.cache_prefix}{namespace}:{key}"
+        return "{self.cache_prefix}{namespace}:{key}"
 
     def _serialize_value(self, value: Any) -> bytes:
         """Serialize value for storage."""
@@ -39,7 +39,7 @@ class CacheManager:
                 # Use pickle for complex objects
                 return pickle.dumps(value)
         except Exception as e:
-            logger.error(f"Serialization error: {e}")
+            logger.error("Serialization error: {e}")
             return pickle.dumps(value)
 
     def _deserialize_value(self, data: bytes) -> Any:
@@ -53,7 +53,7 @@ class CacheManager:
                 # Fall back to pickle
                 return pickle.loads(data)
             except Exception as e:
-                logger.error(f"Deserialization error: {e}")
+                logger.error("Deserialization error: {e}")
                 return None
 
     def get(self, key: str, namespace: str = "default") -> Optional[Any]:
@@ -73,7 +73,7 @@ class CacheManager:
                 return None
 
         except Exception as e:
-            logger.error(f"Cache get error: {e}")
+            logger.error("Cache get error: {e}")
             self.stats["errors"] += 1
             return None
 
@@ -99,7 +99,7 @@ class CacheManager:
             return result
 
         except Exception as e:
-            logger.error(f"Cache set error: {e}")
+            logger.error("Cache set error: {e}")
             self.stats["errors"] += 1
             return False
 
@@ -116,7 +116,7 @@ class CacheManager:
             return bool(result)
 
         except Exception as e:
-            logger.error(f"Cache delete error: {e}")
+            logger.error("Cache delete error: {e}")
             self.stats["errors"] += 1
             return False
 
@@ -129,7 +129,7 @@ class CacheManager:
             cache_key = self._generate_key(key, namespace)
             return bool(self.redis_client.exists(cache_key))
         except Exception as e:
-            logger.error(f"Cache exists error: {e}")
+            logger.error("Cache exists error: {e}")
             return False
 
     def ttl(self, key: str, namespace: str = "default") -> int:
@@ -141,7 +141,7 @@ class CacheManager:
             cache_key = self._generate_key(key, namespace)
             return self.redis_client.ttl(cache_key)
         except Exception as e:
-            logger.error(f"Cache TTL error: {e}")
+            logger.error("Cache TTL error: {e}")
             return -1
 
     def clear_namespace(self, namespace: str = "default") -> bool:
@@ -150,17 +150,17 @@ class CacheManager:
             return False
 
         try:
-            pattern = f"{self.cache_prefix}{namespace}:*"
+            pattern = "{self.cache_prefix}{namespace}:*"
             keys = self.redis_client.keys(pattern)
 
             if keys:
                 deleted = self.redis_client.delete(*keys)
-                logger.info(f"Cleared {deleted} keys from namespace f'{namespace}'")
+                logger.info("Cleared {deleted} keys from namespace f'{namespace}'")
                 return True
             return True
 
         except Exception as e:
-            logger.error(f"Cache clear namespace error: {e}")
+            logger.error("Cache clear namespace error: {e}")
             return False
 
     def clear_all(self) -> bool:
@@ -169,21 +169,21 @@ class CacheManager:
             return False
 
         try:
-            pattern = f"{self.cache_prefix}*"
+            pattern = "{self.cache_prefix}*"
             keys = self.redis_client.keys(pattern)
 
             if keys:
                 deleted = self.redis_client.delete(*keys)
-                logger.info(f"Cleared {deleted} keys from cache")
+                logger.info("Cleared {deleted} keys from cache")
                 return True
             return True
 
         except Exception as e:
-            logger.error(f"Cache clear all error: {e}")
+            logger.error("Cache clear all error: {e}")
             return False
 
     def get_stats(self) -> Dict[str, any]:
-        """Get cache statistics.""f"
+        """Get cache statistics."""
         if not self.redis_client:
             return {"error": "Redis not available"}
 
@@ -194,7 +194,7 @@ class CacheManager:
             # Calculate hit rate
             total_requests = self.stats["hits"] + self.stats["misses"]
             hit_rate = (
-                (self.stats["hitsf"] / total_requests * 100) if total_requests > 0 else 0
+                (self.stats["hits"] / total_requests * 100) if total_requests > 0 else 0
             )
 
             return {
@@ -213,7 +213,7 @@ class CacheManager:
             }
 
         except Exception as e:
-            logger.error("Cache stats error: {e}f")
+            logger.error("Cache stats error: {e}")
             return {"error": str(e)}
 
     def get_keys(self, pattern: str = "*", namespace: str = "default") -> List[str]:
@@ -222,15 +222,15 @@ class CacheManager:
             return []
 
         try:
-            search_pattern = f"{self.cache_prefix}{namespace}:{pattern}"
+            search_pattern = "{self.cache_prefix}{namespace}:{pattern}"
             keys = self.redis_client.keys(search_pattern)
 
             # Remove prefix from keys
-            prefix = f"{self.cache_prefix}{namespace}:"
+            prefix = "{self.cache_prefix}{namespace}:"
             return [key.decode().replace(prefix, "") for key in keys]
 
         except Exception as e:
-            logger.error(f"Cache get keys error: {e}")
+            logger.error("Cache get keys error: {e}")
             return []
 
 
@@ -247,7 +247,7 @@ def init_cache_manager(redis_url: str = None, cache_type: str = "memory"):
     else:
         cache_manager = MemoryCacheManager()
 
-    logger.info(f"Initialized {cache_type} cache manager")
+    logger.info("Initialized {cache_type} cache manager")
 
 
 def get_cache_manager():
@@ -277,13 +277,13 @@ def cache(
                 # Default key generation using SHA-256 for security
                 key_parts = [func.__name__]
                 key_parts.extend([str(arg) for arg in args])
-                key_parts.extend([f"{k}:{v}" for k, v in sorted(kwargs.items())])
+                key_parts.extend(["{k}:{v}" for k, v in sorted(kwargs.items())])
                 cache_key = hashlib.sha256(":".join(key_parts).encode()).hexdigest()
 
             # Try to get from cache
             cached_result = cache_manager.get(cache_key, namespace)
             if cached_result is not None:
-                logger.debug(f"Cache hit for {func.__name__}")
+                logger.debug("Cache hit for {func.__name__}")
                 return cached_result
 
             # Execute function
@@ -296,7 +296,7 @@ def cache(
 
             if should_cache:
                 cache_manager.set(cache_key, result, ttl, namespace)
-                logger.debug(f"Cached result for {func.__name__}")
+                logger.debug("Cached result for {func.__name__}")
 
             return result
 
@@ -313,9 +313,9 @@ def cache_by_user(ttl: Optional[int] = None, namespace: str = "user"):
         if hasattr(request, "user") and request.user:
             user_id = request.user.get("user_id", "unknown")
 
-        key_parts = [f"user:{user_id}"]
+        key_parts = ["user:{user_id}"]
         key_parts.extend([str(arg) for arg in args])
-        key_parts.extend([f"{k}:{v}" for k, v in sorted(kwargs.items())])
+        key_parts.extend(["{k}:{v}" for k, v in sorted(kwargs.items())])
         return hashlib.sha256(":".join(key_parts).encode()).hexdigest()
 
     return cache(ttl, namespace, key_func)
@@ -327,9 +327,9 @@ def cache_by_ip(ttl: Optional[int] = None, namespace: str = "ip"):
     def key_func(*args, **kwargs):
         ip = request.remote_addr or "unknown"
 
-        key_parts = [f"ip:{ip}"]
+        key_parts = ["ip:{ip}"]
         key_parts.extend([str(arg) for arg in args])
-        key_parts.extend([f"{k}:{v}" for k, v in sorted(kwargs.items())])
+        key_parts.extend(["{k}:{v}" for k, v in sorted(kwargs.items())])
         return hashlib.sha256(":".join(key_parts).encode()).hexdigest()
 
     return cache(ttl, namespace, key_func)
@@ -348,7 +348,7 @@ def invalidate_cache(pattern: str = "*", namespace: str = "default"):
             for key in keys:
                 cache_manager.delete(key, namespace)
 
-            logger.debug(f"Invalidated {len(keys)} cache keys for {func.__name__}")
+            logger.debug("Invalidated {len(keys)} cache keys for {func.__name__}")
             return result
 
         return wrapper
@@ -433,14 +433,14 @@ class LRUCacheStrategy(CacheStrategy):
 
 
 class TieredCacheStrategy(CacheStrategy):
-    """Tiered cache strategy with multiple levels.""f"
+    """Tiered cache strategy with multiple levels."""
 
     def __init__(self, cache_manager: CacheManager):
         super().__init__(cache_manager)
         self.tiers = {
             "hot": {"ttl": 60, "namespace": "hot"},  # 1 minute
-            "warmf": {"ttl": 300, "namespace": "warm"},  # 5 minutes
-            "coldf": {"ttl": 3600, "namespace": "cold"},  # 1 hour
+            "warm": {"ttl": 300, "namespace": "warm"},  # 5 minutes
+            "cold": {"ttl": 3600, "namespace": "cold"},  # 1 hour
         }
 
     def get(self, key: str, namespace: str = "default") -> Optional[Any]:
@@ -492,7 +492,7 @@ class CacheMonitor:
 
         # Calculate additional metrics
         total_requests = stats["total_requests"]
-        hit_rate = stats["hit_ratef"]
+        hit_rate = stats["hit_rate"]
 
         # Performance indicators
         performance = {
@@ -527,23 +527,23 @@ class CacheMonitor:
         return recommendations
 
     def get_cache_usage_report(self) -> Dict[str, any]:
-        """Get detailed cache usage report.""f"
+        """Get detailed cache usage report."""
         if not self.cache_manager.redis_client:
             return {"error": "Redis not available"}
 
         try:
             # Get all cache keys
-            all_keys = self.cache_manager.get_keys("*", "*f")
+            all_keys = self.cache_manager.get_keys("*", "*")
 
             # Analyze by namespace
             namespace_stats = {}
             for key in all_keys:
                 if ":" in key:
-                    namespace = key.split(":f")[0]
+                    namespace = key.split(":")[0]
                     if namespace not in namespace_stats:
                         namespace_stats[namespace] = {"count": 0, "keys": []}
                     namespace_stats[namespace]["count"] += 1
-                    namespace_stats[namespace]["keysf"].append(key)
+                    namespace_stats[namespace]["keys"].append(key)
 
             return {
                 "total_keys": len(all_keys),

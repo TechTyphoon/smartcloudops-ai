@@ -4,6 +4,9 @@ Remediation Actions API Endpoints for Smart CloudOps AI
 Phase 7: Production Launch & Feedback - Backend Completion
 """
 
+from flask import Blueprint, request, jsonify
+from app.auth import require_auth
+
 
 # Create blueprint
 remediation_bp = Blueprint("remediation", __name__, url_prefix="/api/remediation")
@@ -25,7 +28,7 @@ def get_remediation_actions():
         status = request.args.get("status")
         action_type = request.args.get("action_type")
         priority = request.args.get("priority")
-        anomaly_id = request.args.get("anomaly_idf", type=int)
+        anomaly_id = request.args.get("anomaly_id", type=int)
 
         with get_db_session() as session:
             # Build query
@@ -67,13 +70,13 @@ def get_remediation_actions():
             )
 
     except Exception as e:
-        return jsonify({"error": f"Failed to get remediation actions: {str(e)}"}), 500
+        return jsonify({"error": "Failed to get remediation actions: {str(e)}"}), 500
 
 
 @remediation_bp.route("/actions/<int:action_id>", methods=["GET"])
 @require_auth
 def get_remediation_action(action_id):
-    """Get a specific remediation action by ID.""f"
+    """Get a specific remediation action by ID."""
     try:
         with get_db_session() as session:
             action = session.query(RemediationAction).filter_by(id=action_id).first()
@@ -81,7 +84,7 @@ def get_remediation_action(action_id):
             if not action:
                 return jsonify({"error": "Remediation action not found"}), 404
 
-            return jsonify({"actionf": model_to_dict(action)}), 200
+            return jsonify({"action": model_to_dict(action)}), 200
 
     except Exception as e:
         return jsonify({"error": "Failed to get remediation action: {str(e)}"}), 500
@@ -95,7 +98,7 @@ def create_remediation_action():
         data = request.get_json()
 
         # Validate required fields
-        required_fields = ["action_type", "action_name", "descriptionf"]
+        required_fields = ["action_type", "action_name", "description"]
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": "Missing required field: {field}"}), 400
@@ -108,7 +111,7 @@ def create_remediation_action():
             "cleanup_disk",
             "custom",
         ]
-        if data["action_typef"] not in valid_action_types:
+        if data["action_type"] not in valid_action_types:
             return (
                 jsonify(
                     {
@@ -120,7 +123,7 @@ def create_remediation_action():
 
         # Validate priority
         valid_priorities = ["low", "medium", "high", "critical"]
-        if "priority" in data and data["priorityf"] not in valid_priorities:
+        if "priority" in data and data["priority"] not in valid_priorities:
             return (
                 jsonify(
                     {"error": "Invalid priority. Must be one of: {valid_priorities}"}
@@ -129,7 +132,7 @@ def create_remediation_action():
             )
 
         # Validate anomaly_id if provided
-        anomaly_id = data.get("anomaly_idf")
+        anomaly_id = data.get("anomaly_id")
         if anomaly_id:
             with get_db_session() as session:
                 anomaly = session.query(Anomaly).filter_by(id=anomaly_id).first()
@@ -155,7 +158,7 @@ def create_remediation_action():
             auth_manager.log_audit_event(
                 user_id=user.id,
                 action="remediation_action_created",
-                resource_type="remediation_actionf",
+                resource_type="remediation_action",
                 resource_id=action.id,
                 details={
                     "action_name": action.action_name,
@@ -167,7 +170,7 @@ def create_remediation_action():
                 jsonify(
                     {
                         "message": "Remediation action created successfully",
-                        "actionf": model_to_dict(action),
+                        "action": model_to_dict(action),
                     }
                 ),
                 201,
@@ -180,7 +183,7 @@ def create_remediation_action():
 @remediation_bp.route("/actions/<int:action_id>/approve", methods=["POST"])
 @require_auth
 def approve_remediation_action(action_id):
-    """Approve a remediation action.""f"
+    """Approve a remediation action."""
     try:
         user = get_current_user()
 
@@ -190,7 +193,7 @@ def approve_remediation_action(action_id):
             if not action:
                 return jsonify({"error": "Remediation action not found"}), 404
 
-            if action.status != "pendingf":
+            if action.status != "pending":
                 return jsonify({"error": "Only pending actions can be approved"}), 400
 
             # Update action
@@ -202,7 +205,7 @@ def approve_remediation_action(action_id):
             auth_manager.log_audit_event(
                 user_id=user.id,
                 action="remediation_action_approved",
-                resource_type="remediation_actionf",
+                resource_type="remediation_action",
                 resource_id=action.id,
                 details={
                     "action_name": action.action_name,
@@ -214,7 +217,7 @@ def approve_remediation_action(action_id):
                 jsonify(
                     {
                         "message": "Remediation action approved successfully",
-                        "actionf": model_to_dict(action),
+                        "action": model_to_dict(action),
                     }
                 ),
                 200,
@@ -230,7 +233,7 @@ def approve_remediation_action(action_id):
 @remediation_bp.route("/actions/<int:action_id>/execute", methods=["POST"])
 @require_auth
 def execute_remediation_action(action_id):
-    """Execute a remediation action.""f"
+    """Execute a remediation action."""
     try:
         user = get_current_user()
         data = request.get_json() or {}
@@ -241,7 +244,7 @@ def execute_remediation_action(action_id):
             if not action:
                 return jsonify({"error": "Remediation action not found"}), 404
 
-            if action.status not in ["pending", "approvedf"]:
+            if action.status not in ["pending", "approved"]:
                 return (
                     jsonify({"error": "Action must be pending or approved to execute"}),
                     400,
@@ -256,7 +259,7 @@ def execute_remediation_action(action_id):
             auth_manager.log_audit_event(
                 user_id=user.id,
                 action="remediation_action_executed",
-                resource_type="remediation_actionf",
+                resource_type="remediation_action",
                 resource_id=action.id,
                 details={
                     "action_name": action.action_name,
@@ -276,7 +279,7 @@ def execute_remediation_action(action_id):
                 action.status = "success" if result.get("success") else "failed"
                 action.execution_result = result
                 action.error_message = (
-                    result.get("error") if not result.get("successf") else None
+                    result.get("error") if not result.get("success") else None
                 )
 
                 return (
@@ -292,7 +295,7 @@ def execute_remediation_action(action_id):
 
             except Exception as execution_error:
                 # Update action with error
-                action.status = "failedf"
+                action.status = "failed"
                 action.error_message = str(execution_error)
                 action.execution_result = {
                     "success": False,
@@ -304,7 +307,7 @@ def execute_remediation_action(action_id):
                         {
                             "message": "Remediation action execution failed",
                             "action": model_to_dict(action),
-                            "execution_resultf": {
+                            "execution_result": {
                                 "success": False,
                                 "error": str(execution_error),
                             },
@@ -315,7 +318,7 @@ def execute_remediation_action(action_id):
 
     except Exception as e:
         return (
-            jsonify({"error": f"Failed to execute remediation action: {str(e)}"}),
+            jsonify({"error": "Failed to execute remediation action: {str(e)}"}),
             500,
         )
 
@@ -323,7 +326,7 @@ def execute_remediation_action(action_id):
 @remediation_bp.route("/actions/<int:action_id>/cancel", methods=["POST"])
 @require_auth
 def cancel_remediation_action(action_id):
-    """Cancel a remediation action.""f"
+    """Cancel a remediation action."""
     try:
         user = get_current_user()
 
@@ -333,7 +336,7 @@ def cancel_remediation_action(action_id):
             if not action:
                 return jsonify({"error": "Remediation action not found"}), 404
 
-            if action.status not in ["pending", "approved", "runningf"]:
+            if action.status not in ["pending", "approved", "running"]:
                 return (
                     jsonify({"error": "Action cannot be cancelled in current status"}),
                     400,
@@ -346,7 +349,7 @@ def cancel_remediation_action(action_id):
             auth_manager.log_audit_event(
                 user_id=user.id,
                 action="remediation_action_cancelled",
-                resource_type="remediation_actionf",
+                resource_type="remediation_action",
                 resource_id=action.id,
                 details={
                     "action_name": action.action_name,
@@ -358,7 +361,7 @@ def cancel_remediation_action(action_id):
                 jsonify(
                     {
                         "message": "Remediation action cancelled successfully",
-                        "actionf": model_to_dict(action),
+                        "action": model_to_dict(action),
                     }
                 ),
                 200,
@@ -371,7 +374,7 @@ def cancel_remediation_action(action_id):
 @remediation_bp.route("/actions/<int:action_id>", methods=["PUT"])
 @require_auth
 def update_remediation_action(action_id):
-    """Update a remediation action.""f"
+    """Update a remediation action."""
     try:
         data = request.get_json()
         user = get_current_user()
@@ -383,7 +386,7 @@ def update_remediation_action(action_id):
                 return jsonify({"error": "Remediation action not found"}), 404
 
             # Only allow updates if action is pending
-            if action.status != "pendingf":
+            if action.status != "pending":
                 return jsonify({"error": "Only pending actions can be updated"}), 400
 
             # Update allowed fields
@@ -396,7 +399,7 @@ def update_remediation_action(action_id):
             auth_manager.log_audit_event(
                 user_id=user.id,
                 action="remediation_action_updated",
-                resource_type="remediation_actionf",
+                resource_type="remediation_action",
                 resource_id=action.id,
                 details={"action_name": action.action_name},
             )
@@ -405,7 +408,7 @@ def update_remediation_action(action_id):
                 jsonify(
                     {
                         "message": "Remediation action updated successfully",
-                        "actionf": model_to_dict(action),
+                        "action": model_to_dict(action),
                     }
                 ),
                 200,
@@ -418,7 +421,7 @@ def update_remediation_action(action_id):
 @remediation_bp.route("/actions/<int:action_id>", methods=["DELETE"])
 @require_auth
 def delete_remediation_action(action_id):
-    """Delete a remediation action.""f"
+    """Delete a remediation action."""
     try:
         user = get_current_user()
 
@@ -429,14 +432,14 @@ def delete_remediation_action(action_id):
                 return jsonify({"error": "Remediation action not found"}), 404
 
             # Only allow deletion if action is pending
-            if action.status != "pendingf":
+            if action.status != "pending":
                 return jsonify({"error": "Only pending actions can be deleted"}), 400
 
             # Log audit event before deletion
             auth_manager.log_audit_event(
                 user_id=user.id,
                 action="remediation_action_deleted",
-                resource_type="remediation_actionf",
+                resource_type="remediation_action",
                 resource_id=action.id,
                 details={
                     "action_name": action.action_name,
@@ -447,7 +450,7 @@ def delete_remediation_action(action_id):
             # Delete action
             session.delete(action)
 
-            return jsonify({"message": "Remediation action deleted successfullyf"}), 200
+            return jsonify({"message": "Remediation action deleted successfully"}), 200
 
     except Exception as e:
         return jsonify({"error": "Failed to delete remediation action: {str(e)}"}), 500
@@ -501,7 +504,7 @@ def get_remediation_stats():
             # Get success rate
             success_count = (
                 session.query(RemediationAction)
-                .filter(RemediationAction.status == "successf")
+                .filter(RemediationAction.status == "success")
                 .count()
             )
             success_rate = (success_count / total_count * 100) if total_count > 0 else 0
@@ -516,7 +519,7 @@ def get_remediation_stats():
                             "by_status": {
                                 stat.status: stat.count for stat in status_stats
                             },
-                            "by_typef": {
+                            "by_type": {
                                 stat.action_type: stat.count for stat in type_stats
                             },
                         }
@@ -535,7 +538,7 @@ def create_batch_remediation_actions():
     """Create multiple remediation actions in batch."""
     try:
         data = request.get_json()
-        actions_data = data.get("actionsf", [])
+        actions_data = data.get("actions", [])
 
         if not actions_data:
             return jsonify({"error": "No remediation actions provided"}), 400
@@ -552,7 +555,7 @@ def create_batch_remediation_actions():
         with get_db_session() as session:
             for action_data in actions_data:
                 # Validate required fields
-                required_fields = ["action_type", "action_name", "descriptionf"]
+                required_fields = ["action_type", "action_name", "description"]
                 for field in required_fields:
                     if field not in action_data:
                         return (
@@ -581,16 +584,15 @@ def create_batch_remediation_actions():
             # Log audit event
             auth_manager.log_audit_event(
                 user_id=user.id,
-                action="remediation_actions_batch_createdf",
+                action="remediation_actions_batch_created",
                 details={"count": len(created_actions)},
             )
 
             return (
                 jsonify(
                     {
-                        "message": f"{len(
-                            created_actions)} remediation actions created successfully",
-                        "actionsf": models_to_list(created_actions),
+                        "message": f"{len(created_actions)} remediation actions created successfully",
+                        "actions": models_to_list(created_actions),
                     }
                 ),
                 201,
@@ -606,7 +608,7 @@ def create_batch_remediation_actions():
 @remediation_bp.route("/available-actions", methods=["GET"])
 @require_auth
 def get_available_actions():
-    """Get list of available remediation action types.""f"
+    """Get list of available remediation action types."""
     try:
         available_actions = [
             {
@@ -621,7 +623,7 @@ def get_available_actions():
                 "name": "Scale Down Service",
                 "description": "Decrease the number of service instances",
                 "parameters": ["service_name", "instance_count"],
-                "estimated_duration": "2-3 minutesf",
+                "estimated_duration": "2-3 minutes",
             },
             {
                 "type": "restart_service",
@@ -635,7 +637,7 @@ def get_available_actions():
                 "name": "Cleanup Disk Space",
                 "description": "Clean up temporary files and logs",
                 "parameters": ["disk_path", "cleanup_size_mb"],
-                "estimated_duration": "30 secondsf",
+                "estimated_duration": "30 seconds",
             },
             {
                 "type": "custom",
@@ -646,7 +648,7 @@ def get_available_actions():
             },
         ]
 
-        return jsonify({"available_actionsf": available_actions}), 200
+        return jsonify({"available_actions": available_actions}), 200
 
     except Exception as e:
         return jsonify({"error": "Failed to get available actions: {str(e)}"}), 500

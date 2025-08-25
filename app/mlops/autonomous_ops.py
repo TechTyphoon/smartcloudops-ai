@@ -147,7 +147,7 @@ class PolicyRule:
 
 
 class AutonomousOperationsEngine:
-    """Autonomous operations engine with closed-loop automation""f"
+    """Autonomous operations engine with closed-loop automation"""
 
     def __init__(self):
         self.policies = []
@@ -167,7 +167,7 @@ class AutonomousOperationsEngine:
             # Critical anomalies - full automation
             PolicyRule(
                 rule_id="critical_auto",
-                name="Critical Anomaly Auto-Remediationf",
+                name="Critical Anomaly Auto-Remediation",
                 conditions={
                     "severity": ["critical"],
                     "min_confidence": 0.8,
@@ -179,7 +179,7 @@ class AutonomousOperationsEngine:
             # High severity - semi-automation
             PolicyRule(
                 rule_id="high_semi_auto",
-                name="High Severity Semi-Automationf",
+                name="High Severity Semi-Automation",
                 conditions={
                     "severity": ["high"],
                     "min_confidence": 0.7,
@@ -191,7 +191,7 @@ class AutonomousOperationsEngine:
             # Medium severity - adaptive automation
             PolicyRule(
                 rule_id="medium_adaptive",
-                name="Medium Severity Adaptive Automationf",
+                name="Medium Severity Adaptive Automation",
                 conditions={"severity": ["medium"], "min_confidence": 0.6},
                 automation_level=AutomationLevel.ADAPTIVE,
                 priority=3,
@@ -199,7 +199,7 @@ class AutonomousOperationsEngine:
             # Low severity - manual intervention
             PolicyRule(
                 rule_id="low_manual",
-                name="Low Severity Manual Interventionf",
+                name="Low Severity Manual Intervention",
                 conditions={"severity": ["low"]},
                 automation_level=AutomationLevel.MANUAL,
                 priority=4,
@@ -207,7 +207,7 @@ class AutonomousOperationsEngine:
             # Business hours policy
             PolicyRule(
                 rule_id="business_hours",
-                name="Business Hours Automationf",
+                name="Business Hours Automation",
                 conditions={
                     "time_window": {"start": 9, "end": 17},
                     "min_confidence": 0.75,
@@ -222,12 +222,12 @@ class AutonomousOperationsEngine:
     def add_policy(self, policy: PolicyRule):
         """Add a new automation policy"""
         self.system_policies.append(policy)
-        logger.info(f"Added automation policy: {policy.name}")
+        logger.info("Added automation policy: {policy.name}")
 
     def remove_policy(self, rule_id: str):
         """Remove an automation policy"""
         self.system_policies = [p for p in self.system_policies if p.rule_id != rule_id]
-        logger.info(f"Removed automation policy: {rule_id}")
+        logger.info("Removed automation policy: {rule_id}")
 
     def evaluate_automation_level(
         self, anomaly_info: Dict[str, Any], system_state: Dict[str, Any]
@@ -249,7 +249,7 @@ class AutonomousOperationsEngine:
         return selected_policy.automation_level, selected_policy
 
     async def process_anomaly(self, anomaly_id: int) -> Dict[str, Any]:
-        """Process anomaly with autonomous operations""f"
+        """Process anomaly with autonomous operations"""
         session = get_db_session()
         try:
             # Get anomaly details
@@ -270,7 +270,7 @@ class AutonomousOperationsEngine:
                     if anomaly.metrics_data
                     else 0.5
                 ),
-                "metricsf": anomaly.metrics_data or {},
+                "metrics": anomaly.metrics_data or {},
             }
 
             # Evaluate automation level
@@ -307,11 +307,11 @@ class AutonomousOperationsEngine:
             return result
 
         except Exception as e:
-            logger.error("Error processing anomaly {anomaly_id}: {e}f")
+            logger.error("Error processing anomaly {anomaly_id}: {e}")
             return {"error": str(e)}
 
     async def _get_system_state(self) -> Dict[str, Any]:
-        """Get current system state""f"
+        """Get current system state"""
         session = get_db_session()
         try:
             # Get latest metrics
@@ -334,14 +334,14 @@ class AutonomousOperationsEngine:
             return {}
 
         except Exception as e:
-            logger.error("Error getting system state: {e}f")
+            logger.error("Error getting system state: {e}")
             return {}
 
     async def _handle_manual_intervention(
         self, anomaly: Anomaly, recommendations: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
         """Handle manual intervention"""
-        self.automation_stats["manual_interventionsf"] += 1
+        self.automation_stats["manual_interventions"] += 1
 
         return {
             "automation_level": "manual",
@@ -368,7 +368,7 @@ class AutonomousOperationsEngine:
 
         # Create remediation action
         remediation = await self._create_remediation_action(
-            anomaly, best_recommendation["action_type"], "semi_autof"
+            anomaly, best_recommendation["action_type"], "semi_auto"
         )
 
         return {
@@ -386,7 +386,7 @@ class AutonomousOperationsEngine:
     async def _handle_full_automation(
         self, anomaly: Anomaly, recommendations: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
-        """Handle full automation""f"
+        """Handle full automation"""
         if not recommendations:
             return {"error": "No recommendations available for full automation"}
 
@@ -395,7 +395,7 @@ class AutonomousOperationsEngine:
 
         # Execute remediation
         remediation = await self._create_remediation_action(
-            anomaly, best_recommendation["action_type"], "full_autof"
+            anomaly, best_recommendation["action_type"], "full_auto"
         )
 
         # Execute the remediation
@@ -412,7 +412,7 @@ class AutonomousOperationsEngine:
                 "description": anomaly.description,
                 "metrics": anomaly.metrics_data,
             },
-            best_recommendation["action_typef"],
+            best_recommendation["action_type"],
             success,
         )
 
@@ -476,7 +476,7 @@ class AutonomousOperationsEngine:
         return remediation
 
     async def _execute_remediation(self, remediation: RemediationAction) -> bool:
-        """Execute remediation action""f"
+        """Execute remediation action"""
         try:
             # Simulate remediation execution
             start_time = datetime.now()
@@ -511,13 +511,13 @@ class AutonomousOperationsEngine:
             session.commit()
 
             logger.info(
-                f"Executed remediation {remediation.id}: {remediation.action_type} (
+                "Executed remediation {remediation.id}: {remediation.action_type} (
                     success: {success})"
             )
             return success
 
         except Exception as e:
-            logger.error(f"Error executing remediation {remediation.id}: {e}")
+            logger.error("Error executing remediation {remediation.id}: {e}")
             return False
 
     async def _update_remediation_status(
@@ -541,7 +541,7 @@ class AutonomousOperationsEngine:
                 session.commit()
 
         except Exception as e:
-            logger.error(f"Error updating remediation status: {e}")
+            logger.error("Error updating remediation status: {e}")
 
     def _update_automation_stats(self, result: Dict[str, Any]):
         """Update automation statistics"""
@@ -568,7 +568,7 @@ class AutonomousOperationsEngine:
         return stats
 
     def get_policies(self) -> List[Dict[str, Any]]:
-        """Get all automation policies""f"
+        """Get all automation policies"""
         return [
             {
                 "rule_id": policy.rule_id,
@@ -596,7 +596,7 @@ class PolicyManager:
         priority: int = 5,
     ) -> str:
         """Create a new automation policy"""
-        rule_id = f"custom_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        rule_id = "custom_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
         automation_level_enum = AutomationLevel(automation_level)
 
@@ -628,7 +628,7 @@ class PolicyManager:
                 if "enabled" in updates:
                     policy.enabled = updates["enabled"]
 
-                logger.info(f"Updated policy {rule_id}")
+                logger.info("Updated policy {rule_id}")
                 return True
 
         return False

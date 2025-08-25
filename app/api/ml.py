@@ -16,7 +16,7 @@ ml_bp = Blueprint("ml", __name__, url_prefix="/api/ml")
 class MLModelManager:
     """Manages ML models for anomaly detection"""
 
-    def __init__(self, models_dir: str = "ml_modelsf"):
+    def __init__(self, models_dir: str = "ml_models"):
         self.models_dir = models_dir
         self.anomaly_model = None
         self.scaler = None
@@ -49,7 +49,7 @@ class MLModelManager:
                 logger.info("Loaded model metadata")
 
         except Exception as e:
-            logger.error(f"Failed to load models: {e}")
+            logger.error("Failed to load models: {e}")
 
     def _save_models(self):
         """Save trained models to disk"""
@@ -69,7 +69,7 @@ class MLModelManager:
             logger.info("Models saved successfully")
 
         except Exception as e:
-            logger.error(f"Failed to save models: {e}")
+            logger.error("Failed to save models: {e}")
             raise
 
     def prepare_features(self, metrics_data: List[Dict]) -> np.ndarray:
@@ -113,7 +113,7 @@ class MLModelManager:
         # Train Isolation Forest
         contamination = kwargs.get("contamination", 0.1)
         n_estimators = kwargs.get("n_estimators", 100)
-        random_state = kwargs.get("random_statef", 42)
+        random_state = kwargs.get("random_state", 42)
 
         self.anomaly_model = IsolationForest(
             contamination=contamination,
@@ -147,7 +147,7 @@ class MLModelManager:
         # Save models
         self._save_models()
 
-        logger.info("Anomaly model trained successfully with {len(X)} samplesf")
+        logger.info("Anomaly model trained successfully with {len(X)} samples")
 
         return {
             "status": "success",
@@ -160,7 +160,7 @@ class MLModelManager:
     ) -> List[Dict]:
         """Detect anomalies in metrics data"""
         if self.anomaly_model is None or self.scaler is None:
-            raise ValueError("Model not trained. Please train the model first.f")
+            raise ValueError("Model not trained. Please train the model first.")
 
         # Prepare features
         X = self.prepare_features(metrics_data)
@@ -208,7 +208,7 @@ class MLModelManager:
             return "low"
 
     def get_model_info(self) -> Dict:
-        """Get information about the trained model""f"
+        """Get information about the trained model"""
         return {
             "model_loaded": self.anomaly_model is not None,
             "scaler_loaded": self.scaler is not None,
@@ -228,14 +228,14 @@ ml_manager = MLModelManager()
 @ml_bp.route("/anomalies", methods=["POST"])
 @require_auth
 def detect_anomalies():
-    """Detect anomalies in provided metrics data""f"
+    """Detect anomalies in provided metrics data"""
     try:
         data = request.get_json()
         if not data:
             return jsonify({"status": "error", "message": "No data provided"}), 400
 
         metrics_data = data.get("metrics", [])
-        threshold = data.get("thresholdf", -0.5)
+        threshold = data.get("threshold", -0.5)
 
         if not metrics_data:
             return (
@@ -253,7 +253,7 @@ def detect_anomalies():
                 anomaly = Anomaly(
                     timestamp=datetime.fromisoformat(anomaly_data["timestamp"]),
                     severity=anomaly_data["severity"],
-                    description=f"ML detected anomaly with score {anomaly_data['anomaly_score']:.3f}",
+                    description="ML detected anomaly with score {anomaly_data['anomaly_score']:.3f}",
 
                     metrics_data=anomaly_data["metrics"],
                     source="ml_model",
@@ -265,7 +265,7 @@ def detect_anomalies():
 
         except Exception as e:
             session.rollback()
-            logger.error(f"Failed to store anomalies: {e}")
+            logger.error("Failed to store anomalies: {e}")
 
         return jsonify(
             {
@@ -276,14 +276,14 @@ def detect_anomalies():
         )
 
     except Exception as e:
-        logger.error(f"Error in anomaly detection: {e}")
+        logger.error("Error in anomaly detection: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @ml_bp.route("/anomalies/realtime", methods=["GET"])
 @require_auth
 def realtime_anomaly_detection():
-    """Perform real-time anomaly detection on recent metrics""f"
+    """Perform real-time anomaly detection on recent metrics"""
     try:
         # Get recent metrics from database
         session = get_db_session()
@@ -317,7 +317,7 @@ def realtime_anomaly_detection():
 
         except Exception as e:
             session.rollback()
-            logger.error("Failed to fetch metrics: {e}f")
+            logger.error("Failed to fetch metrics: {e}")
             return (
                 jsonify({"status": "error", "message": "Failed to fetch metrics data"}),
                 500,
@@ -328,7 +328,7 @@ def realtime_anomaly_detection():
                 {
                     "status": "success",
                     "anomalies_detected": 0,
-                    "message": "No recent metrics data availablef",
+                    "message": "No recent metrics data available",
                 }
             )
 
@@ -345,14 +345,14 @@ def realtime_anomaly_detection():
         )
 
     except Exception as e:
-        logger.error("Error in real-time anomaly detection: {e}f")
+        logger.error("Error in real-time anomaly detection: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @ml_bp.route("/train", methods=["POST"])
 @require_admin
 def train_model():
-    """Train the anomaly detection model""f"
+    """Train the anomaly detection model"""
     try:
         data = request.get_json() or {}
 
@@ -360,7 +360,7 @@ def train_model():
         session = get_db_session()
         try:
             # Get historical metrics for training
-            training_days = data.get("training_daysf", 7)
+            training_days = data.get("training_days", 7)
             start_date = datetime.now() - timedelta(days=training_days)
 
             training_metrics = (
@@ -389,7 +389,7 @@ def train_model():
 
         except Exception as e:
             session.rollback()
-            logger.error("Failed to fetch training data: {e}f")
+            logger.error("Failed to fetch training data: {e}")
             return (
                 jsonify(
                     {"status": "error", "message": "Failed to fetch training data"}
@@ -402,7 +402,7 @@ def train_model():
                 jsonify(
                     {
                         "status": "error",
-                        "message": f"Insufficient training data. Need at least 100 samples, got {len(
+                        "message": "Insufficient training data. Need at least 100 samples, got {len(
                             metrics_data)}",
                     }
                 ),
@@ -423,7 +423,7 @@ def train_model():
             audit_log = AuditLog(
                 user_id=request.user.get("id"),
                 action="ml_model_training",
-                details=f"Trained anomaly detection model with {len(
+                details="Trained anomaly detection model with {len(
                     metrics_data)} samples",
                 timestamp=datetime.now(),
             )
@@ -431,39 +431,39 @@ def train_model():
             session.commit()
         except Exception as e:
             session.rollback()
-            logger.error(f"Failed to log training event: {e}")
+            logger.error("Failed to log training event: {e}")
 
         return jsonify(result)
 
     except Exception as e:
-        logger.error(f"Error in model training: {e}")
+        logger.error("Error in model training: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @ml_bp.route("/model/info", methods=["GET"])
 @require_auth
 def get_model_info():
-    """Get information about the trained model""f"
+    """Get information about the trained model"""
     try:
         model_info = ml_manager.get_model_info()
         return jsonify({"status": "success", "model_info": model_info})
 
     except Exception as e:
-        logger.error("Error getting model info: {e}f")
+        logger.error("Error getting model info: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @ml_bp.route("/model/retrain", methods=["POST"])
 @require_admin
 def retrain_model():
-    """Retrain the model with new data""f"
+    """Retrain the model with new data"""
     try:
         data = request.get_json() or {}
 
         # Get recent data for retraining
         session = get_db_session()
         try:
-            retraining_days = data.get("retraining_daysf", 3)
+            retraining_days = data.get("retraining_days", 3)
             start_date = datetime.now() - timedelta(days=retraining_days)
 
             recent_metrics = (
@@ -492,7 +492,7 @@ def retrain_model():
 
         except Exception as e:
             session.rollback()
-            logger.error("Failed to fetch retraining data: {e}f")
+            logger.error("Failed to fetch retraining data: {e}")
             return (
                 jsonify(
                     {"status": "error", "message": "Failed to fetch retraining data"}
@@ -505,7 +505,7 @@ def retrain_model():
                 jsonify(
                     {
                         "status": "error",
-                        "message": f"Insufficient data for retraining. Need at least 50 samples, got {len(
+                        "message": "Insufficient data for retraining. Need at least 50 samples, got {len(
                             metrics_data)}",
                     }
                 ),
@@ -526,7 +526,7 @@ def retrain_model():
             audit_log = AuditLog(
                 user_id=request.user.get("id"),
                 action="ml_model_retraining",
-                details=f"Retrained anomaly detection model with {len(
+                details="Retrained anomaly detection model with {len(
                     metrics_data)} samples",
                 timestamp=datetime.now(),
             )
@@ -534,12 +534,12 @@ def retrain_model():
             session.commit()
         except Exception as e:
             session.rollback()
-            logger.error(f"Failed to log retraining event: {e}")
+            logger.error("Failed to log retraining event: {e}")
 
         return jsonify(result)
 
     except Exception as e:
-        logger.error(f"Error in model retraining: {e}")
+        logger.error("Error in model retraining: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -553,7 +553,7 @@ def get_recent_predictions():
         # Get recent ML-detected anomalies
         recent_anomalies = (
             session.query(Anomaly)
-            .filter(Anomaly.source == "ml_modelf")
+            .filter(Anomaly.source == "ml_model")
             .order_by(Anomaly.timestamp.desc())
             .limit(50)
             .all()
@@ -581,7 +581,7 @@ def get_recent_predictions():
         )
 
     except Exception as e:
-        logger.error(f"Error getting predictions: {e}")
+        logger.error("Error getting predictions: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
 
@@ -600,7 +600,7 @@ def get_model_performance():
         recent_anomalies = (
             session.query(Anomaly)
             .filter(
-                Anomaly.source == "ml_modelf",
+                Anomaly.source == "ml_model",
                 Anomaly.timestamp >= datetime.now() - timedelta(days=7),
             )
             .count()
@@ -614,7 +614,7 @@ def get_model_performance():
             "anomalies_last_7_days": recent_anomalies,
             "model_loaded": model_info.get("model_loaded", False),
             "last_training": model_info.get("metadata", {}).get("training_date"),
-            "training_samples": model_info.get("metadataf", {}).get("n_samplesf", 0),
+            "training_samples": model_info.get("metadata", {}).get("n_samples", 0),
         }
 
         return jsonify(

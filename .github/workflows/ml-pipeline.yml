@@ -1,0 +1,409 @@
+name: ML Pipeline - Train, Test, and Deploy Models
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'ml_models/**'
+      - 'data/**'
+      - '.github/workflows/ml-pipeline.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ml_models/**'
+      - 'data/**'
+  schedule:
+    # Retrain models weekly
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    inputs:
+      model_type:
+        description: 'Type of model to train'
+        required: true
+        default: 'anomaly-detection'
+        type: choice
+        options:
+          - anomaly-detection
+          - forecasting
+          - classification
+      force_retrain:
+        description: 'Force retraining even if no data changes'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+  MLFLOW_REGISTRY_URI: ${{ secrets.MLFLOW_REGISTRY_URI }}
+  AWS_REGION: us-west-2
+  ECR_REPOSITORY: smartcloudops-ml-models
+  KUBECONFIG: ${{ secrets.KUBECONFIG }}
+
+jobs:
+  # Data Validation
+  validate-data:
+    name: Validate Training Data
+    runs-on: ubuntu-latest
+    outputs:
+      data-hash: ${{ steps.data-hash.outputs.hash }}
+      data-changed: ${{ steps.data-changed.outputs.changed }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        pip install pandas numpy scikit-learn mlflow boto3
+        
+    - name: Calculate data hash
+      id: data-hash
+      run: |
+        if [ -d "data" ]; then
+          HASH=$(find data -type f -exec sha256sum {} \; | sort | sha256sum | cut -d' ' -f1)
+          echo "hash=$HASH" >> $GITHUB_OUTPUT
+        else
+          echo "hash=no-data" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Check if data changed
+      id: data-changed
+      run: |
+        if [ "${{ github.event_name }}" == "workflow_dispatch" ] || [ "${{ github.event.inputs.force_retrain }}" == "true" ]; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        elif [ "${{ github.event_name }}" == "schedule" ]; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          # Compare with previous hash
+          PREV_HASH="${{ github.event.before }}"
+          CURRENT_HASH="${{ steps.data-hash.outputs.hash }}"
+          if [ "$PREV_HASH" != "$CURRENT_HASH" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+        fi
+
+  # Model Training
+  train-model:
+    name: Train ML Model
+    runs-on: ubuntu-latest
+    needs: validate-data
+    if: needs.validate-data.outputs.data-changed == 'true' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install mlflow boto3 kubernetes
+        
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+        
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+        
+    - name: Setup MLflow
+      run: |
+        # Configure MLflow tracking
+        echo "MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI" >> $GITHUB_ENV
+        echo "MLFLOW_REGISTRY_URI=$MLFLOW_REGISTRY_URI" >> $GITHUB_ENV
+        
+    - name: Run ML training pipeline
+      id: train
+      run: |
+        cd ml_models
+        python train_with_mlflow.py
+        
+        # Get model URI from output
+        MODEL_URI=$(python -c "
+        import mlflow
+        client = mlflow.tracking.MlflowClient()
+        latest_version = client.get_latest_versions('anomaly-detector', stages=['None'])[0]
+        print(latest_version.source)
+        ")
+        echo "model_uri=$MODEL_URI" >> $GITHUB_OUTPUT
+        
+    - name: Model evaluation
+      run: |
+        cd ml_models
+        python -c "
+        from mlflow.tracking import MlflowClient
+        client = MlflowClient()
+        
+        # Get latest model
+        latest_version = client.get_latest_versions('anomaly-detector', stages=['None'])[0]
+        
+        # Check if model meets quality threshold
+        metrics = client.get_run(latest_version.run_id).data.metrics
+        mean_score = metrics.get('mean_score', 0)
+        
+        print(f'Model mean_score: {mean_score}')
+        
+        # Fail if model quality is below threshold
+        if mean_score < -0.5:  # Adjust threshold as needed
+            print('ERROR: Model quality below threshold')
+            exit(1)
+        else:
+            print('Model quality meets threshold')
+        "
+        
+    - name: Transition model to Staging
+      run: |
+        cd ml_models
+        python -c "
+        from mlflow.tracking import MlflowClient
+        client = MlflowClient()
+        
+        # Get latest model version
+        latest_version = client.get_latest_versions('anomaly-detector', stages=['None'])[0]
+        
+        # Transition to Staging
+        client.transition_model_version_stage(
+            'anomaly-detector',
+            latest_version.version,
+            'Staging'
+        )
+        print(f'Model v{latest_version.version} transitioned to Staging')
+        "
+
+  # Model Testing
+  test-model:
+    name: Test ML Model
+    runs-on: ubuntu-latest
+    needs: train-model
+    if: always() && needs.train-model.result == 'success'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install mlflow kubernetes
+        
+    - name: Deploy model to test environment
+      run: |
+        # Deploy model to test namespace
+        kubectl create namespace ml-test --dry-run=client -o yaml | kubectl apply -f -
+        
+        # Apply test deployment
+        kubectl apply -f k8s/ml-test-deployment.yaml
+        
+        # Wait for deployment
+        kubectl rollout status deployment/ml-model-test -n ml-test --timeout=300s
+        
+    - name: Run model tests
+      run: |
+        # Run integration tests
+        python -m pytest tests/integration/test_ml_model_deployment.py -v
+        
+        # Run load tests
+        python tests/load/test_model_performance.py
+        
+    - name: Cleanup test environment
+      if: always()
+      run: |
+        kubectl delete namespace ml-test --ignore-not-found=true
+
+  # Model Promotion
+  promote-model:
+    name: Promote Model to Production
+    runs-on: ubuntu-latest
+    needs: [train-model, test-model]
+    if: needs.train-model.result == 'success' && needs.test-model.result == 'success'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        pip install mlflow kubernetes
+        
+    - name: Compare with production model
+      id: compare
+      run: |
+        python -c "
+        from mlflow.tracking import MlflowClient
+        client = MlflowClient()
+        
+        # Get staging and production models
+        staging_versions = client.get_latest_versions('anomaly-detector', stages=['Staging'])
+        production_versions = client.get_latest_versions('anomaly-detector', stages=['Production'])
+        
+        if not staging_versions:
+            print('No staging model found')
+            exit(1)
+            
+        staging_model = staging_versions[0]
+        
+        if production_versions:
+            production_model = production_versions[0]
+            
+            # Compare metrics
+            staging_metrics = client.get_run(staging_model.run_id).data.metrics
+            production_metrics = client.get_run(production_model.run_id).data.metrics
+            
+            staging_score = staging_metrics.get('mean_score', 0)
+            production_score = production_metrics.get('mean_score', 0)
+            
+            print(f'Staging score: {staging_score}')
+            print(f'Production score: {production_score}')
+            
+            # Promote if staging is better
+            if staging_score > production_score:
+                print('Staging model performs better - promoting')
+                client.transition_model_version_stage(
+                    'anomaly-detector',
+                    staging_model.version,
+                    'Production'
+                )
+                print('should_promote=true' >> $GITHUB_OUTPUT)
+            else:
+                print('Production model is better - keeping current')
+                print('should_promote=false' >> $GITHUB_OUTPUT)
+        else:
+            # No production model - promote staging
+            print('No production model - promoting staging model')
+            client.transition_model_version_stage(
+                'anomaly-detector',
+                staging_model.version,
+                'Production'
+            )
+            print('should_promote=true' >> $GITHUB_OUTPUT)
+        "
+        
+    - name: Deploy to production
+      if: steps.compare.outputs.should_promote == 'true'
+      run: |
+        # Update ArgoCD application
+        kubectl patch application smartcloudops-ml-pipeline \
+          -n argocd \
+          --type='merge' \
+          -p='{"spec":{"source":{"helm":{"parameters":[{"name":"model.version","value":"latest"}]}}}}'
+          
+        # Force sync
+        kubectl patch application smartcloudops-ml-pipeline \
+          -n argocd \
+          --type='merge' \
+          -p='{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}'
+          
+    - name: Notify team
+      if: always()
+      run: |
+        # Send notification about model deployment
+        echo "Model training and deployment completed"
+        echo "Check MLflow UI for details: $MLFLOW_TRACKING_URI"
+
+  # Model Monitoring
+  monitor-model:
+    name: Monitor Model Performance
+    runs-on: ubuntu-latest
+    needs: promote-model
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        pip install mlflow prometheus-client requests
+        
+    - name: Check model performance
+      run: |
+        python scripts/monitor_model_performance.py
+        
+    - name: Generate performance report
+      run: |
+        python scripts/generate_model_report.py
+        
+    - name: Upload report
+      uses: actions/upload-artifact@v4
+      with:
+        name: model-performance-report
+        path: reports/
+        retention-days: 30
+
+  # Cleanup
+  cleanup:
+    name: Cleanup Old Models
+    runs-on: ubuntu-latest
+    needs: [train-model, promote-model]
+    if: always()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        pip install mlflow
+        
+    - name: Cleanup old model versions
+      run: |
+        cd ml_models
+        python -c "
+        from mlflow.tracking import MlflowClient
+        client = MlflowClient()
+        
+        # Get all versions
+        versions = client.search_model_versions('name=\"anomaly-detector\"')
+        
+        # Keep only the latest 5 versions
+        versions.sort(key=lambda x: x.creation_timestamp, reverse=True)
+        
+        for version in versions[5:]:
+            if version.current_stage != 'Production':
+                print(f'Deleting old version {version.version}')
+                client.delete_model_version('anomaly-detector', version.version)
+        "

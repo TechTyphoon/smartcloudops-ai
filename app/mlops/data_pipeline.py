@@ -26,7 +26,7 @@ class DataPoint:
 class DataPipeline:
     """Automated data collection pipeline for continuous learning"""
 
-    def __init__(self, data_dir: str = "mlops/dataf"):
+    def __init__(self, data_dir: str = "mlops/data"):
         self.data_dir = data_dir
         self.ensure_data_dir()
         self.collection_stats = {
@@ -46,7 +46,7 @@ class DataPipeline:
 
     async def collect_all_data(self, hours_back: int = 24) -> Dict[str, int]:
         """Collect all data sources for the specified time period"""
-        logger.info(f"Starting data collection for last {hours_back} hours")
+        logger.info("Starting data collection for last {hours_back} hours")
 
         start_time = datetime.now() - timedelta(hours=hours_back)
 
@@ -81,11 +81,11 @@ class DataPipeline:
             }
         )
 
-        logger.info(f"Data collection completed: {self.collection_stats}")
+        logger.info("Data collection completed: {self.collection_stats}")
         return self.collection_stats
 
     async def collect_metrics_data(self, start_time: datetime) -> List[Dict]:
-        """Collect system metrics data""f"
+        """Collect system metrics data"""
         session = get_db_session()
         try:
             metrics = (
@@ -116,11 +116,11 @@ class DataPipeline:
             return metrics_data
 
         except Exception as e:
-            logger.error(f"Error collecting metrics data: {e}")
+            logger.error("Error collecting metrics data: {e}")
             return []
 
     async def collect_anomalies_data(self, start_time: datetime) -> List[Dict]:
-        """Collect anomaly data with user feedback""f"
+        """Collect anomaly data with user feedback"""
         session = get_db_session()
         try:
             anomalies = (
@@ -157,11 +157,11 @@ class DataPipeline:
             return anomalies_data
 
         except Exception as e:
-            logger.error(f"Error collecting anomalies data: {e}")
+            logger.error("Error collecting anomalies data: {e}")
             return []
 
     async def collect_remediations_data(self, start_time: datetime) -> List[Dict]:
-        """Collect remediation action data""f"
+        """Collect remediation action data"""
         session = get_db_session()
         try:
             remediations = (
@@ -190,11 +190,11 @@ class DataPipeline:
             return remediations_data
 
         except Exception as e:
-            logger.error(f"Error collecting remediations data: {e}")
+            logger.error("Error collecting remediations data: {e}")
             return []
 
     async def collect_feedback_data(self, start_time: datetime) -> List[Dict]:
-        """Collect user feedback data""f"
+        """Collect user feedback data"""
         session = get_db_session()
         try:
             feedbacks = (
@@ -223,7 +223,7 @@ class DataPipeline:
             return feedback_data
 
         except Exception as e:
-            logger.error(f"Error collecting feedback data: {e}")
+            logger.error("Error collecting feedback data: {e}")
             return []
 
     async def combine_data_sources(
@@ -233,7 +233,7 @@ class DataPipeline:
         remediations: List[Dict],
         feedback: List[Dict],
     ) -> List[DataPoint]:
-        """Combine data from all sources into standardized DataPoints""f"
+        """Combine data from all sources into standardized DataPoints"""
         combined_data = []
 
         # Create a timeline of all events
@@ -241,7 +241,7 @@ class DataPipeline:
 
         # Add metrics to timeline
         for metric in metrics:
-            timestamp = metric["timestampf"]
+            timestamp = metric["timestamp"]
             if timestamp not in timeline:
                 timeline[timestamp] = {
                     "metrics": [],
@@ -253,7 +253,7 @@ class DataPipeline:
 
         # Add anomalies to timeline
         for anomaly in anomalies:
-            timestamp = anomaly["timestampf"]
+            timestamp = anomaly["timestamp"]
             if timestamp not in timeline:
                 timeline[timestamp] = {
                     "metrics": [],
@@ -265,7 +265,7 @@ class DataPipeline:
 
         # Add remediations to timeline
         for remediation in remediations:
-            timestamp = remediation["timestampf"]
+            timestamp = remediation["timestamp"]
             if timestamp not in timeline:
                 timeline[timestamp] = {
                     "metrics": [],
@@ -277,7 +277,7 @@ class DataPipeline:
 
         # Add feedback to timeline
         for fb in feedback:
-            timestamp = fb["timestampf"]
+            timestamp = fb["timestamp"]
             if timestamp not in timeline:
                 timeline[timestamp] = {
                     "metrics": [],
@@ -285,14 +285,14 @@ class DataPipeline:
                     "remediations": [],
                     "feedback": [],
                 }
-            timeline[timestamp]["feedbackf"].append(fb)
+            timeline[timestamp]["feedback"].append(fb)
 
         # Create DataPoints for each timestamp
         for timestamp, events in timeline.items():
             # Extract features from metrics
             features = {}
             if events["metrics"]:
-                latest_metric = events["metricsf"][-1]  # Use latest metric
+                latest_metric = events["metrics"][-1]  # Use latest metric
                 features.update(
                     {
                         "cpu_usage": latest_metric.get("cpu_usage", 0),
@@ -324,7 +324,7 @@ class DataPipeline:
                     else None
                 ),
                 "user_feedback_rating": (
-                    events["feedback"][0]["rating"] if events["feedbackf"] else None
+                    events["feedback"][0]["rating"] if events["feedback"] else None
                 ),
             }
 
@@ -357,7 +357,7 @@ class DataPipeline:
 
             combined_data.append(data_point)
 
-        logger.info(f"Combined {len(combined_data)} data points from all sources")
+        logger.info("Combined {len(combined_data)} data points from all sources")
         return combined_data
 
     async def process_and_label_data(
@@ -426,13 +426,13 @@ class DataPipeline:
 
             processed_data.append(processed_data_point)
 
-        logger.info(f"Processed and labeled {len(processed_data)} data points")
+        logger.info("Processed and labeled {len(processed_data)} data points")
         return processed_data
 
     async def save_raw_data(self, data_points: List[DataPoint]):
         """Save raw data to disk"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"raw_data_{timestamp}.json"
+        filename = "raw_data_{timestamp}.json"
         filepath = os.path.join(self.data_dir, "raw", filename)
 
         data_dict = [asdict(dp) for dp in data_points]
@@ -440,12 +440,12 @@ class DataPipeline:
         with open(filepath, "w") as f:
             json.dump(data_dict, f, indent=2, default=str)
 
-        logger.info(f"Saved raw data to {filepath}")
+        logger.info("Saved raw data to {filepath}")
 
     async def save_processed_data(self, data_points: List[DataPoint]):
         """Save processed data to disk"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"processed_data_{timestamp}.json"
+        filename = "processed_data_{timestamp}.json"
         filepath = os.path.join(self.data_dir, "processed", filename)
 
         data_dict = [asdict(dp) for dp in data_points]
@@ -453,7 +453,7 @@ class DataPipeline:
         with open(filepath, "w") as f:
             json.dump(data_dict, f, indent=2, default=str)
 
-        logger.info(f"Saved processed data to {filepath}")
+        logger.info("Saved processed data to {filepath}")
 
     def get_collection_stats(self) -> Dict[str, Any]:
         """Get data collection statistics"""
@@ -465,11 +465,11 @@ class DataPipeline:
             try:
                 await self.collect_all_data(hours_back=interval_hours)
                 logger.info(
-                    f"Completed scheduled data collection. Next collection in {interval_hours} hours."
+                    "Completed scheduled data collection. Next collection in {interval_hours} hours."
                 )
                 await asyncio.sleep(interval_hours * 3600)  # Convert hours to seconds
             except Exception as e:
-                logger.error(f"Error in scheduled data collection: {e}")
+                logger.error("Error in scheduled data collection: {e}")
                 await asyncio.sleep(3600)  # Wait 1 hour before retrying
 
 

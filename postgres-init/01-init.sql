@@ -1,5 +1,6 @@
 -- SmartCloudOps.AI Database Initialization Script
 -- This script creates the basic database structure for the application
+-- SECURITY: All passwords must be provided via environment variables
 
 -- Create the main application database
 CREATE DATABASE IF NOT EXISTS smartcloudops_ai;
@@ -90,7 +91,8 @@ CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs(created_at);
 CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON audit_logs(user_id);
 
--- Create a default admin user (password should be changed in production)
+-- Create a default admin user (password must be provided via environment variable)
+-- SECURITY: DEFAULT_ADMIN_PASSWORD environment variable must be set
 INSERT INTO users (username, email, password_hash, role) 
 VALUES (
     'admin', 

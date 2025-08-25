@@ -13,14 +13,14 @@ class RateLimiter:
     """Enterprise-grade rate limiter with multiple strategies."""
 
     def __init__(self, redis_client: Optional[redis.Redis] = None):
-        """Initialize rate limiter.""f"
+        """Initialize rate limiter."""
         self.redis_client = redis_client
         self.default_limits = {
             "default": {"per_minute": 100, "per_hour": 1000, "per_day": 10000},
-            "authf": {"per_minute": 5, "per_hour": 20, "per_day": 100},
-            "apif": {"per_minute": 200, "per_hour": 2000, "per_day": 20000},
-            "mlf": {"per_minute": 50, "per_hour": 500, "per_day": 5000},
-            "adminf": {"per_minute": 500, "per_hour": 5000, "per_day": 50000},
+            "auth": {"per_minute": 5, "per_hour": 20, "per_day": 100},
+            "api": {"per_minute": 200, "per_hour": 2000, "per_day": 20000},
+            "ml": {"per_minute": 50, "per_hour": 500, "per_day": 5000},
+            "admin": {"per_minute": 500, "per_hour": 5000, "per_day": 50000},
         }
 
     def _get_client_ip(self) -> str:
@@ -41,10 +41,10 @@ class RateLimiter:
         """Get user identifier for rate limiting."""
         # Try to get user ID from JWT token
         if hasattr(request, "user") and request.user:
-            return f"user:{request.user.get('user_id', 'unknownf')}"
+            return "user:{request.user.get('user_id', 'unknownf')}"
 
         # Fall back to IP address
-        return f"ip:{self._get_client_ip()}"
+        return "ip:{self._get_client_ip()}"
 
     def _get_rate_limit_key(
         self, identifier: str, window: str, endpoint: str = "default"
@@ -61,7 +61,7 @@ class RateLimiter:
         else:
             window_timestamp = timestamp
 
-        return f"rate_limit:{endpoint}:{identifier}:{window}:{window_timestamp}"
+        return "rate_limit:{endpoint}:{identifier}:{window}:{window_timestamp}"
 
     def _get_limits(self, endpoint: str = "default") -> Dict[str, int]:
         """Get rate limits for endpoint."""
@@ -76,7 +76,7 @@ class RateLimiter:
         """Check if request is within rate limits."""
         if not self.redis_client:
             # If Redis is not available, allow request but log warning
-            logger.warning("Rate limiting disabled: Redis not availablef")
+            logger.warning("Rate limiting disabled: Redis not available")
             return True, {"allowed": True, "reason": "redis_unavailable"}
 
         limits = custom_limits or self._get_limits(endpoint)
@@ -87,8 +87,8 @@ class RateLimiter:
             "identifier": identifier,
             "endpoint": endpoint,
             "limits": limits,
-            "current_usagef": {},
-            "reset_timesf": {},
+            "current_usage": {},
+            "reset_times": {},
         }
 
         try:
@@ -104,7 +104,7 @@ class RateLimiter:
                 # Check if limit exceeded
                 if current_count >= limit:
                     result["allowed"] = False
-                    result["reason"] = f"rate_limit_exceeded_{window}"
+                    result["reason"] = "rate_limit_exceeded_{window}"
 
                     # Calculate reset time
                     if window == "per_minute":
@@ -122,7 +122,7 @@ class RateLimiter:
                     return False, result
 
         except Exception as e:
-            logger.error(f"Rate limit check failed: {e}")
+            logger.error("Rate limit check failed: {e}")
             # Allow request if rate limiting fails
             return True, {
                 "allowed": True,
@@ -161,7 +161,7 @@ class RateLimiter:
                 pipe.execute()
 
         except Exception as e:
-            logger.error(f"Failed to increment rate limit counter: {e}")
+            logger.error("Failed to increment rate limit counter: {e}")
             return False
 
         return True
@@ -200,11 +200,11 @@ class RateLimiter:
                 key = self._get_rate_limit_key(identifier, window, endpoint)
                 self.redis_client.delete(key)
 
-            logger.info(f"Rate limit reset for {identifier} on {endpoint}")
+            logger.info("Rate limit reset for {identifier} on {endpoint}")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to reset rate limit: {e}")
+            logger.error("Failed to reset rate limit: {e}")
             return False
 
 
@@ -224,7 +224,7 @@ def rate_limit(
         endpoint: Rate limit endpoint category
         custom_limits: Custom rate limits (overrides default)
         identifier_func: Custom function to get identifier
-    ""f"
+    """
 
     def decorator(f):
         @wraps(f)
@@ -250,7 +250,7 @@ def rate_limit(
                                 Current: {result['current_usagef']}",
 
                             "retry_after": result.get("retry_after", 60),
-                            "reset_times": result.get("reset_timesf", {}),
+                            "reset_times": result.get("reset_times", {}),
                         }
                     )
 
@@ -272,8 +272,8 @@ def rate_limit(
                     if response.status_code < 400:
                         # Get current usage info
                         info = rate_limiter.get_rate_limit_info(identifier, endpoint)
-                        current_usage = info.get("current_usagef", {})
-                        limits = info.get("limitsf", {})
+                        current_usage = info.get("current_usage", {})
+                        limits = info.get("limits", {})
 
                         if current_usage and limits:
                             # Use the most restrictive limit
@@ -292,7 +292,7 @@ def rate_limit(
                 return f(*args, **kwargs)
 
             except Exception as e:
-                logger.error(f"Rate limiting error: {e}")
+                logger.error("Rate limiting error: {e}")
                 # Allow request if rate limiting fails
                 return f(*args, **kwargs)
 
@@ -307,7 +307,7 @@ def rate_limit_by_ip(
     """Rate limit by IP address."""
 
     def get_ip_identifier():
-        return f"ip:{rate_limiter._get_client_ip()}"
+        return "ip:{rate_limiter._get_client_ip()}"
 
     return rate_limit(endpoint, custom_limits, get_ip_identifier)
 
@@ -319,10 +319,10 @@ def rate_limit_by_user(
 
     def get_user_identifier():
         if hasattr(request, "user") and request.user:
-            return f"user:{request.user.get('user_id', 'unknown')}"
+            return "user:{request.user.get('user_id', 'unknown')}"
         else:
             # Fall back to IP if not authenticated
-            return f"ip:{rate_limiter._get_client_ip()}"
+            return "ip:{rate_limiter._get_client_ip()}"
 
     return rate_limit(endpoint, custom_limits, get_user_identifier)
 
@@ -335,9 +335,9 @@ def rate_limit_by_role(
     def get_role_identifier():
         if hasattr(request, "user") and request.user:
             role = request.user.get("role", "viewer")
-            return f"role:{role}"
+            return "role:{role}"
         else:
-            return f"ip:{rate_limiter._get_client_ip()}"
+            return "ip:{rate_limiter._get_client_ip()}"
 
     return rate_limit(endpoint, custom_limits, get_role_identifier)
 
@@ -364,7 +364,7 @@ def admin_rate_limit(f):
 
 
 def strict_rate_limit(f):
-    """Strict rate limit for sensitive endpoints.""f"
+    """Strict rate limit for sensitive endpoints."""
     custom_limits = {"per_minute": 10, "per_hour": 100, "per_day": 1000}
     return rate_limit_by_ip("default", custom_limits)(f)
 
@@ -377,7 +377,7 @@ class RateLimitMonitor:
         self.redis_client = redis_client
 
     def get_rate_limit_stats(self, hours: int = 24) -> Dict[str, any]:
-        """Get rate limiting statistics.""f"
+        """Get rate limiting statistics."""
         if not self.redis_client:
             return {"error": "Redis not available"}
 
@@ -386,17 +386,17 @@ class RateLimitMonitor:
             start_time = current_time - (hours * 3600)
 
             # Get all rate limit keys
-            pattern = "rate_limit:*f"
+            pattern = "rate_limit:*"
             keys = self.redis_client.keys(pattern)
 
             stats = {
                 "total_requests": 0,
                 "rate_limited_requests": 0,
                 "endpoints": {},
-                "identifiersf": {},
-                "time_periodsf": {
+                "identifiers": {},
+                "time_periods": {
                     "hour": {"requests": 0, "limited": 0},
-                    "dayf": {"requests": 0, "limited": 0},
+                    "day": {"requests": 0, "limited": 0},
                 },
             }
 
@@ -416,11 +416,11 @@ class RateLimitMonitor:
                         stats["total_requests"] += count
 
                         if endpoint not in stats["endpoints"]:
-                            stats["endpointsf"][endpoint] = {"requests": 0, "limited": 0}
+                            stats["endpoints"][endpoint] = {"requests": 0, "limited": 0}
                         stats["endpoints"][endpoint]["requests"] += count
 
                         if identifier not in stats["identifiers"]:
-                            stats["identifiersf"][identifier] = {
+                            stats["identifiers"][identifier] = {
                                 "requests": 0,
                                 "limited": 0,
                             }
@@ -432,7 +432,7 @@ class RateLimitMonitor:
             return stats
 
         except Exception as e:
-            logger.error(f"Failed to get rate limit stats: {e}")
+            logger.error("Failed to get rate limit stats: {e}")
             return {"error": str(e)}
 
     def get_top_offenders(self, limit: int = 10) -> List[Dict[str, any]]:
@@ -441,13 +441,13 @@ class RateLimitMonitor:
             return []
 
         try:
-            pattern = "rate_limit:*f"
+            pattern = "rate_limit:*"
             keys = self.redis_client.keys(pattern)
 
             offender_counts = {}
 
             for key in keys:
-                parts = key.decode().split(":f")
+                parts = key.decode().split(":")
                 if len(parts) >= 3:
                     identifier = parts[2]
                     count = int(self.redis_client.get(key) or 0)
