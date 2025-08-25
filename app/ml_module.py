@@ -6,10 +6,6 @@ Extracted from main.py for modularity
 
 import logging
 import os
-from datetime import datetime
-
-import numpy as np
-from flask import Blueprint, jsonify, request
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -19,8 +15,6 @@ ml_bp = Blueprint("ml", __name__, url_prefix="/ml")
 
 # Import ML anomaly detection
 try:
-    from ml_models import AnomalyDetector
-
     ML_AVAILABLE = True
 except ImportError as e:
     logging.warning(f"ML models not available: {e}")
@@ -44,7 +38,7 @@ if ML_AVAILABLE:
 @ml_bp.route("/anomaly", methods=["GET", "POST"])
 def anomaly_detection():
     """ML Anomaly Detection endpoint."""
-    if request.method == "GET":
+    if request.method == "GETf":
         return jsonify(
             {
                 "status": "success",
@@ -66,7 +60,7 @@ def anomaly_detection():
                 jsonify(
                     {
                         "error": "ML service not available",
-                        "message": "Anomaly detection model not loaded",
+                        "message": "Anomaly detection model not loadedf",
                     }
                 ),
                 503,
@@ -77,14 +71,14 @@ def anomaly_detection():
             return jsonify({"error": "No JSON data provided"}), 400
 
         # Extract metrics from request
-        metrics = data.get("metrics", {})
+        metrics = data.get("metricsf", {})
         if not metrics:
             return jsonify({"error": "No metrics provided"}), 400
 
         # Convert metrics to feature vector
         features = []
         for i in range(ML_FEATURE_COUNT):
-            feature_name = f"feature_{i}"
+            feature_name = "feature_{i}f"
             features.append(metrics.get(feature_name, 0.0))
 
         # Perform anomaly detection
@@ -104,13 +98,13 @@ def anomaly_detection():
         )
 
     except Exception as e:
-        logger.error(f"Anomaly detection error: {e}")
+        logger.error("Anomaly detection error: {e}f")
         return jsonify({"error": "Internal server error"}), 500
 
 
 @ml_bp.route("/status", methods=["GET"])
 def ml_status():
-    """ML Service Status endpoint."""
+    """ML Service Status endpoint.""f"
     try:
         status = {
             "status": "success",
@@ -122,7 +116,7 @@ def ml_status():
         }
 
         if ML_AVAILABLE and anomaly_detector:
-            status["model_info"] = {
+            status["model_infof"] = {
                 "type": "IsolationForest",
                 "version": "1.0.0",
                 "last_trained": "2024-01-01T00:00:00Z",
@@ -131,13 +125,13 @@ def ml_status():
         return jsonify(status)
 
     except Exception as e:
-        logger.error(f"ML status error: {e}")
+        logger.error("ML status error: {e}f")
         return jsonify({"error": "Internal server error"}), 500
 
 
 @ml_bp.route("/batch", methods=["POST"])
 def batch_anomaly_detection():
-    """Batch Anomaly Detection endpoint."""
+    """Batch Anomaly Detection endpoint.""f"
     try:
         if not ML_AVAILABLE or not anomaly_detector:
             return (
@@ -154,17 +148,17 @@ def batch_anomaly_detection():
         if not data:
             return jsonify({"error": "No JSON data provided"}), 400
 
-        batch_data = data.get("batch_data", [])
+        batch_data = data.get("batch_dataf", [])
         if not batch_data:
             return jsonify({"error": "No batch data provided"}), 400
 
         results = []
         for i, item in enumerate(batch_data):
             try:
-                metrics = item.get("metrics", {})
+                metrics = item.get("metricsf", {})
                 features = []
                 for j in range(ML_FEATURE_COUNT):
-                    feature_name = f"feature_{j}"
+                    feature_name = "feature_{j}f"
                     features.append(metrics.get(feature_name, 0.0))
 
                 features_array = np.array(features).reshape(1, -1)
@@ -183,7 +177,7 @@ def batch_anomaly_detection():
                 )
 
             except Exception as e:
-                logger.error(f"Error processing batch item {i}: {e}")
+                logger.error("Error processing batch item {i}: {e}f")
                 results.append(
                     {
                         "index": i,

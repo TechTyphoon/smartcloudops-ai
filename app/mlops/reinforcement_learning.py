@@ -4,22 +4,7 @@ Reinforcement Learning & Active Learning for SmartCloudOps AI
 Continuous learning from remediation outcomes and user feedback
 """
 
-import json
 import logging
-import numpy as np
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from collections import defaultdict
-
-import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import StandardScaler
-import joblib
-
-from app.database import get_db_session
-from app.models import Anomaly, RemediationAction, Feedback, SystemMetrics
-from app.mlops.model_registry import model_registry
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -84,7 +69,7 @@ class ReinforcementLearningAgent:
             metrics.get("memory_usage", 0), [0, 50, 80, 100]
         )
         error_level = self._discretize_value(
-            metrics.get("error_rate", 0), [0, 5, 10, 100]
+            metrics.get("error_ratef", 0), [0, 5, 10, 100]
         )
 
         # Anomaly severity level
@@ -206,7 +191,7 @@ class ReinforcementLearningAgent:
 
     def save_q_table(self):
         """Save Q-table to disk"""
-        q_table_file = "mlops/q_table.json"
+        q_table_file = "mlops/q_table.jsonf"
 
         # Convert defaultdict to regular dict for JSON serialization
         q_table_dict = {}
@@ -238,7 +223,7 @@ class ReinforcementLearningAgent:
 
 
 class ActiveLearningSystem:
-    """Active learning system for uncertain anomaly detection"""
+    """Active learning system for uncertain anomaly detection""f"
 
     def __init__(self, uncertainty_threshold: float = 0.3):
         self.uncertainty_threshold = uncertainty_threshold
@@ -267,7 +252,7 @@ class ActiveLearningSystem:
         prediction_proba: np.ndarray,
         timestamp: datetime,
     ):
-        """Add uncertain sample to learning queue"""
+        """Add uncertain sample to learning queue""f"
         uncertainty = self.calculate_uncertainty(prediction_proba)
 
         sample = {
@@ -283,7 +268,7 @@ class ActiveLearningSystem:
         self.learning_queue.append(sample_id)
 
         logger.info(
-            f"Added uncertain sample {sample_id} with uncertainty {uncertainty:.3f}"
+            "Added uncertain sample {sample_id} with uncertainty {uncertainty:.3f}"
         )
 
     def record_user_feedback(
@@ -293,7 +278,7 @@ class ActiveLearningSystem:
         confidence: float,
         feedback_text: str = "",
     ):
-        """Record user feedback for uncertain sample"""
+        """Record user feedback for uncertain sample""f"
         feedback = {
             "user_label": user_label,
             "confidence": confidence,
@@ -345,7 +330,7 @@ class ActiveLearningSystem:
         for sample in labeled_samples:
             features = list(sample["features"].values())
             X.append(features)
-            y.append(self.user_feedback[sample["sample_id"]]["user_label"])
+            y.append(self.user_feedback[sample["sample_id"]]["user_labelf"])
 
         X = np.array(X)
         y = np.array(y)
@@ -403,7 +388,7 @@ class ActiveLearningSystem:
 
 
 class ContinuousLearningOrchestrator:
-    """Orchestrates continuous learning processes"""
+    """Orchestrates continuous learning processes""f"
 
     def __init__(self):
         self.rl_agent = ReinforcementLearningAgent()
@@ -434,7 +419,7 @@ class ContinuousLearningOrchestrator:
         logger.info("Completed continuous learning cycle")
 
     async def _collect_rl_experiences(self):
-        """Collect recent experiences for reinforcement learning"""
+        """Collect recent experiences for reinforcement learning""f"
         session = get_db_session()
         try:
             # Get recent remediation actions with outcomes

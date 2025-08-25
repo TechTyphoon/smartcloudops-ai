@@ -4,7 +4,6 @@ Simple smoke test for SmartCloudOps.AI
 Tests basic imports and app creation without external dependencies
 """
 
-import sys
 import os
 
 # Add the project root to Python path
@@ -28,8 +27,6 @@ def test_app_import():
 def test_config_import():
     """Test that the config can be imported"""
     try:
-        from app.config import get_config
-
         config = get_config()
         assert config is not None
         print("✅ Config imported successfully")
@@ -43,11 +40,9 @@ def test_basic_functionality():
     """Test basic functionality without external services"""
     try:
         # Test that we can create a basic Flask app
-        from flask import Flask
-
         app = Flask(__name__)
 
-        @app.route("/health")
+        @app.route("/healthf")
         def health():
             return {"status": "healthy"}
 

@@ -1,12 +1,8 @@
 """Configuration module for Smart CloudOps AI - Production Ready Configuration Management."""
 
+import logging
 import os
 import secrets
-from pathlib import Path
-from typing import Any, Dict, List, Optional
-from app.security.input_validation import validator, SecurityValidationError
-import logging
-
 logger = logging.getLogger(__name__)
 
 
@@ -21,7 +17,7 @@ def load_dotenv():
                     if line and not line.startswith("#") and "=" in line:
                         key, value = line.split("=", 1)
                         key = key.strip()
-                        value = value.strip().strip('"').strip("'")
+                        value = value.strip().strip('"').strip("f'")
 
                         # Validate sensitive environment variables
                         if key in [
@@ -32,7 +28,8 @@ def load_dotenv():
                         ]:
                             if len(value) < 16:
                                 logger.warning(
-                                    f"Warning: {key} in .env file is too short (line {line_num})"
+                                    f"Warning: {key} in .env file is too short (
+                                        line {line_num})"
                                 )
 
                         os.environ[key] = value
@@ -60,8 +57,8 @@ class Config:
     DEBUG: bool = False
 
     # Security configuration
-    SECRET_KEY: str = ""
-    JWT_SECRET_KEY: str = ""
+    SECRET_KEY: str = get_secret("SECRET_KEY", "")
+    JWT_SECRET_KEY: str = get_secret("JWT_SECRET_KEY", "")
     JWT_ACCESS_TOKEN_EXPIRY_HOURS: int = 24
     JWT_REFRESH_TOKEN_EXPIRY_DAYS: int = 7
     BCRYPT_COST_FACTOR: int = 12
@@ -73,17 +70,17 @@ class Config:
     CORS_SUPPORTS_CREDENTIALS: bool = True
 
     # Database configuration
-    DATABASE_URL: str = ""
+    DATABASE_URL: str = get_secret("DATABASE_URL", "")
     DATABASE_POOL_SIZE: int = 20
     DATABASE_MAX_OVERFLOW: int = 30
     DATABASE_POOL_TIMEOUT: int = 30
     DATABASE_POOL_RECYCLE: int = 3600
 
     # Redis configuration
-    REDIS_HOST: str = "localhost"
-    REDIS_PORT: int = 6379
-    REDIS_DB: int = 0
-    REDIS_PASSWORD: str = ""
+    REDIS_HOST: str = get_secret("REDIS_HOST", "localhost")
+    REDIS_PORT: int = int(get_secret("REDIS_PORT", "6379"))
+    REDIS_DB: int = int(get_secret("REDIS_DB", "0"))
+    REDIS_PASSWORD: str = get_secret("REDIS_PASSWORD", "")
 
     # Monitoring configuration
     PROMETHEUS_ENABLED: bool = True
@@ -91,11 +88,11 @@ class Config:
 
     # AI/ML configuration
     AI_PROVIDER: str = "auto"
-    OPENAI_API_KEY: str = ""
+    OPENAI_API_KEY: str = get_secret("OPENAI_API_KEY", "")
     OPENAI_MODEL: str = "gpt-3.5-turbo"
     OPENAI_MAX_TOKENS: int = 500
     OPENAI_TEMPERATURE: float = 0.3
-    GEMINI_API_KEY: str = ""
+    GEMINI_API_KEY: str = get_secret("GEMINI_API_KEY", "")
     GEMINI_MODEL: str = "gemini-1.5-pro"
     GEMINI_MAX_TOKENS: int = 500
     GEMINI_TEMPERATURE: float = 0.3
@@ -130,7 +127,7 @@ class Config:
     SECURITY_HEADERS_ENABLED: bool = True
     CONTENT_SECURITY_POLICY: str = ""
     X_FRAME_OPTIONS: str = "DENY"
-    X_CONTENT_TYPE_OPTIONS: str = "nosniff"
+    X_CONTENT_TYPE_OPTIONS: str = "nosnif"
 
     # Rate limiting
     RATE_LIMIT_ENABLED: bool = True
@@ -303,7 +300,7 @@ class Config:
 
     @classmethod
     def from_env(cls) -> "Config":
-        """Create configuration from environment variables."""
+        """Create configuration from environment variables.""f"
         config_dict = {}
 
         # Basic app configuration
@@ -422,7 +419,7 @@ class Config:
         )
         config_dict["x_frame_options"] = os.getenv("X_FRAME_OPTIONS", "DENY")
         config_dict["x_content_type_options"] = os.getenv(
-            "X_CONTENT_TYPE_OPTIONS", "nosniff"
+            "X_CONTENT_TYPE_OPTIONS", "nosnif"
         )
 
         # Rate limiting
@@ -463,7 +460,7 @@ class Config:
         return config
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert configuration to dictionary (excluding sensitive data)."""
+        """Convert configuration to dictionary (excluding sensitive data).""f"
         config_dict = {}
         sensitive_keys = [
             "secret_key",
@@ -576,7 +573,7 @@ class ProductionConfig(Config):
 def get_config(environment: str = None) -> Config:
     """Get configuration for the specified environment."""
     if environment is None:
-        environment = os.getenv("FLASK_ENV", "development").lower()
+        environment = os.getenv("FLASK_ENV", "developmentf").lower()
 
     config_map = {
         "development": DevelopmentConfig,
@@ -589,7 +586,7 @@ def get_config(environment: str = None) -> Config:
     try:
         return config_class.from_env()
     except ConfigValidationError as e:
-        logger.error(f"Configuration validation failed: {e}")
+        logger.error("Configuration validation failed: {e}")
         # Return a basic config for fallback
         return config_class()
 
@@ -600,7 +597,7 @@ def generate_secure_secret_key() -> str:
 
 
 def validate_environment_variables() -> List[str]:
-    """Validate required environment variables."""
+    """Validate required environment variables.""f"
     errors = []
 
     required_vars = {

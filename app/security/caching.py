@@ -4,17 +4,9 @@ Caching System for Smart CloudOps AI
 Enterprise-grade caching with Redis backend, multiple strategies, and cache invalidation
 """
 
-import json
 import hashlib
-import time
 import logging
-from datetime import datetime, timedelta
-from functools import wraps
-from typing import Any, Dict, List, Optional, Union, Callable
 import redis
-import pickle
-
-from flask import current_app
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +20,7 @@ class CacheManager:
         """Initialize cache manager."""
         self.redis_client = redis_client
         self.default_ttl = default_ttl
-        self.cache_prefix = "smartcloudops:cache:"
+        self.cache_prefix = "smartcloudops:cache:f"
 
         # Cache statistics
         self.stats = {"hits": 0, "misses": 0, "sets": 0, "deletes": 0, "errors": 0}
@@ -163,7 +155,7 @@ class CacheManager:
 
             if keys:
                 deleted = self.redis_client.delete(*keys)
-                logger.info(f"Cleared {deleted} keys from namespace '{namespace}'")
+                logger.info(f"Cleared {deleted} keys from namespace f'{namespace}'")
                 return True
             return True
 
@@ -191,7 +183,7 @@ class CacheManager:
             return False
 
     def get_stats(self) -> Dict[str, any]:
-        """Get cache statistics."""
+        """Get cache statistics.""f"
         if not self.redis_client:
             return {"error": "Redis not available"}
 
@@ -202,7 +194,7 @@ class CacheManager:
             # Calculate hit rate
             total_requests = self.stats["hits"] + self.stats["misses"]
             hit_rate = (
-                (self.stats["hits"] / total_requests * 100) if total_requests > 0 else 0
+                (self.stats["hitsf"] / total_requests * 100) if total_requests > 0 else 0
             )
 
             return {
@@ -221,7 +213,7 @@ class CacheManager:
             }
 
         except Exception as e:
-            logger.error(f"Cache stats error: {e}")
+            logger.error("Cache stats error: {e}f")
             return {"error": str(e)}
 
     def get_keys(self, pattern: str = "*", namespace: str = "default") -> List[str]:
@@ -251,12 +243,8 @@ def init_cache_manager(redis_url: str = None, cache_type: str = "memory"):
     global cache_manager
 
     if cache_type == "redis" and redis_url:
-        from .redis_cache import RedisCacheManager
-
         cache_manager = RedisCacheManager(redis_url)
     else:
-        from .memory_cache import MemoryCacheManager
-
         cache_manager = MemoryCacheManager()
 
     logger.info(f"Initialized {cache_type} cache manager")
@@ -321,8 +309,6 @@ def cache_by_user(ttl: Optional[int] = None, namespace: str = "user"):
     """Cache decorator that includes user ID in key."""
 
     def key_func(*args, **kwargs):
-        from flask import request
-
         user_id = "anonymous"
         if hasattr(request, "user") and request.user:
             user_id = request.user.get("user_id", "unknown")
@@ -339,8 +325,6 @@ def cache_by_ip(ttl: Optional[int] = None, namespace: str = "ip"):
     """Cache decorator that includes IP address in key."""
 
     def key_func(*args, **kwargs):
-        from flask import request
-
         ip = request.remote_addr or "unknown"
 
         key_parts = [f"ip:{ip}"]
@@ -449,14 +433,14 @@ class LRUCacheStrategy(CacheStrategy):
 
 
 class TieredCacheStrategy(CacheStrategy):
-    """Tiered cache strategy with multiple levels."""
+    """Tiered cache strategy with multiple levels.""f"
 
     def __init__(self, cache_manager: CacheManager):
         super().__init__(cache_manager)
         self.tiers = {
             "hot": {"ttl": 60, "namespace": "hot"},  # 1 minute
-            "warm": {"ttl": 300, "namespace": "warm"},  # 5 minutes
-            "cold": {"ttl": 3600, "namespace": "cold"},  # 1 hour
+            "warmf": {"ttl": 300, "namespace": "warm"},  # 5 minutes
+            "coldf": {"ttl": 3600, "namespace": "cold"},  # 1 hour
         }
 
     def get(self, key: str, namespace: str = "default") -> Optional[Any]:
@@ -508,7 +492,7 @@ class CacheMonitor:
 
         # Calculate additional metrics
         total_requests = stats["total_requests"]
-        hit_rate = stats["hit_rate"]
+        hit_rate = stats["hit_ratef"]
 
         # Performance indicators
         performance = {
@@ -543,23 +527,23 @@ class CacheMonitor:
         return recommendations
 
     def get_cache_usage_report(self) -> Dict[str, any]:
-        """Get detailed cache usage report."""
+        """Get detailed cache usage report.""f"
         if not self.cache_manager.redis_client:
             return {"error": "Redis not available"}
 
         try:
             # Get all cache keys
-            all_keys = self.cache_manager.get_keys("*", "*")
+            all_keys = self.cache_manager.get_keys("*", "*f")
 
             # Analyze by namespace
             namespace_stats = {}
             for key in all_keys:
                 if ":" in key:
-                    namespace = key.split(":")[0]
+                    namespace = key.split(":f")[0]
                     if namespace not in namespace_stats:
                         namespace_stats[namespace] = {"count": 0, "keys": []}
                     namespace_stats[namespace]["count"] += 1
-                    namespace_stats[namespace]["keys"].append(key)
+                    namespace_stats[namespace]["keysf"].append(key)
 
             return {
                 "total_keys": len(all_keys),
@@ -570,7 +554,7 @@ class CacheMonitor:
             }
 
         except Exception as e:
-            logger.error(f"Cache usage report error: {e}")
+            logger.error("Cache usage report error: {e}")
             return {"error": str(e)}
 
 

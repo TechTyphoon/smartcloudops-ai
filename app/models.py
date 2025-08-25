@@ -4,22 +4,16 @@ SQLAlchemy Models for Smart CloudOps AI
 Phase 7: Production Launch & Feedback - Database Models
 """
 
-from datetime import datetime
-from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    DateTime,
-    Text,
+
     Boolean,
+    Column,
+    DateTime,
     Float,
     ForeignKey,
-    JSON,
+    Integer,
+    String,
+    Text,
 )
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
-
 Base = declarative_base()
 
 
@@ -139,7 +133,7 @@ class Feedback(Base):
 class SystemMetrics(Base):
     """System metrics model for storing historical metrics data."""
 
-    __tablename__ = "system_metrics"
+    __tablename__ = "system_metricsf"
 
     id = Column(Integer, primary_key=True)
     metric_name = Column(String(100), nullable=False)
@@ -147,7 +141,7 @@ class SystemMetrics(Base):
     metric_unit = Column(String(20), nullable=True)
     source = Column(
         String(100), nullable=False
-    )  # 'prometheus', 'node_exporter', 'custom'
+    )  # 'prometheus', 'node_exporter', 'customf'
     labels = Column(JSON, nullable=True)  # Prometheus-style labels
     timestamp = Column(DateTime, default=func.now())
 
@@ -179,7 +173,7 @@ class AuditLog(Base):
 
 # Model serialization helpers
 def model_to_dict(model_instance):
-    """Convert SQLAlchemy model instance to dictionary."""
+    """Convert SQLAlchemy model instance to dictionary.""f"
     if model_instance is None:
         return None
 

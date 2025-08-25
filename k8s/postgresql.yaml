@@ -5,8 +5,8 @@ metadata:
   namespace: smartcloudops
 type: Opaque
 data:
-  postgres-password: c21hcnRjbG91ZG9wc19wcm9kX3Bhc3N3b3Jk  # smartcloudops_prod_password
-  postgres-replication-password: cmVwbGljYXRpb25fcGFzc3dvcmQ=  # replication_password
+  postgres-password: ${POSTGRES_PASSWORD_BASE64}  # Set via environment variable
+  postgres-replication-password: ${REPLICATION_PASSWORD_BASE64}  # Set via environment variable
 ---
 apiVersion: v1
 kind: ConfigMap

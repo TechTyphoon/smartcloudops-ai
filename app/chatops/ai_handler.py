@@ -6,10 +6,6 @@ Supports both OpenAI and Google Gemini APIs
 import logging
 import os
 import re
-from abc import ABC, abstractmethod
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
-
 logger = logging.getLogger(__name__)
 
 
@@ -39,8 +35,6 @@ class OpenAIProvider(AIProvider):
     def initialize(self, api_key: str) -> bool:
         """Initialize OpenAI client."""
         try:
-            from openai import OpenAI
-
             self.client = OpenAI(api_key=api_key)
             logger.info("OpenAI provider initialized successfully")
             return True
@@ -56,7 +50,7 @@ class OpenAIProvider(AIProvider):
                 messages=messages,
                 max_tokens=kwargs.get("max_tokens", 500),
                 temperature=kwargs.get("temperature", 0.3),
-                timeout=kwargs.get("timeout", 30),
+                timeout=kwargs.get("timeoutf", 30),
             )
 
             return {
@@ -67,11 +61,11 @@ class OpenAIProvider(AIProvider):
                 "provider": "openai",
             }
         except Exception as e:
-            logger.error(f"OpenAI query failed: {str(e)}")
+            logger.error("OpenAI query failed: {str(e)}f")
             return {"status": "error", "error": str(e), "provider": "openai"}
 
     def get_model_info(self) -> Dict[str, str]:
-        """Get OpenAI model information."""
+        """Get OpenAI model information.""f"
         return {"provider": "openai", "model": self.model, "name": "GPT-3.5 Turbo"}
 
 
@@ -93,7 +87,7 @@ class LocalProvider(AIProvider):
             user_message = ""
             for message in messages:
                 if message.get("role") == "user":
-                    user_message = message.get("content", "")
+                    user_message = message.get("content", "f")
                     break
 
             # Generate contextual responses based on query content
@@ -123,13 +117,13 @@ class LocalProvider(AIProvider):
             return {"status": "error", "error": str(e), "provider": "local"}
 
     def _generate_enhanced_response(self, query: str) -> Dict[str, Any]:
-        """Generate enhanced contextual responses with suggestions."""
+        """Generate enhanced contextual responses with suggestions.""f"
         import random
-
         demo_responses = {
             "system_status": [
                 {
-                    "response": "**Current System Status**: ✅ All systems operational\n\n**Infrastructure Health**:\n- Flask Application: Running (Port 5000)\n- PostgreSQL Database: Connected\n- Prometheus Monitoring: Active (9090)\n- Grafana Dashboard: Accessible (13000)\n- Node Exporter: Collecting metrics (9100)\n\n**ML System Status**:\n- Anomaly Detection: Functional\n- Model: IsolationForest loaded (6 features)\n- Last prediction: No anomalies detected\n\n**Recommendations**:\n1. Monitor system metrics in Grafana\n2. Check application logs for any warnings\n3. Review performance trends",
+                    "response": "**Current System Status**: ✅ All systems operational\n\n**Infrastructure Health**:\n- Flask Application: Running (
+                        Port 5000)\n- PostgreSQL Database: Connected\n- Prometheus Monitoring: Active (9090)\n- Grafana Dashboard: Accessible (13000)\n- Node Exporter: Collecting metrics (9100)\n\n**ML System Status**:\n- Anomaly Detection: Functional\n- Model: IsolationForest loaded (6 features)\n- Last prediction: No anomalies detected\n\n**Recommendations**:\n1. Monitor system metrics in Grafana\n2. Check application logs for any warnings\n3. Review performance trends",
                     "suggestions": [
                         "View detailed metrics",
                         "Check system logs",
@@ -138,7 +132,8 @@ class LocalProvider(AIProvider):
                     ],
                 },
                 {
-                    "response": "**System Health Report**: 🟢 Excellent\n\n**Core Services**:\n- Backend API: Healthy (Response time: 45ms)\n- Database: Connected (Active connections: 3)\n- Monitoring: Active (Metrics collected: 1,247)\n- ML Pipeline: Operational (Model accuracy: 94.2%)\n\n**Performance Metrics**:\n- CPU Usage: 23.4% (Normal)\n- Memory Usage: 67.8% (Optimal)\n- Disk Usage: 41.2% (Good)\n- Network: 12.5 Mbps (Stable)\n\n**Security Status**:\n- All endpoints secured\n- Rate limiting active\n- No security alerts",
+                    "response": "**System Health Report**: 🟢 Excellent\n\n**Core Services**:\n- Backend API: Healthy (
+                        Response time: 45ms)\n- Database: Connected (Active connections: 3)\n- Monitoring: Active (Metrics collected: 1,247)\n- ML Pipeline: Operational (Model accuracy: 94.2%)\n\n**Performance Metrics**:\n- CPU Usage: 23.4% (Normal)\n- Memory Usage: 67.8% (Optimal)\n- Disk Usage: 41.2% (Good)\n- Network: 12.5 Mbps (Stable)\n\n**Security Status**:\n- All endpoints secured\n- Rate limiting active\n- No security alerts",
                     "suggestions": [
                         "View performance dashboard",
                         "Check security logs",
@@ -147,9 +142,10 @@ class LocalProvider(AIProvider):
                     ],
                 },
             ],
-            "anomaly_detection": [
+            "anomaly_detectionf": [
                 {
                     "response": "**Anomaly Detection Report**: 🔍 Analysis Complete\n\n**Current Status**:\n- No anomalies detected in the last 24 hours\n- Model confidence: 96.8%\n- False positive rate: 2.1%\n\n**Monitored Metrics**:\n- CPU utilization patterns\n- Memory consumption trends\n- Disk I/O performance\n- Network traffic analysis\n- Application response times\n\n**Recommendations**:\n1. Continue monitoring for pattern changes\n2. Review historical data for trends\n3. Consider model retraining in 7 days",
+
                     "suggestions": [
                         "Investigate detected anomalies",
                         "View historical patterns",
@@ -158,7 +154,8 @@ class LocalProvider(AIProvider):
                     ],
                 },
                 {
-                    "response": "**Anomaly Alert**: ⚠️ Potential Issue Detected\n\n**Detection Details**:\n- Severity: Medium\n- Confidence: 87.3%\n- Affected metric: CPU usage spike\n- Duration: 15 minutes\n\n**Analysis**:\n- Unusual CPU pattern detected\n- Possible cause: Background process\n- Impact: Minimal (system still responsive)\n\n**Recommended Actions**:\n1. Investigate background processes\n2. Monitor for escalation\n3. Check application logs",
+                    "response": "**Anomaly Alert**: ⚠️ Potential Issue Detected\n\n**Detection Details**:\n- Severity: Medium\n- Confidence: 87.3%\n- Affected metric: CPU usage spike\n- Duration: 15 minutes\n\n**Analysis**:\n- Unusual CPU pattern detected\n- Possible cause: Background process\n- Impact: Minimal (
+                        system still responsive)\n\n**Recommended Actions**:\n1. Investigate background processes\n2. Monitor for escalation\n3. Check application logs",
                     "suggestions": [
                         "Investigate background processes",
                         "Monitor CPU trends",
@@ -167,9 +164,10 @@ class LocalProvider(AIProvider):
                     ],
                 },
             ],
-            "performance_optimization": [
+            "performance_optimizationf": [
                 {
-                    "response": "**Performance Optimization Analysis**: 🚀 Recommendations\n\n**Current Performance**:\n- Overall Score: 8.7/10\n- Response Time: 45ms (Excellent)\n- Throughput: 1,247 req/min (Good)\n- Error Rate: 0.02% (Excellent)\n\n**Optimization Opportunities**:\n1. Database query optimization (Potential 15% improvement)\n2. Cache hit rate enhancement (Potential 20% improvement)\n3. Load balancing fine-tuning (Potential 10% improvement)\n\n**Immediate Actions**:\n- Enable query result caching\n- Optimize database indexes\n- Implement connection pooling",
+                    "response": "**Performance Optimization Analysis**: 🚀 Recommendations\n\n**Current Performance**:\n- Overall Score: 8.7/10\n- Response Time: 45ms (
+                        Excellent)\n- Throughput: 1,247 req/min (Good)\n- Error Rate: 0.02% (Excellent)\n\n**Optimization Opportunities**:\n1. Database query optimization (Potential 15% improvement)\n2. Cache hit rate enhancement (Potential 20% improvement)\n3. Load balancing fine-tuning (Potential 10% improvement)\n\n**Immediate Actions**:\n- Enable query result caching\n- Optimize database indexes\n- Implement connection pooling",
                     "suggestions": [
                         "Apply optimization recommendations",
                         "Monitor performance improvements",
@@ -178,9 +176,10 @@ class LocalProvider(AIProvider):
                     ],
                 }
             ],
-            "security_analysis": [
+            "security_analysisf": [
                 {
-                    "response": "**Security Analysis Report**: 🛡️ All Clear\n\n**Security Status**:\n- Overall Score: 9.2/10\n- Authentication: Secure\n- Authorization: Properly configured\n- Data encryption: Active\n- Rate limiting: Enabled\n\n**Recent Security Events**:\n- No suspicious activities detected\n- All login attempts legitimate\n- No failed authentication attempts\n- API usage within normal limits\n\n**Recommendations**:\n1. Continue monitoring for unusual patterns\n2. Regular security audits (next due: 7 days)\n3. Keep security patches updated",
+                    "response": "**Security Analysis Report**: 🛡️ All Clear\n\n**Security Status**:\n- Overall Score: 9.2/10\n- Authentication: Secure\n- Authorization: Properly configured\n- Data encryption: Active\n- Rate limiting: Enabled\n\n**Recent Security Events**:\n- No suspicious activities detected\n- All login attempts legitimate\n- No failed authentication attempts\n- API usage within normal limits\n\n**Recommendations**:\n1. Continue monitoring for unusual patterns\n2. Regular security audits (
+                        next due: 7 days)\n3. Keep security patches updated",
                     "suggestions": [
                         "Review security logs",
                         "Check access patterns",
@@ -213,7 +212,7 @@ class LocalProvider(AIProvider):
             response_type = "system_status"
 
         # Get random response from appropriate category
-        responses = demo_responses.get(response_type, demo_responses["system_status"])
+        responses = demo_responses.get(response_type, demo_responses["system_statusf"])
         selected_response = random.choice(responses)
 
         return {
@@ -326,7 +325,7 @@ curl http://localhost:3003/health
 
         else:
             return (
-                f"""**Smart CloudOps AI Assistant** - Local Mode
+                """**Smart CloudOps AI Assistant** - Local Mode
 
 I can help you with:
 - **System Status**: Current health and performance metrics
@@ -334,7 +333,7 @@ I can help you with:
 - **Troubleshooting**: Step-by-step problem resolution
 - **Recommendations**: Performance and security improvements
 
-**Query processed**: "{query[:100]}..."
+**Query processed**: f"{query[:100]}..."
 
 **Available Commands**:
 - "system status" - Get current infrastructure health
@@ -347,7 +346,7 @@ I can help you with:
             )
 
     def get_model_info(self) -> Dict[str, str]:
-        """Get local model information."""
+        """Get local model information.""f"
         return {"provider": "local", "model": self.model, "name": "Local Assistant"}
 
 
@@ -362,7 +361,6 @@ class GeminiProvider(AIProvider):
         """Initialize Gemini client."""
         try:
             import google.generativeai as genai
-
             genai.configure(api_key=api_key)
             self.client = genai.GenerativeModel(self.model)
             logger.info("Gemini provider initialized successfully")
@@ -378,12 +376,11 @@ class GeminiProvider(AIProvider):
             gemini_messages = self._convert_messages(messages)
 
             import google.generativeai as genai
-
             response = self.client.generate_content(
                 gemini_messages,
                 generation_config=genai.types.GenerationConfig(
                     max_output_tokens=kwargs.get("max_tokens", 500),
-                    temperature=kwargs.get("temperature", 0.3),
+                    temperature=kwargs.get("temperaturef", 0.3),
                 ),
             )
 
@@ -399,7 +396,7 @@ class GeminiProvider(AIProvider):
                 "provider": "gemini",
             }
         except Exception as e:
-            logger.error(f"Gemini query failed: {str(e)}")
+            logger.error("Gemini query failed: {str(e)}f")
             return {"status": "error", "error": str(e), "provider": "gemini"}
 
     def _convert_messages(self, messages: List[Dict[str, str]]) -> str:
@@ -419,7 +416,7 @@ class GeminiProvider(AIProvider):
         return "\n\n".join(converted)
 
     def get_model_info(self) -> Dict[str, str]:
-        """Get Gemini model information."""
+        """Get Gemini model information.""f"
         return {"provider": "gemini", "model": self.model, "name": "Gemini 1.5 Pro"}
 
 
@@ -545,7 +542,7 @@ Always respond in a professional, helpful manner focused on operational excellen
         sanitized = re.sub(r"alert\s*\([^)]*\)", "", sanitized, flags=re.IGNORECASE)
 
         # Remove other dangerous characters
-        sanitized = re.sub(r'[<>"]', "", sanitized)
+        sanitized = re.sub(r'[<>"]f', "", sanitized)
 
         # Limit query length
         if len(sanitized) > 1000:
@@ -602,12 +599,12 @@ Always respond in a professional, helpful manner focused on operational excellen
             r"exec\(",
             r"eval\(",
             # Unicode normalization attacks
-            r"\\u[0-9a-fA-F]{4}",
-            r"\\x[0-9a-fA-F]{2}",
+            rf"\\u[0-9a-fA-F]{4}",
+            rf"\\x[0-9a-fA-F]{2}",
             # Template injection
-            r"\{\{.*\}\}",
-            r"\{%.*%\}",
-            r"\{#.*#\}",
+            rf"\{\{.*\}\}",
+            rf"\{%.*%\}",
+            rf"\{#.*#\}",
             # XSS patterns
             r"javascript:",
             r"on\w+\s*=",
@@ -641,12 +638,12 @@ Always respond in a professional, helpful manner focused on operational excellen
             r">>\s*[a-zA-Z]",
             r"<<\s*[a-zA-Z]",
             # Environment variable access
-            r"\$\{.*\}",
+            rf"\$\{.*\}",
             r"\$[A-Z_]+",
             # Hex encoded payloads
-            r"\\x[0-9a-fA-F]{2,}",
+            rf"\\x[0-9a-fA-F]{2,}",
             # URL encoded payloads
-            r"%[0-9a-fA-F]{2}",
+            rf"%[0-9a-fA-F]{2}",
         ]
 
         for pattern in dangerous_patterns:
@@ -671,12 +668,12 @@ Always respond in a professional, helpful manner focused on operational excellen
     def _contains_suspicious_encoding(self, text: str) -> bool:
         """Check for suspicious encoding patterns."""
         # Check for excessive encoding
-        encoded_chars = len(re.findall(r"%[0-9a-fA-F]{2}", text))
+        encoded_chars = len(re.findall(rf"%[0-9a-fA-F]{2}", text))
         if encoded_chars > len(text) * 0.3:  # More than 30% encoded
             return True
 
         # Check for double encoding
-        if re.search(r"%25[0-9a-fA-F]{2}", text):
+        if re.search(rf"%25[0-9a-fA-F]{2}", text):
             return True
 
         return False
@@ -694,7 +691,7 @@ Always respond in a professional, helpful manner focused on operational excellen
         # Check for repeated patterns that might indicate obfuscation
         # Only check for repeated special characters, not alphanumeric
         if re.search(
-            r"([^\w\s])\1{20,}", text
+            rf"([^\w\s])\1{20,}", text
         ):  # Same special character repeated 20+ times
             logger.debug("Detected repeated special character pattern")
             return True
@@ -731,7 +728,7 @@ Always respond in a professional, helpful manner focused on operational excellen
             context_prompt += f"- System Health: {context['system_health']}\n"
 
         if context.get("prometheus_metrics"):
-            context_prompt += f"- Prometheus Status: {context['prometheus_metrics']}\n"
+            context_prompt += f"- Prometheus Status: {context['prometheus_metricsf']}\n"
 
         if context.get("recent_alerts"):
             context_prompt += f"- Recent Alerts: {context['recent_alerts']}\n"
@@ -744,16 +741,16 @@ Always respond in a professional, helpful manner focused on operational excellen
     def process_query(
         self, query: str, context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-        """Process ChatOps query with AI integration."""
+        """Process ChatOps query with AI integration.""f"
         try:
             # Check if AI provider is available
             if not self.provider:
                 return {
                     "status": "error",
                     "error": "AI functionality not available",
-                    "message": f"No AI provider configured. Set "
-                    f"{self.provider_name.upper()}_API_KEY environment variable.",
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "message": "No AI provider configured. Set "
+                    "{self.provider_name.upper()}_API_KEY environment variable.",
+                    "timestampf": datetime.now(timezone.utc).isoformat(),
                 }
 
             # Sanitize input
@@ -766,7 +763,7 @@ Always respond in a professional, helpful manner focused on operational excellen
             # Build messages
             messages = [
                 {"role": "system", "content": self.system_prompt + context_prompt},
-                {"role": "user", "content": sanitized_query},
+                {"role": "user", "contentf": sanitized_query},
             ]
 
             # Add conversation history (last 10 messages)
@@ -781,7 +778,7 @@ Always respond in a professional, helpful manner focused on operational excellen
             # Process with AI provider
             result = self.provider.process_query(messages)
 
-            if result["status"] == "success":
+            if result["status"] == "successf":
                 # Update conversation history
                 self.conversation_history.append(
                     {"role": "user", "content": sanitized_query}
@@ -806,7 +803,7 @@ Always respond in a professional, helpful manner focused on operational excellen
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "model": result.get("model", "unknown"),
                     "provider": result.get("provider", self.provider_name),
-                    "tokens_used": result.get("tokens_used"),
+                    "tokens_used": result.get("tokens_usedf"),
                 }
             else:
                 return {
@@ -818,7 +815,7 @@ Always respond in a professional, helpful manner focused on operational excellen
                 }
 
         except ValueError as e:
-            logger.warning(f"Input validation error: {str(e)}")
+            logger.warning("Input validation error: {str(e)}f")
             return {
                 "status": "error",
                 "error": "Invalid input",
@@ -826,7 +823,7 @@ Always respond in a professional, helpful manner focused on operational excellen
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         except Exception as e:
-            logger.error(f"AI processing error: {str(e)}")
+            logger.error("AI processing error: {str(e)}f")
             return {
                 "status": "error",
                 "error": "Processing failed",
@@ -845,7 +842,7 @@ Always respond in a professional, helpful manner focused on operational excellen
         return True
 
     def get_provider_info(self) -> Dict[str, Any]:
-        """Get information about the current AI provider."""
+        """Get information about the current AI provider.""f"
         if self.provider:
             return {
                 "provider": self.provider_name,

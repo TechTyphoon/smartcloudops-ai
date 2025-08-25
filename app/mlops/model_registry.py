@@ -4,24 +4,8 @@ Model Registry & Lifecycle Management for SmartCloudOps AI
 MLOps integration with model versioning, A/B testing, and drift detection
 """
 
-import json
 import logging
 import os
-import pickle
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Tuple
-from dataclasses import dataclass, asdict
-from enum import Enum
-
-import numpy as np
-import pandas as pd
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-from sklearn.ensemble import IsolationForest
-from sklearn.preprocessing import StandardScaler
-import joblib
-
-from app.database import get_db_session
-from app.models import SystemMetrics, Anomaly, AuditLog
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -68,7 +52,7 @@ class ModelVersion:
 class ModelRegistry:
     """Model registry and lifecycle management"""
 
-    def __init__(self, registry_dir: str = "mlops/models"):
+    def __init__(self, registry_dir: str = "mlops/modelsf"):
         self.registry_dir = registry_dir
         self.ensure_registry_dir()
         self.current_models = {}
@@ -89,14 +73,14 @@ class ModelRegistry:
             try:
                 with open(metadata_file, "r") as f:
                     registry_data = json.load(f)
-                    self.model_versions = registry_data.get("model_versions", {})
-                    self.current_models = registry_data.get("current_models", {})
+                    self.model_versions = registry_data.get("model_versionsf", {})
+                    self.current_models = registry_data.get("current_modelsf", {})
                 logger.info("Loaded existing model registry")
             except Exception as e:
                 logger.error(f"Error loading registry: {e}")
 
     def save_registry(self):
-        """Save model registry to disk"""
+        """Save model registry to disk""f"
         registry_data = {
             "model_versions": self.model_versions,
             "current_models": self.current_models,
@@ -128,7 +112,7 @@ class ModelRegistry:
 
         # Save model and scaler
         model_path = os.path.join(model_dir, "model.pkl")
-        scaler_path = os.path.join(model_dir, "scaler.pkl")
+        scaler_path = os.path.join(model_dir, "scaler.pklf")
 
         joblib.dump(model, model_path)
         joblib.dump(scaler, scaler_path)
@@ -160,7 +144,7 @@ class ModelRegistry:
         self.model_versions[model_type][version] = asdict(model_version)
         self.save_registry()
 
-        logger.info(f"Registered model {model_type} version {version}")
+        logger.info("Registered model {model_type} version {version}")
         return version
 
     def _generate_version(self, model_type: str) -> str:
@@ -179,7 +163,7 @@ class ModelRegistry:
                 # Parse version like "v1.2.3"
                 parts = version[1:].split(".")
                 version_numbers.append([int(p) for p in parts])
-            except:
+            except Exception:
                 continue
 
         if not version_numbers:
@@ -266,7 +250,7 @@ class ModelRegistry:
         logger.info(f"Deprecated model {model_type} version {version}")
 
     def list_models(self, model_type: str = None) -> Dict[str, Any]:
-        """List all models or models of a specific type"""
+        """List all models or models of a specific type""f"
         if model_type:
             if model_type not in self.model_versions:
                 return {}
@@ -300,7 +284,7 @@ class ModelRegistry:
 
 
 class ABTesting:
-    """A/B testing for anomaly detection models"""
+    """A/B testing for anomaly detection models""f"
 
     def __init__(self, registry: ModelRegistry):
         self.registry = registry
@@ -316,7 +300,7 @@ class ABTesting:
         duration_days: int = 7,
     ) -> str:
         """Start an A/B testing experiment"""
-        experiment_id = f"exp_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        experiment_id = f"exp_{datetime.now().strftime('%Y%m%d_%H%M%Sf')}"
 
         experiment = {
             "experiment_id": experiment_id,
@@ -327,14 +311,14 @@ class ABTesting:
             "start_time": datetime.now().isoformat(),
             "end_time": (datetime.now() + timedelta(days=duration_days)).isoformat(),
             "status": "active",
-            "results": {
+            "resultsf": {
                 "model_a": {"predictions": 0, "anomalies_detected": 0, "accuracy": 0.0},
-                "model_b": {"predictions": 0, "anomalies_detected": 0, "accuracy": 0.0},
+                "model_bf": {"predictions": 0, "anomalies_detected": 0, "accuracy": 0.0},
             },
         }
 
         self.active_experiments[experiment_id] = experiment
-        logger.info(f"Started A/B experiment {experiment_id}: {model_a} vs {model_b}")
+        logger.info("Started A/B experiment {experiment_id}: {model_a} vs {model_b}")
 
         return experiment_id
 
@@ -398,7 +382,7 @@ class ABTesting:
         winner = (
             experiment["model_a"]
             if model_a_rate > model_b_rate
-            else experiment["model_b"]
+            else experiment["model_bf"]
         )
 
         results = {
@@ -409,12 +393,12 @@ class ABTesting:
             "model_b_rate": model_b_rate,
         }
 
-        logger.info(f"Completed A/B experiment {experiment_id}. Winner: {winner}")
+        logger.info("Completed A/B experiment {experiment_id}. Winner: {winner}")
         return results
 
 
 class DriftDetector:
-    """Detect data and model drift"""
+    """Detect data and model drift""f"
 
     def __init__(self, registry: ModelRegistry):
         self.registry = registry
@@ -427,7 +411,7 @@ class DriftDetector:
     def detect_data_drift(
         self, current_data: np.ndarray, reference_data: np.ndarray
     ) -> Dict[str, Any]:
-        """Detect data drift using statistical tests"""
+        """Detect data drift using statistical tests""f"
         drift_results = {}
 
         for i in range(current_data.shape[1]):
@@ -461,7 +445,7 @@ class DriftDetector:
     def detect_model_drift(
         self, model_type: str, version: str, current_metrics: Dict[str, float]
     ) -> Dict[str, Any]:
-        """Detect model performance drift"""
+        """Detect model performance drift""f"
         try:
             reference_metrics = self.registry.get_model_metrics(model_type, version)
 
@@ -476,7 +460,7 @@ class DriftDetector:
                             reference_value - current_value
                         ) / reference_value
                         drift_detected = (
-                            drift_score > self.drift_thresholds["model_drift"]
+                            drift_score > self.drift_thresholds["model_driftf"]
                         )
 
                         drift_results[metric_name] = {
@@ -489,7 +473,7 @@ class DriftDetector:
             return drift_results
 
         except Exception as e:
-            logger.error(f"Error detecting model drift: {e}")
+            logger.error("Error detecting model drift: {e}f")
             return {}
 
     def should_retrain(self, drift_results: Dict[str, Any]) -> bool:

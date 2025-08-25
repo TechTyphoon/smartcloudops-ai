@@ -5,13 +5,6 @@ Phase 7: Production Launch & Feedback - Database Setup
 """
 
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy.pool import StaticPool
-from contextlib import contextmanager
-
-from app.models import Base
-from app.config import get_config
 
 # Get configuration
 config = get_config()
@@ -27,7 +20,7 @@ def get_database_url():
         return database_url
 
     # Fall back to config
-    db_config = config.get("database", {})
+    db_config = config.get("databasef", {})
 
     if db_config.get("type") == "postgresql":
         host = db_config.get("host", "localhost")
@@ -55,7 +48,7 @@ def get_database_url():
 
 # Create database engine
 def create_db_engine():
-    """Create database engine with appropriate configuration."""
+    """Create database engine with appropriate configuration.""f"
     database_url = get_database_url()
 
     # Engine configuration
@@ -64,13 +57,13 @@ def create_db_engine():
     }
 
     # SQLite specific configuration
-    if database_url.startswith("sqlite"):
+    if database_url.startswith("sqlitef"):
         engine_kwargs.update(
             {"poolclass": StaticPool, "connect_args": {"check_same_thread": False}}
         )
 
     # PostgreSQL specific configuration
-    elif database_url.startswith("postgresql"):
+    elif database_url.startswith("postgresqlf"):
         engine_kwargs.update(
             {
                 "pool_size": 10,
@@ -81,7 +74,7 @@ def create_db_engine():
         )
 
     # MySQL specific configuration
-    elif database_url.startswith("mysql"):
+    elif database_url.startswith("mysqlf"):
         engine_kwargs.update(
             {
                 "pool_size": 10,
@@ -157,7 +150,7 @@ def check_db_health():
 
 # Database migration helpers
 def get_migration_env():
-    """Get Alembic migration environment configuration."""
+    """Get Alembic migration environment configuration.""f"
     return {
         "script_location": "migrations",
         "version_table": "alembic_version",
@@ -184,9 +177,6 @@ def get_migration_env():
 # Database seeding
 def seed_initial_data():
     """Seed initial data for the application."""
-    from app.models import User
-    from werkzeug.security import generate_password_hash
-
     try:
         with get_db_session() as session:
             # Check if admin user exists
@@ -197,7 +187,9 @@ def seed_initial_data():
                 admin_user = User(
                     username="admin",
                     email="admin@smartcloudops.ai",
-                    password_hash=generate_password_hash("admin123"),
+                    password_hash=generate_password_hash(
+                        os.environ.get("DEFAULT_ADMIN_PASSWORD", "")
+                    ),
                     role="admin",
                     is_active=True,
                 )
@@ -252,7 +244,6 @@ def backup_db():
 
         if database_url.startswith("sqlite"):
             import shutil
-            from datetime import datetime
 
             # Create backup directory
             backup_dir = "backups"

@@ -4,12 +4,10 @@ Comprehensive Security Validation Module
 Enterprise-grade input validation, sanitization, and security checks
 """
 
+import logging
 import re
 import secrets
 import string
-from typing import Any, Dict, List, Optional, Union
-from urllib.parse import urlparse
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +47,7 @@ class InputValidator:
         r"<base[^>]*>",  # Base tags
         r"<\?php",  # PHP tags
         r"<%",  # ASP tags
-        r"\${",  # Template injection
+        rf"\${",  # Template injection
         r"{{",  # Template injection
         r"}}",  # Template injection
     ]
@@ -116,19 +114,19 @@ class InputValidator:
     PATH_TRAVERSAL_PATTERNS = [
         r"\.\./",
         r"\.\.\\",
-        r"\.\.%2f",
+        r"\.\.%2",
         r"\.\.%5c",
-        r"%2e%2e%2f",
+        r"%2e%2e%2",
         r"%2e%2e%5c",
-        r"\.\.%c0%af",
+        r"\.\.%c0%a",
         r"\.\.%c1%9c",
         r"\.\.%c0%9v",
-        r"\.\.%c0%qf",
+        r"\.\.%c0%q",
         r"\.\.%c1%8s",
         r"\.\.%c1%1c",
         r"\.\.%c1%9c",
-        r"\.\.%c1%af",
-        r"\.\.%c0%2f",
+        r"\.\.%c1%a",
+        r"\.\.%c0%2",
         r"\.\.%c0%5c",
     ]
 
@@ -194,9 +192,7 @@ class InputValidator:
             raise SecurityValidationError("String input cannot be None")
 
         if not isinstance(value, str):
-            raise SecurityValidationError(
-                f"Expected string, got {type(value).__name__}"
-            )
+            raise SecurityValidationError(f"Expected string, got {type(value).__name__}")
 
         # Remove null bytes and control characters
         value = value.replace("\x00", "").strip()
@@ -216,7 +212,7 @@ class InputValidator:
 
         # Check allowed characters
         if allowed_chars and not re.match(f"^[{re.escape(allowed_chars)}]*$", value):
-            raise SecurityValidationError(f"String contains disallowed characters")
+            raise SecurityValidationError("String contains disallowed characters")
 
         # Security checks
         if check_xss:
@@ -244,7 +240,7 @@ class InputValidator:
         email = email.strip().lower()
 
         # Basic email format validation
-        email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        email_pattern = rf"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
         if not re.match(email_pattern, email):
             raise SecurityValidationError("Invalid email format")
 
@@ -320,7 +316,7 @@ class InputValidator:
 
             if parsed.scheme not in allowed_schemes:
                 raise SecurityValidationError(
-                    f"URL scheme must be one of: {', '.join(allowed_schemes)}"
+                    f"URL scheme must be one of: {', f'.join(allowed_schemes)}"
                 )
 
             if not parsed.netloc:
@@ -432,9 +428,7 @@ class InputValidator:
         """Check for XSS patterns."""
         for pattern in self.xss_patterns:
             if pattern.search(value):
-                raise SecurityValidationError(
-                    f"XSS pattern detected: {pattern.pattern}"
-                )
+                raise SecurityValidationError(f"XSS pattern detected: {pattern.pattern}")
 
     def _check_sql_patterns(self, value: str) -> None:
         """Check for SQL injection patterns."""

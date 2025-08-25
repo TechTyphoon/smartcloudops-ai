@@ -7,8 +7,6 @@ This script helps set up the development environment for the Smart CloudOps AI p
 import os
 import platform
 import subprocess
-import sys
-from pathlib import Path
 
 
 def run_command(command, description=""):
@@ -46,7 +44,7 @@ def run_command(command, description=""):
 
 def check_prerequisites():
     """Check if required tools are installed."""
-    print("🔍 Checking prerequisites...")
+    print("🔍 Checking prerequisites...f")
 
     required_tools = {
         "python3": "python3 --version",
@@ -59,7 +57,7 @@ def check_prerequisites():
     missing_tools = []
 
     for tool, command in required_tools.items():
-        if run_command(command, f"Checking {tool}"):
+        if run_command(command, "Checking {tool}"):
             continue
         else:
             missing_tools.append(tool)
@@ -98,7 +96,7 @@ def setup_python_environment():
     ):
         return False
 
-    print(f"✅ Python environment setup complete!")
+    print("✅ Python environment setup complete!")
     print(f"💡 To activate the environment, run: {activate_script}")
     return True
 

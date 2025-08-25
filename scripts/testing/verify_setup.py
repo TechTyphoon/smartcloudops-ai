@@ -6,8 +6,6 @@ This script verifies that Phase 0 setup is complete and working correctly.
 
 import os
 import subprocess
-import sys
-from pathlib import Path
 
 
 def check_file_exists(file_path, description):
@@ -141,7 +139,7 @@ def verify_phase_0():
 
     # Summary
     print("\n" + "=" * 50)
-    print(f"📊 Verification Summary:")
+    print("📊 Verification Summary:")
     print(f"Required checks passed: {passed_checks}/{total_checks}")
     print(f"Optional tools available: {optional_passed}/{len(tools_to_check)}")
 
@@ -153,7 +151,7 @@ def verify_phase_0():
         print("- Run: docker-compose up -d (to start local development stack)")
         return True
     else:
-        print(f"❌ Phase 0 setup is INCOMPLETE!")
+        print("❌ Phase 0 setup is INCOMPLETE!")
         print(f"Missing {total_checks - passed_checks} required components.")
         print("Please review the missing items above.")
         return False

@@ -34,7 +34,7 @@ monitoring:
     retention_days: 15
   grafana:
     port: 3000
-    admin_password: "admin123"  # Change in production
+    admin_password: "${GRAFANA_ADMIN_PASSWORD}"  # Set via environment variable
   node_exporter:
     port: 9100
     

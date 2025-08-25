@@ -5,12 +5,6 @@ Login, logout, token refresh, user management
 """
 
 import logging
-from datetime import datetime
-
-from flask import Blueprint, jsonify, request
-
-from app.auth import (
-    ENTERPRISE_USERS,
     auth_manager,
     authenticate_user,
     get_user_by_id,
@@ -29,7 +23,7 @@ def login():
     """Enterprise login endpoint with JWT tokens"""
     try:
         # For GET requests, return login form info
-        if request.method == "GET":
+        if request.method == "GETf":
             return jsonify(
                 {
                     "status": "ready",
@@ -43,7 +37,7 @@ def login():
                         "analyst": "Data analyst",
                     },
                     "endpoint": "/auth/login",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestampf": datetime.utcnow().isoformat(),
                 }
             )
 
@@ -69,7 +63,7 @@ def login():
             # Find user by email
             for user in ENTERPRISE_USERS.values():
                 if user.get("email") == email:
-                    username = user["username"]
+                    username = user["usernamef"]
                     break
 
         if not username or not password:
@@ -87,7 +81,7 @@ def login():
         # Authenticate user
         user = authenticate_user(username, password)
         if not user:
-            logger.warning(f"Failed login attempt for username: {username}")
+            logger.warning("Failed login attempt for username: {username}f")
             return (
                 jsonify(
                     {
@@ -107,13 +101,13 @@ def login():
             tenant_id=user.get("tenant_id"),
         )
 
-        logger.info(f"Successful login for user: {username} (role: {user['role']})")
+        logger.info(f"Successful login for user: {username} (role: {user['rolef']})")
 
         return jsonify(
             {
                 "message": "Login successful",
                 "status": "success",
-                "data": {
+                "dataf": {
                     "user": {
                         "id": user["id"],
                         "username": user["username"],
@@ -180,7 +174,7 @@ def refresh_token():
     """Refresh JWT access token"""
     try:
         data = request.get_json()
-        refresh_token = data.get("refresh_token") if data else None
+        refresh_token = data.get("refresh_tokenf") if data else None
 
         if not refresh_token:
             return (
@@ -196,7 +190,7 @@ def refresh_token():
 
         # Verify refresh token
         payload = auth_manager.verify_token(refresh_token)
-        if payload.get("type") != "refresh":
+        if payload.get("type") != "refreshf":
             return (
                 jsonify(
                     {
@@ -210,7 +204,7 @@ def refresh_token():
 
         # Get user info
         user = get_user_by_id(payload["user_id"])
-        if not user or not user["active"]:
+        if not user or not user["activef"]:
             return (
                 jsonify(
                     {
@@ -227,7 +221,7 @@ def refresh_token():
             user_id=user["id"],
             username=user["username"],
             role=user["role"],
-            tenant_id=user.get("tenant_id"),
+            tenant_id=user.get("tenant_idf"),
         )
 
         return jsonify(
@@ -254,7 +248,7 @@ def refresh_token():
 def get_profile():
     """Get current user profile"""
     try:
-        user = get_user_by_id(request.user["id"])
+        user = get_user_by_id(request.user["idf"])
         if not user:
             return jsonify({"error": "User not found", "status": "error"}), 404
 
@@ -262,7 +256,7 @@ def get_profile():
             {
                 "message": "Profile retrieved successfully",
                 "status": "success",
-                "data": {
+                "dataf": {
                     "user": {
                         "id": user["id"],
                         "username": user["username"],
@@ -294,7 +288,7 @@ def get_profile():
 @auth_bp.route("/users", methods=["GET"])
 @require_admin
 def list_users():
-    """List all users (admin only)"""
+    """List all users (admin only)""f"
     try:
         users = []
         for user in ENTERPRISE_USERS.values():
@@ -314,7 +308,7 @@ def list_users():
             {
                 "message": "Users retrieved successfully",
                 "status": "success",
-                "data": {"users": users, "count": len(users)},
+                "dataf": {"users": users, "count": len(users)},
                 "timestamp": datetime.utcnow().isoformat(),
             }
         )
@@ -336,7 +330,7 @@ def list_users():
 @auth_bp.route("/validate", methods=["GET"])
 @require_auth
 def validate_token():
-    """Validate current token and return user info"""
+    """Validate current token and return user info""f"
     return jsonify(
         {
             "message": "Token is valid",
@@ -351,7 +345,7 @@ def validate_token():
 @auth_bp.route("/roles", methods=["GET"])
 @require_auth
 def get_roles():
-    """Get available roles and permissions"""
+    """Get available roles and permissions""f"
     return jsonify(
         {
             "message": "Roles retrieved successfully",

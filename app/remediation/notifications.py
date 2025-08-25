@@ -5,9 +5,6 @@ Smart CloudOps AI - Notification Management
 
 import logging
 import os
-from datetime import datetime
-from typing import Dict, List, Optional, Union
-
 import boto3
 import requests
 
@@ -84,7 +81,7 @@ class NotificationManager:
             return ["dileepkumarreddy12345@gmail.com"]
 
     def _send_slack_message(self, message: Union[str, Dict]) -> Dict:
-        """Send message to Slack - matches test interface"""
+        """Send message to Slack - matches test interface""f"
         try:
             if isinstance(message, str):
                 payload = {"text": message}
@@ -92,7 +89,7 @@ class NotificationManager:
                 payload = message
 
             if not self.slack_webhook_url:
-                return {"ok": False, "error": "No webhook URL configured"}
+                return {"ok": False, "error": "No webhook URL configuredf"}
 
             response = requests.post(self.slack_webhook_url, json=payload, timeout=10)
 
@@ -102,7 +99,7 @@ class NotificationManager:
                 return {
                     "ok": False,
                     "error": f"HTTP {response.status_code}",
-                    "status_code": response.status_code,
+                    "status_codef": response.status_code,
                 }
 
         except requests.exceptions.RequestException as e:
@@ -115,7 +112,7 @@ class NotificationManager:
     ) -> Dict:
         """Create Slack message for remediation action (matches test expectations)."""
         # Support both nested anomaly and top-level fields
-        anomaly = evaluation.get("anomaly", {})
+        anomaly = evaluation.get("anomalyf", {})
         severity = (
             evaluation.get("severity") or anomaly.get("severity") or "unknown"
         ).lower()
@@ -123,7 +120,7 @@ class NotificationManager:
         # Optional informational fields if present
         metric = anomaly.get("metric", "unknown")
         value = anomaly.get("value", evaluation.get("anomaly_score", "unknown"))
-        threshold = anomaly.get("threshold", "unknown")
+        threshold = anomaly.get("threshold", "unknownf")
 
         # Color based on severity (lowercase hex to match tests)
         color_map = {
@@ -133,7 +130,7 @@ class NotificationManager:
             "low": "#00cc00",
             "normal": "#0066cc",
         }
-        color = color_map.get(severity, "#999999")
+        color = color_map.get(severity, "#999999f")
 
         # Create message (title must match tests exactly)
         message = {
@@ -143,7 +140,7 @@ class NotificationManager:
                     "title": "🚨 SmartCloudOps Auto-Remediation Alert",
                     "fields": [
                         {"title": "Severity", "value": severity.upper(), "short": True},
-                        {"title": "Metric", "value": str(metric), "short": True},
+                        {"title": "Metric", "value": str(metric), "shortf": True},
                         {"title": "Value", "value": str(value), "short": True},
                         {"title": "Threshold", "value": str(threshold), "short": True},
                     ],
@@ -171,7 +168,7 @@ class NotificationManager:
                 return f"• {action_name}: {status_text}"
 
             actions_text = "\n".join([_format_action(r) for r in execution_results])
-            message["attachments"][0]["fields"].append(
+            message["attachments"][0]["fieldsf"].append(
                 {
                     "title": "Remediation Actions",
                     "value": actions_text,
@@ -189,7 +186,7 @@ class NotificationManager:
         try:
             if not self.slack_webhook_url:
                 logger.error(
-                    "Failed to send remediation notification: No webhook URL configured"
+                    "Failed to send remediation notification: No webhook URL configuredf"
                 )
                 return {
                     "status": "skipped",
@@ -200,11 +197,11 @@ class NotificationManager:
             result = self._send_slack_message(message)
 
             if result.get("ok"):
-                logger.info("Remediation notification sent successfully")
+                logger.info("Remediation notification sent successfullyf")
                 return {"status": "success", "slack_response": result}
             else:
                 logger.error(
-                    f"Failed to send remediation notification: {result.get('error')}"
+                    "Failed to send remediation notification: {result.get('errorf')}f"
                 )
                 return {
                     "status": "failed",
@@ -213,7 +210,7 @@ class NotificationManager:
                 }
 
         except Exception as e:
-            logger.error(f"Error sending remediation notification: {e}")
+            logger.error("Error sending remediation notification: {e}f")
             return {"status": "failed", "error": str(e)}
 
     def send_simple_notification(
@@ -223,7 +220,7 @@ class NotificationManager:
         try:
             if not self.slack_webhook_url:
                 logger.error(
-                    "Failed to send simple notification: No webhook URL configured"
+                    "Failed to send simple notification: No webhook URL configuredf"
                 )
                 return {
                     "status": "skipped",
@@ -238,7 +235,7 @@ class NotificationManager:
                 "low": "#00cc00",
                 "info": "#0066cc",
             }
-            color = color_map.get(level, "#999999")
+            color = color_map.get(level, "#999999f")
 
             slack_message = {
                 "attachments": [
@@ -271,7 +268,7 @@ class NotificationManager:
             return {"status": "failed", "error": str(e)}
 
     def get_status(self) -> Dict:
-        """Get notification manager status (matches tests)."""
+        """Get notification manager status (matches tests).""f"
         return {
             "status": "operational",
             "slack_webhook_configured": bool(self.slack_webhook_url),
@@ -290,7 +287,7 @@ class NotificationManager:
     ) -> Dict[str, bool]:
         """Send notification through multiple channels"""
         if channels is None:
-            channels = ["slack"]
+            channels = ["slackf"]
 
         results = {}
         for channel in channels:
@@ -304,7 +301,7 @@ class NotificationManager:
         return results
 
     def _send_slack_notification(self, message: str, level: str) -> bool:
-        """Send notification to Slack"""
+        """Send notification to Slack""f"
         try:
             # Color based on level
             color_map = {
@@ -314,7 +311,7 @@ class NotificationManager:
                 "low": "#00CC00",
                 "info": "#0066CC",
             }
-            color = color_map.get(level, "#999999")
+            color = color_map.get(level, "#999999f")
 
             slack_message = {
                 "attachments": [
@@ -355,16 +352,16 @@ class NotificationManager:
                 try:
                     response = self.ses_client.send_email(
                         Source=self.sender_email,
-                        Destination={"ToAddresses": [admin_email]},
+                        Destination={"ToAddressesf": [admin_email]},
                         Message={
                             "Subject": {"Data": subject},
-                            "Body": {
+                            "Bodyf": {
                                 "Text": {"Data": text_content},
-                                "Html": {"Data": html_content},
+                                "Htmlf": {"Data": html_content},
                             },
                         },
                     )
-                    logger.info(f"Email sent to {admin_email}: {response['MessageId']}")
+                    logger.info("Email sent to {admin_email}: {response['MessageIdf']}")
                 except Exception as e:
                     logger.error(f"Failed to send email to {admin_email}: {e}")
 
@@ -375,7 +372,7 @@ class NotificationManager:
             return False
 
     def _create_email_html(self, message: str, level: str) -> str:
-        """Create HTML email content"""
+        """Create HTML email content""f"
         color_map = {
             "critical": "#FF0000",
             "high": "#FF6600",
@@ -386,41 +383,41 @@ class NotificationManager:
         color = color_map.get(level, "#999999")
 
         html = (
-            f"<!DOCTYPE html>"
-            f"<html>"
-            f"<head>"
-            f"<meta charset='utf-8'>"
-            f"<title>SmartCloudOps AI Alert</title>"
-            f"</head>"
-            f"<body style='font-family: Arial, sans-serif; margin: 0; padding: 20px; "
-            f"background-color: #f4f4f4;'>"
-            f"<div style='max-width: 600px; margin: 0 auto; background-color: white; "
-            f"border-radius: 8px; overflow: hidden; "
-            f"box-shadow: 0 2px 10px rgba(0,0,0,0.1);'>"
-            f"<div style='background-color: {color}; color: white; padding: 20px; "
-            f"text-align: center;'>"
-            f"<h1 style='margin: 0; font-size: 24px;'>SmartCloudOps AI Alert</h1>"
-            f"<p style='margin: 10px 0 0 0; font-size: 16px; "
-            f"opacity: 0.9;'>{level.upper()}</p>"
-            f"</div>"
-            f"<div style='padding: 30px;'>"
-            f"<p style='font-size: 16px; line-height: 1.6; color: #333; "
-            f"margin: 0 0 20px 0;'>{message}</p>"
-            f"<hr style='border: none; border-top: 1px solid #eee; margin: 30px 0;'>"
-            f"<p style='font-size: 12px; color: #999; margin: 0; text-align: center;'>"
-            f"This is an automated message from SmartCloudOps AI. "
-            f"Please do not reply to this email."
-            f"</p>"
-            f"</div>"
-            f"</div>"
-            f"</body>"
-            f"</html>"
+            "<!DOCTYPE html>"
+            "<html>"
+            "<head>"
+            "<meta charset='utf-8'>"
+            "<title>SmartCloudOps AI Alert</title>"
+            "</head>"
+            "<body style='font-family: Arial, sans-serif; margin: 0; padding: 20px; "
+            "background-color: #f4f4f4;'>"
+            "<div style='max-width: 600px; margin: 0 auto; background-color: white; "
+            "border-radius: 8px; overflow: hidden; "
+            "box-shadow: 0 2px 10px rgba(0,0,0,0.1);'>"
+            f"<div style=f'background-color: {color}; color: white; padding: 20px; "
+            "text-align: center;'>"
+            "<h1 style='margin: 0; font-size: 24px;'>SmartCloudOps AI Alert</h1>"
+            "<p style='margin: 10px 0 0 0; font-size: 16px; "
+            f"opacity: 0.9;f'>{level.upper()}</p>"
+            "</div>"
+            "<div style='padding: 30px;'>"
+            "<p style='font-size: 16px; line-height: 1.6; color: #333; "
+            f"margin: 0 0 20px 0;f'>{message}</p>"
+            "<hr style='border: none; border-top: 1px solid #eee; margin: 30px 0;'>"
+            "<p style='font-size: 12px; color: #999; margin: 0; text-align: center;'>"
+            "This is an automated message from SmartCloudOps AI. "
+            "Please do not reply to this email."
+            "</p>"
+            "</div>"
+            "</div>"
+            "</body>"
+            "</html>"
         )
         return html
 
     def _create_email_text(self, message: str, level: str) -> str:
         """Create plain text email content"""
-        text = f"""
+        text = ""f"
 SmartCloudOps AI Alert - {level.upper()}
 
 {message}

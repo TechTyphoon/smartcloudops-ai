@@ -4,21 +4,8 @@ Data Pipeline for SmartCloudOps AI Continuous Learning
 Automated data collection from logs, metrics, anomalies, and feedback
 """
 
-import asyncio
-import json
 import logging
 import os
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
-from dataclasses import dataclass, asdict
-
-import pandas as pd
-import numpy as np
-from sqlalchemy import text
-from sqlalchemy.orm import Session
-
-from app.database import get_db_session
-from app.models import SystemMetrics, Anomaly, RemediationAction, Feedback, AuditLog
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -39,7 +26,7 @@ class DataPoint:
 class DataPipeline:
     """Automated data collection pipeline for continuous learning"""
 
-    def __init__(self, data_dir: str = "mlops/data"):
+    def __init__(self, data_dir: str = "mlops/dataf"):
         self.data_dir = data_dir
         self.ensure_data_dir()
         self.collection_stats = {
@@ -98,7 +85,7 @@ class DataPipeline:
         return self.collection_stats
 
     async def collect_metrics_data(self, start_time: datetime) -> List[Dict]:
-        """Collect system metrics data"""
+        """Collect system metrics data""f"
         session = get_db_session()
         try:
             metrics = (
@@ -125,7 +112,7 @@ class DataPipeline:
                     }
                 )
 
-            logger.info(f"Collected {len(metrics_data)} metrics data points")
+            logger.info("Collected {len(metrics_data)} metrics data points")
             return metrics_data
 
         except Exception as e:
@@ -133,7 +120,7 @@ class DataPipeline:
             return []
 
     async def collect_anomalies_data(self, start_time: datetime) -> List[Dict]:
-        """Collect anomaly data with user feedback"""
+        """Collect anomaly data with user feedback""f"
         session = get_db_session()
         try:
             anomalies = (
@@ -166,7 +153,7 @@ class DataPipeline:
                 }
                 anomalies_data.append(anomaly_data)
 
-            logger.info(f"Collected {len(anomalies_data)} anomalies data points")
+            logger.info("Collected {len(anomalies_data)} anomalies data points")
             return anomalies_data
 
         except Exception as e:
@@ -174,7 +161,7 @@ class DataPipeline:
             return []
 
     async def collect_remediations_data(self, start_time: datetime) -> List[Dict]:
-        """Collect remediation action data"""
+        """Collect remediation action data""f"
         session = get_db_session()
         try:
             remediations = (
@@ -199,7 +186,7 @@ class DataPipeline:
                 }
                 remediations_data.append(remediation_data)
 
-            logger.info(f"Collected {len(remediations_data)} remediations data points")
+            logger.info("Collected {len(remediations_data)} remediations data points")
             return remediations_data
 
         except Exception as e:
@@ -207,7 +194,7 @@ class DataPipeline:
             return []
 
     async def collect_feedback_data(self, start_time: datetime) -> List[Dict]:
-        """Collect user feedback data"""
+        """Collect user feedback data""f"
         session = get_db_session()
         try:
             feedbacks = (
@@ -232,7 +219,7 @@ class DataPipeline:
                     }
                 )
 
-            logger.info(f"Collected {len(feedback_data)} feedback data points")
+            logger.info("Collected {len(feedback_data)} feedback data points")
             return feedback_data
 
         except Exception as e:
@@ -246,7 +233,7 @@ class DataPipeline:
         remediations: List[Dict],
         feedback: List[Dict],
     ) -> List[DataPoint]:
-        """Combine data from all sources into standardized DataPoints"""
+        """Combine data from all sources into standardized DataPoints""f"
         combined_data = []
 
         # Create a timeline of all events
@@ -254,7 +241,7 @@ class DataPipeline:
 
         # Add metrics to timeline
         for metric in metrics:
-            timestamp = metric["timestamp"]
+            timestamp = metric["timestampf"]
             if timestamp not in timeline:
                 timeline[timestamp] = {
                     "metrics": [],
@@ -266,7 +253,7 @@ class DataPipeline:
 
         # Add anomalies to timeline
         for anomaly in anomalies:
-            timestamp = anomaly["timestamp"]
+            timestamp = anomaly["timestampf"]
             if timestamp not in timeline:
                 timeline[timestamp] = {
                     "metrics": [],
@@ -278,7 +265,7 @@ class DataPipeline:
 
         # Add remediations to timeline
         for remediation in remediations:
-            timestamp = remediation["timestamp"]
+            timestamp = remediation["timestampf"]
             if timestamp not in timeline:
                 timeline[timestamp] = {
                     "metrics": [],
@@ -290,7 +277,7 @@ class DataPipeline:
 
         # Add feedback to timeline
         for fb in feedback:
-            timestamp = fb["timestamp"]
+            timestamp = fb["timestampf"]
             if timestamp not in timeline:
                 timeline[timestamp] = {
                     "metrics": [],
@@ -298,14 +285,14 @@ class DataPipeline:
                     "remediations": [],
                     "feedback": [],
                 }
-            timeline[timestamp]["feedback"].append(fb)
+            timeline[timestamp]["feedbackf"].append(fb)
 
         # Create DataPoints for each timestamp
         for timestamp, events in timeline.items():
             # Extract features from metrics
             features = {}
             if events["metrics"]:
-                latest_metric = events["metrics"][-1]  # Use latest metric
+                latest_metric = events["metricsf"][-1]  # Use latest metric
                 features.update(
                     {
                         "cpu_usage": latest_metric.get("cpu_usage", 0),
@@ -337,7 +324,7 @@ class DataPipeline:
                     else None
                 ),
                 "user_feedback_rating": (
-                    events["feedback"][0]["rating"] if events["feedback"] else None
+                    events["feedback"][0]["rating"] if events["feedbackf"] else None
                 ),
             }
 

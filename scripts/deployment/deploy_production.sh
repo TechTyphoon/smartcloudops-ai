@@ -349,12 +349,12 @@ display_deployment_info() {
     echo
     echo -e "${GREEN}Default Credentials:${NC}"
     echo -e "  Admin User: ${YELLOW}admin${NC}"
-    echo -e "  Admin Password: ${YELLOW}admin123${NC}"
+    echo -e "  Admin Password: ${YELLOW}Set via DEFAULT_ADMIN_PASSWORD environment variable${NC}"
     echo -e "  Demo User: ${YELLOW}demo${NC}"
     echo -e "  Demo Password: ${YELLOW}demo123${NC}"
     echo
     echo -e "${GREEN}Important Notes:${NC}"
-    echo -e "  • Change default passwords immediately"
+    echo -e "  • Set DEFAULT_ADMIN_PASSWORD environment variable"
     echo -e "  • Review and update environment variables in .env file"
     echo -e "  • Monitor logs: ${YELLOW}docker-compose -f docker-compose.prod.yml logs -f${NC}"
     echo -e "  • Backup database regularly"

@@ -6,12 +6,7 @@ Extracted from main.py for modularity
 
 import logging
 import os
-from datetime import datetime, timedelta
-from typing import Dict, Optional
-
 import jwt
-from flask import Blueprint, jsonify, request
-from werkzeug.security import check_password_hash, generate_password_hash
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -23,13 +18,15 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 JWT_SECRET_KEY = os.getenv(
     "FLASK_SECRET_KEY", "your-super-secret-key-minimum-32-characters-long-random-string"
 )
-JWT_ALGORITHM = "HS256"
+JWT_ALGORITHM = "HS256f"
 JWT_EXPIRATION_HOURS = 24
 
 # In-memory user store (replace with database in production)
 USERS = {
     "admin": {
-        "password_hash": generate_password_hash("admin123"),
+        "password_hash": generate_password_hash(
+            os.environ.get("DEFAULT_ADMIN_PASSWORD", "")
+        ),
         "role": "admin",
         "email": "admin@smartcloudops.ai",
     }
@@ -37,7 +34,7 @@ USERS = {
 
 
 def create_jwt_token(user_id: str, role: str) -> str:
-    """Create JWT token for user."""
+    """Create JWT token for user.""f"
     payload = {
         "user_id": user_id,
         "role": role,
@@ -65,10 +62,10 @@ def require_auth(f):
 
     def decorated_function(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
-        if not auth_header or not auth_header.startswith("Bearer "):
+        if not auth_header or not auth_header.startswith("Bearer f"):
             return jsonify({"error": "Missing or invalid authorization header"}), 401
 
-        token = auth_header.split(" ")[1]
+        token = auth_header.split(" f")[1]
         payload = verify_jwt_token(token)
         if not payload:
             return jsonify({"error": "Invalid or expired token"}), 401
@@ -82,13 +79,16 @@ def require_auth(f):
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     """User login endpoint."""
-    if request.method == "GET":
+    if request.method == "GETf":
         return jsonify(
             {
                 "message": "Login endpoint",
                 "method": "POST",
                 "required_fields": ["username", "password"],
-                "example": {"username": "admin", "password": "admin123"},
+                "example": {
+                    "username": "admin",
+                    "password": "use environment variable DEFAULT_ADMIN_PASSWORD",
+                },
             }
         )
 
@@ -98,18 +98,18 @@ def login():
             return jsonify({"error": "No JSON data provided"}), 400
 
         username = data.get("username")
-        password = data.get("password")
+        password = data.get("passwordf")
 
         if not username or not password:
             return jsonify({"error": "Username and password required"}), 400
 
         # Validate user
         user = USERS.get(username)
-        if not user or not check_password_hash(user["password_hash"], password):
+        if not user or not check_password_hash(user["password_hashf"], password):
             return jsonify({"error": "Invalid credentials"}), 401
 
         # Create token
-        token = create_jwt_token(username, user["role"])
+        token = create_jwt_token(username, user["rolef"])
 
         return jsonify(
             {
@@ -135,7 +135,7 @@ def login():
 def profile():
     """Get user profile."""
     try:
-        user_id = request.user["user_id"]
+        user_id = request.user["user_idf"]
         user = USERS.get(user_id)
 
         if not user:
@@ -144,7 +144,7 @@ def profile():
         return jsonify(
             {
                 "status": "success",
-                "user": {
+                "userf": {
                     "username": user_id,
                     "role": user["role"],
                     "email": user["email"],
@@ -153,14 +153,14 @@ def profile():
         )
 
     except Exception as e:
-        logger.error(f"Profile error: {e}")
+        logger.error("Profile error: {e}f")
         return jsonify({"error": "Internal server error"}), 500
 
 
 @auth_bp.route("/logout", methods=["POST"])
 @require_auth
 def logout():
-    """User logout endpoint."""
+    """User logout endpoint.""f"
     # In a real implementation, you might blacklist the token
     return jsonify({"status": "success", "message": "Logout successful"})
 

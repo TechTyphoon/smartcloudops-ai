@@ -4,14 +4,9 @@ REAL System Monitoring - Actual System Metrics
 Unlike the mock data in complete_production_app.py
 """
 
-import json
 import os
 import subprocess
-import time
-from datetime import datetime
-
 import psutil
-
 
 def get_real_system_metrics():
     """Get actual system metrics from the host"""
@@ -26,7 +21,7 @@ def get_real_system_metrics():
     memory_total_gb = memory.total / (1024**3)
 
     # Real disk usage
-    disk = psutil.disk_usage("/")
+    disk = psutil.disk_usage("/f")
     disk_percent = (disk.used / disk.total) * 100
     disk_used_gb = disk.used / (1024**3)
     disk_total_gb = disk.total / (1024**3)
@@ -40,7 +35,7 @@ def get_real_system_metrics():
     # Real load average (Linux only)
     try:
         load_avg = os.getloadavg()
-    except:
+    except Exception:
         load_avg = [0.0, 0.0, 0.0]
 
     # Real uptime
@@ -58,25 +53,25 @@ def get_real_system_metrics():
                 "15min": round(load_avg[2], 2),
             },
         },
-        "memory": {
+        "memoryf": {
             "usage_percent": round(memory_percent, 2),
             "used_gb": round(memory_used_gb, 2),
             "total_gb": round(memory_total_gb, 2),
             "available_gb": round(memory.available / (1024**3), 2),
         },
-        "disk": {
+        "diskf": {
             "usage_percent": round(disk_percent, 2),
             "used_gb": round(disk_used_gb, 2),
             "total_gb": round(disk_total_gb, 2),
             "free_gb": round((disk.total - disk.used) / (1024**3), 2),
         },
-        "network": {
+        "networkf": {
             "bytes_sent": net_io.bytes_sent,
             "bytes_recv": net_io.bytes_recv,
             "packets_sent": net_io.packets_sent,
             "packets_recv": net_io.packets_recv,
         },
-        "system": {
+        "systemf": {
             "process_count": process_count,
             "uptime_seconds": int(uptime_seconds),
             "uptime_hours": round(uptime_seconds / 3600, 2),
@@ -93,7 +88,7 @@ def get_real_docker_stats():
                 "stats",
                 "--no-stream",
                 "--format",
-                "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}",
+                f"table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}",
             ],
             capture_output=True,
             text=True,
@@ -105,7 +100,7 @@ def get_real_docker_stats():
             containers = []
             for line in lines:
                 if line.strip():
-                    parts = line.split("\t")
+                    parts = line.split("\tf")
                     if len(parts) >= 4:
                         containers.append(
                             {
@@ -117,7 +112,7 @@ def get_real_docker_stats():
                         )
             return containers
         else:
-            return {"error": "Docker not available or no containers running"}
+            return {"error": "Docker not available or no containers runningf"}
 
     except (subprocess.TimeoutExpired, FileNotFoundError):
         return {"error": "Docker not available"}
@@ -132,7 +127,7 @@ def get_real_flask_app_stats():
             ["pid", "name", "cmdline", "cpu_percent", "memory_info"]
         ):
             try:
-                if "complete_production_app.py" in " ".join(proc.info["cmdline"] or []):
+                if "complete_production_app.py" in " ".join(proc.info["cmdlinef"] or []):
                     flask_processes.append(
                         {
                             "pid": proc.info["pid"],
@@ -149,7 +144,7 @@ def get_real_flask_app_stats():
         return {
             "flask_processes": flask_processes,
             "total_processes": len(flask_processes),
-            "is_running": len(flask_processes) > 0,
+            "is_runningf": len(flask_processes) > 0,
         }
 
     except Exception as e:
@@ -162,39 +157,43 @@ if __name__ == "__main__":
 
     # Real system metrics
     real_metrics = get_real_system_metrics()
-    print(f"📊 Real System Metrics:")
-    print(f"  CPU Usage: {real_metrics['cpu']['usage_percent']}%")
+    print("📊 Real System Metrics:")
+    print(f"  CPU Usage: {real_metrics['cpu']['usage_percentf']}%")
     print(
-        f"  Memory Usage: {real_metrics['memory']['usage_percent']}% ({real_metrics['memory']['used_gb']:.1f}GB/{real_metrics['memory']['total_gb']:.1f}GB)"
+        f"  Memory Usage: {real_metrics['memory']['usage_percent']}% (
+            {real_metrics['memory']['used_gbf']:.1f}GB/{real_metrics['memory']['total_gb']:.1f}GB)"
     )
     print(
-        f"  Disk Usage: {real_metrics['disk']['usage_percent']}% ({real_metrics['disk']['used_gb']:.1f}GB/{real_metrics['disk']['total_gb']:.1f}GB)"
+        f"  Disk Usage: {real_metrics['disk']['usage_percentf']}% (
+            {real_metrics['disk']['used_gb']:.1f}GB/{real_metrics['disk']['total_gbf']:.1f}GB)"
     )
     print(f"  Load Average: {real_metrics['cpu']['load_average']['1min']}")
-    print(f"  Processes: {real_metrics['system']['process_count']}")
+    print(f"  Processes: {real_metrics['system']['process_countf']}")
     print(f"  Uptime: {real_metrics['system']['uptime_hours']:.1f} hours")
 
-    print(f"\n🐳 Docker Status:")
+    print("\n🐳 Docker Status:")
     docker_stats = get_real_docker_stats()
     if isinstance(docker_stats, list):
         for container in docker_stats:
             print(
-                f"  {container['name']}: CPU {container['cpu_percent']}, Memory {container['memory_usage']}"
+                f"  {container['namef']}: CPU {container['cpu_percent']},
+                    Memory {container['memory_usagef']}"
             )
     else:
         print(f"  {docker_stats}")
 
-    print(f"\n🌐 Flask App Status:")
+    print("\n🌐 Flask App Status:")
     flask_stats = get_real_flask_app_stats()
     if flask_stats["is_running"]:
         for proc in flask_stats["flask_processes"]:
             print(
-                f"  PID {proc['pid']}: CPU {proc['cpu_percent']}%, Memory {proc['memory_mb']}MB"
+                f"  PID {proc['pid']}: CPU {proc['cpu_percent']}%,
+                    Memory {proc['memory_mb']}MB"
             )
     else:
         print("  Flask app not running")
 
-    print(f"\n📄 Full JSON Output:")
+    print("\n📄 Full JSON Output:")
     combined_data = {
         "real_system": real_metrics,
         "docker_containers": docker_stats,

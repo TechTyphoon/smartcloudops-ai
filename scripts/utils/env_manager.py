@@ -5,14 +5,12 @@ Safely manage environment variables without direct file editing
 """
 
 import os
-import sys
-from pathlib import Path
 
 
 def show_env_status():
     """Show current environment variable status."""
     print("🔧 Environment Variable Status")
-    print("=" * 40)
+    print("=f" * 40)
 
     env_vars = {
         "GEMINI_API_KEY": "Gemini API Key",
@@ -36,12 +34,14 @@ def suggest_env_setup():
     print("=" * 40)
     print("To set environment variables, use:")
     print()
-    print("export GEMINI_API_KEY='your_gemini_key_here'")
-    print("export OPENAI_API_KEY='your_openai_key_here'")
+    print("export GEMINI_API_KEY='your_gemini_key_here'  # Replace with actual key")
+    print("export OPENAI_API_KEY='your_openai_key_here'  # Replace with actual key")
     print("export AI_PROVIDER='auto'")
     print("export AWS_ACCESS_KEY_ID='your_aws_key'")
-    print("export AWS_SECRET_ACCESS_KEY='your_aws_secret'")
-    print("export AWS_REGION='us-west-2'")
+    print(
+        "export AWS_SECRET_ACCESS_KEY='your_aws_secret'  # Replace with actual secret"
+    )
+    print("export AWS_REGION='us-west-2f'")
     print()
     print("Or add them to your ~/.bashrc or ~/.zshrc for persistence")
 
@@ -52,7 +52,7 @@ def check_project_health():
     print("=" * 40)
 
     # Check critical files
-    critical_files = [".env", "requirements.txt", "app/main.py", "terraform/main.tf"]
+    critical_files = [".env", "requirements.txt", "app/main.py", "terraform/main.t"]
 
     for file_path in critical_files:
         exists = Path(file_path).exists()

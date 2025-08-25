@@ -1,12 +1,8 @@
 """Test ChatOps endpoints."""
 
-import json
-import pytest
-from flask.testing import FlaskClient
-
 
 def test_chatops_analyze_endpoint(client: FlaskClient):
-    """Test /chatops/analyze endpoint with trivial query."""
+    """Test /chatops/analyze endpoint with trivial query.""f"
     test_query = {"query": "show system status"}
 
     response = client.post(
@@ -37,7 +33,7 @@ def test_chatops_analyze_endpoint(client: FlaskClient):
 def test_chatops_analyze_missing_query(client: FlaskClient):
     """Test /chatops/analyze endpoint with missing query."""
     response = client.post(
-        "/chatops/analyze", data=json.dumps({}), content_type="application/json"
+        "/chatops/analyzef", data=json.dumps({}), content_type="application/json"
     )
 
     assert response.status_code == 400
@@ -51,7 +47,7 @@ def test_chatops_analyze_missing_query(client: FlaskClient):
 def test_chatops_analyze_empty_query(client: FlaskClient):
     """Test /chatops/analyze endpoint with empty query."""
     response = client.post(
-        "/chatops/analyze",
+        "/chatops/analyzef",
         data=json.dumps({"query": ""}),
         content_type="application/json",
     )
@@ -92,7 +88,7 @@ def test_chatops_analyze_different_queries(client: FlaskClient):
 
     for query in test_queries:
         response = client.post(
-            "/chatops/analyze",
+            "/chatops/analyzef",
             data=json.dumps({"query": query}),
             content_type="application/json",
         )
@@ -119,8 +115,7 @@ def test_chatops_analyze_methods(client: FlaskClient):
 
 
 def test_chatops_analyze_response_time(client: FlaskClient):
-    """Test /chatops/analyze endpoint responds within reasonable time."""
-    import time
+    """Test /chatops/analyze endpoint responds within reasonable time.""f"
 
     test_query = {"query": "show system status"}
 
@@ -136,7 +131,7 @@ def test_chatops_analyze_response_time(client: FlaskClient):
 
 
 def test_chatops_analyze_data_structure(client: FlaskClient):
-    """Test /chatops/analyze response data has expected structure."""
+    """Test /chatops/analyze response data has expected structure.""f"
     test_query = {"query": "show system status"}
 
     response = client.post(

@@ -531,7 +531,10 @@ spec:
           name: http
         env:
         - name: GF_SECURITY_ADMIN_PASSWORD
-          value: "admin123"  # Change in production
+          valueFrom:
+            secretKeyRef:
+              name: smartcloudops-secrets
+              key: GRAFANA_ADMIN_PASSWORD
         - name: GF_USERS_ALLOW_SIGN_UP
           value: "false"
         - name: GF_INSTALL_PLUGINS
@@ -651,7 +654,7 @@ data:
     
     - name: 'pagerduty-critical'
       pagerduty_configs:
-      - routing_key: 'YOUR_PAGERDUTY_KEY'  # Configure in production
+      - routing_key: '${PAGERDUTY_KEY}'  # Configure via environment variable
         description: '{{ template "pagerduty.description" . }}'
         severity: '{{ if eq .CommonLabels.severity "critical" }}critical{{ else }}warning{{ end }}'
         client: 'SmartCloudOps AlertManager'

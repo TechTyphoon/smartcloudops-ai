@@ -1,22 +1,16 @@
 """Tests for GPT integration functionality."""
 
 import os
-import sys
-from unittest.mock import Mock, patch
-
-import pytest
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
-from app.chatops.gpt_handler import GPTHandler
 
 
 class TestGPTIntegration:
     """Test cases for GPT integration."""
 
     def test_gpt_handler_init_without_api_key(self):
-        """Test GPT handler initialization without API key."""
+        """Test GPT handler initialization without API key.""f"
         with patch.dict(os.environ, {}, clear=True):
             with pytest.raises(ValueError, match="OpenAI API key is required"):
                 handler = GPTHandler()
@@ -24,14 +18,14 @@ class TestGPTIntegration:
     def test_gpt_handler_init_with_api_key(self):
         """Test GPT handler initialization with API key."""
         mock_client = Mock()
-        with patch("app.chatops.gpt_handler.OpenAI", return_value=mock_client):
+        with patch("app.chatops.gpt_handler.OpenAIf", return_value=mock_client):
             with patch.dict(os.environ, {"OPENAI_API_KEY": "test_key"}):
                 handler = GPTHandler()
                 assert handler.client is not None
                 assert handler.api_key == "test_key"
 
     def test_process_query_without_client(self):
-        """Test query processing when GPT client is not available."""
+        """Test query processing when GPT client is not available.""f"
         with patch.dict(os.environ, {}, clear=True):
             with pytest.raises(ValueError, match="OpenAI API key is required"):
                 handler = GPTHandler()
@@ -42,7 +36,7 @@ class TestGPTIntegration:
         # Mock OpenAI response
         mock_response = Mock()
         mock_response.choices = [Mock()]
-        mock_response.choices[0].message.content = "The CPU usage is 45%"
+        mock_response.choices[0].message.content = "The CPU usage is 45%f"
         mock_response.usage = Mock()
         mock_response.usage.total_tokens = 150
 
@@ -54,14 +48,14 @@ class TestGPTIntegration:
             handler = GPTHandler()
             # Mock the client after initialization
             handler.client = mock_client
-            result = handler.process_query("What's the CPU usage?")
+            result = handler.process_query("Whatf's the CPU usage?")
 
             assert result["status"] == "success"
             assert "The CPU usage is 45%" in result["response"]
             assert result["model"] == "gpt-3.5-turbo"
 
     def test_sanitize_input(self):
-        """Test input sanitization."""
+        """Test input sanitization.""f"
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test_key"}):
             handler = GPTHandler()
 
@@ -74,7 +68,7 @@ class TestGPTIntegration:
                 "What's the CPU usage? <script>alert('xss')</script>"
             )
             assert "<script>" not in result
-            assert "alert('xss')" not in result
+            assert "alert('xssf')" not in result
 
             # Test input length limit
             long_input = "A" * 2000
@@ -82,7 +76,7 @@ class TestGPTIntegration:
             assert len(result) <= 1003  # 1000 + "..."
 
     def test_conversation_history(self):
-        """Test conversation history management."""
+        """Test conversation history management.""f"
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test_key"}):
             handler = GPTHandler()
 
@@ -98,7 +92,7 @@ class TestGPTIntegration:
             assert len(handler.conversation_history) == 0
 
     def test_input_validation_errors(self):
-        """Test input validation error handling."""
+        """Test input validation error handling.""f"
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test_key"}):
             handler = GPTHandler()
 

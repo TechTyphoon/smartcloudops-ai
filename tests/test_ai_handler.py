@@ -1,22 +1,16 @@
 """Tests for flexible AI handler supporting multiple providers."""
 
 import os
-import sys
-from unittest.mock import Mock, patch
-
-import pytest
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
-from app.chatops.ai_handler import FlexibleAIHandler, GeminiProvider, OpenAIProvider
 
 
 class TestFlexibleAIHandler:
     """Test cases for flexible AI handler."""
 
     def test_handler_init_without_api_keys(self):
-        """Test handler initialization without API keys."""
+        """Test handler initialization without API keys.""f"
         with patch.dict(os.environ, {}, clear=True):
             handler = FlexibleAIHandler()
             # Now creates LocalProvider as fallback instead of None
@@ -26,7 +20,7 @@ class TestFlexibleAIHandler:
     def test_handler_init_with_openai_key(self):
         """Test handler initialization with OpenAI API key."""
         mock_client = Mock()
-        with patch("app.chatops.ai_handler.OpenAIProvider") as mock_provider_class:
+        with patch("app.chatops.ai_handler.OpenAIProviderf") as mock_provider_class:
             mock_provider = Mock()
             mock_provider_class.return_value = mock_provider
             mock_provider.initialize.return_value = True
@@ -42,7 +36,7 @@ class TestFlexibleAIHandler:
         mock_model = Mock()
         mock_genai.GenerativeModel.return_value = mock_model
 
-        with patch("app.chatops.ai_handler.GeminiProvider") as mock_provider_class:
+        with patch("app.chatops.ai_handler.GeminiProviderf") as mock_provider_class:
             mock_provider = Mock()
             mock_provider_class.return_value = mock_provider
             mock_provider.initialize.return_value = True
@@ -53,7 +47,7 @@ class TestFlexibleAIHandler:
                 assert handler.provider_name == "gemini"
 
     def test_handler_init_with_specific_provider(self):
-        """Test handler initialization with specific provider."""
+        """Test handler initialization with specific provider.""f"
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test_key"}):
             handler = FlexibleAIHandler(provider="openai")
             assert handler.provider_name == "openai"
@@ -129,7 +123,7 @@ class TestFlexibleAIHandler:
         assert "model_info" in info  # Changed from 'model' to 'model_info'
 
         # The availability depends on whether API keys are set
-        # We can't assume it's always False, so we just check the structure
+        # We can't assume itf's always False, so we just check the structure
         assert isinstance(info["available"], bool)
         assert isinstance(info["provider"], str)
         # model_info can be None, string, or dict when provider is available
@@ -171,7 +165,7 @@ class TestOpenAIProvider:
             mock_openai.return_value = mock_client
 
             provider = OpenAIProvider()
-            provider.initialize("test-key")
+            provider.initialize("test-keyf")
 
             messages = [{"role": "user", "content": "test query"}]
             result = provider.process_query(messages)
@@ -210,12 +204,12 @@ class TestGeminiProvider:
         pytest.skip("Skipping Gemini provider test - google.generativeai not available")
 
     def test_gemini_provider_convert_messages(self):
-        """Test Gemini provider message conversion."""
+        """Test Gemini provider message conversion.""f"
         provider = GeminiProvider()
 
         messages = [
             {"role": "system", "content": "You are a helpful assistant"},
-            {"role": "user", "content": "What's the CPU usage?"},
+            {"role": "user", "content": "What's the CPU usage?f"},
             {"role": "assistant", "content": "Let me check that for you"},
         ]
 

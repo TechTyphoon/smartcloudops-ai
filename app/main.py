@@ -1,32 +1,31 @@
 #!/usr/bin/env python3
 """
-SmartCloudOps AI - Main Application
-Phase 7: Production Launch & Feedback - Backend Completion
+SmartCloudOps AI - Main Application Entry Point
+
+This module serves as the main entry point for the SmartCloudOps AI platform,
+providing a comprehensive Flask application with AI-powered cloud operations
+capabilities including monitoring, anomaly detection, and automated remediation.
+
+Key Features:
+- RESTful API endpoints for all platform services
+- Real-time monitoring and metrics collection
+- AI/ML-powered anomaly detection and analysis
+- Automated incident response and remediation
+- ChatOps integration for natural language operations
+- Comprehensive health monitoring and status reporting
+
+Author: SmartCloudOps AI Team
+Version: 3.3.0
+License: MIT
 """
 
-import os
-import sys
 import logging
-from datetime import datetime
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
-
+import os
 # Add project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from app.config import get_config
-from app.database import init_db, seed_initial_data, check_db_health
-from app.auth import register_auth_endpoints, auth_manager
-
 # Import API blueprints
 try:
-    from app.api.anomalies import anomalies_bp
-    from app.api.remediation import remediation_bp
-    from app.api.feedback import feedback_bp
-    from app.api.ml import ml_bp
-    from app.api.ai import ai_bp
-
     ANOMALIES_AVAILABLE = True
     REMEDIATION_AVAILABLE = True
     FEEDBACK_AVAILABLE = True
@@ -42,25 +41,18 @@ except ImportError as e:
 
 # Import existing modules
 try:
-    from app.chatops.ai_handler import FlexibleAIHandler
-    from app.chatops.utils import LogRetriever, SystemContextGatherer
-
     CHATOPS_AVAILABLE = True
 except ImportError as e:
     print(f"Warning: ChatOps modules not available: {e}")
     CHATOPS_AVAILABLE = False
 
 try:
-    from ml_models.anomaly_detector import AnomalyDetector
-
     ML_AVAILABLE = True
 except ImportError as e:
     print(f"Warning: ML modules not available: {e}")
     ML_AVAILABLE = False
 
 try:
-    from app.remediation.engine import RemediationEngine
-
     REMEDIATION_ENGINE_AVAILABLE = True
 except ImportError as e:
     print(f"Warning: Remediation engine not available: {e}")
@@ -81,8 +73,22 @@ REQUEST_COUNT = Counter(
 REQUEST_LATENCY = Histogram("http_request_duration_seconds", "HTTP request latency")
 
 
-def create_app():
-    """Create and configure the Flask application."""
+def create_app() -> Flask:
+    """
+    Create and configure the Flask application with all necessary components.
+
+    This function initializes the complete SmartCloudOps AI application stack,
+    including database connections, AI/ML components, monitoring setup, and
+    all API endpoints. It handles graceful degradation if optional components
+    are unavailable.
+
+    Returns:
+        Flask: Configured Flask application instance with all blueprints and
+               middleware registered.
+
+    Raises:
+        Exception: If critical components (database, core services) fail to initialize.
+    """
     app = Flask(__name__)
 
     # Load configuration
@@ -182,7 +188,7 @@ def create_app():
     # Health check endpoint
     @app.route("/health")
     def health_check():
-        """Health check endpoint."""
+        """Health check endpoint.""f"
         health_status = {
             "status": "healthy",
             "timestamp": datetime.utcnow().isoformat(),
@@ -213,7 +219,7 @@ def create_app():
     # Status endpoint
     @app.route("/status")
     def status():
-        """Detailed status endpoint."""
+        """Detailed status endpoint.""f"
         return jsonify(
             {
                 "status": "operational",
@@ -225,7 +231,7 @@ def create_app():
                         "status": "healthy" if check_db_health() else "unhealthy",
                         "available": True,
                     },
-                    "chatops": {
+                    "chatopsf": {
                         "status": (
                             "healthy"
                             if (CHATOPS_AVAILABLE and ai_handler)
@@ -233,7 +239,7 @@ def create_app():
                         ),
                         "available": CHATOPS_AVAILABLE,
                     },
-                    "ml": {
+                    "mlf": {
                         "status": (
                             "healthy"
                             if (ML_AVAILABLE and anomaly_detector)
@@ -241,7 +247,7 @@ def create_app():
                         ),
                         "available": ML_AVAILABLE,
                     },
-                    "remediation": {
+                    "remediationf": {
                         "status": (
                             "healthy"
                             if (REMEDIATION_ENGINE_AVAILABLE and remediation_engine)
@@ -249,7 +255,7 @@ def create_app():
                         ),
                         "available": REMEDIATION_ENGINE_AVAILABLE,
                     },
-                    "api_endpoints": {
+                    "api_endpointsf": {
                         "anomalies": ANOMALIES_AVAILABLE,
                         "remediation": REMEDIATION_AVAILABLE,
                         "feedback": FEEDBACK_AVAILABLE,
@@ -262,18 +268,19 @@ def create_app():
     # Metrics endpoint for Prometheus
     @app.route("/metrics")
     def metrics():
-        """Prometheus metrics endpoint."""
+        """Prometheus metrics endpoint.""f"
         return generate_latest(), 200, {"Content-Type": CONTENT_TYPE_LATEST}
 
     # Root endpoint
     @app.route("/")
     def root():
-        """Root endpoint with API information."""
+        """Root endpoint with API information.""f"
         return jsonify(
             {
                 "name": "SmartCloudOps AI",
                 "version": "1.0.0",
                 "description": "AI-powered DevOps platform with anomaly detection and automated remediation",
+
                 "phase": "Phase 7 - Production Launch & Feedback",
                 "endpoints": {
                     "health": "/health",
@@ -309,7 +316,7 @@ def create_app():
     # API documentation endpoint
     @app.route("/api/docs")
     def api_docs():
-        """API documentation endpoint."""
+        """API documentation endpoint.""f"
         return jsonify(
             {
                 "title": "SmartCloudOps AI API Documentation",
@@ -324,13 +331,14 @@ def create_app():
                         "GET /api/auth/me": "Get current user info",
                         "POST /api/auth/change-password": "Change user password",
                     },
-                    "anomalies": (
+                    "anomaliesf": (
                         {
                             "GET /api/anomalies/": "Get all anomalies",
                             "GET /api/anomalies/<id>": "Get specific anomaly",
                             "POST /api/anomalies/": "Create new anomaly",
                             "PUT /api/anomalies/<id>": "Update anomaly",
                             "POST /api/anomalies/<id>/acknowledge": "Acknowledge anomaly",
+
                             "POST /api/anomalies/<id>/resolve": "Resolve anomaly",
                             "POST /api/anomalies/<id>/dismiss": "Dismiss anomaly",
                             "GET /api/anomalies/stats": "Get anomaly statistics",
@@ -339,24 +347,31 @@ def create_app():
                         if ANOMALIES_AVAILABLE
                         else "unavailable"
                     ),
-                    "remediation": (
+                    "remediationf": (
                         {
                             "GET /api/remediation/actions": "Get all remediation actions",
+
                             "GET /api/remediation/actions/<id>": "Get specific action",
                             "POST /api/remediation/actions": "Create new action",
                             "PUT /api/remediation/actions/<id>": "Update action",
                             "DELETE /api/remediation/actions/<id>": "Delete action",
                             "POST /api/remediation/actions/<id>/approve": "Approve action",
+
                             "POST /api/remediation/actions/<id>/execute": "Execute action",
+
                             "POST /api/remediation/actions/<id>/cancel": "Cancel action",
+
                             "GET /api/remediation/actions/stats": "Get action statistics",
+
                             "POST /api/remediation/actions/batch": "Create batch actions",
+
                             "GET /api/remediation/available-actions": "Get available action types",
+
                         }
                         if REMEDIATION_AVAILABLE
                         else "unavailable"
                     ),
-                    "feedback": (
+                    "feedbackf": (
                         {
                             "GET /api/feedback/": "Get all feedback",
                             "GET /api/feedback/<id>": "Get specific feedback",
@@ -364,6 +379,7 @@ def create_app():
                             "PUT /api/feedback/<id>": "Update feedback",
                             "DELETE /api/feedback/<id>": "Delete feedback",
                             "POST /api/feedback/<id>/update-status": "Update feedback status",
+
                             "GET /api/feedback/stats": "Get feedback statistics",
                             "GET /api/feedback/my-feedback": "Get user feedback",
                             "GET /api/feedback/types": "Get feedback types",
@@ -371,10 +387,12 @@ def create_app():
                         if FEEDBACK_AVAILABLE
                         else "unavailable"
                     ),
-                    "ml": (
+                    "mlf": (
                         {
                             "POST /api/ml/anomalies": "Detect anomalies in metrics data",
+
                             "GET /api/ml/anomalies/realtime": "Real-time anomaly detection",
+
                             "POST /api/ml/train": "Train anomaly detection model",
                             "GET /api/ml/model/info": "Get model information",
                             "POST /api/ml/model/retrain": "Retrain model with new data",
@@ -384,33 +402,51 @@ def create_app():
                         if ML_API_AVAILABLE
                         else "unavailable"
                     ),
-                    "ai": (
+                    "aif": (
                         {
                             "POST /api/ai/recommendations": "Get AI-powered remediation recommendations",
+
                             "POST /api/ai/autonomous/process": "Process anomaly with autonomous operations",
+
                             "GET /api/ai/autonomous/policies": "Get automation policies",
+
                             "POST /api/ai/autonomous/policies": "Create automation policy",
+
                             "PUT /api/ai/autonomous/policies/<id>": "Update automation policy",
+
                             "DELETE /api/ai/autonomous/policies/<id>": "Delete automation policy",
+
                             "POST /api/ai/learning/cycle": "Run continuous learning cycle",
+
                             "GET /api/ai/learning/statistics": "Get learning statistics",
+
                             "POST /api/ai/data/collect": "Collect data for continuous learning",
+
                             "GET /api/ai/models/registry": "Get model registry information",
+
                             "POST /api/ai/models/<type>/promote": "Promote model to production",
+
                             "POST /api/ai/experiments/ab-testing": "Start A/B testing experiment",
+
                             "POST /api/ai/experiments/ab-testing/<id>/end": "End A/B testing experiment",
+
                             "POST /api/ai/drift/detect": "Detect data and model drift",
                             "GET /api/ai/knowledge/stats": "Get knowledge base statistics",
+
                             "POST /api/ai/knowledge/experience": "Add experience to knowledge base",
+
                             "GET /api/ai/autonomous/stats": "Get autonomous operations statistics",
+
                         }
                         if AI_API_AVAILABLE
                         else "unavailable"
                     ),
                 },
-                "authentication": "All endpoints except /api/feedback/ (POST) and /api/feedback/types require JWT authentication",
+                "authentication": "All endpoints except /api/feedback/ (
+                    POST) and /api/feedback/types require JWT authentication",
                 "rate_limiting": "API endpoints are rate limited. Login endpoints have stricter limits.",
-                "error_codes": {
+
+                "error_codesf": {
                     "400": "Bad Request",
                     "401": "Unauthorized",
                     "403": "Forbidden",

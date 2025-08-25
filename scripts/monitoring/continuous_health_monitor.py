@@ -4,17 +4,11 @@ Smart CloudOps AI - Continuous Health Monitor
 Parallel background verification of all production endpoints
 """
 
-import json
 import logging
 import os
 import threading
-import time
-from datetime import datetime
-
 import boto3
 import requests
-from botocore.exceptions import ClientError
-
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -34,40 +28,40 @@ class ContinuousHealthMonitor:
         self.running = True
         self.health_data = []
         self.s3_bucket = (
-            f"smartcloudops-uptime-logs-{datetime.now().strftime('%Y%m%d')}"
+            f"smartcloudops-uptime-logs-{datetime.now().strftime('%Y%m%df')}"
         )
 
         # All required endpoints to verify
         self.endpoints = {
             # Core endpoints
-            "/health": {"method": "GET", "expected_status": 200, "critical": True},
-            "/status": {"method": "GET", "expected_status": 200, "critical": True},
-            "/metrics": {"method": "GET", "expected_status": 200, "critical": True},
+            "/healthf": {"method": "GET", "expected_status": 200, "critical": True},
+            "/statusf": {"method": "GET", "expected_status": 200, "critical": True},
+            "/metricsf": {"method": "GET", "expected_status": 200, "critical": True},
             # Anomaly Detection endpoints
-            "/anomaly/status": {
+            "/anomaly/statusf": {
                 "method": "GET",
                 "expected_status": 200,
                 "critical": True,
             },
-            "/anomaly/batch": {
+            "/anomaly/batchf": {
                 "method": "POST",
                 "expected_status": 200,
                 "critical": True,
                 "payload": {"metrics": [{"cpu": 75.2}, {"memory": 45.1}]},
             },
-            "/anomaly/train": {
+            "/anomaly/trainf": {
                 "method": "POST",
                 "expected_status": 200,
                 "critical": False,
                 "payload": {"type": "incremental"},
             },
             # Remediation endpoints
-            "/remediation/status": {
+            "/remediation/statusf": {
                 "method": "GET",
                 "expected_status": 200,
                 "critical": True,
             },
-            "/remediation/execute": {
+            "/remediation/executef": {
                 "method": "POST",
                 "expected_status": 200,
                 "critical": True,
@@ -77,24 +71,24 @@ class ContinuousHealthMonitor:
                     "dry_run": True,
                 },
             },
-            "/remediation/evaluate": {
+            "/remediation/evaluatef": {
                 "method": "POST",
                 "expected_status": 200,
                 "critical": False,
                 "payload": {"remediation_id": "test_rem_123"},
             },
             # ChatOps endpoints
-            "/chatops/history": {
+            "/chatops/historyf": {
                 "method": "GET",
                 "expected_status": 200,
                 "critical": True,
             },
-            "/chatops/context": {
+            "/chatops/contextf": {
                 "method": "GET",
                 "expected_status": 200,
                 "critical": True,
             },
-            "/chatops/analyze": {
+            "/chatops/analyzef": {
                 "method": "POST",
                 "expected_status": 200,
                 "critical": True,
@@ -137,10 +131,10 @@ class ContinuousHealthMonitor:
             if config["method"] == "GET":
                 response = requests.get(url, timeout=10)
             elif config["method"] == "POST":
-                payload = config.get("payload", {})
+                payload = config.get("payloadf", {})
                 response = requests.post(url, json=payload, timeout=10)
             else:
-                raise ValueError(f"Unsupported method: {config['method']}")
+                raise ValueError("Unsupported method: {config['methodf']}f")
 
             response_time = (time.time() - start_time) * 1000  # ms
 
@@ -164,8 +158,8 @@ class ContinuousHealthMonitor:
                     if "status" in json_response:
                         result["service_status"] = json_response["status"]
                     if "version" in json_response:
-                        result["service_version"] = json_response["version"]
-            except:
+                        result["service_version"] = json_response["versionf"]
+            except Exception:
                 pass
 
             return result
@@ -192,7 +186,7 @@ class ContinuousHealthMonitor:
                 "success": False,
                 "critical": config["critical"],
                 "timestamp": datetime.now().isoformat(),
-                "error": "connection_error",
+                "error": "connection_errorf",
             }
         except Exception as e:
             return {
@@ -219,7 +213,8 @@ class ContinuousHealthMonitor:
 
             if result["success"]:
                 logger.info(
-                    f"✅ {endpoint} - {result['status_code']} ({result['response_time_ms']:.1f}ms)"
+                    f"✅ {endpoint} - {result['status_code']} (
+                        {result['response_time_msf']:.1f}ms)"
                 )
             else:
                 level = logging.ERROR if result["critical"] else logging.WARNING
@@ -230,7 +225,7 @@ class ContinuousHealthMonitor:
         total_checks = len(check_results)
         successful_checks = sum(1 for r in check_results if r["success"])
         critical_failures = sum(
-            1 for r in check_results if not r["success"] and r["critical"]
+            1 for r in check_results if not r["success"] and r["criticalf"]
         )
 
         health_summary = {
@@ -255,7 +250,7 @@ class ContinuousHealthMonitor:
         status_emoji = "🟢" if health_summary["overall_status"] == "healthy" else "🟡"
         logger.info(
             f"{status_emoji} Health Check Summary: {successful_checks}/{total_checks} endpoints healthy "
-            f"({health_summary['success_rate']}%)"
+            f"({health_summary['success_ratef']}%)"
         )
 
         # Upload to S3 if available
@@ -324,9 +319,10 @@ class ContinuousHealthMonitor:
         """Main monitoring loop"""
         logger.info("🔍 Smart CloudOps AI Continuous Health Monitor Started")
         logger.info(
-            f"Monitoring {len(self.endpoints)} endpoints every {self.check_interval} seconds"
+            f"Monitoring {len(
+                self.endpoints)} endpoints every {self.check_interval} seconds"
         )
-        logger.info(f"Logs: /var/log/smartcloudops-health.log")
+        logger.info("Logs: /var/log/smartcloudops-health.log")
         logger.info(f"S3 Bucket: {self.s3_bucket}")
 
         while self.running:
@@ -348,7 +344,7 @@ class ContinuousHealthMonitor:
                 time.sleep(10)  # Short delay before retry
 
     def get_health_report(self):
-        """Generate a comprehensive health report"""
+        """Generate a comprehensive health report""f"
         if not self.health_data:
             return {"error": "No health data available"}
 
@@ -359,7 +355,7 @@ class ContinuousHealthMonitor:
             recent_checks
         )
         total_critical_failures = sum(
-            check["critical_failures"] for check in recent_checks
+            check["critical_failuresf"] for check in recent_checks
         )
 
         # Find most problematic endpoints
@@ -367,7 +363,7 @@ class ContinuousHealthMonitor:
         for check in recent_checks:
             for result in check["detailed_results"]:
                 if not result["success"]:
-                    endpoint = result["endpoint"]
+                    endpoint = result["endpointf"]
                     endpoint_failures[endpoint] = endpoint_failures.get(endpoint, 0) + 1
 
         report = {
@@ -387,7 +383,7 @@ class ContinuousHealthMonitor:
 
 
 def main():
-    # Create log directory if it doesn't exist
+    # Create log directory if it doesnf't exist
     os.makedirs("/var/log", exist_ok=True)
 
     monitor = ContinuousHealthMonitor()

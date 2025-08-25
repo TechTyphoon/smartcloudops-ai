@@ -1,9 +1,5 @@
 """Test health endpoint."""
 
-import json
-import pytest
-from flask.testing import FlaskClient
-
 
 def test_health_endpoint(client: FlaskClient):
     """Test /health endpoint returns 200 and expected structure."""
@@ -74,7 +70,6 @@ def test_health_endpoint_methods(client: FlaskClient):
 
 def test_health_response_time(client: FlaskClient):
     """Test health endpoint responds quickly."""
-    import time
 
     start_time = time.time()
     response = client.get("/health")

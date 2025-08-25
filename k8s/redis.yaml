@@ -5,7 +5,7 @@ metadata:
   namespace: smartcloudops
 type: Opaque
 data:
-  redis-password: c21hcnRjbG91ZG9wc19yZWRpc19wYXNzd29yZA==  # smartcloudops_redis_password
+  redis-password: ${REDIS_PASSWORD_BASE64}  # Set via environment variable
 ---
 apiVersion: v1
 kind: ConfigMap

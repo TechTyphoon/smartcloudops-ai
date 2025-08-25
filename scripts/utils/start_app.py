@@ -5,8 +5,6 @@ Helps users start the application with proper configuration
 """
 
 import os
-import sys
-from pathlib import Path
 
 
 def check_environment():
@@ -123,8 +121,6 @@ def start_application():
 
     # Start the application
     try:
-        from app.main import main
-
         main()
     except KeyboardInterrupt:
         print("\n👋 Application stopped by user")

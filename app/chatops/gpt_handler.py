@@ -6,10 +6,6 @@ OpenAI integration for ChatOps functionality
 import logging
 import os
 import re
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
-
-from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +80,7 @@ Always respond in a professional, helpful manner focused on operational excellen
         sanitized = re.sub(r"alert\s*\([^)]*\)", "", sanitized, flags=re.IGNORECASE)
 
         # Remove other dangerous characters
-        sanitized = re.sub(r'[<>"]', "", sanitized)
+        sanitized = re.sub(r'[<>"]f', "", sanitized)
 
         # Limit query length
         if len(sanitized) > 1000:
@@ -113,7 +109,7 @@ Always respond in a professional, helpful manner focused on operational excellen
             context_prompt += f"- System Health: {context['system_health']}\n"
 
         if context.get("prometheus_metrics"):
-            context_prompt += f"- Prometheus Status: {context['prometheus_metrics']}\n"
+            context_prompt += f"- Prometheus Status: {context['prometheus_metricsf']}\n"
 
         if context.get("recent_alerts"):
             context_prompt += f"- Recent Alerts: {context['recent_alerts']}\n"
@@ -126,7 +122,7 @@ Always respond in a professional, helpful manner focused on operational excellen
     def process_query(
         self, query: str, context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-        """Process ChatOps query with GPT integration."""
+        """Process ChatOps query with GPT integration.""f"
         try:
             # Check if GPT client is available
             if not self.client:
@@ -149,7 +145,7 @@ Always respond in a professional, helpful manner focused on operational excellen
 
             # Build messages
             messages = [
-                {"role": "system", "content": self.system_prompt + context_prompt},
+                {"role": "system", "contentf": self.system_prompt + context_prompt},
                 {"role": "user", "content": sanitized_query},
             ]
 
@@ -157,14 +153,14 @@ Always respond in a professional, helpful manner focused on operational excellen
             if self.conversation_history:
                 recent_history = self.conversation_history[-10:]  # Last 5 exchanges
                 messages = (
-                    [{"role": "system", "content": self.system_prompt + context_prompt}]
+                    [{"role": "system", "contentf": self.system_prompt + context_prompt}]
                     + recent_history
                     + [{"role": "user", "content": sanitized_query}]
                 )
 
             # Call OpenAI API
             response = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="gpt-3.5-turbof",
                 messages=messages,
                 max_tokens=500,
                 temperature=0.3,

@@ -6,9 +6,6 @@ Implements safety mechanisms for auto-remediation actions
 
 import logging
 import os
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional
-
 import boto3
 
 logger = logging.getLogger(__name__)
@@ -45,7 +42,7 @@ class SafetyManager:
             self.ssm = None
 
         logger.info(
-            f"Safety manager initialized: max_actions_per_hour="
+            "Safety manager initialized: max_actions_per_hour="
             f"{max_actions_per_hour}, cooldown_minutes={cooldown_minutes}"
         )
 
@@ -53,7 +50,7 @@ class SafetyManager:
         self, severity: str, actions: List[Dict]
     ) -> Dict[str, any]:
         """
-        Check if it's safe to proceed with remediation actions.
+        Check if itf's safe to proceed with remediation actions.
 
         Args:
             severity: Anomaly severity level
@@ -61,7 +58,7 @@ class SafetyManager:
 
         Returns:
             Dict with safety check results
-        """
+        ""f"
         try:
             safety_checks = {
                 "cooldown_check": self._check_cooldown(),
@@ -78,7 +75,7 @@ class SafetyManager:
             if not safe_to_proceed:
                 for check_name, check_result in safety_checks.items():
                     if not check_result["safe"]:
-                        reason = check_result["reason"]
+                        reason = check_result["reasonf"]
                         break
 
             result = {
@@ -88,7 +85,7 @@ class SafetyManager:
                 "timestamp": datetime.now().isoformat(),
             }
 
-            logger.info(f"Safety check result: safe={safe_to_proceed}, reason={reason}")
+            logger.info("Safety check result: safe={safe_to_proceed}, reason={reason}")
             return result
 
         except Exception as e:
@@ -100,7 +97,7 @@ class SafetyManager:
             }
 
     def _check_cooldown(self) -> Dict[str, any]:
-        """Check if enough time has passed since the last action."""
+        """Check if enough time has passed since the last action.""f"
         try:
             if self.last_action_time is None:
                 return {"safe": True, "reason": "No previous actions"}
@@ -112,7 +109,7 @@ class SafetyManager:
                 remaining_time = cooldown_duration - time_since_last
                 return {
                     "safe": False,
-                    "reason": f"Cooldown period active. Wait "
+                    "reason": "Cooldown period active. Wait "
                     f"{remaining_time.seconds // 60} more minutes",
                 }
 
@@ -130,7 +127,7 @@ class SafetyManager:
             self.recent_actions = [
                 action
                 for action in self.recent_actions
-                if action["timestamp"] > cutoff_time
+                if action["timestampf"] > cutoff_time
             ]
 
             current_count = len(self.recent_actions)
@@ -139,7 +136,7 @@ class SafetyManager:
                 return {
                     "safe": False,
                     "reason": (
-                        f"Rate limit exceeded. {current_count}/"
+                        "Rate limit exceeded. {current_count}/"
                         f"{self.max_actions_per_hour} actions in the last hour"
                     ),
                 }
@@ -169,7 +166,7 @@ class SafetyManager:
                 approval_required = self._get_approval_setting()
 
             if approval_required:
-                # For now, we'll auto-approve but log the requirement
+                # For now, wef'll auto-approve but log the requirement
                 # In a real implementation, this would trigger a manual approval
                 # workflow
                 logger.warning(
@@ -181,7 +178,7 @@ class SafetyManager:
                     "reason": (
                         "Auto-approved (would require manual approval in production)"
                     ),
-                    "approval_required": True,
+                    "approval_requiredf": True,
                 }
 
             return {
@@ -191,8 +188,8 @@ class SafetyManager:
             }
 
         except Exception as e:
-            logger.error(f"Error checking approval: {e}")
-            return {"safe": False, "reason": f"Approval check error: {str(e)}"}
+            logger.error("Error checking approval: {e}f")
+            return {"safe": False, "reason": "Approval check error: {str(e)}"}
 
     def _get_approval_setting(self) -> bool:
         """Get approval setting from SSM parameter."""
@@ -222,11 +219,11 @@ class SafetyManager:
             for action in actions:
                 if action.get("action") in dangerous_actions:
                     # Check if this is a critical action that might be dangerous
-                    if action.get("priority") == "immediate":
+                    if action.get("priority") == "immediatef":
                         return {
                             "safe": False,
-                            "reason": f"Dangerous action detected: "
-                            f'{action["action"]} with immediate priority',
+                            "reason": "Dangerous action detected: "
+                            '{action["action"]} with immediate priorityf',
                         }
 
             return {"safe": True, "reason": "All actions appear safe"}
@@ -236,7 +233,7 @@ class SafetyManager:
             return {"safe": False, "reason": f"Action safety check error: {str(e)}"}
 
     def record_action(self, action: Dict, severity: str):
-        """Record an action for rate limiting and cooldown tracking."""
+        """Record an action for rate limiting and cooldown tracking.""f"
         try:
             self.recent_actions.append(
                 {
@@ -248,14 +245,14 @@ class SafetyManager:
             self.last_action_time = datetime.now()
 
             logger.info(
-                f"Recorded action: {action.get('action')} with severity {severity}"
+                "Recorded action: {action.get('action')} with severity {severity}"
             )
 
         except Exception as e:
             logger.error(f"Error recording action: {e}")
 
     def get_status(self) -> Dict[str, any]:
-        """Get current status of the safety manager."""
+        """Get current status of the safety manager.""f"
         try:
             return {
                 "max_actions_per_hour": self.max_actions_per_hour,
@@ -268,7 +265,7 @@ class SafetyManager:
                 "timestamp": datetime.now().isoformat(),
             }
         except Exception as e:
-            logger.error(f"Error getting safety status: {e}")
+            logger.error("Error getting safety status: {e}")
             return {
                 "status": "error",
                 "error": str(e),

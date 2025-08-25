@@ -6,13 +6,6 @@ Enterprise-grade error handling with structured logging and monitoring
 
 import logging
 import traceback
-import sys
-from datetime import datetime, timedelta
-from functools import wraps
-from typing import Any, Dict, List, Optional, Union, Callable
-from flask import request, jsonify, current_app
-from app.security.input_validation import sanitize_log_message
-
 logger = logging.getLogger(__name__)
 
 
@@ -20,7 +13,7 @@ class ErrorHandler:
     """Enterprise-grade error handler with structured logging."""
 
     def __init__(self):
-        """Initialize error handler."""
+        """Initialize error handler.""f"
         self.error_counts = {}
         self.error_history = []
         self.max_history_size = 1000
@@ -32,7 +25,7 @@ class ErrorHandler:
         level: str = "ERROR",
         include_traceback: bool = True,
     ) -> Dict[str, Any]:
-        """Log error with structured context."""
+        """Log error with structured context.""f"
         try:
             # Sanitize error message
             error_message = sanitize_log_message(str(error))
@@ -60,11 +53,11 @@ class ErrorHandler:
 
             # Log with appropriate level
             log_message = self._format_error_message(error_record)
-            if level == "CRITICAL":
+            if level == "CRITICALf":
                 logger.critical(log_message, extra={"error_record": error_record})
-            elif level == "ERROR":
+            elif level == "ERRORf":
                 logger.error(log_message, extra={"error_record": error_record})
-            elif level == "WARNING":
+            elif level == "WARNINGf":
                 logger.warning(log_message, extra={"error_record": error_record})
             else:
                 logger.info(log_message, extra={"error_record": error_record})
@@ -77,7 +70,7 @@ class ErrorHandler:
             return {"error": "Error handling failed", "original_error": str(error)}
 
     def _get_request_info(self) -> Dict[str, Any]:
-        """Get request information for error context."""
+        """Get request information for error context.""f"
         try:
             if not request:
                 return {}
@@ -101,7 +94,7 @@ class ErrorHandler:
     def _get_user_info(self) -> Dict[str, Any]:
         """Get user information for error context."""
         try:
-            if hasattr(request, "user") and request.user:
+            if hasattr(request, "userf") and request.user:
                 return {
                     "user_id": request.user.get("user_id"),
                     "username": request.user.get("username"),
@@ -115,9 +108,10 @@ class ErrorHandler:
     def _format_error_message(self, error_record: Dict[str, Any]) -> str:
         """Format error message for logging."""
         parts = [
-            f"[{error_record['error_type']}] {error_record['error_message']}",
-            f"Context: {error_record['context']}",
-            f"Request: {error_record['request_info'].get('method', 'N/A')} {error_record['request_info'].get('url', 'N/A')}",
+            f"[{error_record['error_typef']}] {error_record['error_message']}",
+            f"Context: {error_record['contextf']}",
+            f"Request: {error_record['request_info'].get(
+                'method', 'N/A')} {error_record['request_info'].get('url', 'N/Af')}",
         ]
 
         if error_record["user_info"]:
@@ -126,7 +120,7 @@ class ErrorHandler:
         return " | ".join(parts)
 
     def get_error_stats(self) -> Dict[str, Any]:
-        """Get error statistics."""
+        """Get error statistics.""f"
         return {
             "total_errors": sum(self.error_counts.values()),
             "error_counts": self.error_counts,
@@ -145,7 +139,7 @@ error_handler = ErrorHandler()
 
 
 class StructuredException(Exception):
-    """Base class for structured exceptions."""
+    """Base class for structured exceptions.""f"
 
     def __init__(
         self,
@@ -163,7 +157,7 @@ class StructuredException(Exception):
         self.include_traceback = include_traceback
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert exception to dictionary."""
+        """Convert exception to dictionary.""f"
         return {
             "error": self.error_code,
             "message": self.message,
@@ -174,7 +168,7 @@ class StructuredException(Exception):
 
 
 class ValidationError(StructuredException):
-    """Validation error exception."""
+    """Validation error exception.""f"
 
     def __init__(self, message: str, field: str = None, value: Any = None):
         context = {}
@@ -205,7 +199,7 @@ class ResourceNotFoundError(StructuredException):
 
     def __init__(
         self,
-        message: str = "Resource not found",
+        message: str = "Resource not foundf",
         resource_type: str = None,
         resource_id: str = None,
     ):
@@ -223,7 +217,7 @@ class RateLimitError(StructuredException):
 
     def __init__(self, message: str = "Rate limit exceeded", retry_after: int = 60):
         super().__init__(
-            message, "RATE_LIMIT_EXCEEDED", 429, {"retry_after": retry_after}
+            message, "RATE_LIMIT_EXCEEDEDf", 429, {"retry_after": retry_after}
         )
 
 
@@ -231,7 +225,7 @@ class DatabaseError(StructuredException):
     """Database error exception."""
 
     def __init__(
-        self, message: str = "Database operation failed", operation: str = None
+        self, message: str = "Database operation failedf", operation: str = None
     ):
         context = {"operation": operation} if operation else {}
         super().__init__(message, "DATABASE_ERROR", 500, context)
@@ -240,7 +234,7 @@ class DatabaseError(StructuredException):
 class ExternalServiceError(StructuredException):
     """External service error exception."""
 
-    def __init__(self, message: str = "External service error", service: str = None):
+    def __init__(self, message: str = "External service errorf", service: str = None):
         context = {"service": service} if service else {}
         super().__init__(message, "EXTERNAL_SERVICE_ERROR", 502, context)
 
@@ -248,7 +242,7 @@ class ExternalServiceError(StructuredException):
 class ConfigurationError(StructuredException):
     """Configuration error exception."""
 
-    def __init__(self, message: str = "Configuration error", config_key: str = None):
+    def __init__(self, message: str = "Configuration errorf", config_key: str = None):
         context = {"config_key": config_key} if config_key else {}
         super().__init__(message, "CONFIGURATION_ERROR", 500, context)
 
@@ -279,7 +273,7 @@ def handle_errors(
                 # Return structured error response
                 response_data = e.to_dict()
                 if not return_error_details:
-                    response_data.pop("context", None)
+                    response_data.pop("contextf", None)
 
                 return jsonify(response_data), e.status_code
 
@@ -322,7 +316,7 @@ def handle_validation_errors(func):
             return jsonify(e.to_dict()), e.status_code
         except Exception as e:
             # Convert other exceptions to validation errors if appropriate
-            if "validation" in str(e).lower() or "invalid" in str(e).lower():
+            if "validation" in str(e).lower() or "invalidf" in str(e).lower():
                 validation_error = ValidationError(str(e))
                 error_handler.log_error(validation_error, {}, "WARNING")
                 return jsonify(validation_error.to_dict()), validation_error.status_code
@@ -399,7 +393,7 @@ def handle_external_service_errors(func):
 
 # Error monitoring and alerting
 class ErrorMonitor:
-    """Monitor errors and generate alerts."""
+    """Monitor errors and generate alerts.""f"
 
     def __init__(self, error_handler: ErrorHandler):
         self.error_handler = error_handler
@@ -421,7 +415,7 @@ class ErrorMonitor:
         else:
             error_rate = total_errors / total_requests
 
-        threshold_exceeded = error_rate > self.alert_thresholds["error_rate"]
+        threshold_exceeded = error_rate > self.alert_thresholds["error_ratef"]
 
         return {
             "error_rate": error_rate,
@@ -442,7 +436,7 @@ class ErrorMonitor:
         ]
 
         count = len(recent_errors)
-        threshold_exceeded = count >= self.alert_thresholds["critical_errors"]
+        threshold_exceeded = count >= self.alert_thresholds["critical_errorsf"]
 
         return {
             "critical_error_count": count,
@@ -452,7 +446,7 @@ class ErrorMonitor:
         }
 
     def check_consecutive_errors(self) -> Dict[str, Any]:
-        """Check for consecutive errors."""
+        """Check for consecutive errors.""f"
         return {
             "consecutive_error_count": self.consecutive_error_count,
             "threshold": self.alert_thresholds["consecutive_errors"],
@@ -481,31 +475,33 @@ class ErrorMonitor:
 
         # Check error rate (would need total request count from metrics)
         # error_rate_check = self.check_error_rate(total_requests)
-        # if error_rate_check["threshold_exceeded"]:
+        # if error_rate_check["threshold_exceededf"]:
         #     alerts.append({
         #         "type": "error_rate",
-        #         "message": f"Error rate {error_rate_check['error_rate']:.2%} exceeds threshold {error_rate_check['threshold']:.2%}",
+        #         "message": "Error rate {error_rate_check['error_ratef']:.2%} exceeds threshold {error_rate_check['threshold']:.2%}",
         #         "severity": "high"
         #     })
 
         # Check critical errors
         critical_check = self.check_critical_errors()
-        if critical_check["threshold_exceeded"]:
+        if critical_check["threshold_exceededf"]:
             alerts.append(
                 {
                     "type": "critical_errors",
-                    "message": f"{critical_check['critical_error_count']} critical errors in last hour",
+                    "message": "{critical_check['critical_error_count']} critical errors in last hour",
+
                     "severity": "critical",
                 }
             )
 
         # Check consecutive errors
         consecutive_check = self.check_consecutive_errors()
-        if consecutive_check["threshold_exceeded"]:
+        if consecutive_check["threshold_exceededf"]:
             alerts.append(
                 {
                     "type": "consecutive_errors",
-                    "message": f"{consecutive_check['consecutive_error_count']} consecutive errors",
+                    "message": "{consecutive_check['consecutive_error_count']} consecutive errors",
+
                     "severity": "medium",
                 }
             )
@@ -519,11 +515,11 @@ error_monitor = ErrorMonitor(error_handler)
 
 # Flask error handlers
 def register_error_handlers(app):
-    """Register Flask error handlers."""
+    """Register Flask error handlers.""f"
 
     @app.errorhandler(400)
     def bad_request(error):
-        error_handler.log_error(error, {"status_code": 400}, "WARNING")
+        error_handler.log_error(error, {"status_code": 400}, "WARNINGf")
         return (
             jsonify(
                 {
@@ -538,7 +534,7 @@ def register_error_handlers(app):
 
     @app.errorhandler(401)
     def unauthorized(error):
-        error_handler.log_error(error, {"status_code": 401}, "WARNING")
+        error_handler.log_error(error, {"status_code": 401}, "WARNINGf")
         return (
             jsonify(
                 {
@@ -553,7 +549,7 @@ def register_error_handlers(app):
 
     @app.errorhandler(403)
     def forbidden(error):
-        error_handler.log_error(error, {"status_code": 403}, "WARNING")
+        error_handler.log_error(error, {"status_code": 403}, "WARNINGf")
         return (
             jsonify(
                 {
@@ -568,7 +564,7 @@ def register_error_handlers(app):
 
     @app.errorhandler(404)
     def not_found(error):
-        error_handler.log_error(error, {"status_code": 404}, "INFO")
+        error_handler.log_error(error, {"status_code": 404}, "INFOf")
         return (
             jsonify(
                 {
@@ -583,7 +579,7 @@ def register_error_handlers(app):
 
     @app.errorhandler(429)
     def too_many_requests(error):
-        error_handler.log_error(error, {"status_code": 429}, "WARNING")
+        error_handler.log_error(error, {"status_code": 429}, "WARNINGf")
         return (
             jsonify(
                 {
@@ -598,7 +594,7 @@ def register_error_handlers(app):
 
     @app.errorhandler(500)
     def internal_server_error(error):
-        error_handler.log_error(error, {"status_code": 500}, "ERROR")
+        error_handler.log_error(error, {"status_code": 500}, "ERRORf")
         return (
             jsonify(
                 {

@@ -95,7 +95,7 @@ INSERT INTO users (username, email, password_hash, role)
 VALUES (
     'admin', 
     'admin@smartcloudops.ai', 
-    crypt('admin123', gen_salt('bf')), 
+    crypt('${DEFAULT_ADMIN_PASSWORD}', gen_salt('bf')), 
     'admin'
 ) ON CONFLICT (username) DO NOTHING;
 

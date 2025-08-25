@@ -18,16 +18,16 @@ terraform {
     }
   }
 
-  # Remote state: For production, create backend.hcl with:
-  # bucket         = "your-terraform-state-bucket" 
-  # key            = "smartcloudops-ai/terraform.tfstate"
-  # region         = "us-west-2"
-  # encrypt        = true
-  # dynamodb_table = "terraform-locks"
-  # Then run: terraform init -backend-config=backend.hcl
-
-  # For validation, using local backend (comment out for production)
-  # backend "s3" {}
+  # Remote state configuration for production
+  # Uncomment and configure for production use
+  # backend "s3" {
+  #   bucket         = "your-terraform-state-bucket-name"
+  #   key            = "smartcloudops-ai/terraform.tfstate"
+  #   region         = "us-west-2"
+  #   encrypt        = true
+  #   dynamodb_table = "terraform-locks"
+  #   kms_key_id     = "arn:aws:kms:us-west-2:ACCOUNT_ID:key/your-kms-key-id"
+  # }
 }
 
 # AWS Provider Configuration

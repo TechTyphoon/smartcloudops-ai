@@ -3,10 +3,11 @@
 
 # Code Quality & Security
 flake8==6.1.0
-black==23.11.0
+black==25.1.0
 isort==5.12.0
 bandit==1.7.5
 safety==3.6.0
+mypy==1.7.1
 
 # Testing
 pytest==8.2.0
@@ -16,7 +17,6 @@ pytest-asyncio==0.23.6
 pytest-xdist==3.6.0  # Parallel test execution
 
 # Type Checking
-mypy==1.9.0
 types-requests==2.32.4.20250809
 
 # Pre-commit hooks
@@ -32,3 +32,25 @@ ipdb==0.13.13
 
 # Load testing
 locust==2.25.0
+
+# Coverage reporting
+coverage==7.4.1
+
+# Dependency management
+pip-tools==7.3.0
+
+# Code formatting
+autopep8==2.0.4
+
+# Import sorting
+isort==5.12.0
+
+# Linting
+pylint==3.0.3
+
+# Security scanning
+# semgrep==1.50.0  # Commented out due to urllib3 conflict
+
+# Performance profiling
+memory-profiler==0.61.0
+line-profiler==4.1.2

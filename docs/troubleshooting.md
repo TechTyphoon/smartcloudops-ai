@@ -1,534 +1,641 @@
-# Smart CloudOps AI - Troubleshooting Guide
+# SmartCloudOps AI - Troubleshooting Guide
 
-**Last Updated**: December 19, 2024  
-**Covers**: Phase 0 & Phase 1 Issues  
+**Last Updated**: January 2025  
+**Version**: 3.3.0  
+**Covers**: Complete SmartCloudOps AI Platform  
 
 ## 🚨 Quick Issue Resolution
 
 ### 🔍 Common Symptoms
 | Symptom | Likely Cause | Quick Fix |
 |---------|--------------|-----------|
-| Terraform apply fails | Invalid configuration | `terraform validate` |
-| Cannot access Grafana | Security group issue | Check `allowed_cidr_blocks` |
-| No monitoring data | Prometheus targets down | Check `/targets` endpoint |
-| SSH connection fails | Key permissions | `chmod 400 ~/.ssh/key.pem` |
-| Docker services down | Resource limits | Check `docker ps` and logs |
+| Tests failing | Missing dependencies | `pip install -r requirements.txt` |
+| Docker build fails | Build context issues | `docker build --no-cache .` |
+| Database connection fails | Connection string | Check `DATABASE_URL` in `.env` |
+| ML model errors | Model file missing | Run `python ml_models/train_enhanced_model.py` |
+| API authentication fails | JWT token expired | Re-authenticate via `/auth/login` |
+| Prometheus targets down | Service discovery | Check `/targets` endpoint |
 
-## 🔧 Phase 0: Foundation Issues
+## 🧪 Testing Issues
 
-### Setup Script Failures
+### Unit Test Failures
 
-#### Issue: `python3 setup.py` fails
+#### Issue: `pytest` fails with import errors
 **Symptoms**: 
-- Missing dependencies error
-- Permission denied
-- Virtual environment creation fails
+- ModuleNotFoundError for app modules
+- ImportError for ml_models
+- Test discovery failures
 
 **Diagnosis**:
 ```bash
-# Check Python version
-python3 --version
+# Check Python path
+python -c "import sys; print(sys.path)"
 
-# Check available tools
-which terraform docker aws git
-
-# Check permissions
-ls -la setup.py
+# Check test structure
+ls -la tests/
+pytest --collect-only
 ```
 
 **Solution**:
 ```bash
-# Install missing tools
-sudo apt update
-sudo apt install python3-venv python3-pip
-
-# Fix permissions
-chmod +x setup.py
-
-# Manual venv creation
-python3 -m venv venv
-source venv/bin/activate
+# Install dependencies
 pip install -r requirements.txt
+pip install -r requirements-dev.txt
+
+# Run tests with proper path
+PYTHONPATH=. pytest tests/
+
+# Run specific test categories
+pytest tests/unit/
+pytest tests/integration/
+pytest tests/backend/
 ```
 
-#### Issue: Verification script fails
-**Symptoms**: 
-- "Missing files" errors
-- Directory structure issues
-- CI/CD workflow validation fails
+#### Issue: Database tests failing
+**Symptoms**:
+- SQLAlchemy connection errors
+- Database not found
+- Migration errors
 
 **Diagnosis**:
 ```bash
-# Run verification with details
-python3 verify_setup.py
+# Check database configuration
+echo $DATABASE_URL
+python -c "from app.database import get_db_session; print('DB OK')"
 
-# Check file structure
-ls -la
-tree . -L 2
+# Check migrations
+alembic current
+alembic history
 ```
 
 **Solution**:
 ```bash
-# Recreate missing directories
-mkdir -p terraform app scripts ml_models .github/workflows docs
+# Set up test database
+export DATABASE_URL="sqlite:///test.db"
+alembic upgrade head
 
-# Verify git repository
-git status
-git add .
+# Run tests with test database
+DATABASE_URL="sqlite:///test.db" pytest tests/
+
+# Clean up test database
+rm test.db
 ```
 
-### CI/CD Pipeline Issues
-
-#### Issue: GitHub Actions failing
+#### Issue: ML model tests failing
 **Symptoms**:
-- Workflow syntax errors
-- Permission denied in actions
-- Security scanning failures
+- Model file not found
+- Scikit-learn version conflicts
+- Memory errors during training
 
 **Diagnosis**:
 ```bash
-# Validate workflow files
-github-action-validator .github/workflows/ci-infra.yml
-github-action-validator .github/workflows/ci-app.yml
+# Check ML dependencies
+python -c "import sklearn, pandas, numpy; print('ML OK')"
 
-# Check repository settings
-# - Actions permissions
-# - Branch protection rules
-```
-
-**Solution**:
-```yaml
-# Fix common workflow issues
-# In .github/workflows/ci-*.yml
-
-# Add proper permissions
-permissions:
-  contents: read
-  security-events: write
-
-# Fix dependency installation
-- name: Install dependencies
-  run: |
-    python -m pip install --upgrade pip
-    pip install -r requirements.txt
-```
-
-## 🏗️ Phase 1: Infrastructure Issues
-
-### Terraform Deployment Problems
-
-#### Issue: `terraform apply` fails with user_data size error
-**Symptoms**:
-```
-Error: expected length of user_data to be in the range (0 - 16384)
-```
-
-**Diagnosis**:
-```bash
-# Check user_data size
-cd terraform
-terraform plan
-
-# Validate configuration
-terraform validate
+# Check model files
+ls -la ml_models/
+ls -la ml_models/versions/
 ```
 
 **Solution**:
 ```bash
-# This was fixed in our implementation
-# User data now uses simplified approach
-# If you encounter this, update main.tf:
+# Install ML dependencies
+pip install scikit-learn pandas numpy joblib
 
-# Replace complex templatefile with simple file reference
-user_data = base64encode(file("${path.module}/scripts/monitoring_setup.sh"))
+# Train test model
+python ml_models/train_enhanced_model.py
+
+# Run ML tests
+pytest tests/unit/test_ml_models.py -v
 ```
 
-#### Issue: AWS permissions denied
+### Integration Test Issues
+
+#### Issue: API integration tests failing
 **Symptoms**:
-- "UnauthorizedOperation" errors
-- "AccessDenied" for specific resources
-- "InvalidUserID.NotFound" errors
+- Flask app not starting
+- Authentication token issues
+- Endpoint not found errors
 
 **Diagnosis**:
 ```bash
-# Check AWS credentials
-aws sts get-caller-identity
+# Check Flask app
+python -c "from app.main import create_app; app = create_app(); print('App OK')"
 
-# Verify permissions
-aws iam get-user
-aws iam list-attached-user-policies --user-name <username>
+# Check test client
+pytest tests/integration/test_api_endpoints.py -v -s
 ```
 
 **Solution**:
 ```bash
-# Configure AWS CLI
-aws configure
+# Set test environment
+export FLASK_ENV=testing
+export TESTING=True
 
-# Required permissions for Smart CloudOps AI:
-# - EC2: DescribeInstances, RunInstances, TerminateInstances
-# - VPC: CreateVpc, CreateSubnet, CreateInternetGateway
-# - IAM: Basic permissions for resource tagging
+# Run integration tests
+pytest tests/integration/ -v
+
+# Check app logs
+pytest tests/integration/ -v -s --log-cli-level=DEBUG
 ```
 
-#### Issue: Resource already exists errors
+#### Issue: Database integration tests failing
 **Symptoms**:
-- "AlreadyExists" errors for VPC, subnets
-- "InvalidKeyPair.Duplicate" errors
-- State file conflicts
+- Transaction rollback errors
+- Data persistence issues
+- Constraint violations
 
 **Diagnosis**:
 ```bash
-# Check existing resources
-aws ec2 describe-vpcs --filters "Name=tag:Name,Values=smartcloudops-*"
-aws ec2 describe-key-pairs --key-names smartcloudops-ai-key
+# Check database session
+python -c "from app.database import get_db_session; session = get_db_session(); print('Session OK')"
 
-# Check terraform state
-terraform state list
+# Check models
+python -c "from app.models import User, Anomaly; print('Models OK')"
 ```
 
 **Solution**:
 ```bash
-# Option 1: Import existing resources
-terraform import aws_vpc.smartcloudops_vpc vpc-xxxxxxxx
-terraform import aws_key_pair.smartcloudops_key smartcloudops-ai-key
+# Use test database
+export DATABASE_URL="sqlite:///:memory:"
 
-# Option 2: Use different names
-# Edit variables.tf
-project_name = "smartcloudops-ai-v2"
+# Run database tests
+pytest tests/integration/test_api_endpoints.py::TestDatabaseIntegration -v
 
-# Option 3: Clean up existing resources
-aws ec2 delete-key-pair --key-name smartcloudops-ai-key
+# Check transaction handling
+pytest tests/integration/test_api_endpoints.py::TestDatabaseIntegration::test_database_transactions -v -s
 ```
 
-### EC2 Instance Issues
+## 🏗️ Infrastructure Issues
 
-#### Issue: Instances not accessible
+### Docker Deployment Problems
+
+#### Issue: Docker build fails
 **Symptoms**:
-- SSH timeout
-- HTTP/HTTPS connection refused
-- Services not responding
+- Build context errors
+- Missing files in Dockerfile
+- Permission denied errors
 
 **Diagnosis**:
 ```bash
-# Check instance status
-aws ec2 describe-instances --filters "Name=tag:Name,Values=smartcloudops-ai-*"
+# Check Dockerfile
+cat Dockerfile
 
-# Check security groups
-aws ec2 describe-security-groups --filters "Name=group-name,Values=smartcloudops-ai-*"
+# Check build context
+docker build --no-cache . 2>&1 | head -20
 
-# Test connectivity
-telnet <instance-ip> 22
-telnet <instance-ip> 9090
+# Check file permissions
+ls -la Dockerfile
+ls -la requirements.txt
 ```
 
 **Solution**:
 ```bash
-# Fix security group rules
-# Edit terraform/terraform.tfvars
-allowed_cidr_blocks = ["YOUR_ACTUAL_IP/32"]
+# Clean build
+docker system prune -f
+docker build --no-cache -t smartcloudops-ai .
 
-# Re-apply terraform
-terraform apply
+# Check for missing files
+docker build . 2>&1 | grep "COPY failed"
 
-# Check SSH key permissions
-chmod 400 ~/.ssh/smartcloudops-ai-key
-
-# Verify instance is running
-aws ec2 describe-instance-status --instance-ids <instance-id>
+# Fix file permissions
+chmod 644 requirements.txt
+chmod 644 Dockerfile
 ```
 
-#### Issue: User data script failures
+#### Issue: Docker Compose services not starting
 **Symptoms**:
-- Services not installed
-- Docker not running
-- Monitoring stack not started
+- Services exiting with code 1
+- Port conflicts
+- Volume mount errors
 
 **Diagnosis**:
 ```bash
-# SSH to instance and check logs
-ssh -i ~/.ssh/smartcloudops-ai-key ec2-user@<instance-ip>
-
-# Check cloud-init logs
-sudo tail -f /var/log/cloud-init-output.log
-sudo cat /var/log/cloud-init.log
-
 # Check service status
-sudo systemctl status docker
-sudo systemctl status node_exporter
+docker-compose ps
+docker-compose logs
+
+# Check port usage
+netstat -tlnp | grep :5000
+netstat -tlnp | grep :5432
 ```
 
 **Solution**:
 ```bash
-# Manual service restart
-sudo systemctl start docker
-sudo systemctl enable docker
+# Stop all services
+docker-compose down
 
-# Check Docker services
-cd /opt/monitoring
-sudo docker-compose ps
-sudo docker-compose logs
+# Remove volumes
+docker-compose down -v
 
-# Restart monitoring stack
-sudo docker-compose down
-sudo docker-compose up -d
+# Start fresh
+docker-compose up -d
+
+# Check logs
+docker-compose logs -f
 ```
 
-## 📊 Monitoring Stack Issues
+### Database Connection Issues
+
+#### Issue: PostgreSQL connection fails
+**Symptoms**:
+- Connection refused errors
+- Authentication failures
+- Database not found
+
+**Diagnosis**:
+```bash
+# Check PostgreSQL container
+docker-compose ps postgres
+docker-compose logs postgres
+
+# Test connection
+docker-compose exec postgres psql -U cloudops -d cloudops_db
+```
+
+**Solution**:
+```bash
+# Restart PostgreSQL
+docker-compose restart postgres
+
+# Check environment variables
+cat .env | grep DATABASE
+
+# Recreate database
+docker-compose down -v
+docker-compose up -d postgres
+sleep 10
+docker-compose up -d
+```
+
+#### Issue: Redis connection fails
+**Symptoms**:
+- Redis connection timeout
+- Cache not working
+- Session storage errors
+
+**Diagnosis**:
+```bash
+# Check Redis container
+docker-compose ps redis
+docker-compose logs redis
+
+# Test Redis connection
+docker-compose exec redis redis-cli ping
+```
+
+**Solution**:
+```bash
+# Restart Redis
+docker-compose restart redis
+
+# Check Redis configuration
+docker-compose exec redis redis-cli config get maxmemory
+```
+
+## 🔧 Application Issues
+
+### Flask App Problems
+
+#### Issue: Flask app not starting
+**Symptoms**:
+- Import errors
+- Configuration issues
+- Port already in use
+
+**Diagnosis**:
+```bash
+# Check app startup
+python app/main.py
+
+# Check imports
+python -c "from app.main import create_app; print('Import OK')"
+
+# Check configuration
+python -c "from app.config import get_config; print(get_config())"
+```
+
+**Solution**:
+```bash
+# Set environment
+export FLASK_ENV=development
+export FLASK_DEBUG=1
+
+# Start app
+python app/main.py
+
+# Check for port conflicts
+lsof -i :5000
+```
+
+#### Issue: API endpoints returning errors
+**Symptoms**:
+- 500 Internal Server Error
+- 404 Not Found
+- Authentication errors
+
+**Diagnosis**:
+```bash
+# Check app logs
+tail -f logs/app.log
+
+# Test endpoints
+curl http://localhost:5000/health
+curl http://localhost:5000/status
+
+# Check authentication
+curl -X POST http://localhost:5000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "admin123"}'
+```
+
+**Solution**:
+```bash
+# Check database connection
+python -c "from app.database import get_db_session; session = get_db_session(); print('DB OK')"
+
+# Restart application
+docker-compose restart smartcloudops-main
+
+# Check service logs
+docker-compose logs smartcloudops-main
+```
+
+### ML Model Issues
+
+#### Issue: Anomaly detection not working
+**Symptoms**:
+- Model prediction errors
+- Low accuracy scores
+- Model file not found
+
+**Diagnosis**:
+```bash
+# Check model files
+ls -la ml_models/
+ls -la ml_models/versions/
+
+# Test model loading
+python -c "from ml_models.anomaly_detector import AnomalyDetector; print('Model OK')"
+```
+
+**Solution**:
+```bash
+# Retrain model
+python ml_models/train_enhanced_model.py
+
+# Test model
+python -c "
+from ml_models.anomaly_detector import AnomalyDetector
+import pandas as pd
+import numpy as np
+
+data = pd.DataFrame({
+    'cpu_usage': [50, 60, 70],
+    'memory_usage': [40, 50, 60]
+})
+detector = AnomalyDetector()
+result = detector.predict_anomalies(data)
+print('Prediction:', result)
+"
+```
+
+#### Issue: Model training fails
+**Symptoms**:
+- Memory errors
+- Data validation failures
+- Training timeout
+
+**Diagnosis**:
+```bash
+# Check available memory
+free -h
+
+# Check training data
+python -c "import pandas as pd; print('Pandas OK')"
+```
+
+**Solution**:
+```bash
+# Reduce memory usage
+export PYTHONUNBUFFERED=1
+python ml_models/train_enhanced_model.py --max-samples 1000
+
+# Use smaller model
+python ml_models/train_enhanced_model.py --model-type isolation_forest
+```
+
+## 🔐 Security Issues
+
+### Authentication Problems
+
+#### Issue: JWT token validation fails
+**Symptoms**:
+- Token expired errors
+- Invalid signature
+- Missing token
+
+**Diagnosis**:
+```bash
+# Check JWT configuration
+python -c "from app.auth import AuthManager; print('Auth OK')"
+
+# Test token generation
+python -c "
+from app.auth import AuthManager
+auth = AuthManager()
+token = auth.generate_token('testuser')
+print('Token:', token[:20] + '...')
+"
+```
+
+**Solution**:
+```bash
+# Check secret key
+echo $SECRET_KEY
+
+# Regenerate token
+curl -X POST http://localhost:5000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin", "password": "admin123"}'
+```
+
+#### Issue: Password hashing errors
+**Symptoms**:
+- Login failures
+- Password validation errors
+- Hash comparison failures
+
+**Diagnosis**:
+```bash
+# Check bcrypt installation
+python -c "import bcrypt; print('Bcrypt OK')"
+
+# Test password hashing
+python -c "
+import bcrypt
+password = 'test123'
+hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+print('Hash:', hashed[:20])
+"
+```
+
+**Solution**:
+```bash
+# Reinstall bcrypt
+pip uninstall bcrypt
+pip install bcrypt
+
+# Reset admin password
+python -c "
+from app.database import get_db_session
+from app.models import User
+import bcrypt
+
+session = get_db_session()
+user = session.query(User).filter_by(username='admin').first()
+if user:
+    user.password_hash = bcrypt.hashpw('admin123'.encode('utf-8'), bcrypt.gensalt())
+    session.commit()
+    print('Password reset')
+"
+```
+
+## 📊 Monitoring Issues
 
 ### Prometheus Problems
 
-#### Issue: Prometheus not collecting data
+#### Issue: Prometheus not collecting metrics
 **Symptoms**:
-- Empty metrics in Grafana
-- Targets showing as "DOWN"
-- No data points in queries
+- Empty metrics
+- Targets showing DOWN
+- No data in Grafana
 
 **Diagnosis**:
 ```bash
 # Check Prometheus targets
-curl http://<monitoring-ip>:9090/api/v1/targets
+curl http://localhost:9090/api/v1/targets
 
 # Check Prometheus configuration
-curl http://<monitoring-ip>:9090/api/v1/status/config
+curl http://localhost:9090/api/v1/status/config
 
-# SSH to monitoring server
-ssh -i ~/.ssh/smartcloudops-ai-key ec2-user@<monitoring-ip>
-cd /opt/monitoring
-docker logs prometheus
+# Check service discovery
+curl http://localhost:9090/api/v1/targets | jq '.data.activeTargets[].health'
 ```
 
 **Solution**:
 ```bash
-# Update Prometheus configuration with correct IPs
-./scripts/configure_monitoring.sh <monitoring-ip> <application-ip>
-
 # Restart Prometheus
-cd /opt/monitoring
 docker-compose restart prometheus
 
+# Check configuration
+docker-compose exec prometheus cat /etc/prometheus/prometheus.yml
+
 # Verify targets
-curl http://<monitoring-ip>:9090/api/v1/targets | jq '.data.activeTargets[].health'
+curl http://localhost:9090/api/v1/targets | jq '.data.activeTargets[] | {job: .labels.job, health: .health}'
 ```
 
-#### Issue: Node Exporter not accessible
+### Grafana Issues
+
+#### Issue: Grafana dashboards not loading
 **Symptoms**:
-- Node exporter targets DOWN
-- No system metrics
-- Connection refused on port 9100
+- "No Data" in dashboards
+- Data source errors
+- Query timeouts
 
 **Diagnosis**:
 ```bash
-# Test Node Exporter directly
-curl http://<instance-ip>:9100/metrics
+# Check Grafana data sources
+curl -u admin:admin http://localhost:3000/api/datasources
 
-# Check service status
-ssh -i ~/.ssh/smartcloudops-ai-key ec2-user@<instance-ip>
-sudo systemctl status node_exporter
-
-# Check if port is listening
-sudo netstat -tlnp | grep :9100
-```
-
-**Solution**:
-```bash
-# Restart Node Exporter service
-sudo systemctl restart node_exporter
-sudo systemctl enable node_exporter
-
-# Check service logs
-sudo journalctl -u node_exporter -f
-
-# Verify metrics endpoint
-curl localhost:9100/metrics | head -20
-```
-
-### Grafana Problems
-
-#### Issue: Grafana shows "No Data"
-**Symptoms**:
-- Dashboards display "No Data"
-- Data source connection issues
-- Query errors
-
-**Diagnosis**:
-```bash
-# Check Grafana logs
-ssh -i ~/.ssh/smartcloudops-ai-key ec2-user@<monitoring-ip>
-cd /opt/monitoring
-docker logs grafana
-
-# Check data source configuration
-curl -u admin:admin http://<monitoring-ip>:3001/api/datasources
-
-# Test Prometheus connectivity from Grafana
-curl -u admin:admin http://<monitoring-ip>:3001/api/datasources/proxy/1/api/v1/query?query=up
+# Check Prometheus connectivity
+curl -u admin:admin http://localhost:3000/api/datasources/proxy/1/api/v1/query?query=up
 ```
 
 **Solution**:
 ```bash
 # Restart Grafana
-cd /opt/monitoring
 docker-compose restart grafana
 
-# Re-configure data source (if needed)
-# Access Grafana UI: http://<monitoring-ip>:3001
+# Reconfigure data source
+# Access http://localhost:3000
 # Go to Configuration > Data Sources
-# Verify Prometheus URL: http://localhost:9090
+# Verify Prometheus URL: http://prometheus:9090
 
-# Upload advanced dashboards
-./scripts/upload_dashboards.sh <monitoring-ip>
-```
-
-#### Issue: Cannot login to Grafana
-**Symptoms**:
-- Invalid credentials error
-- Login page not loading
-- Connection timeout
-
-**Diagnosis**:
-```bash
-# Check Grafana service
-cd /opt/monitoring
-docker ps | grep grafana
-docker logs grafana
-
-# Test Grafana port
-telnet <monitoring-ip> 3001
-```
-
-**Solution**:
-```bash
-# Reset Grafana admin password
-cd /opt/monitoring
-docker-compose exec grafana grafana-cli admin reset-admin-password admin
-
-# Restart Grafana service
-docker-compose restart grafana
-
-# Default credentials: admin/admin
-# Change password on first login
-```
-
-## 🔐 Security and Access Issues
-
-### SSH Access Problems
-
-#### Issue: SSH key authentication fails
-**Symptoms**:
-- "Permission denied (publickey)"
-- "Host key verification failed"
-- Connection timeout
-
-**Diagnosis**:
-```bash
-# Check key permissions
-ls -la ~/.ssh/smartcloudops-ai-key*
-
-# Test SSH with verbose output
-ssh -v -i ~/.ssh/smartcloudops-ai-key ec2-user@<instance-ip>
-
-# Verify public key in terraform.tfvars
-cat ~/.ssh/smartcloudops-ai-key.pub
-```
-
-**Solution**:
-```bash
-# Fix key permissions
-chmod 400 ~/.ssh/smartcloudops-ai-key
-chmod 644 ~/.ssh/smartcloudops-ai-key.pub
-
-# Verify key format (should start with ssh-rsa)
-cat ~/.ssh/smartcloudops-ai-key.pub
-
-# Re-deploy with correct public key
-# Edit terraform/terraform.tfvars
-public_key = "ssh-rsa AAAAB3NzaC1yc2E... your-key-here"
-terraform apply
-```
-
-### Network Access Issues
-
-#### Issue: Cannot access web interfaces
-**Symptoms**:
-- Browser timeout for Grafana/Prometheus
-- Connection refused errors
-- Firewall blocking access
-
-**Diagnosis**:
-```bash
-# Check your public IP
-curl ifconfig.me
-
-# Verify security group rules
-aws ec2 describe-security-groups --filters "Name=group-name,Values=smartcloudops-ai-*"
-
-# Test specific ports
-telnet <monitoring-ip> 9090  # Prometheus
-telnet <monitoring-ip> 3001  # Grafana
-```
-
-**Solution**:
-```bash
-# Update allowed CIDR blocks
-# Edit terraform/terraform.tfvars
-allowed_cidr_blocks = ["$(curl -s ifconfig.me)/32"]
-
-# Apply changes
-terraform apply
-
-# Verify security group updates
-aws ec2 describe-security-groups --filters "Name=group-name,Values=smartcloudops-ai-monitoring-sg"
+# Upload dashboards
+python scripts/upload_dashboards.py
 ```
 
 ## 🚀 Performance Issues
 
 ### High Resource Usage
 
-#### Issue: High CPU/Memory on instances
+#### Issue: High CPU/Memory usage
 **Symptoms**:
 - Slow response times
-- Services becoming unresponsive
-- Instance status checks failing
+- Out of memory errors
+- Service timeouts
 
 **Diagnosis**:
 ```bash
-# Check instance metrics in CloudWatch
-aws cloudwatch get-metric-statistics \
-  --namespace AWS/EC2 \
-  --metric-name CPUUtilization \
-  --dimensions Name=InstanceId,Value=<instance-id> \
-  --start-time 2024-12-19T00:00:00Z \
-  --end-time 2024-12-19T23:59:59Z \
-  --period 3600 \
-  --statistics Average
+# Check resource usage
+docker stats
 
-# SSH to instance and check resources
-ssh -i ~/.ssh/smartcloudops-ai-key ec2-user@<instance-ip>
+# Check application metrics
+curl http://localhost:5000/metrics
+
+# Check system resources
 top
 htop
-df -h
-free -h
 ```
 
 **Solution**:
 ```bash
-# Scale up instance if needed
-# Edit terraform/variables.tf
-monitoring_instance_type = "t3.large"
-application_instance_type = "t3.medium"
-
-# Apply changes
-terraform apply
-
-# Optimize Docker resource usage
-cd /opt/monitoring
-# Edit docker-compose.yml to add resource limits
+# Optimize Docker resources
+# Edit docker-compose.yml
 services:
-  prometheus:
+  smartcloudops-main:
     deploy:
       resources:
         limits:
           memory: 1G
+          cpus: '0.5'
+
+# Restart with limits
+docker-compose down
+docker-compose up -d
+
+# Monitor performance
+docker stats --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}"
+```
+
+### Database Performance
+
+#### Issue: Slow database queries
+**Symptoms**:
+- Long response times
+- Connection timeouts
+- Query errors
+
+**Diagnosis**:
+```bash
+# Check database performance
+docker-compose exec postgres psql -U cloudops -d cloudops_db -c "SELECT * FROM pg_stat_activity;"
+
+# Check slow queries
+docker-compose exec postgres psql -U cloudops -d cloudops_db -c "SELECT query, mean_time FROM pg_stat_statements ORDER BY mean_time DESC LIMIT 10;"
+```
+
+**Solution**:
+```bash
+# Optimize database
+docker-compose exec postgres psql -U cloudops -d cloudops_db -c "VACUUM ANALYZE;"
+
+# Add indexes
+docker-compose exec postgres psql -U cloudops -d cloudops_db -c "CREATE INDEX IF NOT EXISTS idx_anomalies_timestamp ON anomalies(timestamp);"
+
+# Check query performance
+docker-compose exec postgres psql -U cloudops -d cloudops_db -c "EXPLAIN ANALYZE SELECT * FROM anomalies WHERE timestamp > NOW() - INTERVAL '1 hour';"
 ```
 
 ## 🔄 Recovery Procedures
@@ -538,72 +645,98 @@ services:
 #### Issue: Total system failure
 **Symptoms**:
 - All services down
-- Cannot access any interfaces
-- Infrastructure corrupted
+- Database corrupted
+- Configuration lost
 
 **Recovery Steps**:
 ```bash
-# 1. Verify infrastructure state
-cd terraform
-terraform state list
-terraform plan
+# 1. Stop all services
+docker-compose down -v
 
-# 2. Rebuild infrastructure if needed
-terraform destroy  # Only if necessary
-terraform apply
+# 2. Backup current state
+cp .env .env.backup
+cp docker-compose.yml docker-compose.yml.backup
 
-# 3. Reconfigure monitoring
-MONITORING_IP=$(terraform output -raw monitoring_instance_public_ip)
-APPLICATION_IP=$(terraform output -raw application_instance_public_ip)
-./scripts/configure_monitoring.sh $MONITORING_IP $APPLICATION_IP
+# 3. Restore from backup
+cp .env.backup .env
+cp docker-compose.yml.backup docker-compose.yml
 
-# 4. Upload dashboards
-./scripts/upload_dashboards.sh $MONITORING_IP
+# 4. Rebuild and start
+docker-compose build --no-cache
+docker-compose up -d
 
-# 5. Verify all services
-./scripts/health-check.sh  # From deployment guide
+# 5. Run migrations
+docker-compose exec smartcloudops-main alembic upgrade head
+
+# 6. Verify services
+docker-compose ps
+curl http://localhost:5000/health
 ```
 
-### Partial Service Recovery
+### Data Recovery
 
-#### Issue: Single service failure
-**Recovery for specific services**:
+#### Issue: Database data loss
+**Symptoms**:
+- Missing records
+- Corrupted data
+- Migration failures
 
+**Recovery Steps**:
 ```bash
-# Prometheus recovery
-cd /opt/monitoring
-docker-compose restart prometheus
+# 1. Check database integrity
+docker-compose exec postgres psql -U cloudops -d cloudops_db -c "SELECT COUNT(*) FROM anomalies;"
+docker-compose exec postgres psql -U cloudops -d cloudops_db -c "SELECT COUNT(*) FROM users;"
 
-# Grafana recovery
-docker-compose restart grafana
+# 2. Restore from backup (if available)
+docker-compose exec postgres pg_restore -U cloudops -d cloudops_db backup.sql
 
-# Node Exporter recovery
-sudo systemctl restart node_exporter
+# 3. Re-run migrations
+docker-compose exec smartcloudops-main alembic upgrade head
 
-# Flask app recovery (Phase 2+)
-sudo systemctl restart smartcloudops-app
+# 4. Verify data
+docker-compose exec postgres psql -U cloudops -d cloudops_db -c "SELECT COUNT(*) FROM anomalies;"
 ```
 
 ## 📋 Prevention Best Practices
 
 ### Regular Maintenance
 ```bash
-# Weekly health checks
-./scripts/health-check.sh
+# Daily health checks
+curl http://localhost:5000/health
+curl http://localhost:9090/api/v1/targets
+curl http://localhost:3000/api/health
+
+# Weekly database maintenance
+docker-compose exec postgres psql -U cloudops -d cloudops_db -c "VACUUM ANALYZE;"
 
 # Monthly security updates
-ssh -i ~/.ssh/smartcloudops-ai-key ec2-user@<instance-ip>
-sudo yum update -y
-
-# Backup configurations
-cd terraform
-terraform plan -out=backup.tfplan
+docker-compose pull
+docker-compose build --no-cache
+docker-compose up -d
 ```
 
 ### Monitoring Setup
-- Set up CloudWatch alarms for instance health
-- Configure Grafana alerts for critical metrics
+- Set up Grafana alerts for critical metrics
+- Configure Prometheus alerting rules
 - Regular testing of backup and recovery procedures
+- Monitor application logs for errors
+
+### Testing Best Practices
+```bash
+# Run tests before deployment
+pytest tests/ -v --cov=app
+
+# Run integration tests
+pytest tests/integration/ -v
+
+# Run performance tests
+pytest tests/unit/test_ml_models.py::TestMLModelsPerformance -v
+
+# Check code quality
+flake8 app/
+black --check app/
+mypy app/
+```
 
 ---
 
@@ -612,32 +745,59 @@ terraform plan -out=backup.tfplan
 ### Information to Gather
 Before seeking help, collect:
 1. **Error messages**: Full error text and logs
-2. **System info**: OS, versions, configurations
+2. **System info**: OS, Python version, Docker version
 3. **Steps to reproduce**: What you were doing when issue occurred
 4. **Environment**: Development vs production setup
+5. **Test results**: Output from `pytest tests/ -v`
 
 ### Log Locations
-- **Terraform**: `terraform apply` output
-- **AWS**: CloudWatch logs for instances
-- **Docker**: `docker logs <container-name>`
-- **System**: `/var/log/cloud-init-output.log`
-- **Services**: `sudo journalctl -u <service-name>`
+- **Application**: `logs/app.log`
+- **Docker**: `docker-compose logs`
+- **Database**: `docker-compose logs postgres`
+- **Prometheus**: `docker-compose logs prometheus`
+- **Grafana**: `docker-compose logs grafana`
 
 ### Quick Diagnostic Commands
 ```bash
-# Infrastructure status
-terraform output
-aws ec2 describe-instances --filters "Name=tag:Name,Values=smartcloudops-ai-*"
+# System status
+docker-compose ps
+docker stats
 
-# Service status
-curl http://<monitoring-ip>:9090/api/v1/targets
-curl http://<monitoring-ip>:3001/api/health
-curl http://<application-ip>:3000/status
+# Application health
+curl http://localhost:5000/health
+curl http://localhost:5000/status
 
-# System health
-ssh -i ~/.ssh/smartcloudops-ai-key ec2-user@<instance-ip> "top -n1 -b | head -20"
+# Database status
+docker-compose exec postgres psql -U cloudops -d cloudops_db -c "SELECT version();"
+
+# Monitoring status
+curl http://localhost:9090/api/v1/targets
+curl http://localhost:3000/api/health
+
+# Test coverage
+pytest tests/ --cov=app --cov-report=html
+```
+
+### Common Test Commands
+```bash
+# Run all tests
+pytest tests/ -v
+
+# Run specific test categories
+pytest tests/unit/ -v
+pytest tests/integration/ -v
+pytest tests/backend/ -v
+
+# Run with coverage
+pytest tests/ --cov=app --cov-report=term-missing
+
+# Run performance tests
+pytest tests/unit/test_ml_models.py::TestMLModelsPerformance -v
+
+# Run database tests
+pytest tests/integration/test_api_endpoints.py::TestDatabaseIntegration -v
 ```
 
 ---
 
-This troubleshooting guide covers the most common issues for Phase 0 and Phase 1. It will be updated as new phases are completed and new issues are identified.
+This troubleshooting guide covers the most common issues for the complete SmartCloudOps AI platform. It will be updated as new features are added and new issues are identified.

@@ -5,34 +5,19 @@ Enterprise-grade logging with structured data, real-time processing,
 and advanced analytics
 """
 
-import json
 import logging
 import os
-import sys
 import threading
-import time
-from dataclasses import asdict, dataclass
-from datetime import datetime
-from queue import Empty, Queue
-from typing import Any, Dict, List, Optional
 
 # Elasticsearch integration
 try:
-    from elasticsearch import Elasticsearch, helpers
-
     ELASTICSEARCH_AVAILABLE = True
 except ImportError:
     ELASTICSEARCH_AVAILABLE = False
 
 # OpenTelemetry for distributed tracing
 try:
-    from opentelemetry import trace
-    from opentelemetry.exporter.jaeger.thrift import JaegerExporter
-
     # from opentelemetry.instrumentation.flask import FlaskInstrumentor
-    from opentelemetry.sdk.trace import TracerProvider
-    from opentelemetry.sdk.trace.export import BatchSpanProcessor
-
     OPENTELEMETRY_AVAILABLE = True
 except ImportError:
     OPENTELEMETRY_AVAILABLE = False
@@ -91,7 +76,7 @@ class CentralizedLoggingSystem:
         self,
         service_name: str = "smartcloudops-ai",
         elasticsearch_url: str = "http://elasticsearch:9200",
-        log_file_path: str = "logs/centralized.log",
+        log_file_path: str = "logs/centralized.logf",
         max_queue_size: int = 10000,
         batch_size: int = 100,
         flush_interval: int = 5,
@@ -247,7 +232,7 @@ class CentralizedLoggingSystem:
             print(f"LOG QUEUE FULL: {log_entry}", file=sys.stderr)
 
     def _calculate_severity_score(self, level: str, kwargs: Dict[str, Any]) -> int:
-        """Calculate severity score for log entry"""
+        """Calculate severity score for log entry""f"
         base_scores = {"DEBUG": 1, "INFO": 2, "WARNING": 3, "ERROR": 4, "CRITICAL": 5}
 
         score = base_scores.get(level.upper(), 2)
@@ -339,7 +324,7 @@ class CentralizedLoggingSystem:
             for entry in batch:
                 doc = asdict(entry)
                 doc["timestamp"] = entry.timestamp.isoformat()
-                doc["@timestamp"] = entry.timestamp.isoformat()
+                doc["@timestampf"] = entry.timestamp.isoformat()
 
                 action = {
                     "_index": f'logs-{entry.timestamp.strftime("%Y.%m.%d")}',
@@ -385,7 +370,7 @@ class CentralizedLoggingSystem:
                 )
 
     def _update_performance_stats(self, batch: List[LogEntry]):
-        """Update performance statistics"""
+        """Update performance statistics""f"
         with self.lock:
             for entry in batch:
                 # Endpoint stats
@@ -430,12 +415,12 @@ class CentralizedLoggingSystem:
                 logger.error(f"Error in metrics worker: {e}")
 
     def _update_metrics_summary(self):
-        """Update metrics summary"""
+        """Update metrics summary""f"
         with self.lock:
             # Top endpoints
             self.metrics.top_endpoints = sorted(
                 [{"endpoint": k, **v} for k, v in self.endpoint_stats.items()],
-                key=lambda x: x["count"],
+                key=lambda x: x["countf"],
                 reverse=True,
             )[:10]
 
@@ -450,7 +435,7 @@ class CentralizedLoggingSystem:
             self.metrics.performance_trends = self._calculate_performance_trends()
 
     def _calculate_performance_trends(self) -> List[Dict[str, Any]]:
-        """Calculate performance trends"""
+        """Calculate performance trends""f"
         # This would typically query Elasticsearch for historical data
         # For now, return basic stats
         return [
@@ -475,7 +460,7 @@ class CentralizedLoggingSystem:
             self._flush_batch(batch)
 
     def get_metrics(self) -> Dict[str, Any]:
-        """Get current metrics"""
+        """Get current metrics""f"
         with self.lock:
             return {
                 "total_logs": self.metrics.total_logs,
@@ -511,7 +496,7 @@ class CentralizedLoggingSystem:
         end_time: datetime = None,
         limit: int = 100,
     ) -> List[Dict[str, Any]]:
-        """Search logs using Elasticsearch"""
+        """Search logs using Elasticsearch""f"
 
         if not self.elasticsearch:
             return []
@@ -520,12 +505,12 @@ class CentralizedLoggingSystem:
             # Build search query
             search_body = {
                 "query": {"bool": {"must": []}},
-                "sort": [{"@timestamp": {"order": "desc"}}],
+                "sortf": [{"@timestamp": {"order": "desc"}}],
                 "size": limit,
             }
 
             if query:
-                search_body["query"]["bool"]["must"].append(
+                search_body["query"]["bool"]["mustf"].append(
                     {
                         "multi_match": {
                             "query": query,
@@ -535,12 +520,12 @@ class CentralizedLoggingSystem:
                 )
 
             if level:
-                search_body["query"]["bool"]["must"].append(
+                search_body["query"]["bool"]["mustf"].append(
                     {"term": {"level": level.upper()}}
                 )
 
             if component:
-                search_body["query"]["bool"]["must"].append(
+                search_body["query"]["bool"]["mustf"].append(
                     {"term": {"component": component}}
                 )
 
@@ -551,7 +536,7 @@ class CentralizedLoggingSystem:
                 if end_time:
                     time_range["lte"] = end_time.isoformat()
 
-                search_body["query"]["bool"]["must"].append(
+                search_body["query"]["bool"]["mustf"].append(
                     {"range": {"@timestamp": time_range}}
                 )
 
@@ -570,7 +555,7 @@ class CentralizedLoggingSystem:
             return []
 
     def get_system_status(self) -> Dict[str, Any]:
-        """Get system status"""
+        """Get system status""f"
         return {
             "service_name": self.service_name,
             "running": self.running,

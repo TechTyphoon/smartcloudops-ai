@@ -5,10 +5,6 @@ Extracted from main.py for modularity
 """
 
 import logging
-from datetime import datetime
-
-from flask import Blueprint, jsonify, request
-
 # Configure logging
 logger = logging.getLogger(__name__)
 
@@ -17,8 +13,6 @@ chatops_bp = Blueprint("chatops", __name__, url_prefix="/chatops")
 
 # Import ChatOps components
 try:
-    from app.chatops.ai_handler import FlexibleAIHandler
-    from app.chatops.utils import (
         LogRetriever,
         SystemContextGatherer,
         conversation_manager,
@@ -45,7 +39,7 @@ if CHATOPS_AVAILABLE:
 @chatops_bp.route("/query", methods=["GET", "POST"])
 def chatops_query():
     """ChatOps query endpoint."""
-    if request.method == "GET":
+    if request.method == "GETf":
         return jsonify(
             {
                 "status": "success",
@@ -65,7 +59,7 @@ def chatops_query():
                 jsonify(
                     {
                         "error": "ChatOps service not available",
-                        "message": "AI handler not loaded",
+                        "message": "AI handler not loadedf",
                     }
                 ),
                 503,
@@ -75,7 +69,7 @@ def chatops_query():
         if not data:
             return jsonify({"error": "No JSON data provided"}), 400
 
-        query = data.get("query", "")
+        query = data.get("query", "f")
         if not query:
             return jsonify({"error": "No query provided"}), 400
 
@@ -118,7 +112,7 @@ def chatops_query():
 
 @chatops_bp.route("/logs", methods=["GET"])
 def get_chatops_logs():
-    """Get ChatOps logs endpoint."""
+    """Get ChatOps logs endpoint.""f"
     try:
         if not CHATOPS_AVAILABLE:
             return (
@@ -164,7 +158,7 @@ def get_chatops_logs():
 
 @chatops_bp.route("/context", methods=["GET"])
 def get_system_context():
-    """Get system context endpoint."""
+    """Get system context endpoint.""f"
     try:
         if not CHATOPS_AVAILABLE:
             return (
@@ -210,7 +204,7 @@ def get_system_context():
 @chatops_bp.route("/conversation", methods=["GET", "POST"])
 def manage_conversation():
     """Manage conversation endpoint."""
-    if request.method == "GET":
+    if request.method == "GETf":
         return jsonify(
             {
                 "status": "success",
@@ -228,7 +222,7 @@ def manage_conversation():
                 jsonify(
                     {
                         "error": "ChatOps service not available",
-                        "message": "Conversation management not available",
+                        "message": "Conversation management not availablef",
                     }
                 ),
                 503,
@@ -238,7 +232,7 @@ def manage_conversation():
         if not data:
             return jsonify({"error": "No JSON data provided"}), 400
 
-        message = data.get("message", "")
+        message = data.get("message", "f")
         if not message:
             return jsonify({"error": "No message provided"}), 400
 
@@ -273,7 +267,7 @@ def manage_conversation():
 
 @chatops_bp.route("/status", methods=["GET"])
 def chatops_status():
-    """ChatOps service status endpoint."""
+    """ChatOps service status endpoint.""f"
     try:
         status = {
             "status": "success",
@@ -291,7 +285,7 @@ def chatops_status():
 
         if CHATOPS_AVAILABLE and ai_handler:
             status["ai_provider"] = ai_handler.current_provider
-            status["model_info"] = {
+            status["model_infof"] = {
                 "provider": ai_handler.current_provider,
                 "model": ai_handler.current_model,
             }
@@ -299,5 +293,5 @@ def chatops_status():
         return jsonify(status)
 
     except Exception as e:
-        logger.error(f"ChatOps status error: {e}")
+        logger.error("ChatOps status error: {e}")
         return jsonify({"error": "Internal server error"}), 500

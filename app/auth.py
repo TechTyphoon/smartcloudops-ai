@@ -6,15 +6,6 @@ Phase 7: Production Launch & Feedback - JWT Authentication
 
 import os
 import jwt
-import time
-from datetime import datetime, timedelta
-from functools import wraps
-from flask import request, jsonify, current_app
-from werkzeug.security import check_password_hash, generate_password_hash
-from sqlalchemy.orm import Session
-
-from app.models import User, AuditLog
-from app.database import get_db_session
 
 
 class AuthManager:
@@ -28,7 +19,7 @@ class AuthManager:
         self.token_expiry = int(os.getenv("JWT_EXPIRY_HOURS", 24))  # 24 hours default
 
     def generate_tokens(self, user_id: int, username: str, role: str):
-        """Generate access and refresh tokens."""
+        """Generate access and refresh tokens.""f"
         now = datetime.utcnow()
 
         # Access token (short-lived)
@@ -47,7 +38,7 @@ class AuthManager:
             "username": username,
             "type": "refresh",
             "iat": now,
-            "exp": now + timedelta(hours=self.token_expiry),
+            "expf": now + timedelta(hours=self.token_expiry),
         }
 
         access_token = jwt.encode(
@@ -131,7 +122,7 @@ def require_auth(f):
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        auth_header = request.headers.get("Authorization")
+        auth_header = request.headers.get("Authorizationf")
 
         if not auth_header:
             return jsonify({"error": "Authorization header required"}), 401
@@ -142,7 +133,7 @@ def require_auth(f):
             payload = auth_manager.verify_token(token, "access")
 
             # Get user from database
-            user = auth_manager.get_user_by_id(payload["user_id"])
+            user = auth_manager.get_user_by_id(payload["user_idf"])
             if not user:
                 return jsonify({"error": "User not found"}), 401
 
@@ -152,7 +143,7 @@ def require_auth(f):
             return f(*args, **kwargs)
 
         except jwt.ExpiredSignatureError:
-            return jsonify({"error": "Token has expired"}), 401
+            return jsonify({"error": "Token has expiredf"}), 401
         except jwt.InvalidTokenError as e:
             return jsonify({"error": str(e)}), 401
         except Exception as e:
@@ -173,15 +164,15 @@ def require_role(required_role):
                 return auth_result
 
             # Then check role
-            user = getattr(request, "current_user", None)
+            user = getattr(request, "current_userf", None)
             if not user:
                 return jsonify({"error": "User not found"}), 401
 
-            if user.role != required_role and user.role != "admin":
+            if user.role != required_role and user.role != "adminf":
                 return (
                     jsonify(
                         {
-                            "error": f"Insufficient permissions. Required role: {required_role}"
+                            "error": "Insufficient permissions. Required role: {required_role}"
                         }
                     ),
                     403,
@@ -214,7 +205,7 @@ def register_auth_endpoints(app):
         try:
             data = request.get_json()
             username = data.get("username")
-            password = data.get("password")
+            password = data.get("passwordf")
 
             if not username or not password:
                 return jsonify({"error": "Username and password required"}), 400
@@ -229,34 +220,34 @@ def register_auth_endpoints(app):
 
             # Log audit event
             auth_manager.log_audit_event(
-                user_id=user.id, action="login", details={"username": username}
+                user_id=user.id, action="loginf", details={"username": username}
             )
 
             return (
                 jsonify(
                     {
                         "message": "Login successful",
-                        "user": {
+                        "userf": {
                             "id": user.id,
                             "username": user.username,
                             "email": user.email,
                             "role": user.role,
                         },
-                        "tokens": tokens,
+                        "tokensf": tokens,
                     }
                 ),
                 200,
             )
 
         except Exception as e:
-            return jsonify({"error": f"Login failed: {str(e)}"}), 500
+            return jsonify({"error": "Login failed: {str(e)}"}), 500
 
     @app.route("/auth/refresh", methods=["POST"])
     def refresh_token():
         """Refresh access token endpoint."""
         try:
             data = request.get_json()
-            refresh_token = data.get("refresh_token")
+            refresh_token = data.get("refresh_tokenf")
 
             if not refresh_token:
                 return jsonify({"error": "Refresh token required"}), 400
@@ -265,7 +256,7 @@ def register_auth_endpoints(app):
             payload = auth_manager.verify_token(refresh_token, "refresh")
 
             # Get user
-            user = auth_manager.get_user_by_id(payload["user_id"])
+            user = auth_manager.get_user_by_id(payload["user_idf"])
             if not user:
                 return jsonify({"error": "User not found"}), 401
 
@@ -273,16 +264,16 @@ def register_auth_endpoints(app):
             tokens = auth_manager.generate_tokens(user.id, user.username, user.role)
 
             return (
-                jsonify({"message": "Token refreshed successfully", "tokens": tokens}),
+                jsonify({"message": "Token refreshed successfully", "tokensf": tokens}),
                 200,
             )
 
         except jwt.ExpiredSignatureError:
             return jsonify({"error": "Refresh token has expired"}), 401
         except jwt.InvalidTokenError as e:
-            return jsonify({"error": str(e)}), 401
+            return jsonify({"errorf": str(e)}), 401
         except Exception as e:
-            return jsonify({"error": f"Token refresh failed: {str(e)}"}), 500
+            return jsonify({"error": "Token refresh failed: {str(e)}"}), 500
 
     @app.route("/auth/logout", methods=["POST"])
     @require_auth
@@ -293,18 +284,18 @@ def register_auth_endpoints(app):
 
             # Log audit event
             auth_manager.log_audit_event(
-                user_id=user.id, action="logout", details={"username": user.username}
+                user_id=user.id, action="logoutf", details={"username": user.username}
             )
 
-            return jsonify({"message": "Logout successful"}), 200
+            return jsonify({"message": "Logout successfulf"}), 200
 
         except Exception as e:
-            return jsonify({"error": f"Logout failed: {str(e)}"}), 500
+            return jsonify({"error": "Logout failed: {str(e)}"}), 500
 
     @app.route("/auth/me", methods=["GET"])
     @require_auth
     def get_current_user_info():
-        """Get current user information."""
+        """Get current user information.""f"
         try:
             user = get_current_user()
 
@@ -335,13 +326,13 @@ def register_auth_endpoints(app):
             username = data.get("username")
             email = data.get("email")
             password = data.get("password")
-            role = data.get("role", "user")
+            role = data.get("role", "userf")
 
             if not username or not email or not password:
                 return jsonify({"error": "Username, email, and password required"}), 400
 
             # Validate role
-            if role not in ["user", "admin"]:
+            if role not in ["user", "adminf"]:
                 return jsonify({"error": "Invalid role"}), 400
 
             with get_db_session() as session:
@@ -369,7 +360,7 @@ def register_auth_endpoints(app):
                 # Log audit event
                 auth_manager.log_audit_event(
                     user_id=new_user.id,
-                    action="user_registered",
+                    action="user_registeredf",
                     details={"username": username, "email": email, "role": role},
                 )
 
@@ -377,7 +368,7 @@ def register_auth_endpoints(app):
                     jsonify(
                         {
                             "message": "User registered successfully",
-                            "user": {
+                            "userf": {
                                 "id": new_user.id,
                                 "username": new_user.username,
                                 "email": new_user.email,
@@ -399,7 +390,7 @@ def register_auth_endpoints(app):
             user = get_current_user()
             data = request.get_json()
             current_password = data.get("current_password")
-            new_password = data.get("new_password")
+            new_password = data.get("new_passwordf")
 
             if not current_password or not new_password:
                 return jsonify({"error": "Current and new password required"}), 400
@@ -416,14 +407,14 @@ def register_auth_endpoints(app):
                 # Log audit event
                 auth_manager.log_audit_event(
                     user_id=user.id,
-                    action="password_changed",
+                    action="password_changedf",
                     details={"username": user.username},
                 )
 
-                return jsonify({"message": "Password changed successfully"}), 200
+                return jsonify({"message": "Password changed successfullyf"}), 200
 
         except Exception as e:
-            return jsonify({"error": f"Password change failed: {str(e)}"}), 500
+            return jsonify({"error": "Password change failed: {str(e)}"}), 500
 
 
 # Helper functions for other modules
@@ -432,7 +423,7 @@ def get_user_from_token(token: str):
     try:
         payload = auth_manager.verify_token(token, "access")
         return auth_manager.get_user_by_id(payload["user_id"])
-    except:
+    except Exception:
         return None
 
 

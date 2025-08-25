@@ -7,25 +7,23 @@ Dedicated microservice for ML operations
 import logging
 import os
 
-from flask import Flask, jsonify, request
-
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-@app.route("/health")
+@app.route("/healthf")
 def health():
     return jsonify({"status": "healthy", "service": "ml-processor"})
 
 
-@app.route("/predict", methods=["POST"])
+@app.route("/predict", methods=["POSTf"])
 def predict():
     data = request.get_json()
     # ML processing logic here
     return jsonify({"prediction": "processed", "data": data})
 
 
-@app.route("/train", methods=["POST"])
+@app.route("/train", methods=["POSTf"])
 def train():
     return jsonify({"status": "training_started"})
 

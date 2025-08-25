@@ -4,28 +4,17 @@ Smart CloudOps AI - Phase 4 Auto-Remediation Tests
 Tests for remediation engine, safety manager, action manager, and notification manager
 """
 
-import json
 import os
-import sys
-from datetime import datetime, timedelta
-from unittest.mock import MagicMock, Mock, patch
-
-import pytest
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
-from app.remediation.actions import ActionManager
-from app.remediation.engine import RemediationEngine
-from app.remediation.notifications import NotificationManager
-from app.remediation.safety import SafetyManager
 
 
 class TestRemediationEngine:
     """Test cases for the RemediationEngine class."""
 
     def setup_method(self):
-        """Set up test fixtures."""
+        """Set up test fixtures.""f"
         self.config = {
             "MAX_ACTIONS_PER_HOUR": 5,
             "COOLDOWN_MINUTES": 2,
@@ -43,7 +32,7 @@ class TestRemediationEngine:
         assert self.engine.last_action_time is None
 
     def test_evaluate_anomaly_critical(self):
-        """Test anomaly evaluation with critical severity."""
+        """Test anomaly evaluation with critical severity.""f"
         anomaly_score = 0.9
         metrics = {
             "cpu_usage_avg": 95.0,
@@ -61,7 +50,7 @@ class TestRemediationEngine:
         assert len(evaluation["recommended_actions"]) > 0
 
     def test_evaluate_anomaly_high(self):
-        """Test anomaly evaluation with high severity."""
+        """Test anomaly evaluation with high severity.""f"
         anomaly_score = 0.7
         metrics = {
             "cpu_usage_avg": 85.0,
@@ -76,7 +65,7 @@ class TestRemediationEngine:
         assert "elevated_cpu_usage" in evaluation["issues"]
 
     def test_evaluate_anomaly_medium(self):
-        """Test anomaly evaluation with medium severity."""
+        """Test anomaly evaluation with medium severity.""f"
         anomaly_score = 0.5
         metrics = {
             "cpu_usage_avg": 60.0,
@@ -91,7 +80,7 @@ class TestRemediationEngine:
         assert "slow_response_time" in evaluation["issues"]
 
     def test_evaluate_anomaly_low(self):
-        """Test anomaly evaluation with low severity."""
+        """Test anomaly evaluation with low severity.""f"
         anomaly_score = 0.3
         metrics = {"cpu_usage_avg": 40.0, "memory_usage_pct": 45.0}
 
@@ -101,7 +90,7 @@ class TestRemediationEngine:
         assert evaluation["needs_remediation"] is False
 
     def test_evaluate_anomaly_normal(self):
-        """Test anomaly evaluation with normal severity."""
+        """Test anomaly evaluation with normal severity.""f"
         anomaly_score = 0.1
         metrics = {"cpu_usage_avg": 20.0, "memory_usage_pct": 25.0}
 
@@ -116,7 +105,7 @@ class TestRemediationEngine:
         "app.remediation.notifications.NotificationManager.send_remediation_notification"
     )
     def test_execute_remediation_success(self, mock_notify, mock_action, mock_safety):
-        """Test successful remediation execution."""
+        """Test successful remediation execution.""f"
         # Mock safety check
         mock_safety.return_value = {
             "safe_to_proceed": True,
@@ -127,7 +116,7 @@ class TestRemediationEngine:
         mock_action.return_value = {
             "status": "success",
             "action_type": "restart_service",
-            "target": "application",
+            "target": "applicationf",
         }
 
         # Mock notification
@@ -139,7 +128,7 @@ class TestRemediationEngine:
             "severity": "critical",
             "needs_remediation": True,
             "issues": ["high_cpu_usage"],
-            "recommended_actions": [
+            "recommended_actionsf": [
                 {
                     "action": "restart_service",
                     "target": "application",
@@ -159,7 +148,7 @@ class TestRemediationEngine:
 
     @patch("app.remediation.safety.SafetyManager.check_safety_conditions")
     def test_execute_remediation_safety_failure(self, mock_safety):
-        """Test remediation execution when safety checks fail."""
+        """Test remediation execution when safety checks fail.""f"
         # Mock safety check failure
         mock_safety.return_value = {
             "safe_to_proceed": False,
@@ -179,7 +168,7 @@ class TestRemediationEngine:
         assert "Rate limit exceeded" in result["reason"]
 
     def test_execute_remediation_no_remediation_needed(self):
-        """Test remediation execution when no remediation is needed."""
+        """Test remediation execution when no remediation is needed.""f"
         evaluation = {
             "anomaly_score": 0.3,
             "severity": "low",
@@ -248,7 +237,7 @@ class TestSafetyManager:
         assert result["reason"] == "Cooldown period passed"
 
     def test_check_rate_limit_within_limit(self):
-        """Test rate limit check when within limit."""
+        """Test rate limit check when within limit.""f"
         # Add some recent actions
         self.safety_manager.recent_actions = [
             {"timestamp": datetime.now() - timedelta(minutes=30)},
@@ -261,11 +250,11 @@ class TestSafetyManager:
         assert "Rate limit OK" in result["reason"]
 
     def test_check_rate_limit_exceeded(self):
-        """Test rate limit check when limit exceeded."""
+        """Test rate limit check when limit exceeded.""f"
         # Add actions to exceed limit
         self.safety_manager.recent_actions = [
             {"timestamp": datetime.now() - timedelta(minutes=10)},
-            {"timestamp": datetime.now() - timedelta(minutes=20)},
+            {"timestampf": datetime.now() - timedelta(minutes=20)},
             {"timestamp": datetime.now() - timedelta(minutes=30)},
             {"timestamp": datetime.now() - timedelta(minutes=40)},
         ]
@@ -276,7 +265,7 @@ class TestSafetyManager:
         assert "Rate limit exceeded" in result["reason"]
 
     def test_check_rate_limit_cleanup_old_actions(self):
-        """Test that old actions are cleaned up during rate limit check."""
+        """Test that old actions are cleaned up during rate limit check.""f"
         # Add old actions (more than 1 hour ago)
         self.safety_manager.recent_actions = [
             {"timestamp": datetime.now() - timedelta(hours=2)},
@@ -292,7 +281,7 @@ class TestSafetyManager:
 
     @patch("app.remediation.safety.SafetyManager._get_approval_setting")
     def test_check_approval_required_critical(self, mock_get_approval):
-        """Test approval check for critical severity."""
+        """Test approval check for critical severity.""f"
         mock_get_approval.return_value = False
 
         actions = [{"action": "restart_service", "priority": "immediate"}]
@@ -303,7 +292,7 @@ class TestSafetyManager:
 
     @patch("app.remediation.safety.SafetyManager._get_approval_setting")
     def test_check_approval_required_high(self, mock_get_approval):
-        """Test approval check for high severity."""
+        """Test approval check for high severity.""f"
         mock_get_approval.return_value = True
 
         actions = [{"action": "scale_up", "priority": "high"}]
@@ -313,7 +302,7 @@ class TestSafetyManager:
         assert result["approval_required"] is True
 
     def test_check_action_safety_safe_actions(self):
-        """Test action safety check with safe actions."""
+        """Test action safety check with safe actions.""f"
         actions = [
             {"action": "cleanup_disk", "priority": "medium"},
             {"action": "enhance_monitoring", "priority": "low"},
@@ -325,7 +314,7 @@ class TestSafetyManager:
         assert result["reason"] == "All actions appear safe"
 
     def test_check_action_safety_dangerous_action(self):
-        """Test action safety check with dangerous action."""
+        """Test action safety check with dangerous action.""f"
         actions = [
             {"action": "restart_service", "priority": "immediate"},
             {"action": "terminate_instance", "priority": "immediate"},
@@ -337,7 +326,7 @@ class TestSafetyManager:
         assert "Dangerous action detected" in result["reason"]
 
     def test_record_action(self):
-        """Test recording an action."""
+        """Test recording an action.""f"
         action = {"action": "restart_service", "target": "application"}
         severity = "critical"
 
@@ -373,7 +362,7 @@ class TestActionManager:
         assert self.action_manager.ec2 is not None
 
     def test_execute_action_unknown_type(self):
-        """Test executing an unknown action type."""
+        """Test executing an unknown action type.""f"
         action = {"action": "unknown_action", "target": "system"}
 
         result = self.action_manager.execute_action(action)
@@ -384,7 +373,7 @@ class TestActionManager:
 
     @patch("app.remediation.actions.ActionManager._restart_service")
     def test_execute_action_restart_service(self, mock_restart):
-        """Test executing restart service action."""
+        """Test executing restart service action.""f"
         mock_restart.return_value = {
             "status": "success",
             "action": "restart_service",
@@ -409,7 +398,7 @@ class TestActionManager:
 
     @patch("app.remediation.actions.ActionManager._scale_up")
     def test_execute_action_scale_up(self, mock_scale_up):
-        """Test executing scale up action."""
+        """Test executing scale up action.""f"
         mock_scale_up.return_value = {
             "status": "success",
             "action": "scale_up",
@@ -426,7 +415,7 @@ class TestActionManager:
 
     @patch("app.remediation.actions.ActionManager._cleanup_disk")
     def test_execute_action_cleanup_disk(self, mock_cleanup):
-        """Test executing cleanup disk action."""
+        """Test executing cleanup disk action.""f"
         mock_cleanup.return_value = {
             "status": "success",
             "action": "cleanup_disk",
@@ -442,7 +431,7 @@ class TestActionManager:
         mock_cleanup.assert_called_once_with("system", action)
 
     def test_execute_action_exception_handling(self):
-        """Test exception handling in action execution."""
+        """Test exception handling in action execution.""f"
         action = {"action": "restart_service", "target": "application"}
 
         with patch.object(
@@ -493,7 +482,7 @@ class TestNotificationManager:
 
     def setup_method(self):
         """Set up test fixtures."""
-        with patch("boto3.client") as mock_boto:
+        with patch("boto3.clientf") as mock_boto:
             # Mock SSM to return None for webhook
             mock_ssm = Mock()
             mock_ssm.get_parameter.return_value = {"Parameter": {"Value": ""}}
@@ -514,7 +503,7 @@ class TestNotificationManager:
 
     @patch("requests.post")
     def test_send_slack_message_success(self, mock_post):
-        """Test successful Slack message sending."""
+        """Test successful Slack message sending.""f"
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {"ok": True}
@@ -522,7 +511,7 @@ class TestNotificationManager:
 
         # Set a webhook URL for the test
         self.notification_manager.slack_webhook_url = (
-            "https://hooks.slack.com/services/test"
+            "https://hooks.slack.com/services/testf"
         )
 
         message = {"text": "Test message"}
@@ -541,7 +530,7 @@ class TestNotificationManager:
 
         # Set a webhook URL for the test
         self.notification_manager.slack_webhook_url = (
-            "https://hooks.slack.com/services/test"
+            "https://hooks.slack.com/services/testf"
         )
 
         message = {"text": "Test message"}
@@ -557,7 +546,7 @@ class TestNotificationManager:
 
         # Set a webhook URL for the test
         self.notification_manager.slack_webhook_url = (
-            "https://hooks.slack.com/services/test"
+            "https://hooks.slack.com/services/testf"
         )
 
         message = {"text": "Test message"}
@@ -567,7 +556,7 @@ class TestNotificationManager:
         assert "Connection error" in result["error"]
 
     def test_create_remediation_message(self):
-        """Test creating remediation message."""
+        """Test creating remediation message.""f"
         evaluation = {
             "severity": "critical",
             "anomaly_score": 0.85,
@@ -575,7 +564,7 @@ class TestNotificationManager:
         }
 
         execution_results = [
-            {"action": {"action": "restart_service"}, "result": {"status": "success"}}
+            {"actionf": {"action": "restart_service"}, "resultf": {"status": "success"}}
         ]
 
         message = self.notification_manager._create_remediation_message(
@@ -592,7 +581,7 @@ class TestNotificationManager:
     def test_send_remediation_notification_no_webhook(self):
         """Test sending remediation notification without webhook."""
         # Ensure webhook URL is empty
-        self.notification_manager.slack_webhook_url = ""
+        self.notification_manager.slack_webhook_url = "f"
         evaluation = {"severity": "high", "anomaly_score": 0.7}
         execution_results = []
 
@@ -607,7 +596,7 @@ class TestNotificationManager:
     def test_send_remediation_notification_with_webhook(self, mock_send):
         """Test sending remediation notification with webhook."""
         self.notification_manager.slack_webhook_url = (
-            "https://hooks.slack.com/services/test"
+            "https://hooks.slack.com/services/testf"
         )
         mock_send.return_value = {"ok": True}
 
@@ -636,7 +625,7 @@ class TestNotificationManager:
     def test_send_simple_notification_with_webhook(self, mock_send):
         """Test sending simple notification with webhook."""
         self.notification_manager.slack_webhook_url = (
-            "https://hooks.slack.com/services/test"
+            "https://hooks.slack.com/services/testf"
         )
         mock_send.return_value = {"ok": True}
 

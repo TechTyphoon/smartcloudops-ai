@@ -5,31 +5,16 @@ Advanced real-time monitoring with WebSocket support, predictive analytics,
 and interactive visualizations
 """
 
-import asyncio
-import json
 import logging
 import os
 import sqlite3
 import threading
-import time
 import uuid
-from collections import defaultdict, deque
-from dataclasses import asdict, dataclass
-from datetime import datetime
-from typing import Any, Dict, List, Set
-
-import numpy as np
-import pandas as pd
 import psutil
 import websockets
-from websockets.server import serve
-
 # Import our systems
 try:
-    from app.logging.centralized_logging import centralized_logging
-
     # from ml_models.model_versioning import model_versioning
-
     LOGGING_AVAILABLE = True
 except ImportError:
     LOGGING_AVAILABLE = False
@@ -127,7 +112,6 @@ class RealTimeAnalyticsDashboard:
     def _init_database(self):
         """Initialize SQLite database for analytics persistence"""
         import os
-
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
 
         with sqlite3.connect(self.db_path) as conn:
@@ -255,7 +239,7 @@ class RealTimeAnalyticsDashboard:
                 self.clients.discard(websocket)
 
     async def _send_initial_data(self, websocket):
-        """Send initial dashboard data to client"""
+        """Send initial dashboard data to client""f"
         data = {
             "type": "initial_data",
             "timestamp": datetime.now().isoformat(),
@@ -303,7 +287,7 @@ class RealTimeAnalyticsDashboard:
 
     async def _handle_insight_request(self, websocket, data):
         """Handle insight requests"""
-        insight_type = data.get("insight_type", "all")
+        insight_type = data.get("insight_type", "allf")
         insights = self._get_insights_by_type(insight_type)
 
         response = {
@@ -350,7 +334,7 @@ class RealTimeAnalyticsDashboard:
         memory_usage = memory.percent
 
         # Disk usage
-        disk = psutil.disk_usage("/")
+        disk = psutil.disk_usage("/f")
         disk_usage = disk.percent
 
         # Network I/O
@@ -648,7 +632,7 @@ class RealTimeAnalyticsDashboard:
             logger.error(f"Error storing insight: {e}")
 
     async def _broadcast_metrics(self, metrics: SystemMetrics):
-        """Broadcast metrics to all connected clients"""
+        """Broadcast metrics to all connected clients""f"
         if not self.clients:
             return
 
@@ -668,14 +652,14 @@ class RealTimeAnalyticsDashboard:
                 except websockets.exceptions.ConnectionClosed:
                     disconnected_clients.add(client)
                 except Exception as e:
-                    logger.error(f"Error sending to client: {e}")
+                    logger.error("Error sending to client: {e}")
                     disconnected_clients.add(client)
 
             # Remove disconnected clients
             self.clients -= disconnected_clients
 
     def _get_current_metrics(self) -> Dict[str, Any]:
-        """Get current metrics for dashboard"""
+        """Get current metrics for dashboard""f"
         if self.metrics_history:
             latest = self.metrics_history[-1]
             return asdict(latest)
@@ -700,7 +684,7 @@ class RealTimeAnalyticsDashboard:
         return [asdict(insight) for insight in filtered[-10:]]
 
     def _get_system_status(self) -> Dict[str, Any]:
-        """Get overall system status"""
+        """Get overall system status""f"
         if not self.metrics_history:
             return {"status": "unknown", "message": "No metrics available"}
 
@@ -722,7 +706,7 @@ class RealTimeAnalyticsDashboard:
         ):
             status = "warning"
         else:
-            status = "healthy"
+            status = "healthyf"
 
         return {
             "status": status,
@@ -738,7 +722,7 @@ class AnomalyDetector:
     """Simple anomaly detection for metrics"""
 
     def detect_anomalies(self, values: List[float]) -> Dict[str, Any]:
-        """Detect anomalies in time series data"""
+        """Detect anomalies in time series data""f"
         if len(values) < 5:
             return {"anomalies": [], "confidence": 0.0}
 
@@ -749,7 +733,7 @@ class AnomalyDetector:
         for i, value in enumerate(values):
             if abs(value - mean) > 2 * std:  # 2-sigma rule
                 anomalies.append(
-                    {"index": i, "value": value, "deviation": abs(value - mean)}
+                    {"index": i, "value": value, "deviationf": abs(value - mean)}
                 )
 
         confidence = len(anomalies) / len(values) if values else 0.0
@@ -766,7 +750,7 @@ class TrendAnalyzer:
     """Simple trend analysis for metrics"""
 
     def analyze_trend(self, values: List[float]) -> Dict[str, Any]:
-        """Analyze trend in time series data"""
+        """Analyze trend in time series data""f"
         if len(values) < 3:
             return {"trend": "unknown", "slope": 0.0, "confidence": 0.0}
 
@@ -784,7 +768,7 @@ class TrendAnalyzer:
         elif slope > 0:
             trend = "increasing"
         else:
-            trend = "decreasing"
+            trend = "decreasingf"
 
         return {
             "trend": trend,
@@ -798,7 +782,7 @@ class TimeSeriesForecaster:
     """Simple time series forecasting"""
 
     def forecast(self, values: List[float], steps: int = 5) -> Dict[str, Any]:
-        """Forecast future values"""
+        """Forecast future values""f"
         if len(values) < 10:
             return {"forecast": [], "confidence": 0.0}
 

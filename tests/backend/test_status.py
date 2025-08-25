@@ -1,9 +1,5 @@
 """Test status endpoint."""
 
-import json
-import pytest
-from flask.testing import FlaskClient
-
 
 def test_status_endpoint(client: FlaskClient):
     """Test /status endpoint returns 200 and expected structure."""
@@ -110,7 +106,6 @@ def test_status_endpoint_methods(client: FlaskClient):
 
 def test_status_response_time(client: FlaskClient):
     """Test status endpoint responds within reasonable time."""
-    import time
 
     start_time = time.time()
     response = client.get("/status")
@@ -123,7 +118,6 @@ def test_status_response_time(client: FlaskClient):
 
 def test_status_timestamp_format(client: FlaskClient):
     """Test status timestamp is recent."""
-    import time
 
     response = client.get("/status")
     data = json.loads(response.data)

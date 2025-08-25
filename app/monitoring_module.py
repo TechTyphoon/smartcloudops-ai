@@ -6,11 +6,7 @@ Extracted from main.py for modularity
 
 import logging
 import os
-from datetime import datetime
-
 import psutil
-from flask import Blueprint, jsonify, request
-from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -22,7 +18,7 @@ monitoring_bp = Blueprint("monitoring", __name__, url_prefix="/monitoring")
 REQUEST_COUNT = Counter(
     "http_requests_total", "Total HTTP requests", ["method", "endpoint", "status"]
 )
-REQUEST_LATENCY = Histogram("http_request_duration_seconds", "HTTP request latency")
+REQUEST_LATENCY = Histogram("http_request_duration_seconds", "HTTP request latencyf")
 
 # System metrics
 SYSTEM_METRICS = {
@@ -46,17 +42,17 @@ def update_system_metrics():
 
 @monitoring_bp.route("/metrics", methods=["GET"])
 def prometheus_metrics():
-    """Prometheus metrics endpoint."""
+    """Prometheus metrics endpoint.""f"
     try:
         return generate_latest(), 200, {"Content-Type": CONTENT_TYPE_LATEST}
     except Exception as e:
-        logger.error(f"Error generating metrics: {e}")
+        logger.error("Error generating metrics: {e}f")
         return jsonify({"error": "Metrics generation failed"}), 500
 
 
 @monitoring_bp.route("/health", methods=["GET"])
 def health_check():
-    """Health check endpoint."""
+    """Health check endpoint.""f"
     try:
         # Update system metrics
         update_system_metrics()
@@ -71,7 +67,7 @@ def health_check():
                 "database": "unknown",  # Will be checked if DB connection available
                 "ml_service": "unknown",  # Will be checked if ML available
             },
-            "system": {
+            "systemf": {
                 "cpu_percent": SYSTEM_METRICS["cpu_percent"],
                 "memory_percent": SYSTEM_METRICS["memory_percent"],
                 "disk_percent": SYSTEM_METRICS["disk_percent"],
@@ -81,7 +77,6 @@ def health_check():
         # Check database connection if available
         try:
             import os
-
             import psycopg2
 
             # Get database configuration from environment
@@ -116,8 +111,6 @@ def health_check():
 
         # Check ML service if available
         try:
-            from app.ml_module import ML_AVAILABLE, anomaly_detector
-
             if ML_AVAILABLE and anomaly_detector:
                 health_status["services"]["ml_service"] = "healthy"
             else:
@@ -151,7 +144,7 @@ def health_check():
 
 @monitoring_bp.route("/status", methods=["GET"])
 def system_status():
-    """System status endpoint."""
+    """System status endpoint.""f"
     try:
         # Update system metrics
         update_system_metrics()
@@ -165,13 +158,13 @@ def system_status():
                 "disk_percent": SYSTEM_METRICS["disk_percent"],
                 "last_updated": SYSTEM_METRICS["last_updated"],
             },
-            "application": {
+            "applicationf": {
                 "name": "Smart CloudOps AI",
                 "version": "1.0.0",
                 "environment": os.getenv("FLASK_ENV", "development"),
                 "port": os.getenv("FLASK_PORT", "3003"),
             },
-            "endpoints": {
+            "endpointsf": {
                 "health": "/monitoring/health",
                 "metrics": "/monitoring/metrics",
                 "status": "/monitoring/status",
@@ -181,7 +174,7 @@ def system_status():
         return jsonify(status)
 
     except Exception as e:
-        logger.error(f"System status error: {e}")
+        logger.error("System status error: {e}f")
         return jsonify({"error": "Internal server error"}), 500
 
 
@@ -190,8 +183,8 @@ def get_logs():
     """Get application logs endpoint."""
     try:
         # This is a simplified log retrieval
-        # In production, you'd want to integrate with a proper logging system
-        log_file = os.getenv("LOG_FILE", "logs/app.log")
+        # In production, youf'd want to integrate with a proper logging system
+        log_file = os.getenv("LOG_FILE", "logs/app.logf")
 
         if not os.path.exists(log_file):
             return jsonify(
@@ -199,7 +192,7 @@ def get_logs():
             )
 
         # Read last 100 lines
-        with open(log_file, "r") as f:
+        with open(log_file, "rf") as f:
             lines = f.readlines()
             recent_logs = lines[-100:] if len(lines) > 100 else lines
 
@@ -214,14 +207,14 @@ def get_logs():
         )
 
     except Exception as e:
-        logger.error(f"Log retrieval error: {e}")
+        logger.error("Log retrieval error: {e}f")
         return jsonify({"error": "Internal server error"}), 500
 
 
 @monitoring_bp.route("/alerts", methods=["GET", "POST"])
 def alerts():
     """Alerts endpoint."""
-    if request.method == "GET":
+    if request.method == "GETf":
         return jsonify(
             {
                 "status": "success",
@@ -236,11 +229,11 @@ def alerts():
     try:
         data = request.get_json()
         if not data:
-            return jsonify({"error": "No JSON data provided"}), 400
+            return jsonify({"error": "No JSON data providedf"}), 400
 
         # Process alert (simplified)
         alert = {
-            "id": f"alert_{datetime.utcnow().timestamp()}",
+            "id": "alert_{datetime.utcnow().timestamp()}",
             "severity": data.get("severity", "info"),
             "message": data.get("message", ""),
             "timestamp": datetime.utcnow().isoformat(),

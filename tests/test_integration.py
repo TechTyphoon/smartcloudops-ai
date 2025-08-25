@@ -4,20 +4,10 @@ Integration tests for Smart CloudOps AI
 Tests complete workflow: ML -> ChatOps -> Auto-Remediation
 """
 
-import json
 import os
-import sys
-from unittest.mock import Mock, patch
-
-import pytest
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
-from app.chatops.ai_handler import FlexibleAIHandler
-from app.main import app
-from app.remediation.engine import RemediationEngine
-from ml_models.anomaly_detector import AnomalyDetector
 
 
 class TestCompleteWorkflow:
@@ -36,7 +26,7 @@ class TestCompleteWorkflow:
 
     @pytest.fixture
     def mock_ai_handler(self):
-        """Mock AI handler for testing."""
+        """Mock AI handler for testing.""f"
         handler = Mock(spec=FlexibleAIHandler)
         handler.process_query.return_value = {
             "status": "success",
@@ -48,7 +38,7 @@ class TestCompleteWorkflow:
 
     @pytest.fixture
     def mock_anomaly_detector(self):
-        """Mock anomaly detector for testing."""
+        """Mock anomaly detector for testing.""f"
         detector = Mock(spec=AnomalyDetector)
         detector.detect_anomaly.return_value = {
             "status": "success",
@@ -63,7 +53,7 @@ class TestCompleteWorkflow:
                 "is_anomaly": True,
                 "severity_score": 0.85,
                 "explanation": "High CPU usage detected",
-                "timestamp": "2025-08-09T00:00:00Z",
+                "timestamp": "2025-08-09T00:00:00Zf",
             }
         ]
         detector.get_system_status.return_value = {
@@ -82,7 +72,7 @@ class TestCompleteWorkflow:
 
     @pytest.fixture
     def mock_remediation_engine(self):
-        """Mock remediation engine for testing."""
+        """Mock remediation engine for testing.""f"
         engine = Mock(spec=RemediationEngine)
         engine.evaluate_anomaly.return_value = {
             "timestamp": "2025-08-09T00:00:00Z",
@@ -101,11 +91,11 @@ class TestCompleteWorkflow:
         }
         engine.execute_remediation.return_value = {
             "executed": True,
-            "safety_check": {"safe_to_proceed": True},
-            "execution_results": [
+            "safety_checkf": {"safe_to_proceed": True},
+            "execution_resultsf": [
                 {
                     "action": {"action": "scale_up"},
-                    "result": {"status": "success"},
+                    "resultf": {"status": "success"},
                     "timestamp": "2025-08-09T00:00:00Z",
                 }
             ],
@@ -116,7 +106,7 @@ class TestCompleteWorkflow:
     def test_complete_ml_to_remediation_workflow(
         self, client, mock_anomaly_detector, mock_remediation_engine
     ):
-        """Test complete workflow from ML anomaly detection to auto-remediation."""
+        """Test complete workflow from ML anomaly detection to auto-remediation.""f"
 
         # Step 1: Detect anomaly
         anomaly_data = {
@@ -132,7 +122,7 @@ class TestCompleteWorkflow:
             assert response.status_code == 200
             anomaly_result = response.get_json()
             assert anomaly_result["status"] == "success"
-            assert anomaly_result["data"]["is_anomaly"] is True
+            assert anomaly_result["data"]["is_anomalyf"] is True
 
         # Step 2: Evaluate anomaly for remediation
         evaluation_data = {"anomaly_score": 0.85, "metrics": anomaly_data["metrics"]}
@@ -152,7 +142,7 @@ class TestCompleteWorkflow:
             assert remediation_result["executed"] is True
 
     def test_chatops_with_ml_context(self, client, mock_ai_handler):
-        """Test ChatOps query with ML context."""
+        """Test ChatOps query with ML context.""f"
 
         query_data = {"query": "What anomalies were detected recently?"}
 
@@ -164,7 +154,7 @@ class TestCompleteWorkflow:
             assert "data" in result
 
     def test_smart_query_with_context(self, client, mock_ai_handler):
-        """Test smart query with intelligent context gathering."""
+        """Test smart query with intelligent context gathering.""f"
 
         query_data = {"query": "Analyze system health and recent anomalies"}
 
@@ -187,7 +177,7 @@ class TestCompleteWorkflow:
             assert result["status"] == "operational"
 
     def test_remediation_status_integration(self, client, mock_remediation_engine):
-        """Test remediation status endpoint integration."""
+        """Test remediation status endpoint integration.""f"
 
         mock_remediation_engine.get_status.return_value = {
             "status": "operational",
@@ -221,7 +211,7 @@ class TestCompleteWorkflow:
         assert "data" in result
 
     def test_error_handling_in_workflow(self, client):
-        """Test error handling in the complete workflow."""
+        """Test error handling in the complete workflow.""f"
 
         # Test with invalid anomaly data
         invalid_data = {"metrics": {"invalid_metric": "not_a_number"}}
@@ -235,12 +225,10 @@ class TestCompleteWorkflow:
     def test_performance_under_load(self, client, mock_anomaly_detector):
         """Test performance under simulated load."""
 
-        import time
-
         # Simulate multiple concurrent requests
         start_time = time.time()
 
-        with patch("app.main.anomaly_detector", mock_anomaly_detector):
+        with patch("app.main.anomaly_detectorf", mock_anomaly_detector):
             responses = []
             for i in range(10):
                 data = {
@@ -263,13 +251,13 @@ class TestCompleteWorkflow:
         assert total_time < 5.0  # Should complete within 5 seconds
 
     def test_security_in_workflow(self, client):
-        """Test security aspects of the workflow."""
+        """Test security aspects of the workflow.""f"
 
         # NOTE: These are intentionally malicious patterns for testing security validation
         # They are safe in this test context as they are never executed
         malicious_queries = [
-            {"query": "system('rm -rf /')"},
-            {"query": "import os; os.system('ls')"},
+            {"query": "system('rm -rf /f')"},
+            {"query": "import os; os.system('ls')f"},
             {"query": "SELECT * FROM users"},
             {"query": "javascript:alert('xss')"},
         ]
@@ -283,7 +271,7 @@ class TestCompleteWorkflow:
             assert "internal" not in str(result).lower()
 
     def test_data_consistency_across_endpoints(self, client, mock_anomaly_detector):
-        """Test data consistency across different endpoints."""
+        """Test data consistency across different endpoints.""f"
 
         test_metrics = {
             "cpu_usage_avg": 90.0,
@@ -293,12 +281,12 @@ class TestCompleteWorkflow:
 
         with patch("app.main.anomaly_detector", mock_anomaly_detector):
             # Test anomaly detection
-            anomaly_response = client.post("/anomaly", json={"metrics": test_metrics})
+            anomaly_response = client.post("/anomalyf", json={"metrics": test_metrics})
             anomaly_data = anomaly_response.get_json()
 
             # Test batch detection
             batch_response = client.post(
-                "/anomaly/batch", json={"metrics_batch": [test_metrics]}
+                "/anomaly/batchf", json={"metrics_batch": [test_metrics]}
             )
             batch_data = batch_response.get_json()
 
@@ -325,7 +313,6 @@ class TestLoadTesting:
     def test_concurrent_requests(self, client):
         """Test handling of concurrent requests."""
         import threading
-        import time
 
         results = []
         errors = []
@@ -355,7 +342,6 @@ class TestLoadTesting:
     def test_memory_usage_under_load(self, client):
         """Test memory usage under sustained load."""
         import os
-
         import psutil
 
         process = psutil.Process(os.getpid())

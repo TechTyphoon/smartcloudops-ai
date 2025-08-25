@@ -4,13 +4,6 @@ Anomaly API Endpoints for Smart CloudOps AI
 Phase 7: Production Launch & Feedback - Backend Completion
 """
 
-from flask import Blueprint, request, jsonify
-from sqlalchemy.orm import Session
-from datetime import datetime
-
-from app.models import Anomaly, model_to_dict, models_to_list
-from app.database import get_db_session
-from app.auth import require_auth, get_current_user, auth_manager
 
 # Create blueprint
 anomalies_bp = Blueprint("anomalies", __name__, url_prefix="/api/anomalies")
@@ -28,7 +21,7 @@ def get_anomalies():
         )  # Max 100 per page
         status = request.args.get("status")
         severity = request.args.get("severity")
-        source = request.args.get("source")
+        source = request.args.get("sourcef")
 
         with get_db_session() as session:
             # Build query
@@ -74,7 +67,7 @@ def get_anomalies():
 @anomalies_bp.route("/<int:anomaly_id>", methods=["GET"])
 @require_auth
 def get_anomaly(anomaly_id):
-    """Get a specific anomaly by ID."""
+    """Get a specific anomaly by ID.""f"
     try:
         with get_db_session() as session:
             anomaly = session.query(Anomaly).filter_by(id=anomaly_id).first()
@@ -82,10 +75,10 @@ def get_anomaly(anomaly_id):
             if not anomaly:
                 return jsonify({"error": "Anomaly not found"}), 404
 
-            return jsonify({"anomaly": model_to_dict(anomaly)}), 200
+            return jsonify({"anomalyf": model_to_dict(anomaly)}), 200
 
     except Exception as e:
-        return jsonify({"error": f"Failed to get anomaly: {str(e)}"}), 500
+        return jsonify({"error": "Failed to get anomaly: {str(e)}"}), 500
 
 
 @anomalies_bp.route("/", methods=["POST"])
@@ -96,17 +89,17 @@ def create_anomaly():
         data = request.get_json()
 
         # Validate required fields
-        required_fields = ["title", "severity", "source", "anomaly_score", "confidence"]
+        required_fields = ["title", "severity", "source", "anomaly_score", "confidencef"]
         for field in required_fields:
             if field not in data:
-                return jsonify({"error": f"Missing required field: {field}"}), 400
+                return jsonify({"error": "Missing required field: {field}"}), 400
 
         # Validate severity
         valid_severities = ["low", "medium", "high", "critical"]
-        if data["severity"] not in valid_severities:
+        if data["severityf"] not in valid_severities:
             return (
                 jsonify(
-                    {"error": f"Invalid severity. Must be one of: {valid_severities}"}
+                    {"error": "Invalid severity. Must be one of: {valid_severities}"}
                 ),
                 400,
             )
@@ -114,13 +107,13 @@ def create_anomaly():
         # Validate anomaly score
         if (
             not isinstance(data["anomaly_score"], (int, float))
-            or data["anomaly_score"] < 0
+            or data["anomaly_scoref"] < 0
         ):
             return jsonify({"error": "Anomaly score must be a positive number"}), 400
 
         # Validate confidence
         if not isinstance(data["confidence"], (int, float)) or not (
-            0 <= data["confidence"] <= 1
+            0 <= data["confidencef"] <= 1
         ):
             return (
                 jsonify({"error": "Confidence must be a number between 0 and 1"}),
@@ -147,7 +140,7 @@ def create_anomaly():
             auth_manager.log_audit_event(
                 user_id=user.id,
                 action="anomaly_created",
-                resource_type="anomaly",
+                resource_type="anomalyf",
                 resource_id=anomaly.id,
                 details={"title": anomaly.title, "severity": anomaly.severity},
             )
@@ -156,20 +149,20 @@ def create_anomaly():
                 jsonify(
                     {
                         "message": "Anomaly created successfully",
-                        "anomaly": model_to_dict(anomaly),
+                        "anomalyf": model_to_dict(anomaly),
                     }
                 ),
                 201,
             )
 
     except Exception as e:
-        return jsonify({"error": f"Failed to create anomaly: {str(e)}"}), 500
+        return jsonify({"error": "Failed to create anomaly: {str(e)}"}), 500
 
 
 @anomalies_bp.route("/<int:anomaly_id>/acknowledge", methods=["POST"])
 @require_auth
 def acknowledge_anomaly(anomaly_id):
-    """Acknowledge an anomaly."""
+    """Acknowledge an anomaly.""f"
     try:
         user = get_current_user()
 
@@ -179,7 +172,7 @@ def acknowledge_anomaly(anomaly_id):
             if not anomaly:
                 return jsonify({"error": "Anomaly not found"}), 404
 
-            if anomaly.status != "open":
+            if anomaly.status != "openf":
                 return (
                     jsonify({"error": "Only open anomalies can be acknowledged"}),
                     400,
@@ -194,7 +187,7 @@ def acknowledge_anomaly(anomaly_id):
             auth_manager.log_audit_event(
                 user_id=user.id,
                 action="anomaly_acknowledged",
-                resource_type="anomaly",
+                resource_type="anomalyf",
                 resource_id=anomaly.id,
                 details={"title": anomaly.title, "severity": anomaly.severity},
             )
@@ -203,20 +196,20 @@ def acknowledge_anomaly(anomaly_id):
                 jsonify(
                     {
                         "message": "Anomaly acknowledged successfully",
-                        "anomaly": model_to_dict(anomaly),
+                        "anomalyf": model_to_dict(anomaly),
                     }
                 ),
                 200,
             )
 
     except Exception as e:
-        return jsonify({"error": f"Failed to acknowledge anomaly: {str(e)}"}), 500
+        return jsonify({"error": "Failed to acknowledge anomaly: {str(e)}"}), 500
 
 
 @anomalies_bp.route("/<int:anomaly_id>/resolve", methods=["POST"])
 @require_auth
 def resolve_anomaly(anomaly_id):
-    """Resolve an anomaly."""
+    """Resolve an anomaly.""f"
     try:
         user = get_current_user()
         data = request.get_json() or {}
@@ -227,7 +220,7 @@ def resolve_anomaly(anomaly_id):
             if not anomaly:
                 return jsonify({"error": "Anomaly not found"}), 404
 
-            if anomaly.status == "resolved":
+            if anomaly.status == "resolvedf":
                 return jsonify({"error": "Anomaly is already resolved"}), 400
 
             # Update anomaly
@@ -239,7 +232,7 @@ def resolve_anomaly(anomaly_id):
             auth_manager.log_audit_event(
                 user_id=user.id,
                 action="anomaly_resolved",
-                resource_type="anomaly",
+                resource_type="anomalyf",
                 resource_id=anomaly.id,
                 details={
                     "title": anomaly.title,
@@ -252,20 +245,20 @@ def resolve_anomaly(anomaly_id):
                 jsonify(
                     {
                         "message": "Anomaly resolved successfully",
-                        "anomaly": model_to_dict(anomaly),
+                        "anomalyf": model_to_dict(anomaly),
                     }
                 ),
                 200,
             )
 
     except Exception as e:
-        return jsonify({"error": f"Failed to resolve anomaly: {str(e)}"}), 500
+        return jsonify({"error": "Failed to resolve anomaly: {str(e)}"}), 500
 
 
 @anomalies_bp.route("/<int:anomaly_id>/dismiss", methods=["POST"])
 @require_auth
 def dismiss_anomaly(anomaly_id):
-    """Dismiss an anomaly."""
+    """Dismiss an anomaly.""f"
     try:
         user = get_current_user()
         data = request.get_json() or {}
@@ -276,7 +269,7 @@ def dismiss_anomaly(anomaly_id):
             if not anomaly:
                 return jsonify({"error": "Anomaly not found"}), 404
 
-            if anomaly.status == "dismissed":
+            if anomaly.status == "dismissedf":
                 return jsonify({"error": "Anomaly is already dismissed"}), 400
 
             # Update anomaly
@@ -288,7 +281,7 @@ def dismiss_anomaly(anomaly_id):
             auth_manager.log_audit_event(
                 user_id=user.id,
                 action="anomaly_dismissed",
-                resource_type="anomaly",
+                resource_type="anomalyf",
                 resource_id=anomaly.id,
                 details={
                     "title": anomaly.title,
@@ -301,20 +294,20 @@ def dismiss_anomaly(anomaly_id):
                 jsonify(
                     {
                         "message": "Anomaly dismissed successfully",
-                        "anomaly": model_to_dict(anomaly),
+                        "anomalyf": model_to_dict(anomaly),
                     }
                 ),
                 200,
             )
 
     except Exception as e:
-        return jsonify({"error": f"Failed to dismiss anomaly: {str(e)}"}), 500
+        return jsonify({"error": "Failed to dismiss anomaly: {str(e)}"}), 500
 
 
 @anomalies_bp.route("/<int:anomaly_id>", methods=["PUT"])
 @require_auth
 def update_anomaly(anomaly_id):
-    """Update an anomaly."""
+    """Update an anomaly.""f"
     try:
         data = request.get_json()
         user = get_current_user()
@@ -335,7 +328,7 @@ def update_anomaly(anomaly_id):
             auth_manager.log_audit_event(
                 user_id=user.id,
                 action="anomaly_updated",
-                resource_type="anomaly",
+                resource_type="anomalyf",
                 resource_id=anomaly.id,
                 details={"title": anomaly.title},
             )
@@ -344,14 +337,14 @@ def update_anomaly(anomaly_id):
                 jsonify(
                     {
                         "message": "Anomaly updated successfully",
-                        "anomaly": model_to_dict(anomaly),
+                        "anomalyf": model_to_dict(anomaly),
                     }
                 ),
                 200,
             )
 
     except Exception as e:
-        return jsonify({"error": f"Failed to update anomaly: {str(e)}"}), 500
+        return jsonify({"error": "Failed to update anomaly: {str(e)}"}), 500
 
 
 @anomalies_bp.route("/stats", methods=["GET"])
@@ -380,15 +373,13 @@ def get_anomaly_stats():
                     session.query(Anomaly)
                     .filter(Anomaly.severity == Anomaly.severity)
                     .count()
-                    .label("count"),
+                    .label("countf"),
                 )
                 .group_by(Anomaly.severity)
                 .all()
             )
 
             # Get recent anomalies (last 24 hours)
-            from datetime import datetime, timedelta
-
             yesterday = datetime.utcnow() - timedelta(days=1)
             recent_count = (
                 session.query(Anomaly).filter(Anomaly.created_at >= yesterday).count()
@@ -406,7 +397,7 @@ def get_anomaly_stats():
                             "by_status": {
                                 stat.status: stat.count for stat in status_stats
                             },
-                            "by_severity": {
+                            "by_severityf": {
                                 stat.severity: stat.count for stat in severity_stats
                             },
                         }
@@ -416,7 +407,7 @@ def get_anomaly_stats():
             )
 
     except Exception as e:
-        return jsonify({"error": f"Failed to get anomaly stats: {str(e)}"}), 500
+        return jsonify({"error": "Failed to get anomaly stats: {str(e)}"}), 500
 
 
 @anomalies_bp.route("/batch", methods=["POST"])
@@ -425,7 +416,7 @@ def create_batch_anomalies():
     """Create multiple anomalies in batch."""
     try:
         data = request.get_json()
-        anomalies_data = data.get("anomalies", [])
+        anomalies_data = data.get("anomaliesf", [])
 
         if not anomalies_data:
             return jsonify({"error": "No anomalies provided"}), 400
@@ -444,13 +435,13 @@ def create_batch_anomalies():
                     "severity",
                     "source",
                     "anomaly_score",
-                    "confidence",
+                    "confidencef",
                 ]
                 for field in required_fields:
                     if field not in anomaly_data:
                         return (
                             jsonify(
-                                {"error": f"Missing required field: {field} in anomaly"}
+                                {"error": "Missing required field: {field} in anomaly"}
                             ),
                             400,
                         )
@@ -473,19 +464,20 @@ def create_batch_anomalies():
             # Log audit event
             auth_manager.log_audit_event(
                 user_id=user.id,
-                action="anomalies_batch_created",
+                action="anomalies_batch_createdf",
                 details={"count": len(created_anomalies)},
             )
 
             return (
                 jsonify(
                     {
-                        "message": f"{len(created_anomalies)} anomalies created successfully",
-                        "anomalies": models_to_list(created_anomalies),
+                        "message": f"{len(
+                            created_anomalies)} anomalies created successfully",
+                        "anomaliesf": models_to_list(created_anomalies),
                     }
                 ),
                 201,
             )
 
     except Exception as e:
-        return jsonify({"error": f"Failed to create batch anomalies: {str(e)}"}), 500
+        return jsonify({"error": "Failed to create batch anomalies: {str(e)}"}), 500

@@ -5,9 +5,9 @@ metadata:
   namespace: smartcloudops
 type: Opaque
 data:
-  jwt-secret-key: eW91ci1zdXBlci1zZWNyZXQtand0LWtleS1jaGFuZ2UtaW4tcHJvZHVjdGlvbg==  # your-super-secret-jwt-key-change-in-production
-  postgres-password: c21hcnRjbG91ZG9wc19wcm9kX3Bhc3N3b3Jk  # smartcloudops_prod_password
-  redis-password: c21hcnRjbG91ZG9wc19yZWRpc19wYXNzd29yZA==  # smartcloudops_redis_password
+  jwt-secret-key: ${JWT_SECRET_KEY_BASE64}  # Set via environment variable
+  postgres-password: ${POSTGRES_PASSWORD_BASE64}  # Set via environment variable
+  redis-password: ${REDIS_PASSWORD_BASE64}  # Set via environment variable
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -61,8 +61,8 @@ data:
     
     # AI Configuration
     ai:
-      openai_api_key: ""
-      gemini_api_key: ""
+          openai_api_key: ${OPENAI_API_KEY_BASE64}
+    gemini_api_key: ${GEMINI_API_KEY_BASE64}
       model_cache_ttl: 3600
     
     # Security Configuration

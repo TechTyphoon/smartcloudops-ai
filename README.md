@@ -36,6 +36,25 @@ SmartCloudOps AI is a production-ready, enterprise-grade platform that revolutio
 
 ## 🚀 Quick Start
 
+### Frontend Decision
+**⚠️ IMPORTANT: Frontend Integration Decision Required**
+
+This repository currently provides a **REST API-only backend** for SmartCloudOps AI. You have two options:
+
+1. **API-Only Approach** (Recommended for now):
+   - Use the REST API endpoints directly
+   - Integrate with existing monitoring dashboards (Grafana, etc.)
+   - Build custom frontend later if needed
+   - Remove CORS configurations if not planning frontend
+
+2. **Frontend Integration** (Future enhancement):
+   - Add React/Vue.js frontend
+   - Implement ChatOps UI
+   - Add real-time monitoring dashboard
+   - Configure CORS properly
+
+**Current Status**: API-only with monitoring integration via Grafana dashboards.
+
 ### Prerequisites
 - **Docker & Docker Compose** (v20.10+)
 - **Python 3.8+** (for development)

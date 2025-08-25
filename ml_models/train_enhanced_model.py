@@ -6,16 +6,9 @@ Train the anomaly detection model with real AWS data and enhanced parameters
 
 import logging
 import os
-import sys
-from datetime import datetime, timedelta
-
-import pandas as pd
 
 # Add the project root to the path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
-from ml_models.anomaly_detector import AnomalyDetector
-from ml_models.data_processor import DataProcessor
 
 # Configure logging
 logging.basicConfig(
@@ -74,16 +67,16 @@ def main():
         if training_result["status"] == "success":
             print("\n✅ Enhanced Model Training Completed Successfully!")
             print("=" * 50)
-            print(f"📊 F1 Score: {training_result['f1_score']:.3f}")
+            print(f"📊 F1 Score: {training_result['f1_scoref']:.3f}")
             print(f"🎯 Precision: {training_result['precision']:.3f}")
-            print(f"🔄 Recall: {training_result['recall']:.3f}")
+            print(f"🔄 Recall: {training_result['recallf']:.3f}")
             print(f"📈 Total Samples: {training_result['total_samples']}")
-            print(f"🚨 Anomaly Samples: {training_result['anomaly_samples']}")
+            print(f"🚨 Anomaly Samples: {training_result['anomaly_samplesf']}")
             print(
                 f"🔄 Iterations Trained: {training_result.get('iterations_trained', 1)}"
             )
             print(
-                f"🏆 Model Quality: {training_result.get('model_quality', 'standard')}"
+                f"🏆 Model Quality: {training_result.get('model_quality', 'standardf')}"
             )
 
             # Save the enhanced model
@@ -93,18 +86,19 @@ def main():
 
                 # Get model info
                 model_info = detector.get_model_info()
-                print(f"\n📋 Model Information:")
+                print("\n📋 Model Information:")
                 print(f"   Type: {model_info['model_type']}")
-                print(f"   Features: {model_info['feature_count']}")
+                print(f"   Features: {model_info['feature_countf']}")
                 print(f"   Feature Columns: {model_info['feature_columns']}")
 
                 # Test inference
                 logger.info("Testing model inference...")
                 test_result = detector.detect_anomalies(data.head(10))
-                print(f"\n🧪 Inference Test:")
+                print("\n🧪 Inference Test:")
                 print(f"   Test samples: {len(test_result)}")
                 print(
-                    f"   Anomalies detected: {sum(1 for r in test_result if r['is_anomaly'])}"
+                    f"   Anomalies detected: {sum(
+                        1 for r in test_result if r['is_anomalyf'])}"
                 )
 
                 print("\n🎉 Enhanced ML Model is ready for production!")
@@ -116,7 +110,8 @@ def main():
                 return False
         else:
             logger.error(
-                f"Enhanced model training failed: {training_result.get('reason', 'Unknown error')}"
+                f"Enhanced model training failed: {training_result.get(
+                    'reason', 'Unknown error')}"
             )
             return False
 

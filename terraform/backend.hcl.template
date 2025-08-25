@@ -1,0 +1,13 @@
+# Terraform Backend Configuration Template
+# Copy this file to backend.hcl and customize with your AWS resources
+# Then run: terraform init -backend-config=backend.hcl
+
+bucket         = "your-terraform-state-bucket-name"
+key            = "smartcloudops-ai/terraform.tfstate"
+region         = "us-west-2"
+encrypt        = true
+dynamodb_table = "terraform-locks"
+kms_key_id     = "arn:aws:kms:us-west-2:YOUR_ACCOUNT_ID:key/your-kms-key-id"
+
+# Optional: Enable state locking with DynamoDB
+# Make sure the DynamoDB table exists with partition key "LockID" (String)

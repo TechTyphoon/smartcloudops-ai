@@ -15,14 +15,8 @@ Usage:
 """
 
 import argparse
-import json
 import os
 import subprocess
-import sys
-import time
-from pathlib import Path
-from typing import Dict, List, Optional
-
 import requests
 
 
@@ -229,14 +223,14 @@ class FlaskAppDeployer:
 
     def run_health_checks(self) -> Dict[str, bool]:
         """Run comprehensive health checks"""
-        print("🏥 Running health checks...")
+        print("🏥 Running health checks...f")
 
         health_results = {}
 
         # Basic health check
         try:
             response = requests.get(
-                f"http://{self.instance_ip}:{self.app_port}/health", timeout=10
+                "http://{self.instance_ip}:{self.app_port}/health", timeout=10
             )
             health_results["basic_health"] = response.status_code == 200
             print(f"  ✅ Basic health: {response.status_code}")
@@ -312,7 +306,8 @@ class FlaskAppDeployer:
             print(f"📍 Instance: {self.instance_ip}")
             print(f"🌐 Application URL: http://{self.instance_ip}:{self.app_port}")
             print(
-                f"🏥 Health Status: {sum(health_results.values())}/{len(health_results)} endpoints healthy"
+                f"🏥 Health Status: {sum(
+                    health_results.values())}/{len(health_results)} endpoints healthy"
             )
 
             if all(health_results.values()):
