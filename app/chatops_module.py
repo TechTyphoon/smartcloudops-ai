@@ -5,6 +5,7 @@ Extracted from main.py for modularity
 """
 
 import logging
+
 # Configure logging
 logger = logging.getLogger(__name__)
 
@@ -13,6 +14,7 @@ chatops_bp = Blueprint("chatops", __name__, url_prefix="/chatops")
 
 # Import ChatOps components
 try:
+    from app.chatops.utils import (
         LogRetriever,
         SystemContextGatherer,
         conversation_manager,
@@ -22,7 +24,7 @@ try:
 
     CHATOPS_AVAILABLE = True
 except ImportError as e:
-    logging.warning("ChatOps components not available: {e}")
+    logging.warning(f"ChatOps components not available: {e}")
     CHATOPS_AVAILABLE = False
 
 # Initialize ChatOps components
@@ -69,7 +71,7 @@ def chatops_query():
         if not data:
             return jsonify({"error": "No JSON data provided"}), 400
 
-        query = data.get("query", ")
+        query = data.get("query", "")
         if not query:
             return jsonify({"error": "No query provided"}), 400
 
@@ -232,7 +234,7 @@ def manage_conversation():
         if not data:
             return jsonify({"error": "No JSON data provided"}), 400
 
-        message = data.get("message", ")
+        message = data.get("message", "")
         if not message:
             return jsonify({"error": "No message provided"}), 400
 

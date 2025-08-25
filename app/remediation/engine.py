@@ -20,9 +20,11 @@ from app.config import get_config
 try:
     from app.remediation.safety import SafetyManager
     from app.remediation.actions import ActionManager
+    from app.remediation.notifications import NotificationManager
 except ImportError:
     SafetyManager = None
     ActionManager = None
+    NotificationManager = None
 
 
 logger = logging.getLogger(__name__)
@@ -57,7 +59,7 @@ class RemediationEngine:
             approval_param=approval_param,
         )
         self.action_manager = ActionManager() if ActionManager else None
-        self.notification_manager = NotificationManager()
+        self.notification_manager = NotificationManager() if NotificationManager else None
 
         # Track recent actions for safety
         self.recent_actions: List[Dict] = []

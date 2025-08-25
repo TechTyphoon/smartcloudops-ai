@@ -7,6 +7,7 @@ import logging
 import os
 import boto3
 import requests
+from typing import Optional, List, Dict, Union
 
 logger = logging.getLogger(__name__)
 

@@ -30,6 +30,7 @@ def get_url():
     # Get database URL from environment or use default
     return os.getenv("DATABASE_URL", "sqlite:///:memory:")
 
+
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
 
@@ -63,7 +64,7 @@ def run_migrations_online() -> None:
     """
     # Override the URL in the config
     config.set_main_option("sqlalchemy.url", get_url())
-    
+
     connectable = engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
@@ -71,9 +72,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

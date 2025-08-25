@@ -86,13 +86,13 @@ Always respond in a professional, helpful manner focused on operational excellen
         allowed_tags = []  # No HTML tags allowed
         allowed_attributes = {}  # No attributes allowed
         allowed_protocols = []  # No protocols allowed
-        
+
         sanitized = bleach.clean(
             sanitized,
             tags=allowed_tags,
             attributes=allowed_attributes,
             protocols=allowed_protocols,
-            strip=True
+            strip=True,
         )
 
         # SQL Injection prevention patterns
@@ -157,19 +157,19 @@ Always respond in a professional, helpful manner focused on operational excellen
 
         # Sanitize context data to prevent injection attacks
         if context.get("system_health"):
-            sanitized_health = self.sanitize_input(str(context['system_health']))
+            sanitized_health = self.sanitize_input(str(context["system_health"]))
             context_prompt += "- System Health: {sanitized_health}\n"
 
         if context.get("prometheus_metrics"):
-            sanitized_metrics = self.sanitize_input(str(context['prometheus_metrics']))
+            sanitized_metrics = self.sanitize_input(str(context["prometheus_metrics"]))
             context_prompt += "- Prometheus Status: {sanitized_metrics}\n"
 
         if context.get("recent_alerts"):
-            sanitized_alerts = self.sanitize_input(str(context['recent_alerts']))
+            sanitized_alerts = self.sanitize_input(str(context["recent_alerts"]))
             context_prompt += "- Recent Alerts: {sanitized_alerts}\n"
 
         if context.get("resource_usage"):
-            sanitized_usage = self.sanitize_input(str(context['resource_usage']))
+            sanitized_usage = self.sanitize_input(str(context["resource_usage"]))
             context_prompt += "- Resource Usage: {sanitized_usage}\n"
 
         return context_prompt
@@ -224,14 +224,14 @@ Always respond in a professional, helpful manner focused on operational excellen
 
             # Extract and sanitize response
             gpt_response = response.choices[0].message.content.strip()
-            
+
             # Additional sanitization of GPT response to prevent XSS
             gpt_response = bleach.clean(
                 gpt_response,
                 tags=[],  # No HTML tags allowed
                 attributes={},
                 protocols=[],
-                strip=True
+                strip=True,
             )
 
             # Update conversation history with sanitized content

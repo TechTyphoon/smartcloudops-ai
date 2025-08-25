@@ -33,10 +33,10 @@ os.environ["JWT_SECRET_KEY"] = "test-jwt-secret-key-for-testing-only-32-chars-mi
 def app():
     """Create Flask app for testing."""
     from app.main import create_app
-    
+
     # Create app for testing
     flask_app = create_app()
-    
+
     # Configure for testing
     flask_app.config.update(
         {

@@ -171,22 +171,4 @@ default_language_version:
 default_stages: [commit, push]
 
 # Skip hooks for specific files
-exclude: |
-  (?x)^(
-      \.git/|
-      \.venv/|
-      venv/|
-      __pycache__/|
-      \.pytest_cache/|
-      node_modules/|
-      dist/|
-      build/|
-      \.tox/|
-      docs/_build/|
-      *.egg-info/|
-      \.coverage|
-      coverage\.xml|
-      htmlcov/|
-      bandit-results\.json|
-      \.secrets\.baseline
-  )$ 
+exclude: '^(\.git/|\.venv/|venv/|__pycache__/|\.pytest_cache/|node_modules/|dist/|build/|\.tox/|docs/_build/|.*\.egg-info/|\.coverage|coverage\.xml|htmlcov/|bandit-results\.json|\.secrets\.baseline)$' 

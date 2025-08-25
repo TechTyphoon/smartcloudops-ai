@@ -83,10 +83,23 @@ except ImportError:
     AI_API_AVAILABLE = False
 
 # TODO: Fix remaining modules (remediation, ml)
-remediation_bp = None
-ml_bp = None
-REMEDIATION_AVAILABLE = False
-ML_API_AVAILABLE = False
+try:
+    from app.api.remediation import remediation_bp
+    REMEDIATION_AVAILABLE = True
+    print("✅ Remediation API successfully imported")
+except ImportError as e:
+    remediation_bp = None
+    REMEDIATION_AVAILABLE = False
+    print(f"⚠️ Remediation API not available: {e}")
+
+try:
+    from app.api.ml import ml_bp
+    ML_API_AVAILABLE = True
+    print("✅ ML API successfully imported")
+except ImportError as e:
+    ml_bp = None
+    ML_API_AVAILABLE = False
+    print(f"⚠️ ML API not available: {e}")
 
 # Import existing modules
 try:

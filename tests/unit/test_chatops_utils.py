@@ -131,6 +131,7 @@ class TestTimedCache:
 
     def test_timed_cache_info(self):
         """Test cache information retrieval."""
+
         @timed_cache(seconds=1)
         def expensive_function(x):
             return x * 2
@@ -141,7 +142,7 @@ class TestTimedCache:
 
         # Get cache info
         info = expensive_function.cache_info()
-        
+
         assert "size" in info
         assert info["size"] == 2
 
@@ -181,13 +182,13 @@ class TestAdvancedContextManager:
             "resource_usage": {"cpu": 45, "memory": 60},
             "active_alerts": [],
             "remediation_status": "idle",
-            "ml_model_status": "operational"
+            "ml_model_status": "operational",
         }
 
     def test_init_default_values(self):
         """Test AdvancedContextManager initialization with default values."""
         manager = AdvancedContextManager()
-        
+
         assert manager.max_context_size == 100
         assert manager.cache_duration == 300
         assert isinstance(manager.context_cache, dict)
@@ -197,25 +198,53 @@ class TestAdvancedContextManager:
     def test_init_custom_values(self):
         """Test AdvancedContextManager initialization with custom values."""
         manager = AdvancedContextManager(max_context_size=200, cache_duration=600)
-        
+
         assert manager.max_context_size == 200
         assert manager.cache_duration == 600
         assert manager.system_state_history.maxlen == 50
 
-    @patch('app.chatops.utils.datetime')
-    def test_get_system_context_success(self, mock_datetime, context_manager, mock_system_data):
+    @patch("app.chatops.utils.datetime")
+    def test_get_system_context_success(
+        self, mock_datetime, context_manager, mock_system_data
+    ):
         """Test successful system context retrieval."""
         # Mock datetime
         mock_now = datetime(2023, 1, 1, 12, 0, 0)
         mock_datetime.now.return_value = mock_now
 
         # Mock the private methods
-        with patch.object(context_manager, '_get_system_health', return_value=mock_system_data["system_health"]), \
-             patch.object(context_manager, '_get_recent_anomalies', return_value=mock_system_data["recent_anomalies"]), \
-             patch.object(context_manager, '_get_resource_usage', return_value=mock_system_data["resource_usage"]), \
-             patch.object(context_manager, '_get_active_alerts', return_value=mock_system_data["active_alerts"]), \
-             patch.object(context_manager, '_get_remediation_status', return_value=mock_system_data["remediation_status"]), \
-             patch.object(context_manager, '_get_ml_model_status', return_value=mock_system_data["ml_model_status"]):
+        with (
+            patch.object(
+                context_manager,
+                "_get_system_health",
+                return_value=mock_system_data["system_health"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_recent_anomalies",
+                return_value=mock_system_data["recent_anomalies"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_resource_usage",
+                return_value=mock_system_data["resource_usage"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_active_alerts",
+                return_value=mock_system_data["active_alerts"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_remediation_status",
+                return_value=mock_system_data["remediation_status"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_ml_model_status",
+                return_value=mock_system_data["ml_model_status"],
+            ),
+        ):
 
             context = context_manager.get_system_context()
 
@@ -224,21 +253,27 @@ class TestAdvancedContextManager:
             assert context["recent_anomalies"] == mock_system_data["recent_anomalies"]
             assert context["resource_usage"] == mock_system_data["resource_usage"]
             assert context["active_alerts"] == mock_system_data["active_alerts"]
-            assert context["remediation_status"] == mock_system_data["remediation_status"]
+            assert (
+                context["remediation_status"] == mock_system_data["remediation_status"]
+            )
             assert context["ml_model_status"] == mock_system_data["ml_model_status"]
 
             # Verify cache was updated
             assert "system_context" in context_manager.context_cache
             assert context_manager.last_context_update == mock_now
 
-    @patch('app.chatops.utils.datetime')
-    def test_get_system_context_exception_handling(self, mock_datetime, context_manager):
+    @patch("app.chatops.utils.datetime")
+    def test_get_system_context_exception_handling(
+        self, mock_datetime, context_manager
+    ):
         """Test system context retrieval with exception handling."""
         mock_now = datetime(2023, 1, 1, 12, 0, 0)
         mock_datetime.now.return_value = mock_now
 
         # Mock a method to raise an exception
-        with patch.object(context_manager, '_get_system_health', side_effect=Exception("System error")):
+        with patch.object(
+            context_manager, "_get_system_health", side_effect=Exception("System error")
+        ):
             context = context_manager.get_system_context()
 
             # Should return cached context or empty context
@@ -248,31 +283,85 @@ class TestAdvancedContextManager:
     def test_get_system_context_caching(self, context_manager, mock_system_data):
         """Test that system context is properly cached."""
         # Mock the private methods
-        with patch.object(context_manager, '_get_system_health', return_value=mock_system_data["system_health"]), \
-             patch.object(context_manager, '_get_recent_anomalies', return_value=mock_system_data["recent_anomalies"]), \
-             patch.object(context_manager, '_get_resource_usage', return_value=mock_system_data["resource_usage"]), \
-             patch.object(context_manager, '_get_active_alerts', return_value=mock_system_data["active_alerts"]), \
-             patch.object(context_manager, '_get_remediation_status', return_value=mock_system_data["remediation_status"]), \
-             patch.object(context_manager, '_get_ml_model_status', return_value=mock_system_data["ml_model_status"]):
+        with (
+            patch.object(
+                context_manager,
+                "_get_system_health",
+                return_value=mock_system_data["system_health"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_recent_anomalies",
+                return_value=mock_system_data["recent_anomalies"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_resource_usage",
+                return_value=mock_system_data["resource_usage"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_active_alerts",
+                return_value=mock_system_data["active_alerts"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_remediation_status",
+                return_value=mock_system_data["remediation_status"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_ml_model_status",
+                return_value=mock_system_data["ml_model_status"],
+            ),
+        ):
 
             # First call should populate cache
             context1 = context_manager.get_system_context()
-            
+
             # Second call should use cache (methods shouldn't be called again)
             context2 = context_manager.get_system_context()
 
             assert context1 == context2
             assert "system_context" in context_manager.context_cache
 
-    def test_get_system_context_history_management(self, context_manager, mock_system_data):
+    def test_get_system_context_history_management(
+        self, context_manager, mock_system_data
+    ):
         """Test that system context history is properly managed."""
         # Mock the private methods
-        with patch.object(context_manager, '_get_system_health', return_value=mock_system_data["system_health"]), \
-             patch.object(context_manager, '_get_recent_anomalies', return_value=mock_system_data["recent_anomalies"]), \
-             patch.object(context_manager, '_get_resource_usage', return_value=mock_system_data["resource_usage"]), \
-             patch.object(context_manager, '_get_active_alerts', return_value=mock_system_data["active_alerts"]), \
-             patch.object(context_manager, '_get_remediation_status', return_value=mock_system_data["remediation_status"]), \
-             patch.object(context_manager, '_get_ml_model_status', return_value=mock_system_data["ml_model_status"]):
+        with (
+            patch.object(
+                context_manager,
+                "_get_system_health",
+                return_value=mock_system_data["system_health"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_recent_anomalies",
+                return_value=mock_system_data["recent_anomalies"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_resource_usage",
+                return_value=mock_system_data["resource_usage"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_active_alerts",
+                return_value=mock_system_data["active_alerts"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_remediation_status",
+                return_value=mock_system_data["remediation_status"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_ml_model_status",
+                return_value=mock_system_data["ml_model_status"],
+            ),
+        ):
 
             # Add multiple context entries
             for i in range(60):  # More than maxlen
@@ -284,22 +373,52 @@ class TestAdvancedContextManager:
     def test_get_system_context_structure(self, context_manager, mock_system_data):
         """Test that system context has the correct structure."""
         # Mock the private methods
-        with patch.object(context_manager, '_get_system_health', return_value=mock_system_data["system_health"]), \
-             patch.object(context_manager, '_get_recent_anomalies', return_value=mock_system_data["recent_anomalies"]), \
-             patch.object(context_manager, '_get_resource_usage', return_value=mock_system_data["resource_usage"]), \
-             patch.object(context_manager, '_get_active_alerts', return_value=mock_system_data["active_alerts"]), \
-             patch.object(context_manager, '_get_remediation_status', return_value=mock_system_data["remediation_status"]), \
-             patch.object(context_manager, '_get_ml_model_status', return_value=mock_system_data["ml_model_status"]):
+        with (
+            patch.object(
+                context_manager,
+                "_get_system_health",
+                return_value=mock_system_data["system_health"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_recent_anomalies",
+                return_value=mock_system_data["recent_anomalies"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_resource_usage",
+                return_value=mock_system_data["resource_usage"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_active_alerts",
+                return_value=mock_system_data["active_alerts"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_remediation_status",
+                return_value=mock_system_data["remediation_status"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_ml_model_status",
+                return_value=mock_system_data["ml_model_status"],
+            ),
+        ):
 
             context = context_manager.get_system_context()
 
             # Check required fields
             required_fields = [
-                "timestamp", "system_health", "recent_anomalies", 
-                "resource_usage", "active_alerts", "remediation_status", 
-                "ml_model_status"
+                "timestamp",
+                "system_health",
+                "recent_anomalies",
+                "resource_usage",
+                "active_alerts",
+                "remediation_status",
+                "ml_model_status",
             ]
-            
+
             for field in required_fields:
                 assert field in context
 
@@ -320,7 +439,7 @@ class TestAdvancedContextManager:
     def test_context_manager_max_context_size(self):
         """Test that context manager respects max_context_size parameter."""
         manager = AdvancedContextManager(max_context_size=10)
-        
+
         # Add more entries than max_context_size
         for i in range(15):
             manager.context_cache[f"key_{i}"] = f"value_{i}"
@@ -328,19 +447,47 @@ class TestAdvancedContextManager:
         # Should not exceed max_context_size
         assert len(manager.context_cache) <= 10
 
-    @patch('app.chatops.utils.datetime')
-    def test_context_manager_timestamp_format(self, mock_datetime, context_manager, mock_system_data):
+    @patch("app.chatops.utils.datetime")
+    def test_context_manager_timestamp_format(
+        self, mock_datetime, context_manager, mock_system_data
+    ):
         """Test that timestamps are properly formatted."""
         mock_now = datetime(2023, 1, 1, 12, 0, 0)
         mock_datetime.now.return_value = mock_now
 
         # Mock the private methods
-        with patch.object(context_manager, '_get_system_health', return_value=mock_system_data["system_health"]), \
-             patch.object(context_manager, '_get_recent_anomalies', return_value=mock_system_data["recent_anomalies"]), \
-             patch.object(context_manager, '_get_resource_usage', return_value=mock_system_data["resource_usage"]), \
-             patch.object(context_manager, '_get_active_alerts', return_value=mock_system_data["active_alerts"]), \
-             patch.object(context_manager, '_get_remediation_status', return_value=mock_system_data["remediation_status"]), \
-             patch.object(context_manager, '_get_ml_model_status', return_value=mock_system_data["ml_model_status"]):
+        with (
+            patch.object(
+                context_manager,
+                "_get_system_health",
+                return_value=mock_system_data["system_health"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_recent_anomalies",
+                return_value=mock_system_data["recent_anomalies"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_resource_usage",
+                return_value=mock_system_data["resource_usage"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_active_alerts",
+                return_value=mock_system_data["active_alerts"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_remediation_status",
+                return_value=mock_system_data["remediation_status"],
+            ),
+            patch.object(
+                context_manager,
+                "_get_ml_model_status",
+                return_value=mock_system_data["ml_model_status"],
+            ),
+        ):
 
             context = context_manager.get_system_context()
 
@@ -350,12 +497,14 @@ class TestAdvancedContextManager:
     def test_context_manager_empty_context_handling(self, context_manager):
         """Test handling of empty or None context data."""
         # Mock methods to return empty/None values
-        with patch.object(context_manager, '_get_system_health', return_value=None), \
-             patch.object(context_manager, '_get_recent_anomalies', return_value=[]), \
-             patch.object(context_manager, '_get_resource_usage', return_value={}), \
-             patch.object(context_manager, '_get_active_alerts', return_value=None), \
-             patch.object(context_manager, '_get_remediation_status', return_value=""), \
-             patch.object(context_manager, '_get_ml_model_status', return_value=None):
+        with (
+            patch.object(context_manager, "_get_system_health", return_value=None),
+            patch.object(context_manager, "_get_recent_anomalies", return_value=[]),
+            patch.object(context_manager, "_get_resource_usage", return_value={}),
+            patch.object(context_manager, "_get_active_alerts", return_value=None),
+            patch.object(context_manager, "_get_remediation_status", return_value=""),
+            patch.object(context_manager, "_get_ml_model_status", return_value=None),
+        ):
 
             context = context_manager.get_system_context()
 
