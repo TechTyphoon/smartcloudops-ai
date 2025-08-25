@@ -1,0 +1,88 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "SmartCloudOps AI - Business Metrics",
+    "tags": [
+      "smartcloudops",
+      "business",
+      "kpis"
+    ],
+    "timezone": "browser",
+    "refresh": "1m",
+    "schemaVersion": 27,
+    "version": 1,
+    "panels": [
+      {
+        "id": 1,
+        "title": "Key Performance Indicators",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "increase(anomalies_detected_total[24h])",
+            "legendFormat": "Anomalies Detected (24h)"
+          },
+          {
+            "expr": "increase(remediation_actions_total{status=\"success\"}[24h])",
+            "legendFormat": "Successful Remediations (24h)"
+          },
+          {
+            "expr": "active_users_total",
+            "legendFormat": "Active Users"
+          },
+          {
+            "expr": "increase(ml_model_predictions_total[24h])",
+            "legendFormat": "ML Predictions (24h)"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "User Activity Trends",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(auth_attempts_total{status=\"success\"}[5m]) * 60",
+            "legendFormat": "Successful Logins/min"
+          },
+          {
+            "expr": "rate(http_requests_total{endpoint=~\"/api/.*\"}[5m]) * 60",
+            "legendFormat": "API Requests/min"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 3,
+        "title": "System Effectiveness",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(anomalies_resolved_total[5m]) / rate(anomalies_detected_total[5m]) * 100",
+            "legendFormat": "Resolution Rate %"
+          },
+          {
+            "expr": "rate(remediation_actions_total{status=\"success\"}[5m]) / rate(remediation_actions_total[5m]) * 100",
+            "legendFormat": "Remediation Success Rate %"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
+      }
+    ]
+  }
+}

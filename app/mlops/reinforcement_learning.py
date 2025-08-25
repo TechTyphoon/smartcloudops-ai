@@ -69,7 +69,7 @@ class ReinforcementLearningAgent:
             metrics.get("memory_usage", 0), [0, 50, 80, 100]
         )
         error_level = self._discretize_value(
-            metrics.get("error_ratef", 0), [0, 5, 10, 100]
+            metrics.get("error_rate", 0), [0, 5, 10, 100]
         )
 
         # Anomaly severity level
@@ -77,7 +77,7 @@ class ReinforcementLearningAgent:
             anomaly_info.get("severity", "low"), 0
         )
 
-        return f"{cpu_level}_{memory_level}_{error_level}_{severity_level}"
+        return "{cpu_level}_{memory_level}_{error_level}_{severity_level}"
 
     def _discretize_value(self, value: float, thresholds: List[float]) -> int:
         """Discretize continuous value into discrete levels"""
@@ -191,7 +191,7 @@ class ReinforcementLearningAgent:
 
     def save_q_table(self):
         """Save Q-table to disk"""
-        q_table_file = "mlops/q_table.jsonf"
+        q_table_file = "mlops/q_table.json"
 
         # Convert defaultdict to regular dict for JSON serialization
         q_table_dict = {}
@@ -219,11 +219,11 @@ class ReinforcementLearningAgent:
 
                 logger.info("Loaded Q-table")
             except Exception as e:
-                logger.error(f"Error loading Q-table: {e}")
+                logger.error("Error loading Q-table: {e}")
 
 
 class ActiveLearningSystem:
-    """Active learning system for uncertain anomaly detection""f"
+    """Active learning system for uncertain anomaly detection"""
 
     def __init__(self, uncertainty_threshold: float = 0.3):
         self.uncertainty_threshold = uncertainty_threshold
@@ -252,7 +252,7 @@ class ActiveLearningSystem:
         prediction_proba: np.ndarray,
         timestamp: datetime,
     ):
-        """Add uncertain sample to learning queue""f"
+        """Add uncertain sample to learning queue"""
         uncertainty = self.calculate_uncertainty(prediction_proba)
 
         sample = {
@@ -278,7 +278,7 @@ class ActiveLearningSystem:
         confidence: float,
         feedback_text: str = "",
     ):
-        """Record user feedback for uncertain sample""f"
+        """Record user feedback for uncertain sample"""
         feedback = {
             "user_label": user_label,
             "confidence": confidence,
@@ -295,7 +295,7 @@ class ActiveLearningSystem:
                 sample["user_feedback"] = feedback
                 break
 
-        logger.info(f"Recorded user feedback for sample {sample_id}")
+        logger.info("Recorded user feedback for sample {sample_id}")
 
     def get_learning_samples(self, limit: int = 10) -> List[Dict[str, Any]]:
         """Get samples that need user feedback"""
@@ -330,7 +330,7 @@ class ActiveLearningSystem:
         for sample in labeled_samples:
             features = list(sample["features"].values())
             X.append(features)
-            y.append(self.user_feedback[sample["sample_id"]]["user_labelf"])
+            y.append(self.user_feedback[sample["sample_id"]]["user_label"])
 
         X = np.array(X)
         y = np.array(y)
@@ -374,7 +374,7 @@ class ActiveLearningSystem:
                 metrics,
             )
 
-            logger.info(f"Retrained model with user feedback. New version: {version}")
+            logger.info("Retrained model with user feedback. New version: {version}")
 
             # Clear processed samples
             self.uncertain_samples = [
@@ -384,11 +384,11 @@ class ActiveLearningSystem:
             ]
 
         except Exception as e:
-            logger.error(f"Error retraining model with feedback: {e}")
+            logger.error("Error retraining model with feedback: {e}")
 
 
 class ContinuousLearningOrchestrator:
-    """Orchestrates continuous learning processes""f"
+    """Orchestrates continuous learning processes"""
 
     def __init__(self):
         self.rl_agent = ReinforcementLearningAgent()
@@ -419,7 +419,7 @@ class ContinuousLearningOrchestrator:
         logger.info("Completed continuous learning cycle")
 
     async def _collect_rl_experiences(self):
-        """Collect recent experiences for reinforcement learning""f"
+        """Collect recent experiences for reinforcement learning"""
         session = get_db_session()
         try:
             # Get recent remediation actions with outcomes
@@ -471,7 +471,7 @@ class ContinuousLearningOrchestrator:
                     self.learning_stats["total_experiences"] += 1
 
         except Exception as e:
-            logger.error(f"Error collecting RL experiences: {e}")
+            logger.error("Error collecting RL experiences: {e}")
 
     async def _process_uncertain_samples(self):
         """Process uncertain samples for active learning"""

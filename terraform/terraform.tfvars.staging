@@ -1,17 +1,30 @@
+# Terraform Variables for Staging Environment
+# SECURITY: All secrets must be provided via environment variables or AWS Secrets Manager
+
 # SSH Key Configuration - Use environment variable for security
-public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC..."
+# SECURITY: Use AWS Systems Manager Parameter Store for SSH keys
+public_key = "${SSH_PUBLIC_KEY}"
 
 # Monitoring Configuration
 prometheus_retention_days = 15
-grafana_admin_password    = "REPLACE_ME"
+# SECURITY: Grafana admin password must be provided via environment variable
+grafana_admin_password    = "${GRAFANA_ADMIN_PASSWORD}"
 
 # Application Configuration
 flask_debug    = true
-openai_api_key = "REPLACE_ME"
+# SECURITY: OpenAI API key must be provided via environment variable
+openai_api_key = "${OPENAI_API_KEY}"
 
 # Database Configuration
-db_password = "REPLACE_ME"
+# SECURITY: Database password must be provided via environment variable
+db_password = "${DB_PASSWORD}"
 
 # AWS Configuration
 aws_region = "us-west-2"
 environment = "staging"
+
+# Additional Security Variables
+# SECURITY: All sensitive values must be provided via environment variables
+jwt_secret_key = "${JWT_SECRET_KEY}"
+secret_key = "${SECRET_KEY}"
+redis_password = "${REDIS_PASSWORD}"

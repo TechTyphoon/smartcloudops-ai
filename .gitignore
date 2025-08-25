@@ -113,6 +113,21 @@ ENV/
 env.bak/
 venv.bak/
 
+# Security: Additional secret files to ignore
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+*.jks
+*.keystore
+secrets/
+secrets.json
+secrets.yaml
+secrets.yml
+.secrets
+.secrets.*
+
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -230,6 +245,9 @@ analytics/
 bandit-results.json
 security_report*.json
 workflow_validation_report.json
+trivy-results*.sarif
+safety-results.json
+*.sarif
 
 # Temporary files
 *.bak

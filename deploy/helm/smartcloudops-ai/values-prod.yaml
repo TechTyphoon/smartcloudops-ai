@@ -1,0 +1,184 @@
+# SmartCloudOps AI - Production Environment Values
+
+# Backend configuration for production
+backend:
+  replicaCount: 3
+  
+  image:
+    repository: smartcloudops/backend
+    tag: "3.3.0"
+    pullPolicy: IfNotPresent
+    
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+      
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+    
+  env:
+    FLASK_ENV: production
+    PROMETHEUS_URL: http://prometheus:9090
+    REQUIRE_APPROVAL: "false"
+    MAX_ACTIONS_PER_HOUR: "3"
+    COOLDOWN_MINUTES: "10"
+
+# Frontend configuration for production
+frontend:
+  replicaCount: 3
+  
+  image:
+    repository: smartcloudops/frontend
+    tag: "3.3.0"
+    pullPolicy: IfNotPresent
+    
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+      
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 8
+    targetCPUUtilizationPercentage: 70
+
+# Ingress for production
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-burst: "150"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: smartcloudops.example.com
+      paths:
+        - path: /api
+          pathType: Prefix
+          service: backend
+        - path: /
+          pathType: Prefix
+          service: frontend
+  tls:
+    - secretName: smartcloudops-prod-tls
+      hosts:
+        - smartcloudops.example.com
+
+# Database for production (high availability)
+postgresql:
+  enabled: true
+  auth:
+    database: "cloudops_prod"
+  primary:
+    persistence:
+      enabled: true
+      size: 50Gi
+      storageClass: "fast-ssd"
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+      limits:
+        cpu: 2000m
+        memory: 2Gi
+  # Enable read replicas for production
+  readReplicas:
+    replicaCount: 2
+    persistence:
+      enabled: true
+      size: 50Gi
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+
+# Redis for production (high availability)
+redis:
+  enabled: true
+  auth:
+    enabled: true
+  master:
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: "fast-ssd"
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+  # Enable Redis sentinel for HA
+  sentinel:
+    enabled: true
+    replicaCount: 3
+
+# Monitoring for production (full stack)
+monitoring:
+  prometheus:
+    enabled: true
+    server:
+      persistentVolume:
+        enabled: true
+        size: 100Gi
+        storageClass: "fast-ssd"
+      resources:
+        requests:
+          cpu: 1000m
+          memory: 2Gi
+        limits:
+          cpu: 4000m
+          memory: 4Gi
+      retention: "30d"
+          
+  grafana:
+    enabled: true
+    persistence:
+      enabled: true
+      size: 20Gi
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+      limits:
+        cpu: 2000m
+        memory: 2Gi
+    # Enable high availability
+    replicas: 2
+
+# Security (strict for production)
+security:
+  podSecurityPolicy:
+    enabled: true
+  networkPolicies:
+    enabled: true
+
+# Node affinity for production workloads
+affinity:
+  nodeAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+    - weight: 100
+      preference:
+        matchExpressions:
+        - key: node-type
+          operator: In
+          values:
+          - production

@@ -1,0 +1,387 @@
+name: ⚡ Performance Testing & Benchmarks
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_duration:
+        description: 'Test duration (seconds)'
+        required: false
+        default: '60'
+        type: string
+      virtual_users:
+        description: 'Number of virtual users'
+        required: false
+        default: '10'
+        type: string
+      ramp_up_duration:
+        description: 'Ramp-up duration (seconds)'
+        required: false
+        default: '30'
+        type: string
+  push:
+    branches: [ main ]
+    paths: [ 'app/**', 'requirements.txt' ]
+  schedule:
+    # Run performance tests weekly
+    - cron: '0 2 * * 1'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  APP_URL: http://localhost:5000
+  RESULTS_DIR: docs/results
+
+jobs:
+  performance-baseline:
+    name: ⚡ Performance Baseline
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: cloudops_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+          
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+    - name: 📥 Checkout
+      uses: actions/checkout@v4
+      
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        
+    - name: 📦 Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install locust matplotlib pandas
+        
+    - name: 🗄️ Setup database
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cloudops_test
+        REDIS_URL: redis://localhost:6379/0
+      run: |
+        cd app
+        python -c "
+        from database import init_db
+        from config import get_config
+        config = get_config()
+        init_db(config)
+        print('Database initialized')
+        "
+        
+    - name: 🚀 Start application
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cloudops_test
+        REDIS_URL: redis://localhost:6379/0
+        FLASK_ENV: production
+        SECRET_KEY: test-secret-key
+        JWT_SECRET_KEY: test-jwt-secret
+        DISABLE_AWS_SERVICES: true
+        DISABLE_ELASTICSEARCH: true
+      run: |
+        cd app
+        python main.py &
+        sleep 10
+        
+        # Wait for app to be ready
+        for i in {1..30}; do
+          if curl -f http://localhost:5000/health; then
+            echo "App is ready"
+            break
+          fi
+          echo "Waiting for app... ($i/30)"
+          sleep 2
+        done
+        
+    - name: 📝 Create Locust test file
+      run: |
+        mkdir -p tests/performance
+        cat > tests/performance/locustfile.py << 'EOF'
+        from locust import HttpUser, task, between
+        import random
+        import json
+        
+        class SmartCloudOpsUser(HttpUser):
+            wait_time = between(1, 3)
+            
+            def on_start(self):
+                """Setup user session"""
+                # Test user registration/login
+                self.register_or_login()
+                
+            def register_or_login(self):
+                """Register or login a test user"""
+                user_data = {
+                    "email": f"test{random.randint(1000, 9999)}@example.com",
+                    "password": "testpassword123",
+                    "name": f"Test User {random.randint(1, 1000)}"
+                }
+                
+                # Try to register
+                response = self.client.post("/auth/register", json=user_data, catch_response=True)
+                if response.status_code == 201:
+                    self.token = response.json().get("access_token")
+                else:
+                    # Try to login
+                    login_data = {"email": user_data["email"], "password": user_data["password"]}
+                    response = self.client.post("/auth/login", json=login_data, catch_response=True)
+                    if response.status_code == 200:
+                        self.token = response.json().get("access_token")
+                    else:
+                        self.token = None
+                        
+            @property
+            def headers(self):
+                if hasattr(self, 'token') and self.token:
+                    return {"Authorization": f"Bearer {self.token}"}
+                return {}
+            
+            @task(10)
+            def health_check(self):
+                """Test health endpoint"""
+                self.client.get("/health")
+                
+            @task(8)
+            def get_dashboard(self):
+                """Test dashboard data"""
+                self.client.get("/api/dashboard/summary", headers=self.headers)
+                
+            @task(6)
+            def list_anomalies(self):
+                """Test anomaly listing"""
+                self.client.get("/api/anomalies/", headers=self.headers)
+                
+            @task(4)
+            def get_metrics(self):
+                """Test metrics endpoint"""
+                self.client.get("/api/monitoring/metrics", headers=self.headers)
+                
+            @task(3)
+            def ml_model_info(self):
+                """Test ML model info"""
+                self.client.get("/api/ml/model/info", headers=self.headers)
+                
+            @task(2)
+            def create_anomaly(self):
+                """Test anomaly creation"""
+                anomaly_data = {
+                    "metric_name": f"cpu_usage_{random.randint(1, 100)}",
+                    "value": random.uniform(0, 100),
+                    "threshold": 80.0,
+                    "severity": random.choice(["low", "medium", "high"]),
+                    "source": "test_load"
+                }
+                self.client.post("/api/anomalies/", json=anomaly_data, headers=self.headers)
+                
+            @task(1)
+            def run_health_check(self):
+                """Test system health check"""
+                self.client.post("/api/monitoring/health-check", headers=self.headers)
+        EOF
+        
+    - name: ⚡ Run performance tests
+      run: |
+        mkdir -p ${{ env.RESULTS_DIR }}
+        cd tests/performance
+        
+        echo "🚀 Starting Locust performance test..."
+        locust -f locustfile.py --headless \
+               --host=${{ env.APP_URL }} \
+               --users=${{ inputs.virtual_users || '10' }} \
+               --spawn-rate=2 \
+               --run-time=${{ inputs.test_duration || '60' }}s \
+               --html=../../${{ env.RESULTS_DIR }}/performance-report.html \
+               --csv=../../${{ env.RESULTS_DIR }}/performance-results
+               
+    - name: 📊 Generate performance metrics
+      run: |
+        python3 << 'EOF'
+        import pandas as pd
+        import matplotlib.pyplot as plt
+        import json
+        import os
+        
+        results_dir = "${{ env.RESULTS_DIR }}"
+        
+        # Read Locust results
+        try:
+            stats_df = pd.read_csv(f"{results_dir}/performance-results_stats.csv")
+            
+            # Create performance summary
+            summary = {
+                "timestamp": pd.Timestamp.now().isoformat(),
+                "test_duration_seconds": ${{ inputs.test_duration || '60' }},
+                "virtual_users": ${{ inputs.virtual_users || '10' }},
+                "total_requests": int(stats_df['Request Count'].sum()),
+                "total_failures": int(stats_df['Failure Count'].sum()),
+                "average_response_time": float(stats_df['Average Response Time'].mean()),
+                "median_response_time": float(stats_df['Median Response Time'].mean()),
+                "p95_response_time": float(stats_df['95%'].mean()),
+                "p99_response_time": float(stats_df['99%'].mean()),
+                "requests_per_second": float(stats_df['Requests/s'].sum()),
+                "failure_rate": float(stats_df['Failure Count'].sum() / stats_df['Request Count'].sum() * 100) if stats_df['Request Count'].sum() > 0 else 0
+            }
+            
+            # Save summary
+            with open(f"{results_dir}/performance-summary.json", "w") as f:
+                json.dump(summary, f, indent=2)
+                
+            # Create performance charts
+            fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 10))
+            
+            # Response time chart
+            endpoints = stats_df['Name']
+            avg_times = stats_df['Average Response Time']
+            ax1.bar(range(len(endpoints)), avg_times)
+            ax1.set_title('Average Response Time by Endpoint')
+            ax1.set_ylabel('Response Time (ms)')
+            ax1.set_xticks(range(len(endpoints)))
+            ax1.set_xticklabels(endpoints, rotation=45, ha='right')
+            
+            # Requests per second
+            rps = stats_df['Requests/s']
+            ax2.bar(range(len(endpoints)), rps)
+            ax2.set_title('Requests per Second by Endpoint')
+            ax2.set_ylabel('Requests/s')
+            ax2.set_xticks(range(len(endpoints)))
+            ax2.set_xticklabels(endpoints, rotation=45, ha='right')
+            
+            # Percentile comparison
+            percentiles = ['Average Response Time', 'Median Response Time', '95%', '99%']
+            values = [stats_df[p].mean() for p in percentiles]
+            ax3.bar(percentiles, values)
+            ax3.set_title('Response Time Percentiles')
+            ax3.set_ylabel('Response Time (ms)')
+            
+            # Success rate
+            success_rate = (1 - stats_df['Failure Count'] / stats_df['Request Count']) * 100
+            ax4.bar(range(len(endpoints)), success_rate)
+            ax4.set_title('Success Rate by Endpoint')
+            ax4.set_ylabel('Success Rate (%)')
+            ax4.set_xticks(range(len(endpoints)))
+            ax4.set_xticklabels(endpoints, rotation=45, ha='right')
+            ax4.set_ylim([0, 100])
+            
+            plt.tight_layout()
+            plt.savefig(f"{results_dir}/performance-charts.png", dpi=300, bbox_inches='tight')
+            
+            # Print summary
+            print("📊 PERFORMANCE TEST RESULTS")
+            print("=" * 50)
+            print(f"Total Requests: {summary['total_requests']}")
+            print(f"Total Failures: {summary['total_failures']}")
+            print(f"Failure Rate: {summary['failure_rate']:.2f}%")
+            print(f"Average Response Time: {summary['average_response_time']:.2f}ms")
+            print(f"95th Percentile: {summary['p95_response_time']:.2f}ms")
+            print(f"99th Percentile: {summary['p99_response_time']:.2f}ms")
+            print(f"Requests/Second: {summary['requests_per_second']:.2f}")
+            
+            # Performance thresholds check
+            print("\n🎯 PERFORMANCE THRESHOLDS")
+            print("=" * 50)
+            
+            thresholds = {
+                "Average Response Time": (summary['average_response_time'], 500, "ms"),
+                "95th Percentile": (summary['p95_response_time'], 1000, "ms"), 
+                "Failure Rate": (summary['failure_rate'], 1, "%"),
+                "Requests/Second": (summary['requests_per_second'], 10, "rps")
+            }
+            
+            all_passed = True
+            for metric, (value, threshold, unit) in thresholds.items():
+                if metric == "Requests/Second":
+                    passed = value >= threshold
+                else:
+                    passed = value <= threshold
+                    
+                status = "✅ PASS" if passed else "❌ FAIL"
+                print(f"{metric}: {value:.2f}{unit} (threshold: {threshold}{unit}) {status}")
+                
+                if not passed:
+                    all_passed = False
+                    
+            if all_passed:
+                print("\n🎉 All performance thresholds met!")
+            else:
+                print("\n⚠️ Some performance thresholds not met")
+                
+        except Exception as e:
+            print(f"Error processing results: {e}")
+        EOF
+        
+    - name: 📄 Upload performance results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: performance-results-${{ github.run_number }}
+        path: |
+          ${{ env.RESULTS_DIR }}/performance-report.html
+          ${{ env.RESULTS_DIR }}/performance-results*.csv
+          ${{ env.RESULTS_DIR }}/performance-summary.json
+          ${{ env.RESULTS_DIR }}/performance-charts.png
+        retention-days: 90
+        
+    - name: 📊 Comment on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = '${{ env.RESULTS_DIR }}/performance-summary.json';
+          
+          if (fs.existsSync(path)) {
+            const summary = JSON.parse(fs.readFileSync(path, 'utf8'));
+            
+            const body = `## ⚡ Performance Test Results
+            
+            **Test Configuration:**
+            - Duration: ${{ inputs.test_duration || '60' }} seconds
+            - Virtual Users: ${{ inputs.virtual_users || '10' }}
+            - Target: ${summary.total_requests} requests
+            
+            **Results:**
+            - 📊 **Requests/Second**: ${summary.requests_per_second.toFixed(2)}
+            - ⏱️ **Average Response Time**: ${summary.average_response_time.toFixed(2)}ms
+            - 📈 **95th Percentile**: ${summary.p95_response_time.toFixed(2)}ms
+            - 🎯 **Success Rate**: ${(100 - summary.failure_rate).toFixed(2)}%
+            
+            **Thresholds:**
+            - Average Response Time: ${summary.average_response_time <= 500 ? '✅' : '❌'} ${summary.average_response_time.toFixed(2)}ms (≤500ms)
+            - 95th Percentile: ${summary.p95_response_time <= 1000 ? '✅' : '❌'} ${summary.p95_response_time.toFixed(2)}ms (≤1000ms)
+            - Failure Rate: ${summary.failure_rate <= 1 ? '✅' : '❌'} ${summary.failure_rate.toFixed(2)}% (≤1%)
+            - Requests/Second: ${summary.requests_per_second >= 10 ? '✅' : '❌'} ${summary.requests_per_second.toFixed(2)} (≥10 rps)
+            
+            📁 [Full Performance Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+          }

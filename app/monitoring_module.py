@@ -18,7 +18,7 @@ monitoring_bp = Blueprint("monitoring", __name__, url_prefix="/monitoring")
 REQUEST_COUNT = Counter(
     "http_requests_total", "Total HTTP requests", ["method", "endpoint", "status"]
 )
-REQUEST_LATENCY = Histogram("http_request_duration_seconds", "HTTP request latencyf")
+REQUEST_LATENCY = Histogram("http_request_duration_seconds", "HTTP request latency")
 
 # System metrics
 SYSTEM_METRICS = {
@@ -37,22 +37,22 @@ def update_system_metrics():
         SYSTEM_METRICS["disk_percent"] = psutil.disk_usage("/").percent
         SYSTEM_METRICS["last_updated"] = datetime.utcnow().isoformat()
     except Exception as e:
-        logger.error(f"Error updating system metrics: {e}")
+        logger.error("Error updating system metrics: {e}")
 
 
 @monitoring_bp.route("/metrics", methods=["GET"])
 def prometheus_metrics():
-    """Prometheus metrics endpoint.""f"
+    """Prometheus metrics endpoint."""
     try:
         return generate_latest(), 200, {"Content-Type": CONTENT_TYPE_LATEST}
     except Exception as e:
-        logger.error("Error generating metrics: {e}f")
+        logger.error("Error generating metrics: {e}")
         return jsonify({"error": "Metrics generation failed"}), 500
 
 
 @monitoring_bp.route("/health", methods=["GET"])
 def health_check():
-    """Health check endpoint.""f"
+    """Health check endpoint."""
     try:
         # Update system metrics
         update_system_metrics()
@@ -67,7 +67,7 @@ def health_check():
                 "database": "unknown",  # Will be checked if DB connection available
                 "ml_service": "unknown",  # Will be checked if ML available
             },
-            "systemf": {
+            "system": {
                 "cpu_percent": SYSTEM_METRICS["cpu_percent"],
                 "memory_percent": SYSTEM_METRICS["memory_percent"],
                 "disk_percent": SYSTEM_METRICS["disk_percent"],
@@ -106,7 +106,7 @@ def health_check():
             logger.info("psycopg2 not available - skipping database health check")
             health_status["services"]["database"] = "not_configured"
         except Exception as e:
-            logger.warning(f"Database health check failed: {e}")
+            logger.warning("Database health check failed: {e}")
             health_status["services"]["database"] = "unhealthy"
 
         # Check ML service if available
@@ -116,7 +116,7 @@ def health_check():
             else:
                 health_status["services"]["ml_service"] = "unavailable"
         except Exception as e:
-            logger.warning(f"ML service health check failed: {e}")
+            logger.warning("ML service health check failed: {e}")
             health_status["services"]["ml_service"] = "unhealthy"
 
         # Determine overall health
@@ -129,7 +129,7 @@ def health_check():
         return jsonify(health_status)
 
     except Exception as e:
-        logger.error(f"Health check error: {e}")
+        logger.error("Health check error: {e}")
         return (
             jsonify(
                 {
@@ -144,7 +144,7 @@ def health_check():
 
 @monitoring_bp.route("/status", methods=["GET"])
 def system_status():
-    """System status endpoint.""f"
+    """System status endpoint."""
     try:
         # Update system metrics
         update_system_metrics()
@@ -158,13 +158,13 @@ def system_status():
                 "disk_percent": SYSTEM_METRICS["disk_percent"],
                 "last_updated": SYSTEM_METRICS["last_updated"],
             },
-            "applicationf": {
+            "application": {
                 "name": "Smart CloudOps AI",
                 "version": "1.0.0",
                 "environment": os.getenv("FLASK_ENV", "development"),
                 "port": os.getenv("FLASK_PORT", "3003"),
             },
-            "endpointsf": {
+            "endpoints": {
                 "health": "/monitoring/health",
                 "metrics": "/monitoring/metrics",
                 "status": "/monitoring/status",
@@ -174,7 +174,7 @@ def system_status():
         return jsonify(status)
 
     except Exception as e:
-        logger.error("System status error: {e}f")
+        logger.error("System status error: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
 
@@ -184,7 +184,7 @@ def get_logs():
     try:
         # This is a simplified log retrieval
         # In production, youf'd want to integrate with a proper logging system
-        log_file = os.getenv("LOG_FILE", "logs/app.logf")
+        log_file = os.getenv("LOG_FILE", "logs/app.log")
 
         if not os.path.exists(log_file):
             return jsonify(
@@ -192,7 +192,7 @@ def get_logs():
             )
 
         # Read last 100 lines
-        with open(log_file, "rf") as f:
+        with open(log_file, "r") as f:
             lines = f.readlines()
             recent_logs = lines[-100:] if len(lines) > 100 else lines
 
@@ -207,14 +207,14 @@ def get_logs():
         )
 
     except Exception as e:
-        logger.error("Log retrieval error: {e}f")
+        logger.error("Log retrieval error: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
 
 @monitoring_bp.route("/alerts", methods=["GET", "POST"])
 def alerts():
     """Alerts endpoint."""
-    if request.method == "GETf":
+    if request.method == "GET":
         return jsonify(
             {
                 "status": "success",
@@ -229,7 +229,7 @@ def alerts():
     try:
         data = request.get_json()
         if not data:
-            return jsonify({"error": "No JSON data providedf"}), 400
+            return jsonify({"error": "No JSON data provided"}), 400
 
         # Process alert (simplified)
         alert = {
@@ -241,7 +241,7 @@ def alerts():
         }
 
         # In production, you'd store this in a database
-        logger.info(f"Alert received: {alert}")
+        logger.info("Alert received: {alert}")
 
         return jsonify(
             {
@@ -252,5 +252,5 @@ def alerts():
         )
 
     except Exception as e:
-        logger.error(f"Alert creation error: {e}")
+        logger.error("Alert creation error: {e}")
         return jsonify({"error": "Internal server error"}), 500

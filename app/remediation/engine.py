@@ -6,9 +6,25 @@ Orchestrates anomaly detection, safety checks, and remediation actions
 
 import logging
 import os
+import sys
+from typing import Optional, Dict, Any, List
+from datetime import datetime
 
 # Add the project root to Python path - MUST be first
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+
+# Import config after path setup
+from app.config import get_config
+
+# Import remediation components
+try:
+    from app.remediation.safety import SafetyManager
+    from app.remediation.actions import ActionManager
+    from app.remediation.notifications import NotificationManager
+except ImportError:
+    SafetyManager = None
+    ActionManager = None
+    NotificationManager = None
 
 
 logger = logging.getLogger(__name__)
@@ -42,8 +58,8 @@ class RemediationEngine:
             cooldown_minutes=cooldown,
             approval_param=approval_param,
         )
-        self.action_manager = ActionManager()
-        self.notification_manager = NotificationManager()
+        self.action_manager = ActionManager() if ActionManager else None
+        self.notification_manager = NotificationManager() if NotificationManager else None
 
         # Track recent actions for safety
         self.recent_actions: List[Dict] = []
@@ -63,7 +79,7 @@ class RemediationEngine:
 
         Returns:
             Dict with evaluation results and recommended actions
-        ""f"
+        """
         try:
             # Define severity thresholds
             severity_thresholds = {
@@ -81,7 +97,7 @@ class RemediationEngine:
                     break
 
             # Check if remediation is needed
-            needs_remediation = severity in ["critical", "highf"]
+            needs_remediation = severity in ["critical", "high"]
 
             # Analyze metrics for specific issues
             issues = self._analyze_metrics(metrics)
@@ -103,12 +119,12 @@ class RemediationEngine:
 
             logger.info(
                 "Anomaly evaluation: severity={severity}, score="
-                f"{anomaly_score:.3f}, needs_remediation={needs_remediation}"
+                "{anomaly_score:.3f}, needs_remediation={needs_remediation}"
             )
             return evaluation
 
         except Exception as e:
-            logger.error(f"Error evaluating anomaly: {e}")
+            logger.error("Error evaluating anomaly: {e}")
             return {
                 "timestamp": datetime.now().isoformat(),
                 "anomaly_score": anomaly_score,
@@ -171,7 +187,7 @@ class RemediationEngine:
             self._analyze_response_metrics(metrics, issues)
 
         except Exception as e:
-            logger.error(f"Error analyzing metrics: {e}")
+            logger.error("Error analyzing metrics: {e}")
             issues.append("metrics_analysis_error")
 
         return issues
@@ -180,7 +196,7 @@ class RemediationEngine:
         self, actions: List[Dict], issues: List[str], severity: str
     ) -> None:
         """Add critical severity actions."""
-        if "high_cpu_usage" in issues or "critical_memory_usagef" in issues:
+        if "high_cpu_usage" in issues or "critical_memory_usage" in issues:
             actions.append(
                 {
                     "action": "restart_service",
@@ -190,7 +206,7 @@ class RemediationEngine:
                 }
             )
 
-        if "critical_disk_usagef" in issues:
+        if "critical_disk_usage" in issues:
             actions.append(
                 {
                     "action": "cleanup_disk",
@@ -204,7 +220,7 @@ class RemediationEngine:
         self, actions: List[Dict], issues: List[str], severity: str
     ) -> None:
         """Add high severity actions."""
-        if "elevated_cpu_usage" in issues or "high_memory_usagef" in issues:
+        if "elevated_cpu_usage" in issues or "high_memory_usage" in issues:
             actions.append(
                 {
                     "action": "scale_up",
@@ -214,7 +230,7 @@ class RemediationEngine:
                 }
             )
 
-        if "high_disk_usagef" in issues:
+        if "high_disk_usage" in issues:
             actions.append(
                 {
                     "action": "cleanup_disk",
@@ -226,7 +242,7 @@ class RemediationEngine:
 
     def _add_medium_actions(self, actions: List[Dict], issues: List[str]) -> None:
         """Add medium severity actions."""
-        if "slow_response_timef" in issues:
+        if "slow_response_time" in issues:
             actions.append(
                 {
                     "action": "optimize_performance",
@@ -237,7 +253,7 @@ class RemediationEngine:
             )
 
     def _add_monitoring_action(self, actions: List[Dict], severity: str) -> None:
-        """Add monitoring action for all severities.""f"
+        """Add monitoring action for all severities."""
         actions.append(
             {
                 "action": "enhance_monitoring",
@@ -264,7 +280,7 @@ class RemediationEngine:
             self._add_monitoring_action(actions, severity)
 
         except Exception as e:
-            logger.error(f"Error getting recommended actions: {e}")
+            logger.error("Error getting recommended actions: {e}")
             actions.append(
                 {
                     "action": "investigate",
@@ -288,7 +304,7 @@ class RemediationEngine:
         """
         try:
             if not evaluation.get("needs_remediation", False):
-                logger.info("No remediation needed for this anomalyf")
+                logger.info("No remediation needed for this anomaly")
                 return {
                     "executed": False,
                     "reason": "No remediation needed",
@@ -301,7 +317,7 @@ class RemediationEngine:
             )
 
             if not safety_check["safe_to_proceed"]:
-                logger.warning(f"Safety check failed: {safety_check['reasonf']}")
+                logger.warning("Safety check failed: {safety_check['reasonf']}")
                 return {
                     "executed": False,
                     "reason": safety_check["reason"],
@@ -311,7 +327,7 @@ class RemediationEngine:
 
             # Execute actions
             execution_results = []
-            for action in evaluation["recommended_actionsf"]:
+            for action in evaluation["recommended_actions"]:
                 try:
                     result = self.action_manager.execute_action(action)
                     execution_results.append(
@@ -333,17 +349,17 @@ class RemediationEngine:
                     self.last_action_time = datetime.now()
 
                     logger.info(
-                        f"Executed action {action['action']}: "
-                        f"{result.get('status', 'unknown')}"
+                        "Executed action {action['action']}: "
+                        "{result.get('status', 'unknown')}"
                     )
 
                 except Exception as e:
-                    logger.error(f"Error executing action {action['action']}: {e}")
+                    logger.error("Error executing action {action['action']}: {e}")
                     execution_results.append(
                         {
                             "action": action,
-                            "resultf": {"status": "error", "error": str(e)},
-                            "timestampf": datetime.now().isoformat(),
+                            "result": {"status": "error", "error": str(e)},
+                            "timestamp": datetime.now().isoformat(),
                         }
                     )
 
@@ -366,7 +382,7 @@ class RemediationEngine:
             }
 
         except Exception as e:
-            logger.error("Error executing remediation: {e}f")
+            logger.error("Error executing remediation: {e}")
             return {
                 "executed": False,
                 "reason": "Execution error: {str(e)}",
@@ -383,10 +399,10 @@ class RemediationEngine:
                 if action["timestamp"] > cutoff_time
             ]
         except Exception as e:
-            logger.error(f"Error cleaning up old actions: {e}")
+            logger.error("Error cleaning up old actions: {e}")
 
     def get_status(self) -> Dict[str, Any]:
-        """Get current status of the remediation engine.""f"
+        """Get current status of the remediation engine."""
         try:
             return {
                 "status": "operational",

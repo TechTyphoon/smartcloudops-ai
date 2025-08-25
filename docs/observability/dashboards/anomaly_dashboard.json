@@ -1,0 +1,106 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "SmartCloudOps AI - Anomaly Detection",
+    "tags": [
+      "smartcloudops",
+      "anomalies",
+      "ml"
+    ],
+    "timezone": "browser",
+    "refresh": "30s",
+    "schemaVersion": 27,
+    "version": 1,
+    "panels": [
+      {
+        "id": 1,
+        "title": "Anomalies Detected (Last 24h)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "increase(anomalies_detected_total[24h])",
+            "legendFormat": "Total Anomalies"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Anomalies by Severity",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum by (severity) (increase(anomalies_detected_total[1h]))",
+            "legendFormat": "{{severity}}"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 8,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Detection Performance",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(anomaly_detection_duration_seconds_bucket[5m]))",
+            "legendFormat": "95th Percentile (ms)"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 16,
+          "y": 0
+        }
+      },
+      {
+        "id": 4,
+        "title": "Anomaly Detection Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(anomalies_detected_total[5m])",
+            "legendFormat": "{{severity}} {{metric_type}}"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 5,
+        "title": "ML Model Performance",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "ml_model_accuracy",
+            "legendFormat": "{{model_name}} Accuracy"
+          },
+          {
+            "expr": "rate(ml_model_predictions_total[5m])",
+            "legendFormat": "{{model_name}} Predictions/sec"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 16
+        }
+      }
+    ]
+  }
+}

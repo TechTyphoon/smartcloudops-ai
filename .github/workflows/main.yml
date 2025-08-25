@@ -30,6 +30,9 @@ permissions:
   security-events: write
   actions: read
   pull-requests: write
+  # Security: Remove overly permissive permissions
+  # id-token: write  # Only if needed for OIDC
+  # deployments: write  # Only if needed for deployment status
 
 env:
   REGISTRY: ghcr.io
@@ -123,7 +126,7 @@ jobs:
         echo "::endgroup::"
       continue-on-error: true
         
-    - name: 🔒 Python security scan
+    - name: 🔒 Python security scan (Bandit)
       run: |
         echo "::group::Python security scanning"
         bandit -r ${{ env.APP_PATH }} -f json -o bandit-results.json || true
@@ -131,12 +134,23 @@ jobs:
         echo "::endgroup::"
       continue-on-error: true
         
-    - name: 🛡️ Python dependency security
+    - name: 🛡️ Python dependency security (Safety)
       run: |
         echo "::group::Python dependency vulnerabilities"
         safety scan --json > safety-results.json || true
         safety scan || echo "Some vulnerabilities found, but continuing..."
         echo "::endgroup::"
+      continue-on-error: true
+
+    # Security: Add Trivy vulnerability scanner for dependencies
+    - name: 🔍 Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-fs-results.sarif'
+        severity: 'CRITICAL,HIGH'
       continue-on-error: true
         
     - name: 📋 Generate version
@@ -158,7 +172,15 @@ jobs:
         path: |
           bandit-results.json
           safety-results.json
+          trivy-fs-results.sarif
         retention-days: 30
+
+    # Security: Upload SARIF results to GitHub Security tab
+    - name: 📤 Upload Trivy scan results to GitHub Security
+      uses: github/codeql-action/upload-sarif@v3
+      if: always() && hashFiles('trivy-fs-results.sarif') != ''
+      with:
+        sarif_file: 'trivy-fs-results.sarif'
 
   # =====================================================
   # 🧪 STAGE 2: BACKEND TESTING - Flask Application
@@ -180,11 +202,12 @@ jobs:
       DISABLE_ELASTICSEARCH: true
       USE_LOCAL_STORAGE: true
       DATABASE_URL: "sqlite:///:memory:"
-      OPENAI_API_KEY: test-key
-      GEMINI_API_KEY: test-key
-      REDIS_PASSWORD: test-password
-      SECRET_KEY: test-secret-key-for-testing-only-32-chars-minimum
-      JWT_SECRET_KEY: test-jwt-secret-key-for-testing-only-32-chars-minimum
+      # Security: Use GitHub secrets for sensitive test data
+      OPENAI_API_KEY: ${{ secrets.TEST_OPENAI_API_KEY }}
+      GEMINI_API_KEY: ${{ secrets.TEST_GEMINI_API_KEY }}
+      REDIS_PASSWORD: ${{ secrets.TEST_REDIS_PASSWORD }}
+      SECRET_KEY: ${{ secrets.TEST_SECRET_KEY }}
+      JWT_SECRET_KEY: ${{ secrets.TEST_JWT_SECRET_KEY }}
       COVERAGE_MIN: 80
     
     steps:
@@ -338,15 +361,16 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         
-    - name: 🔍 Scan image for vulnerabilities
+    - name: 🔍 Scan image for vulnerabilities (Trivy)
       uses: aquasecurity/trivy-action@master
       with:
         image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}-${{ matrix.target }}
         format: 'sarif'
         output: 'trivy-results-${{ matrix.target }}.sarif'
+        severity: 'CRITICAL,HIGH'
       continue-on-error: true
         
-    - name: 📤 Upload Trivy scan results
+    - name: 📤 Upload Trivy scan results to GitHub Security
       uses: github/codeql-action/upload-sarif@v3
       if: always() && hashFiles('trivy-results-${{ matrix.target }}.sarif') != ''
       with:

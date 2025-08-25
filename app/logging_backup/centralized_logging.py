@@ -76,7 +76,7 @@ class CentralizedLoggingSystem:
         self,
         service_name: str = "smartcloudops-ai",
         elasticsearch_url: str = "http://elasticsearch:9200",
-        log_file_path: str = "logs/centralized.logf",
+        log_file_path: str = "logs/centralized.log",
         max_queue_size: int = 10000,
         batch_size: int = 100,
         flush_interval: int = 5,
@@ -125,7 +125,7 @@ class CentralizedLoggingSystem:
                     logger.warning("⚠️ Elasticsearch connection failed")
                     self.elasticsearch = None
             except Exception as e:
-                logger.warning(f"⚠️ Elasticsearch not available: {e}")
+                logger.warning("⚠️ Elasticsearch not available: {e}")
                 self.elasticsearch = None
 
         # Initialize OpenTelemetry
@@ -138,7 +138,7 @@ class CentralizedLoggingSystem:
         # Start background workers
         self.start()
 
-        logger.info(f"Centralized logging system initialized for {service_name}")
+        logger.info("Centralized logging system initialized for {service_name}")
 
     def _setup_opentelemetry(self):
         """Setup OpenTelemetry for distributed tracing"""
@@ -161,7 +161,7 @@ class CentralizedLoggingSystem:
             logger.info("✅ OpenTelemetry tracing initialized")
 
         except Exception as e:
-            logger.warning(f"⚠️ OpenTelemetry setup failed: {e}")
+            logger.warning("⚠️ OpenTelemetry setup failed: {e}")
 
     def start(self):
         """Start background workers"""
@@ -229,10 +229,10 @@ class CentralizedLoggingSystem:
             self.log_queue.put_nowait(log_entry)
         except Exception:
             # Queue full, log to stderr as fallback
-            print(f"LOG QUEUE FULL: {log_entry}", file=sys.stderr)
+            print("LOG QUEUE FULL: {log_entry}", file=sys.stderr)
 
     def _calculate_severity_score(self, level: str, kwargs: Dict[str, Any]) -> int:
-        """Calculate severity score for log entry""f"
+        """Calculate severity score for log entry"""
         base_scores = {"DEBUG": 1, "INFO": 2, "WARNING": 3, "ERROR": 4, "CRITICAL": 5}
 
         score = base_scores.get(level.upper(), 2)
@@ -283,7 +283,7 @@ class CentralizedLoggingSystem:
                     batch = []
                     last_flush = time.time()
             except Exception as e:
-                logger.error(f"Error in log worker: {e}")
+                logger.error("Error in log worker: {e}")
 
     def _flush_batch(self, batch: List[LogEntry]):
         """Flush a batch of log entries"""
@@ -308,7 +308,7 @@ class CentralizedLoggingSystem:
                     log_line = self._format_log_line(entry)
                     f.write(log_line + "\n")
         except Exception as e:
-            print(f"Error writing to log file: {e}", file=sys.stderr)
+            print("Error writing to log file: {e}", file=sys.stderr)
 
     def _format_log_line(self, entry: LogEntry) -> str:
         """Format log entry as JSON line"""
@@ -324,7 +324,7 @@ class CentralizedLoggingSystem:
             for entry in batch:
                 doc = asdict(entry)
                 doc["timestamp"] = entry.timestamp.isoformat()
-                doc["@timestampf"] = entry.timestamp.isoformat()
+                doc["@timestamp"] = entry.timestamp.isoformat()
 
                 action = {
                     "_index": f'logs-{entry.timestamp.strftime("%Y.%m.%d")}',
@@ -337,7 +337,7 @@ class CentralizedLoggingSystem:
                 helpers.bulk(self.elasticsearch, actions)
 
         except Exception as e:
-            logger.error(f"Error sending to Elasticsearch: {e}")
+            logger.error("Error sending to Elasticsearch: {e}")
 
     def _update_metrics(self, entry: LogEntry):
         """Update metrics with log entry"""
@@ -370,7 +370,7 @@ class CentralizedLoggingSystem:
                 )
 
     def _update_performance_stats(self, batch: List[LogEntry]):
-        """Update performance statistics""f"
+        """Update performance statistics"""
         with self.lock:
             for entry in batch:
                 # Endpoint stats
@@ -412,15 +412,15 @@ class CentralizedLoggingSystem:
                 time.sleep(60)  # Update every minute
                 self._update_metrics_summary()
             except Exception as e:
-                logger.error(f"Error in metrics worker: {e}")
+                logger.error("Error in metrics worker: {e}")
 
     def _update_metrics_summary(self):
-        """Update metrics summary""f"
+        """Update metrics summary"""
         with self.lock:
             # Top endpoints
             self.metrics.top_endpoints = sorted(
                 [{"endpoint": k, **v} for k, v in self.endpoint_stats.items()],
-                key=lambda x: x["countf"],
+                key=lambda x: x["count"],
                 reverse=True,
             )[:10]
 
@@ -435,7 +435,7 @@ class CentralizedLoggingSystem:
             self.metrics.performance_trends = self._calculate_performance_trends()
 
     def _calculate_performance_trends(self) -> List[Dict[str, Any]]:
-        """Calculate performance trends""f"
+        """Calculate performance trends"""
         # This would typically query Elasticsearch for historical data
         # For now, return basic stats
         return [
@@ -460,7 +460,7 @@ class CentralizedLoggingSystem:
             self._flush_batch(batch)
 
     def get_metrics(self) -> Dict[str, Any]:
-        """Get current metrics""f"
+        """Get current metrics"""
         with self.lock:
             return {
                 "total_logs": self.metrics.total_logs,
@@ -496,7 +496,7 @@ class CentralizedLoggingSystem:
         end_time: datetime = None,
         limit: int = 100,
     ) -> List[Dict[str, Any]]:
-        """Search logs using Elasticsearch""f"
+        """Search logs using Elasticsearch"""
 
         if not self.elasticsearch:
             return []
@@ -505,12 +505,12 @@ class CentralizedLoggingSystem:
             # Build search query
             search_body = {
                 "query": {"bool": {"must": []}},
-                "sortf": [{"@timestamp": {"order": "desc"}}],
+                "sort": [{"@timestamp": {"order": "desc"}}],
                 "size": limit,
             }
 
             if query:
-                search_body["query"]["bool"]["mustf"].append(
+                search_body["query"]["bool"]["must"].append(
                     {
                         "multi_match": {
                             "query": query,
@@ -520,12 +520,12 @@ class CentralizedLoggingSystem:
                 )
 
             if level:
-                search_body["query"]["bool"]["mustf"].append(
+                search_body["query"]["bool"]["must"].append(
                     {"term": {"level": level.upper()}}
                 )
 
             if component:
-                search_body["query"]["bool"]["mustf"].append(
+                search_body["query"]["bool"]["must"].append(
                     {"term": {"component": component}}
                 )
 
@@ -536,7 +536,7 @@ class CentralizedLoggingSystem:
                 if end_time:
                     time_range["lte"] = end_time.isoformat()
 
-                search_body["query"]["bool"]["mustf"].append(
+                search_body["query"]["bool"]["must"].append(
                     {"range": {"@timestamp": time_range}}
                 )
 
@@ -551,11 +551,11 @@ class CentralizedLoggingSystem:
             return results
 
         except Exception as e:
-            logger.error(f"Error searching logs: {e}")
+            logger.error("Error searching logs: {e}")
             return []
 
     def get_system_status(self) -> Dict[str, Any]:
-        """Get system status""f"
+        """Get system status"""
         return {
             "service_name": self.service_name,
             "running": self.running,
@@ -608,7 +608,7 @@ class CentralizedLogger:
         )
         centralized_logging.log(
             level,
-            f"{method} {endpoint} - {status_code} ({response_time_ms:.2f}ms)",
+            "{method} {endpoint} - {status_code} ({response_time_ms:.2f}ms)",
             self.component,
             method=method,
             endpoint=endpoint,

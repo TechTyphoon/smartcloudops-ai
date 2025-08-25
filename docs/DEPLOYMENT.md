@@ -1,507 +1,768 @@
-# SmartCloudOps AI - Production Deployment Guide
+# 🚀 SmartCloudOps AI - Deployment Guide
 
-**Phase 7: Production Launch & Feedback**  
-**Version**: 1.0.0  
-**Last Updated**: August 9, 2025
+**Complete deployment guide for production, staging, and development environments**
 
-## 🚀 Overview
+## 📋 Table of Contents
 
-This guide provides comprehensive instructions for deploying SmartCloudOps AI to production environments. The system includes:
+- [Quick Start](#quick-start)
+- [Prerequisites](#prerequisites)
+- [Environment Setup](#environment-setup)
+- [Deployment Options](#deployment-options)
+- [Configuration](#configuration)
+- [Monitoring Setup](#monitoring-setup)
+- [Troubleshooting](#troubleshooting)
 
-- **Backend API** with JWT authentication and role-based access control
-- **Database** with PostgreSQL and Redis caching
-- **Monitoring** with Prometheus and Grafana
-- **Reverse Proxy** with Nginx and SSL/TLS
-- **Log Aggregation** with ELK Stack (optional)
-- **Automated Deployment** scripts for cloud environments
+## ⚡ Quick Start
+
+### Local Development (5 minutes)
+
+```bash
+# Clone repository
+git clone https://github.com/your-org/smartcloudops-ai.git
+cd smartcloudops-ai
+
+# Start with Docker Compose
+docker-compose up -d
+
+# Wait for services to start
+sleep 30
+
+# Access the application
+open http://localhost:3000
+```
+
+### Production Deployment (Kubernetes)
+
+```bash
+# Deploy with Helm
+helm install smartcloudops-ai ./deploy/helm/smartcloudops-ai \
+  --namespace smartcloudops \
+  --create-namespace \
+  -f values-prod.yaml
+
+# Verify deployment
+kubectl get pods -n smartcloudops
+```
 
 ## 📋 Prerequisites
 
 ### System Requirements
 
-- **OS**: Ubuntu 20.04+ / CentOS 8+ / Amazon Linux 2
-- **CPU**: 4+ cores (8+ recommended)
-- **RAM**: 8GB+ (16GB+ recommended)
-- **Storage**: 50GB+ available space
-- **Network**: Public IP with ports 80, 443, 8080 open
+#### Minimum (Development)
+- **CPU**: 4 cores
+- **RAM**: 8 GB
+- **Storage**: 50 GB SSD
+- **Network**: 100 Mbps
 
-### Software Requirements
+#### Recommended (Production)
+- **CPU**: 16+ cores
+- **RAM**: 32+ GB
+- **Storage**: 500+ GB SSD
+- **Network**: 1+ Gbps
+
+### Software Dependencies
 
 - **Docker**: 20.10+
 - **Docker Compose**: 2.0+
-- **Git**: Latest version
-- **OpenSSL**: For certificate generation
+- **Kubernetes**: 1.25+
+- **Helm**: 3.10+
+- **Python**: 3.11+
+- **Node.js**: 18+
+- **PostgreSQL**: 13+
+- **Redis**: 6+
 
-### Domain & SSL
+## 🏗️ Environment Setup
 
-- **Domain Name**: Registered domain pointing to your server
-- **SSL Certificate**: Let's Encrypt (automatic) or custom certificate
-- **Email**: Valid email for SSL certificate notifications
-
-## 🛠 Installation
-
-### 1. Clone the Repository
+### Development Environment
 
 ```bash
-git clone https://github.com/your-repo/smartcloudops-ai.git
-cd smartcloudops-ai
-```
+# 1. Install Python dependencies
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
 
-### 2. Run Production Deployment Script
+# 2. Install Node.js dependencies
+npm install
 
-```bash
-# Make script executable
-chmod +x scripts/deploy_production.sh
-
-# Set environment variables
-export DOMAIN_NAME="yourdomain.com"
-export SSL_EMAIL="admin@yourdomain.com"
-export DEPLOYMENT_ENV="production"
-
-# Run deployment
-./scripts/deploy_production.sh
-```
-
-The deployment script will:
-- ✅ Check system prerequisites
-- ✅ Setup environment variables
-- ✅ Create necessary directories
-- ✅ Obtain SSL certificates
-- ✅ Deploy all services
-- ✅ Initialize database
-- ✅ Setup monitoring
-- ✅ Run health checks
-
-### 3. Manual Deployment (Alternative)
-
-If you prefer manual deployment:
-
-```bash
-# 1. Setup environment
-cp env.template .env
+# 3. Setup environment variables
+cp env.example .env
 # Edit .env with your configuration
 
-# 2. Create directories
-mkdir -p logs backups configs/ssl data
-
-# 3. Deploy services
-docker-compose -f docker-compose.prod.yml up -d
-
 # 4. Initialize database
-docker-compose -f docker-compose.prod.yml exec app python3 -c "
-import sys
-sys.path.append('/app')
-from app.database import init_db, seed_initial_data
-init_db()
-seed_initial_data()
-"
+python scripts/init_db.py
+
+# 5. Start development servers
+# Terminal 1: Backend
+python -m flask run --debug
+
+# Terminal 2: Frontend
+npm run dev
 ```
 
-## 🔧 Configuration
+### Staging Environment
+
+```bash
+# Deploy to staging namespace
+helm install smartcloudops-ai-staging ./deploy/helm/smartcloudops-ai \
+  --namespace smartcloudops-staging \
+  --create-namespace \
+  -f values-staging.yaml \
+  --set image.tag=staging-latest
+
+# Configure ingress for staging
+kubectl apply -f deploy/k8s/staging-ingress.yaml
+```
+
+### Production Environment
+
+```bash
+# Deploy to production
+helm install smartcloudops-ai ./deploy/helm/smartcloudops-ai \
+  --namespace smartcloudops-prod \
+  --create-namespace \
+  -f values-prod.yaml \
+  --set image.tag=v1.0.0
+
+# Apply production configurations
+kubectl apply -f deploy/k8s/prod-configs/
+```
+
+## 🌐 Deployment Options
+
+### Option 1: Docker Compose (Development)
+
+**Best for**: Local development, testing, small deployments
+
+```yaml
+# docker-compose.yml
+version: '3.8'
+services:
+  backend:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgresql://user:pass@db:5432/smartcloudops
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - db
+      - redis
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5000
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: smartcloudops
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
+```
+
+#### Commands
+
+```bash
+# Start all services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Rebuild and restart
+docker-compose up -d --build
+```
+
+### Option 2: Kubernetes with Helm (Production)
+
+**Best for**: Production, staging, scalable deployments
+
+#### Helm Chart Structure
+
+```
+deploy/helm/smartcloudops-ai/
+├── Chart.yaml
+├── values.yaml
+├── values-dev.yaml
+├── values-staging.yaml
+├── values-prod.yaml
+└── templates/
+    ├── backend/
+    │   ├── deployment.yaml
+    │   ├── service.yaml
+    │   ├── configmap.yaml
+    │   └── secret.yaml
+    ├── frontend/
+    │   ├── deployment.yaml
+    │   └── service.yaml
+    ├── ingress.yaml
+    ├── hpa.yaml
+    └── networkpolicy.yaml
+```
+
+#### Installation Commands
+
+```bash
+# Add required repositories
+helm repo add postgresql https://charts.bitnami.com/bitnami
+helm repo add redis https://charts.bitnami.com/bitnami
+helm repo update
+
+# Install dependencies
+helm dependency build deploy/helm/smartcloudops-ai/
+
+# Deploy to production
+helm install smartcloudops-ai deploy/helm/smartcloudops-ai/ \
+  --namespace smartcloudops \
+  --create-namespace \
+  -f deploy/helm/smartcloudops-ai/values-prod.yaml \
+  --wait --timeout=10m
+
+# Upgrade deployment
+helm upgrade smartcloudops-ai deploy/helm/smartcloudops-ai/ \
+  --namespace smartcloudops \
+  -f deploy/helm/smartcloudops-ai/values-prod.yaml
+
+# Rollback if needed
+helm rollback smartcloudops-ai 1 --namespace smartcloudops
+```
+
+### Option 3: Cloud-Specific Deployments
+
+#### AWS EKS
+
+```bash
+# Create EKS cluster
+eksctl create cluster \
+  --name smartcloudops-cluster \
+  --region us-west-2 \
+  --nodes 3 \
+  --node-type t3.medium
+
+# Deploy with AWS-specific configurations
+helm install smartcloudops-ai ./deploy/helm/smartcloudops-ai \
+  --namespace smartcloudops \
+  --create-namespace \
+  -f values-aws.yaml
+```
+
+#### Azure AKS
+
+```bash
+# Create AKS cluster
+az aks create \
+  --resource-group smartcloudops-rg \
+  --name smartcloudops-cluster \
+  --node-count 3 \
+  --node-vm-size Standard_D2s_v3
+
+# Deploy with Azure-specific configurations
+helm install smartcloudops-ai ./deploy/helm/smartcloudops-ai \
+  --namespace smartcloudops \
+  --create-namespace \
+  -f values-azure.yaml
+```
+
+#### Google GKE
+
+```bash
+# Create GKE cluster
+gcloud container clusters create smartcloudops-cluster \
+  --zone us-central1-a \
+  --num-nodes 3 \
+  --machine-type e2-medium
+
+# Deploy with GCP-specific configurations
+helm install smartcloudops-ai ./deploy/helm/smartcloudops-ai \
+  --namespace smartcloudops \
+  --create-namespace \
+  -f values-gcp.yaml
+```
+
+## ⚙️ Configuration
 
 ### Environment Variables
 
-Create a `.env` file with the following variables:
+#### Backend Configuration
 
 ```bash
-# Database Configuration
-POSTGRES_PASSWORD=your_secure_password
-DATABASE_URL=postgresql://smartcloudops:your_secure_password@postgres:5432/smartcloudops
-
-# Redis Configuration
-REDIS_PASSWORD=your_redis_password
-
-# JWT Configuration
-JWT_SECRET_KEY=your_super_secret_jwt_key_change_in_production
-JWT_EXPIRY_HOURS=24
-
-# Application Configuration
+# Application
+FLASK_APP=app/main.py
 FLASK_ENV=production
-FLASK_DEBUG=false
+SECRET_KEY=your-secret-key-here
 LOG_LEVEL=INFO
 
-# Domain Configuration
-DOMAIN_NAME=yourdomain.com
-SSL_EMAIL=admin@yourdomain.com
+# Database
+DATABASE_URL=postgresql://user:pass@localhost:5432/smartcloudops
+DATABASE_POOL_SIZE=20
+DATABASE_MAX_OVERFLOW=0
 
-# AI Provider Configuration (Optional)
-OPENAI_API_KEY=your_openai_api_key
-GEMINI_API_KEY=your_gemini_api_key
+# Redis
+REDIS_URL=redis://localhost:6379/0
+REDIS_POOL_SIZE=10
 
-# Security Configuration
-ALLOWED_HOSTS=localhost,127.0.0.1,yourdomain.com
-CORS_ORIGINS=http://localhost:3000,https://yourdomain.com
+# Authentication
+JWT_SECRET_KEY=your-jwt-secret
+JWT_ACCESS_TOKEN_EXPIRES=3600
+JWT_REFRESH_TOKEN_EXPIRES=86400
 
-# Email Configuration (for notifications)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your_email@gmail.com
-SMTP_PASSWORD=your_app_password
-SMTP_TLS=true
+# ML/AI
+ML_MODEL_PATH=/app/models
+OPENAI_API_KEY=your-openai-key
+HUGGINGFACE_API_KEY=your-hf-key
 
-# AWS Configuration (if using AWS services)
-AWS_ACCESS_KEY_ID=your_aws_access_key
-AWS_SECRET_ACCESS_KEY=your_aws_secret_key
-AWS_REGION=us-east-1
+# Monitoring
+PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus
+JAEGER_AGENT_HOST=localhost
+JAEGER_AGENT_PORT=6831
 
-# Monitoring Configuration
-GRAFANA_PASSWORD=your_grafana_password
+# External Services
+SLACK_BOT_TOKEN=xoxb-your-slack-token
+SLACK_SIGNING_SECRET=your-slack-secret
+EMAIL_SMTP_HOST=smtp.gmail.com
+EMAIL_SMTP_PORT=587
+EMAIL_USERNAME=your-email
+EMAIL_PASSWORD=your-app-password
 ```
 
-### SSL Certificate Setup
-
-#### Automatic (Let's Encrypt)
-
-The deployment script automatically handles SSL certificate generation using Let's Encrypt.
-
-#### Manual SSL Setup
-
-If you have custom certificates:
+#### Frontend Configuration
 
 ```bash
-# Copy your certificates
-cp your_certificate.crt configs/ssl/live/yourdomain.com/fullchain.pem
-cp your_private_key.key configs/ssl/live/yourdomain.com/privkey.pem
+# API
+NEXT_PUBLIC_API_URL=https://api.smartcloudops.ai
+NEXT_PUBLIC_WS_URL=wss://api.smartcloudops.ai
 
-# Set proper permissions
-chmod 600 configs/ssl/live/yourdomain.com/privkey.pem
-chmod 644 configs/ssl/live/yourdomain.com/fullchain.pem
+# Analytics
+NEXT_PUBLIC_GA_ID=GA_MEASUREMENT_ID
+NEXT_PUBLIC_SENTRY_DSN=your-sentry-dsn
+
+# Features
+NEXT_PUBLIC_ENABLE_PWA=true
+NEXT_PUBLIC_ENABLE_DARK_MODE=true
 ```
 
-## 🌐 Service URLs
+### Kubernetes Secrets
 
-After deployment, the following services will be available:
+```bash
+# Create secrets for sensitive data
+kubectl create secret generic smartcloudops-secrets \
+  --namespace smartcloudops \
+  --from-literal=database-url="postgresql://user:pass@db:5432/smartcloudops" \
+  --from-literal=redis-url="redis://redis:6379/0" \
+  --from-literal=jwt-secret="your-jwt-secret" \
+  --from-literal=openai-api-key="your-openai-key" \
+  --from-literal=slack-bot-token="xoxb-your-slack-token"
 
-| Service | URL | Description |
-|---------|-----|-------------|
-| Main Application | `https://yourdomain.com` | SmartCloudOps AI main interface |
-| API Documentation | `https://yourdomain.com/api/docs` | Complete API documentation |
-| Grafana Dashboard | `https://yourdomain.com/grafana` | Monitoring dashboards |
-| Prometheus | `https://yourdomain.com/prometheus` | Metrics and alerting |
-| Health Check | `https://yourdomain.com/health` | System health status |
+# Create ConfigMap for non-sensitive configuration
+kubectl create configmap smartcloudops-config \
+  --namespace smartcloudops \
+  --from-literal=log-level="INFO" \
+  --from-literal=prometheus-multiproc-dir="/tmp/prometheus"
+```
 
-## 🔐 Default Credentials
+### Database Setup
 
-**⚠️ IMPORTANT**: Change these credentials immediately after deployment!
+#### PostgreSQL Configuration
 
-### Application Users
+```sql
+-- Create database and user
+CREATE DATABASE smartcloudops;
+CREATE USER smartcloudops_user WITH PASSWORD 'secure_password';
+GRANT ALL PRIVILEGES ON DATABASE smartcloudops TO smartcloudops_user;
 
-| Username | Password | Role | Description |
-|----------|----------|------|-------------|
-| `admin` | `admin123` | Admin | Full system access |
-| `demo` | `demo123` | User | Limited access for testing |
+-- Connect to database
+\c smartcloudops;
 
-### Grafana
+-- Create extensions
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "pg_stat_statements";
 
-- **Username**: `admin`
-- **Password**: Set in `GRAFANA_PASSWORD` environment variable
+-- Create schemas
+CREATE SCHEMA IF NOT EXISTS app;
+CREATE SCHEMA IF NOT EXISTS audit;
+CREATE SCHEMA IF NOT EXISTS monitoring;
+```
 
-### Database
+#### Database Migration
 
-- **Database**: `smartcloudops`
-- **Username**: `smartcloudops`
-- **Password**: Set in `POSTGRES_PASSWORD` environment variable
+```bash
+# Run database migrations
+python -m flask db upgrade
 
-## 📊 Monitoring & Logging
+# Create initial admin user
+python scripts/create_admin.py \
+  --email admin@smartcloudops.ai \
+  --password SecureAdminPassword123! \
+  --name "System Administrator"
+```
 
-### Prometheus Metrics
+## 📊 Monitoring Setup
 
-The application exposes metrics at `/metrics` endpoint:
+### Prometheus Configuration
 
-- HTTP request counts and latency
-- Database connection status
-- Application health metrics
-- Custom business metrics
+```yaml
+# prometheus.yml
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert_rules.yml"
+
+scrape_configs:
+  - job_name: 'smartcloudops-backend'
+    static_configs:
+      - targets: ['backend:5000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  - job_name: 'smartcloudops-frontend'
+    static_configs:
+      - targets: ['frontend:3000']
+    metrics_path: '/api/metrics'
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+```
 
 ### Grafana Dashboards
 
-Pre-configured dashboards include:
-
-- **System Overview**: CPU, memory, disk usage
-- **Application Metrics**: Request rates, error rates, response times
-- **Database Performance**: Connection pools, query performance
-- **Security Metrics**: Authentication attempts, failed logins
-
-### Log Aggregation
-
-Logs are collected and can be viewed in:
-
-- **Application Logs**: `logs/app.log`
-- **Nginx Logs**: `logs/nginx/`
-- **Docker Logs**: `docker-compose -f docker-compose.prod.yml logs`
-
-### ELK Stack (Optional)
-
-For advanced log analysis, the ELK stack is included:
-
-- **Elasticsearch**: `http://localhost:9200`
-- **Kibana**: `http://localhost:5601`
-- **Filebeat**: Collects logs from all services
-
-## 🔄 Maintenance
-
-### Backup
-
-#### Database Backup
-
 ```bash
-# Manual backup
-docker-compose -f docker-compose.prod.yml exec postgres pg_dump -U smartcloudops smartcloudops > backup_$(date +%Y%m%d_%H%M%S).sql
+# Import dashboards
+curl -X POST \
+  http://admin:admin@grafana:3000/api/dashboards/db \
+  -H 'Content-Type: application/json' \
+  -d @monitoring/grafana/dashboards/overview.json
 
-# Automated backup (configured in docker-compose.prod.yml)
-docker-compose -f docker-compose.prod.yml run --rm backup
+# Set up data sources
+curl -X POST \
+  http://admin:admin@grafana:3000/api/datasources \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Prometheus",
+    "type": "prometheus",
+    "url": "http://prometheus:9090",
+    "access": "proxy",
+    "isDefault": true
+  }'
 ```
 
-#### Configuration Backup
+### Health Checks
 
 ```bash
-# Backup configuration files
-tar -czf config_backup_$(date +%Y%m%d_%H%M%S).tar.gz \
-    .env \
-    configs/ \
-    logs/ \
-    backups/
+# Backend health check
+curl http://localhost:5000/health
+# Expected: {"status": "healthy", "timestamp": "2024-01-15T12:00:00Z"}
+
+# Frontend health check
+curl http://localhost:3000/api/health
+# Expected: {"status": "ok", "uptime": 3600}
+
+# Database health check
+curl http://localhost:5000/health/db
+# Expected: {"status": "connected", "response_time_ms": 15}
+
+# Redis health check
+curl http://localhost:5000/health/redis
+# Expected: {"status": "connected", "response_time_ms": 5}
 ```
 
-### Updates
-
-#### Application Updates
-
-```bash
-# Pull latest changes
-git pull origin main
-
-# Rebuild and restart services
-docker-compose -f docker-compose.prod.yml pull
-docker-compose -f docker-compose.prod.yml build app
-docker-compose -f docker-compose.prod.yml up -d
-
-# Run database migrations (if any)
-docker-compose -f docker-compose.prod.yml exec app python3 -c "
-import sys
-sys.path.append('/app')
-from app.database import init_db
-init_db()
-"
-```
-
-#### SSL Certificate Renewal
-
-SSL certificates auto-renew every 60 days. Manual renewal:
-
-```bash
-docker-compose -f docker-compose.prod.yml run --rm certbot renew
-docker-compose -f docker-compose.prod.yml restart nginx
-```
-
-### Health Monitoring
-
-#### Automated Health Checks
-
-The system includes automated health checks:
-
-```bash
-# Check service status
-docker-compose -f docker-compose.prod.yml ps
-
-# View health check logs
-docker-compose -f docker-compose.prod.yml logs healthcheck
-
-# Manual health check
-curl -f https://yourdomain.com/health
-```
-
-#### Monitoring Alerts
-
-Configure alerts in Grafana for:
-
-- High CPU/memory usage
-- Database connection failures
-- Application errors
-- SSL certificate expiration
-
-## 🚨 Troubleshooting
+## 🔧 Troubleshooting
 
 ### Common Issues
 
-#### 1. Services Not Starting
+#### Issue: Backend fails to start
 
+**Symptoms**: 
+- Container exits with code 1
+- Database connection errors
+- Import errors
+
+**Solutions**:
 ```bash
-# Check service logs
-docker-compose -f docker-compose.prod.yml logs app
-docker-compose -f docker-compose.prod.yml logs postgres
+# Check logs
+docker-compose logs backend
 
-# Check service status
-docker-compose -f docker-compose.prod.yml ps
+# Verify database connectivity
+docker-compose exec backend python -c "
+import psycopg2
+conn = psycopg2.connect('postgresql://user:pass@db:5432/smartcloudops')
+print('Database connection successful')
+"
+
+# Check environment variables
+docker-compose exec backend env | grep -E "(DATABASE|REDIS|SECRET)"
+
+# Rebuild with no cache
+docker-compose build --no-cache backend
 ```
 
-#### 2. Database Connection Issues
+#### Issue: Frontend build failures
 
+**Symptoms**:
+- npm install errors
+- Build process fails
+- Module not found errors
+
+**Solutions**:
+```bash
+# Clear npm cache
+npm cache clean --force
+
+# Delete node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+
+# Check Node.js version
+node --version  # Should be 18+
+
+# Build with verbose output
+npm run build --verbose
+```
+
+#### Issue: Kubernetes pods not starting
+
+**Symptoms**:
+- Pods stuck in Pending/CrashLoopBackOff
+- ImagePullBackOff errors
+- Resource constraints
+
+**Solutions**:
+```bash
+# Check pod status
+kubectl get pods -n smartcloudops
+
+# Describe problematic pod
+kubectl describe pod <pod-name> -n smartcloudops
+
+# Check logs
+kubectl logs <pod-name> -n smartcloudops --previous
+
+# Check resource usage
+kubectl top pods -n smartcloudops
+
+# Verify secrets and configmaps
+kubectl get secrets,configmaps -n smartcloudops
+```
+
+#### Issue: Database migration failures
+
+**Symptoms**:
+- Migration scripts fail
+- Table creation errors
+- Permission denied errors
+
+**Solutions**:
 ```bash
 # Check database connectivity
-docker-compose -f docker-compose.prod.yml exec postgres pg_isready -U smartcloudops
+python -c "
+from app.database import engine
+with engine.connect() as conn:
+    result = conn.execute('SELECT version()')
+    print(result.fetchone())
+"
 
-# Check database logs
-docker-compose -f docker-compose.prod.yml logs postgres
+# Run migrations manually
+python -m flask db current
+python -m flask db upgrade
+
+# Reset migrations (WARNING: Data loss)
+python -m flask db downgrade base
+python -m flask db upgrade
 ```
 
-#### 3. SSL Certificate Issues
+### Performance Issues
+
+#### High Memory Usage
 
 ```bash
-# Check certificate validity
-openssl x509 -in configs/ssl/live/yourdomain.com/fullchain.pem -text -noout
-
-# Renew certificates manually
-docker-compose -f docker-compose.prod.yml run --rm certbot renew --force-renewal
-```
-
-#### 4. Performance Issues
-
-```bash
-# Check resource usage
+# Check memory usage
 docker stats
 
-# Check application metrics
-curl https://yourdomain.com/metrics
+# Analyze Python memory usage
+python -c "
+import psutil
+process = psutil.Process()
+print(f'Memory usage: {process.memory_info().rss / 1024 / 1024:.2f} MB')
+"
 
-# Check nginx access logs
-tail -f logs/nginx/access.log
+# Optimize PostgreSQL
+# Add to postgresql.conf:
+# shared_buffers = 256MB
+# effective_cache_size = 1GB
+# work_mem = 4MB
 ```
 
-### Log Locations
+#### Slow Database Queries
 
-| Component | Log Location |
-|-----------|--------------|
-| Application | `logs/app.log` |
-| Nginx | `logs/nginx/` |
-| Database | `docker-compose -f docker-compose.prod.yml logs postgres` |
-| Prometheus | `docker-compose -f docker-compose.prod.yml logs prometheus` |
-| Grafana | `docker-compose -f docker-compose.prod.yml logs grafana` |
+```bash
+# Enable query logging
+# Add to postgresql.conf:
+# log_min_duration_statement = 1000
+# log_line_prefix = '%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
 
-### Performance Tuning
-
-#### Database Optimization
-
-```sql
--- Check slow queries
+# Check slow queries
 SELECT query, mean_time, calls 
 FROM pg_stat_statements 
 ORDER BY mean_time DESC 
 LIMIT 10;
 
--- Optimize database
-VACUUM ANALYZE;
-REINDEX DATABASE smartcloudops;
+# Add indexes for common queries
+CREATE INDEX CONCURRENTLY idx_anomalies_timestamp ON anomalies(timestamp);
+CREATE INDEX CONCURRENTLY idx_users_email ON users(email);
 ```
 
-#### Application Optimization
+### Network Issues
+
+#### Service Discovery Problems
 
 ```bash
-# Increase worker processes
-# Edit docker-compose.prod.yml
-# Add to app service:
-#   environment:
-#     - GUNICORN_WORKERS=4
-#     - GUNICORN_THREADS=2
+# Check DNS resolution
+kubectl exec -it <pod-name> -n smartcloudops -- nslookup backend
+
+# Test service connectivity
+kubectl exec -it <pod-name> -n smartcloudops -- wget -qO- http://backend:5000/health
+
+# Check network policies
+kubectl get networkpolicies -n smartcloudops
 ```
 
-## 🔒 Security
-
-### Security Best Practices
-
-1. **Change Default Passwords**: Immediately after deployment
-2. **Firewall Configuration**: Only open necessary ports
-3. **Regular Updates**: Keep system and dependencies updated
-4. **Backup Strategy**: Regular automated backups
-5. **Monitoring**: Set up alerts for security events
-6. **Access Control**: Use role-based access control
-7. **SSL/TLS**: Always use HTTPS in production
-
-### Security Headers
-
-The application includes security headers:
-
-- `X-Frame-Options`: Prevent clickjacking
-- `X-Content-Type-Options`: Prevent MIME type sniffing
-- `X-XSS-Protection`: XSS protection
-- `Strict-Transport-Security`: Force HTTPS
-- `Content-Security-Policy`: Prevent XSS and injection attacks
-
-### Rate Limiting
-
-API endpoints are rate limited:
-
-- **General API**: 10 requests/second
-- **Login endpoints**: 5 requests/minute
-- **Health checks**: No limits
-
-## 📞 Support
-
-### Getting Help
-
-1. **Documentation**: Check this guide and API documentation
-2. **Logs**: Review application and system logs
-3. **Community**: GitHub issues and discussions
-4. **Support**: Email support@smartcloudops.ai
-
-### Useful Commands
+#### Ingress Issues
 
 ```bash
-# View all logs
-docker-compose -f docker-compose.prod.yml logs -f
+# Check ingress status
+kubectl get ingress -n smartcloudops
 
-# Restart specific service
-docker-compose -f docker-compose.prod.yml restart app
+# Verify ingress controller
+kubectl get pods -n ingress-nginx
 
-# Check resource usage
-docker system df
-docker stats
+# Test external connectivity
+curl -H "Host: smartcloudops.local" http://<ingress-ip>/health
+```
 
-# Clean up unused resources
-docker system prune -f
+### Log Analysis
 
-# Update all services
-docker-compose -f docker-compose.prod.yml pull
-docker-compose -f docker-compose.prod.yml up -d
+#### Centralized Logging
+
+```bash
+# View application logs
+kubectl logs -f deployment/backend -n smartcloudops
+
+# Search logs with grep
+kubectl logs deployment/backend -n smartcloudops | grep ERROR
+
+# Export logs for analysis
+kubectl logs deployment/backend -n smartcloudops --since=1h > backend-logs.txt
+```
+
+#### Common Log Patterns
+
+```bash
+# Error patterns to watch for
+grep -E "(ERROR|CRITICAL|Exception)" logs/*.log
+
+# Performance patterns
+grep -E "(slow|timeout|connection)" logs/*.log
+
+# Security patterns
+grep -E "(auth|login|permission)" logs/*.log
+```
+
+## 🔄 Backup and Recovery
+
+### Database Backup
+
+```bash
+# Create backup
+pg_dump -h localhost -U smartcloudops_user smartcloudops > backup.sql
+
+# Restore from backup
+psql -h localhost -U smartcloudops_user smartcloudops < backup.sql
+
+# Automated backup script
+#!/bin/bash
+BACKUP_DIR="/backups"
+DATE=$(date +%Y%m%d_%H%M%S)
+pg_dump -h $DB_HOST -U $DB_USER $DB_NAME | gzip > $BACKUP_DIR/backup_$DATE.sql.gz
+```
+
+### Application Data Backup
+
+```bash
+# Backup uploaded files
+tar -czf app_data_backup.tar.gz /app/uploads /app/models
+
+# Backup Redis data
+redis-cli --rdb /backups/redis_backup.rdb
+
+# Backup configuration
+kubectl get configmap,secret -n smartcloudops -o yaml > config_backup.yaml
 ```
 
 ## 📈 Scaling
 
 ### Horizontal Scaling
 
-To scale the application:
-
 ```bash
-# Scale application instances
-docker-compose -f docker-compose.prod.yml up -d --scale app=3
+# Scale backend pods
+kubectl scale deployment backend --replicas=5 -n smartcloudops
 
-# Update nginx configuration for load balancing
-# Edit configs/nginx.conf to include multiple app instances
+# Auto-scaling configuration
+kubectl autoscale deployment backend \
+  --min=2 \
+  --max=10 \
+  --cpu-percent=70 \
+  -n smartcloudops
 ```
 
-### Vertical Scaling
+### Database Scaling
 
-For increased performance:
+```bash
+# Read replicas for PostgreSQL
+# Add to postgresql.conf:
+# wal_level = replica
+# max_wal_senders = 3
+# wal_keep_segments = 64
 
-1. **Increase Resources**: More CPU/RAM for containers
-2. **Database Optimization**: Connection pooling, indexing
-3. **Caching**: Redis caching for frequently accessed data
-4. **CDN**: Use CDN for static assets
-
-## 🎯 Next Steps
-
-After successful deployment:
-
-1. **Change Default Passwords**: Immediately
-2. **Configure Monitoring**: Set up Grafana dashboards and alerts
-3. **Setup Backup**: Configure automated backup strategy
-4. **Security Audit**: Review security configuration
-5. **Performance Testing**: Load test the application
-6. **Documentation**: Update internal documentation
-7. **Training**: Train team on system usage
+# Connection pooling with PgBouncer
+# Deploy PgBouncer as a sidecar or separate service
+```
 
 ---
 
-**SmartCloudOps AI** - Phase 7 Production Deployment Guide  
-**Version**: 1.0.0  
-**Last Updated**: August 9, 2025
+## 📚 Related Documentation
+
+- [Architecture Overview](./ARCHITECTURE.md)
+- [API Reference](./API_REFERENCE_COMPLETE.md)
+- [Operations Runbook](./OPS_RUNBOOK.md)
+- [Security Guide](./SECURITY.md)
+
+---
+
+*For additional support, please refer to our [troubleshooting guide](./TROUBLESHOOTING.md) or contact the development team.*

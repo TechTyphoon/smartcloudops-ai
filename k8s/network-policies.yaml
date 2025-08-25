@@ -1,0 +1,160 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: smartcloudops-app-network-policy
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops-ai
+    component: network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: smartcloudops-ai
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow traffic from ingress controller
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 5000
+  # Allow internal communication
+  - from:
+    - podSelector:
+        matchLabels:
+          app: smartcloudops-ai
+    ports:
+    - protocol: TCP
+      port: 5000
+  # Allow health checks
+  - from:
+    - podSelector:
+        matchLabels:
+          app: smartcloudops-ai
+    ports:
+    - protocol: TCP
+      port: 8080
+  egress:
+  # Allow DNS resolution
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
+  # Allow database access
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgresql
+    ports:
+    - protocol: TCP
+      port: 5432
+  # Allow Redis access
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  # Allow monitoring access
+  - to:
+    - podSelector:
+        matchLabels:
+          app: prometheus
+    ports:
+    - protocol: TCP
+      port: 9090
+  # Allow external API calls (OpenAI, etc.)
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgresql-network-policy
+  namespace: smartcloudops
+  labels:
+    app: postgresql
+    component: network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: postgresql
+  policyTypes:
+  - Ingress
+  ingress:
+  # Allow access from application
+  - from:
+    - podSelector:
+        matchLabels:
+          app: smartcloudops-ai
+    ports:
+    - protocol: TCP
+      port: 5432
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-network-policy
+  namespace: smartcloudops
+  labels:
+    app: redis
+    component: network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+  policyTypes:
+  - Ingress
+  ingress:
+  # Allow access from application
+  - from:
+    - podSelector:
+        matchLabels:
+          app: smartcloudops-ai
+    ports:
+    - protocol: TCP
+      port: 6379
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: monitoring-network-policy
+  namespace: smartcloudops
+  labels:
+    app: monitoring
+    component: network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: prometheus
+  policyTypes:
+  - Ingress
+  ingress:
+  # Allow scraping from application
+  - from:
+    - podSelector:
+        matchLabels:
+          app: smartcloudops-ai
+    ports:
+    - protocol: TCP
+      port: 9090
+  # Allow Grafana access
+  - from:
+    - podSelector:
+        matchLabels:
+          app: grafana
+    ports:
+    - protocol: TCP
+      port: 9090

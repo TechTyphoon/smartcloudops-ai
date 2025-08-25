@@ -1,0 +1,25 @@
+{{- if .Values.backend.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "smartcloudops-ai.fullname" . }}-backend-config
+  labels:
+    {{- include "smartcloudops-ai.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+data:
+  FLASK_ENV: {{ .Values.backend.env.FLASK_ENV | quote }}
+  FLASK_PORT: "5000"
+  FLASK_HOST: "0.0.0.0"
+  PROMETHEUS_URL: {{ .Values.backend.env.PROMETHEUS_URL | quote }}
+  REQUIRE_APPROVAL: {{ .Values.backend.env.REQUIRE_APPROVAL | quote }}
+  MAX_ACTIONS_PER_HOUR: {{ .Values.backend.env.MAX_ACTIONS_PER_HOUR | quote }}
+  COOLDOWN_MINUTES: {{ .Values.backend.env.COOLDOWN_MINUTES | quote }}
+  REMEDIATION_TAG_KEY: "Name"
+  REMEDIATION_TAG_VALUE: "smartcloudops-ai-application"
+  SSM_SERVICE_NAME: "smartcloudops-app"
+  AWS_REGION: "us-west-2"
+  REDIS_HOST: {{ include "smartcloudops-ai.fullname" . }}-redis-master
+  REDIS_PORT: "6379"
+  DISABLE_AWS_SERVICES: "true"
+  DISABLE_ELASTICSEARCH: "true"
+{{- end }}

@@ -95,6 +95,19 @@ spec:
         prometheus.io/port: "5000"
         prometheus.io/path: "/metrics"
     spec:
+      # Security: Run as non-root user
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+        capabilities:
+          drop:
+          - ALL
+      # Security: Pod disruption budget
+      terminationGracePeriodSeconds: 30
       containers:
       - name: app
         image: smartcloudops/app:latest
@@ -102,7 +115,9 @@ spec:
         ports:
         - containerPort: 5000
           name: http
-        - containerPort: 9090
+        - containerPort: 5000
+          name: http
+        - containerPort: 8080
           name: metrics
         env:
         - name: FLASK_ENV
@@ -142,13 +157,27 @@ spec:
           value: "yourdomain.com,localhost"
         - name: CORS_ORIGINS
           value: "https://yourdomain.com,http://localhost:3000"
+        # Security: Container security context
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          capabilities:
+            drop:
+            - ALL
         volumeMounts:
         - name: app-config
           mountPath: /app/config
+          readOnly: true
         - name: app-logs
           mountPath: /app/logs
         - name: ml-models
           mountPath: /app/ml_models
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
         resources:
           requests:
             memory: "512Mi"
@@ -180,10 +209,13 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 30
+      # Security: Volumes for read-only filesystem
       volumes:
       - name: app-config
         configMap:
           name: app-config
+      - name: tmp
+        emptyDir: {}
       - name: app-logs
         emptyDir: {}
       - name: ml-models

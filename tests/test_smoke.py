@@ -5,6 +5,8 @@ Tests basic imports and app creation without external dependencies
 """
 
 import os
+import sys
+from flask import Flask
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -27,6 +29,8 @@ def test_app_import():
 def test_config_import():
     """Test that the config can be imported"""
     try:
+        from app.config import get_config
+
         config = get_config()
         assert config is not None
         print("✅ Config imported successfully")
@@ -42,7 +46,7 @@ def test_basic_functionality():
         # Test that we can create a basic Flask app
         app = Flask(__name__)
 
-        @app.route("/healthf")
+        @app.route("/health")
         def health():
             return {"status": "healthy"}
 

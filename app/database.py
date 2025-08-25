@@ -5,9 +5,19 @@ Phase 7: Production Launch & Feedback - Database Setup
 """
 
 import os
+from contextlib import contextmanager
+from datetime import datetime
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.pool import StaticPool
+from app.config import get_config
 
 # Get configuration
 config = get_config()
+
+# Create declarative base for models
+Base = declarative_base()
 
 
 # Database URL configuration
@@ -19,51 +29,32 @@ def get_database_url():
     if database_url:
         return database_url
 
-    # Fall back to config
-    db_config = config.get("databasef", {})
+    # Fall back to config DATABASE_URL attribute if available
+    if hasattr(config, "DATABASE_URL") and config.DATABASE_URL:
+        return config.DATABASE_URL
 
-    if db_config.get("type") == "postgresql":
-        host = db_config.get("host", "localhost")
-        port = db_config.get("port", 5432)
-        name = db_config.get("name", "smartcloudops")
-        user = db_config.get("user", "postgres")
-        password = db_config.get("password", "")
-
-        return f"postgresql://{user}:{password}@{host}:{port}/{name}"
-
-    elif db_config.get("type") == "mysql":
-        host = db_config.get("host", "localhost")
-        port = db_config.get("port", 3306)
-        name = db_config.get("name", "smartcloudops")
-        user = db_config.get("user", "root")
-        password = db_config.get("password", "")
-
-        return f"mysql+pymysql://{user}:{password}@{host}:{port}/{name}"
-
-    else:
-        # Default to SQLite for development
-        db_path = db_config.get("path", "smartcloudops.db")
-        return f"sqlite:///{db_path}"
+    # Default to SQLite for development
+    return "sqlite:///smartcloudops.db"
 
 
 # Create database engine
 def create_db_engine():
-    """Create database engine with appropriate configuration.""f"
+    """Create database engine with appropriate configuration."""
     database_url = get_database_url()
 
     # Engine configuration
     engine_kwargs = {
-        "echo": config.get("debug", False),  # Log SQL queries in debug mode
+        "echo": getattr(config, "DEBUG", False),  # Log SQL queries in debug mode
     }
 
     # SQLite specific configuration
-    if database_url.startswith("sqlitef"):
+    if database_url.startswith("sqlite"):
         engine_kwargs.update(
             {"poolclass": StaticPool, "connect_args": {"check_same_thread": False}}
         )
 
     # PostgreSQL specific configuration
-    elif database_url.startswith("postgresqlf"):
+    elif database_url.startswith("postgresql"):
         engine_kwargs.update(
             {
                 "pool_size": 10,
@@ -74,7 +65,7 @@ def create_db_engine():
         )
 
     # MySQL specific configuration
-    elif database_url.startswith("mysqlf"):
+    elif database_url.startswith("mysql"):
         engine_kwargs.update(
             {
                 "pool_size": 10,
@@ -101,7 +92,7 @@ def init_db():
         print("✅ Database tables created successfully")
         return True
     except Exception as e:
-        print(f"❌ Database initialization failed: {e}")
+        print("❌ Database initialization failed: {e}")
         return False
 
 
@@ -144,13 +135,13 @@ def check_db_health():
             result.fetchone()
         return True
     except Exception as e:
-        print(f"❌ Database health check failed: {e}")
+        print("❌ Database health check failed: {e}")
         return False
 
 
 # Database migration helpers
 def get_migration_env():
-    """Get Alembic migration environment configuration.""f"
+    """Get Alembic migration environment configuration."""
     return {
         "script_location": "migrations",
         "version_table": "alembic_version",
@@ -210,7 +201,7 @@ def seed_initial_data():
                 print("ℹ️  Initial data already exists")
 
     except Exception as e:
-        print(f"❌ Data seeding failed: {e}")
+        print("❌ Data seeding failed: {e}")
         return False
 
     return True
@@ -233,7 +224,7 @@ def reset_db():
 
         return True
     except Exception as e:
-        print(f"❌ Database reset failed: {e}")
+        print("❌ Database reset failed: {e}")
         return False
 
 
@@ -251,13 +242,13 @@ def backup_db():
 
             # Create backup filename
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            backup_file = f"{backup_dir}/smartcloudops_backup_{timestamp}.db"
+            backup_file = "{backup_dir}/smartcloudops_backup_{timestamp}.db"
 
             # Copy database file
             db_path = database_url.replace("sqlite:///", "")
             shutil.copy2(db_path, backup_file)
 
-            print(f"✅ Database backup created: {backup_file}")
+            print("✅ Database backup created: {backup_file}")
             return backup_file
 
         else:
@@ -265,5 +256,5 @@ def backup_db():
             return None
 
     except Exception as e:
-        print(f"❌ Database backup failed: {e}")
+        print("❌ Database backup failed: {e}")
         return None

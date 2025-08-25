@@ -1,0 +1,125 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "SmartCloudOps AI - Remediation",
+    "tags": [
+      "smartcloudops",
+      "remediation",
+      "automation"
+    ],
+    "timezone": "browser",
+    "refresh": "30s",
+    "schemaVersion": 27,
+    "version": 1,
+    "panels": [
+      {
+        "id": 1,
+        "title": "Remediation Actions (Last 24h)",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "increase(remediation_actions_total[24h])",
+            "legendFormat": "Total Actions"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 0,
+          "y": 0
+        }
+      },
+      {
+        "id": 2,
+        "title": "Success Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "rate(remediation_actions_total{status=\"success\"}[1h]) / rate(remediation_actions_total[1h]) * 100",
+            "legendFormat": "Success Rate %"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 70
+                },
+                {
+                  "color": "green",
+                  "value": 90
+                }
+              ]
+            }
+          }
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 8,
+          "y": 0
+        }
+      },
+      {
+        "id": 3,
+        "title": "Average Duration",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.50, rate(remediation_duration_seconds_bucket[5m]))",
+            "legendFormat": "Median Duration (s)"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 8,
+          "x": 16,
+          "y": 0
+        }
+      },
+      {
+        "id": 4,
+        "title": "Actions by Type",
+        "type": "bargauge",
+        "targets": [
+          {
+            "expr": "sum by (action_type) (increase(remediation_actions_total[1h]))",
+            "legendFormat": "{{action_type}}"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        }
+      },
+      {
+        "id": 5,
+        "title": "Action Status Distribution",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "sum by (status) (increase(remediation_actions_total[1h]))",
+            "legendFormat": "{{status}}"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        }
+      }
+    ]
+  }
+}

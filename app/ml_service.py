@@ -11,19 +11,19 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-@app.route("/healthf")
+@app.route("/health")
 def health():
     return jsonify({"status": "healthy", "service": "ml-processor"})
 
 
-@app.route("/predict", methods=["POSTf"])
+@app.route("/predict", methods=["POST"])
 def predict():
     data = request.get_json()
     # ML processing logic here
     return jsonify({"prediction": "processed", "data": data})
 
 
-@app.route("/train", methods=["POSTf"])
+@app.route("/train", methods=["POST"])
 def train():
     return jsonify({"status": "training_started"})
 
