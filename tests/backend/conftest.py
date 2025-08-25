@@ -1,6 +1,9 @@
 """Pytest configuration for backend tests."""
 
 import os
+import sys
+import pytest
+from flask.testing import FlaskClient
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
@@ -28,7 +31,12 @@ os.environ["JWT_SECRET_KEY"] = "test-jwt-secret-key-for-testing-only-32-chars-mi
 
 @pytest.fixture(scope="session")
 def app():
-    """Create Flask app for testing.""f"
+    """Create Flask app for testing."""
+    from app.main import create_app
+    
+    # Create app for testing
+    flask_app = create_app()
+    
     # Configure for testing
     flask_app.config.update(
         {

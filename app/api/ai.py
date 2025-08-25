@@ -5,6 +5,9 @@ Continuous learning, autonomous operations, and AI recommendations
 """
 
 import logging
+from flask import Blueprint, request, jsonify
+from app.auth import require_auth, require_admin
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -79,7 +82,7 @@ def process_autonomous():
             return jsonify({"status": "error", "message": "Anomaly ID required"}), 400
 
         # Process anomaly with autonomous operations
-        result = await autonomous_ops_engine.process_anomaly(anomaly_id)
+        result = autonomous_ops_engine.process_anomaly(anomaly_id)
 
         return jsonify({"status": "success", "result": result})
 
@@ -184,7 +187,7 @@ def run_learning_cycle():
     """Run a continuous learning cycle"""
     try:
         # Run learning cycle
-        await continuous_learning.run_learning_cycle()
+        continuous_learning.run_learning_cycle()
 
         # Get learning statistics
         learning_stats = continuous_learning.get_learning_stats()
@@ -234,7 +237,7 @@ def collect_data():
         hours_back = data.get("hours_back", 24)
 
         # Collect data
-        collection_stats = await data_pipeline.collect_all_data(hours_back)
+        collection_stats = data_pipeline.collect_all_data(hours_back)
 
         return jsonify(
             {
@@ -411,9 +414,7 @@ def detect_drift():
         model_drift_results = {}
         if version:
             current_metrics = {
-                "accuracy": 0.85,
-                    # Placeholder - in practice,
-                    calculate from recent predictions
+                "accuracy": 0.85,  # Placeholder - in practice, calculate from recent predictions
                 "precision": 0.82,
                 "recall": 0.88,
             }

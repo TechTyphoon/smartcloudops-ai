@@ -4,6 +4,9 @@ Feedback API Endpoints for Smart CloudOps AI
 Phase 7: Production Launch & Feedback - Feedback Loop
 """
 
+from flask import Blueprint, request, jsonify
+from app.auth import require_auth
+
 
 # Create blueprint
 feedback_bp = Blueprint("feedback", __name__, url_prefix="/api/feedback")

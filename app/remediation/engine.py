@@ -6,9 +6,21 @@ Orchestrates anomaly detection, safety checks, and remediation actions
 
 import logging
 import os
+import sys
+from typing import Optional, Dict, Any, List
+from datetime import datetime
 
 # Add the project root to Python path - MUST be first
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+
+# Import config after path setup
+from app.config import get_config
+
+# Import remediation components
+try:
+    from app.remediation.safety import SafetyManager
+except ImportError:
+    SafetyManager = None
 
 
 logger = logging.getLogger(__name__)

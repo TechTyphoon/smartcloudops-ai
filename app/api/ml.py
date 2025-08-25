@@ -6,6 +6,11 @@ Provides AI-driven anomaly detection and model management
 
 import logging
 import os
+from typing import List, Dict
+import numpy as np
+from flask import Blueprint, request, jsonify
+from app.auth import require_auth
+
 # Configure logging
 logger = logging.getLogger(__name__)
 
@@ -402,8 +407,7 @@ def train_model():
                 jsonify(
                     {
                         "status": "error",
-                        "message": "Insufficient training data. Need at least 100 samples, got {len(
-                            metrics_data)}",
+                        "message": f"Insufficient training data. Need at least 100 samples, got {len(metrics_data)}",
                     }
                 ),
                 400,
@@ -423,8 +427,7 @@ def train_model():
             audit_log = AuditLog(
                 user_id=request.user.get("id"),
                 action="ml_model_training",
-                details="Trained anomaly detection model with {len(
-                    metrics_data)} samples",
+                details=f"Trained anomaly detection model with {len(metrics_data)} samples",
                 timestamp=datetime.now(),
             )
             session.add(audit_log)
@@ -505,8 +508,7 @@ def retrain_model():
                 jsonify(
                     {
                         "status": "error",
-                        "message": "Insufficient data for retraining. Need at least 50 samples, got {len(
-                            metrics_data)}",
+                        "message": f"Insufficient data for retraining. Need at least 50 samples, got {len(metrics_data)}",
                     }
                 ),
                 400,
@@ -526,8 +528,7 @@ def retrain_model():
             audit_log = AuditLog(
                 user_id=request.user.get("id"),
                 action="ml_model_retraining",
-                details="Retrained anomaly detection model with {len(
-                    metrics_data)} samples",
+                details=f"Retrained anomaly detection model with {len(metrics_data)} samples",
                 timestamp=datetime.now(),
             )
             session.add(audit_log)

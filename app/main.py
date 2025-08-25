@@ -47,18 +47,33 @@ try:
 except ImportError:
     def register_auth_endpoints(app): pass
 
-# Import API blueprints (temporarily disabled for core app stability)
-# TODO: Re-enable after fixing all API module imports
-anomalies_bp = None
+# Import API blueprints (re-enabling working modules)
+try:
+    from app.api.anomalies import anomalies_bp
+    ANOMALIES_AVAILABLE = True
+except ImportError:
+    anomalies_bp = None
+    ANOMALIES_AVAILABLE = False
+
+try:
+    from app.api.feedback import feedback_bp
+    FEEDBACK_AVAILABLE = True
+except ImportError:
+    feedback_bp = None
+    FEEDBACK_AVAILABLE = False
+
+try:
+    from app.api.ai import ai_bp
+    AI_API_AVAILABLE = True
+except ImportError:
+    ai_bp = None
+    AI_API_AVAILABLE = False
+
+# TODO: Fix remaining modules (remediation, ml)
 remediation_bp = None
-feedback_bp = None
 ml_bp = None
-ai_bp = None
-ANOMALIES_AVAILABLE = False
 REMEDIATION_AVAILABLE = False
-FEEDBACK_AVAILABLE = False
 ML_API_AVAILABLE = False
-AI_API_AVAILABLE = False
 
 # Import existing modules
 try:

@@ -11,8 +11,12 @@ from app.auth import require_auth
 # Create blueprint
 remediation_bp = Blueprint("remediation", __name__, url_prefix="/api/remediation")
 
-# Initialize remediation engine
-remediation_engine = RemediationEngine()
+# Initialize remediation engine (with fallback for missing component)
+try:
+    from app.remediation.engine import RemediationEngine
+    remediation_engine = RemediationEngine()
+except ImportError:
+    remediation_engine = None
 
 
 @remediation_bp.route("/actions", methods=["GET"])
