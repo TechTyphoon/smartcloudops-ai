@@ -7,6 +7,7 @@ Executes AWS SSM-based remediation actions
 import logging
 import os
 import boto3
+from typing import Dict, Any, List
 
 logger = logging.getLogger(__name__)
 

@@ -9,7 +9,7 @@ import os
 from typing import List, Dict
 import numpy as np
 from flask import Blueprint, request, jsonify
-from app.auth import require_auth
+from app.auth import require_auth, require_admin
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -259,7 +259,6 @@ def detect_anomalies():
                     timestamp=datetime.fromisoformat(anomaly_data["timestamp"]),
                     severity=anomaly_data["severity"],
                     description="ML detected anomaly with score {anomaly_data['anomaly_score']:.3f}",
-
                     metrics_data=anomaly_data["metrics"],
                     source="ml_model",
                     status="new",

@@ -14,6 +14,7 @@ remediation_bp = Blueprint("remediation", __name__, url_prefix="/api/remediation
 # Initialize remediation engine (with fallback for missing component)
 try:
     from app.remediation.engine import RemediationEngine
+
     remediation_engine = RemediationEngine()
 except ImportError:
     remediation_engine = None

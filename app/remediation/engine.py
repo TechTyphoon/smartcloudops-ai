@@ -19,8 +19,10 @@ from app.config import get_config
 # Import remediation components
 try:
     from app.remediation.safety import SafetyManager
+    from app.remediation.actions import ActionManager
 except ImportError:
     SafetyManager = None
+    ActionManager = None
 
 
 logger = logging.getLogger(__name__)
@@ -54,7 +56,7 @@ class RemediationEngine:
             cooldown_minutes=cooldown,
             approval_param=approval_param,
         )
-        self.action_manager = ActionManager()
+        self.action_manager = ActionManager() if ActionManager else None
         self.notification_manager = NotificationManager()
 
         # Track recent actions for safety

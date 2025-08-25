@@ -37,19 +37,30 @@ from app.config import get_config
 try:
     from app.database import init_db, seed_initial_data, check_db_health
 except ImportError:
-    def init_db(): pass
-    def seed_initial_data(): pass
-    def check_db_health(): return True
 
-# Import authentication functions  
+    def init_db():
+        pass
+
+    def seed_initial_data():
+        pass
+
+    def check_db_health():
+        return True
+
+
+# Import authentication functions
 try:
     from app.auth_routes import register_auth_endpoints
 except ImportError:
-    def register_auth_endpoints(app): pass
+
+    def register_auth_endpoints(app):
+        pass
+
 
 # Import API blueprints (re-enabling working modules)
 try:
     from app.api.anomalies import anomalies_bp
+
     ANOMALIES_AVAILABLE = True
 except ImportError:
     anomalies_bp = None
@@ -57,6 +68,7 @@ except ImportError:
 
 try:
     from app.api.feedback import feedback_bp
+
     FEEDBACK_AVAILABLE = True
 except ImportError:
     feedback_bp = None
@@ -64,6 +76,7 @@ except ImportError:
 
 try:
     from app.api.ai import ai_bp
+
     AI_API_AVAILABLE = True
 except ImportError:
     ai_bp = None
@@ -132,7 +145,7 @@ def create_app() -> Flask:
     app.config.update(config.to_dict())
 
     # Enable CORS
-    cors_origins = getattr(config, 'CORS_ORIGINS', ["http://localhost:3000"])
+    cors_origins = getattr(config, "CORS_ORIGINS", ["http://localhost:3000"])
     CORS(app, origins=cors_origins)
 
     # Initialize database
@@ -262,7 +275,7 @@ def create_app() -> Flask:
                 "status": "operational",
                 "timestamp": datetime.utcnow().isoformat(),
                 "version": "1.0.0",
-                "environment": getattr(config, 'FLASK_ENV', 'production'),
+                "environment": getattr(config, "FLASK_ENV", "production"),
                 "components": {
                     "database": {
                         "status": "healthy" if check_db_health() else "unhealthy",
@@ -317,7 +330,6 @@ def create_app() -> Flask:
                 "name": "SmartCloudOps AI",
                 "version": "1.0.0",
                 "description": "AI-powered DevOps platform with anomaly detection and automated remediation",
-
                 "phase": "Phase 7 - Production Launch & Feedback",
                 "endpoints": {
                     "health": "/health",
@@ -375,7 +387,6 @@ def create_app() -> Flask:
                             "POST /api/anomalies/": "Create new anomaly",
                             "PUT /api/anomalies/<id>": "Update anomaly",
                             "POST /api/anomalies/<id>/acknowledge": "Acknowledge anomaly",
-
                             "POST /api/anomalies/<id>/resolve": "Resolve anomaly",
                             "POST /api/anomalies/<id>/dismiss": "Dismiss anomaly",
                             "GET /api/anomalies/stats": "Get anomaly statistics",
@@ -387,23 +398,16 @@ def create_app() -> Flask:
                     "remediation": (
                         {
                             "GET /api/remediation/actions": "Get all remediation actions",
-
                             "GET /api/remediation/actions/<id>": "Get specific action",
                             "POST /api/remediation/actions": "Create new action",
                             "PUT /api/remediation/actions/<id>": "Update action",
                             "DELETE /api/remediation/actions/<id>": "Delete action",
                             "POST /api/remediation/actions/<id>/approve": "Approve action",
-
                             "POST /api/remediation/actions/<id>/execute": "Execute action",
-
                             "POST /api/remediation/actions/<id>/cancel": "Cancel action",
-
                             "GET /api/remediation/actions/stats": "Get action statistics",
-
                             "POST /api/remediation/actions/batch": "Create batch actions",
-
                             "GET /api/remediation/available-actions": "Get available action types",
-
                         }
                         if REMEDIATION_AVAILABLE
                         else "unavailable"
@@ -416,7 +420,6 @@ def create_app() -> Flask:
                             "PUT /api/feedback/<id>": "Update feedback",
                             "DELETE /api/feedback/<id>": "Delete feedback",
                             "POST /api/feedback/<id>/update-status": "Update feedback status",
-
                             "GET /api/feedback/stats": "Get feedback statistics",
                             "GET /api/feedback/my-feedback": "Get user feedback",
                             "GET /api/feedback/types": "Get feedback types",
@@ -427,9 +430,7 @@ def create_app() -> Flask:
                     "ml": (
                         {
                             "POST /api/ml/anomalies": "Detect anomalies in metrics data",
-
                             "GET /api/ml/anomalies/realtime": "Real-time anomaly detection",
-
                             "POST /api/ml/train": "Train anomaly detection model",
                             "GET /api/ml/model/info": "Get model information",
                             "POST /api/ml/model/retrain": "Retrain model with new data",
@@ -442,38 +443,22 @@ def create_app() -> Flask:
                     "ai": (
                         {
                             "POST /api/ai/recommendations": "Get AI-powered remediation recommendations",
-
                             "POST /api/ai/autonomous/process": "Process anomaly with autonomous operations",
-
                             "GET /api/ai/autonomous/policies": "Get automation policies",
-
                             "POST /api/ai/autonomous/policies": "Create automation policy",
-
                             "PUT /api/ai/autonomous/policies/<id>": "Update automation policy",
-
                             "DELETE /api/ai/autonomous/policies/<id>": "Delete automation policy",
-
                             "POST /api/ai/learning/cycle": "Run continuous learning cycle",
-
                             "GET /api/ai/learning/statistics": "Get learning statistics",
-
                             "POST /api/ai/data/collect": "Collect data for continuous learning",
-
                             "GET /api/ai/models/registry": "Get model registry information",
-
                             "POST /api/ai/models/<type>/promote": "Promote model to production",
-
                             "POST /api/ai/experiments/ab-testing": "Start A/B testing experiment",
-
                             "POST /api/ai/experiments/ab-testing/<id>/end": "End A/B testing experiment",
-
                             "POST /api/ai/drift/detect": "Detect data and model drift",
                             "GET /api/ai/knowledge/stats": "Get knowledge base statistics",
-
                             "POST /api/ai/knowledge/experience": "Add experience to knowledge base",
-
                             "GET /api/ai/autonomous/stats": "Get autonomous operations statistics",
-
                         }
                         if AI_API_AVAILABLE
                         else "unavailable"
@@ -481,7 +466,6 @@ def create_app() -> Flask:
                 },
                 "authentication": "All endpoints except /api/feedback/ (POST) and /api/feedback/types require JWT authentication",
                 "rate_limiting": "API endpoints are rate limited. Login endpoints have stricter limits.",
-
                 "error_codes": {
                     "400": "Bad Request",
                     "401": "Unauthorized",
@@ -520,9 +504,9 @@ if __name__ == "__main__":
     config = get_config()
 
     # Run the application
-    debug = getattr(config, 'DEBUG', False)
-    host = getattr(config, 'FLASK_HOST', '0.0.0.0')
-    port = getattr(config, 'FLASK_PORT', 5000)
+    debug = getattr(config, "DEBUG", False)
+    host = getattr(config, "FLASK_HOST", "0.0.0.0")
+    port = getattr(config, "FLASK_PORT", 5000)
 
     logger.info("Starting SmartCloudOps AI on {host}:{port}")
     logger.info("Debug mode: {debug}")

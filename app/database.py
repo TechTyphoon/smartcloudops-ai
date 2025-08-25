@@ -30,7 +30,7 @@ def get_database_url():
         return database_url
 
     # Fall back to config DATABASE_URL attribute if available
-    if hasattr(config, 'DATABASE_URL') and config.DATABASE_URL:
+    if hasattr(config, "DATABASE_URL") and config.DATABASE_URL:
         return config.DATABASE_URL
 
     # Default to SQLite for development
@@ -44,7 +44,7 @@ def create_db_engine():
 
     # Engine configuration
     engine_kwargs = {
-        "echo": getattr(config, 'DEBUG', False),  # Log SQL queries in debug mode
+        "echo": getattr(config, "DEBUG", False),  # Log SQL queries in debug mode
     }
 
     # SQLite specific configuration

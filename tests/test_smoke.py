@@ -30,6 +30,7 @@ def test_config_import():
     """Test that the config can be imported"""
     try:
         from app.config import get_config
+
         config = get_config()
         assert config is not None
         print("✅ Config imported successfully")

@@ -289,7 +289,6 @@ def promote_model(model_type):
             {
                 "status": "success",
                 "message": "Model {model_type} version {version} promoted to production",
-
             }
         )
 

@@ -7,6 +7,7 @@ Implements safety mechanisms for auto-remediation actions
 import logging
 import os
 import boto3
+from typing import List, Dict
 
 logger = logging.getLogger(__name__)
 
