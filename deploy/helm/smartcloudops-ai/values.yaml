@@ -176,7 +176,8 @@ monitoring:
     persistence:
       enabled: true
       size: 10Gi
-    adminPassword: admin
+    # adminPassword should be provided via existingSecret or --set during deployment
+    # adminPassword: <set via --set or existingSecret>
     resources:
       requests:
         cpu: 250m

@@ -17,20 +17,15 @@ class AuthManager:
     """Authentication and authorization manager."""
 
     def __init__(self, secret_key=None, algorithm="HS256"):
-        self.secret_key = secret_key or os.getenv(
-            "JWT_SECRET_KEY", "your-secret-key-change-in-production"
-        )
+        self.secret_key = secret_key or os.getenv("JWT_SECRET_KEY")
+        if not self.secret_key:
+            raise ValueError("JWT_SECRET_KEY environment variable is required")
         self.algorithm = algorithm
         self.token_expiry = int(os.getenv("JWT_EXPIRY_HOURS", 24))  # 24 hours default
 
     def generate_tokens(self, user_id: int, username: str, role: str):
-<<<<<<< Current (Your changes)
         """Generate access and refresh tokens."""
-        now = datetime.utcnow()
-=======
-        """"Generate access and refresh tokens.""",
         now = datetime.now(timezone.utc)
->>>>>>> Incoming (Background Agent changes)
 
         # Access token (short-lived)
         access_token_payload = {

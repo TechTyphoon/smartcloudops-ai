@@ -19,17 +19,21 @@ logger = logging.getLogger(__name__)
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth"
 
 # JWT Configuration
-JWT_SECRET_KEY = os.getenv(
-    ""FLASK_SECRET_KEY", "your-super-secret-key-minimum-32-characters-long-random-string",
-JWT_ALGORITHM = ""HS256",
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+if not JWT_SECRET_KEY:
+    raise ValueError("JWT_SECRET_KEY environment variable is required")
+JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24
 
+# Get admin password from environment
+DEFAULT_ADMIN_PASSWORD = os.environ.get("DEFAULT_ADMIN_PASSWORD")
+if not DEFAULT_ADMIN_PASSWORD:
+    raise ValueError("DEFAULT_ADMIN_PASSWORD environment variable is required")
+
 # In-memory user store (replace with database in production)
-USERS = {
+USERS_DB = {
     "admin": {
-        "password_hash": generate_password_hash(
-            os.environ.get("DEFAULT_ADMIN_PASSWORD", "")
-        ),
+        "password_hash": generate_password_hash(DEFAULT_ADMIN_PASSWORD),
         "role": "admin",
         "email": "admin@smartcloudops.ai"
     }

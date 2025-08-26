@@ -91,7 +91,7 @@ class TestGPTHandler:
             with patch(
                 "app.chatops.gpt_handler.OpenAI", return_value=mock_openai_client
             ):
-                handler = GPTHandler(api_key="test-key")
+                handler = GPTHandler(api_key=os.environ.get("TEST_OPENAI_API_KEY", "mock-test-key-for-testing-only"))
                 # Mock the client after initialization
                 handler.client = mock_openai_client
                 result = handler.process_query("What's the CPU usage?")

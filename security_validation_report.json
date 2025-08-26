@@ -1,0 +1,112 @@
+{
+  "total_issues": 38,
+  "critical": 0,
+  "high": 34,
+  "medium": 4,
+  "low": 0,
+  "warnings": [
+    {
+      "file": "Dockerfile.production",
+      "type": "docker_security",
+      "message": "Consider pinning base image with SHA256 digest: FROM python:3.11-slim as builder",
+      "severity": "LOW"
+    },
+    {
+      "file": "Dockerfile.production",
+      "type": "docker_security",
+      "message": "Consider pinning base image with SHA256 digest: FROM python:3.11-slim as production",
+      "severity": "LOW"
+    },
+    {
+      "file": "env.template",
+      "type": "configuration",
+      "message": "env.template may still contain placeholder values",
+      "severity": "LOW"
+    },
+    {
+      "type": "dependencies",
+      "message": "Found 21 dependencies without upper bounds",
+      "severity": "LOW",
+      "details": [
+        "SQLAlchemy>=2.0.28  # Updated for Python 3.13 compatibility",
+        "psycopg2-binary>=2.9.9",
+        "openai>=1.68.2",
+        "google-generativeai>=0.3.0",
+        "scikit-learn>=1.5.2"
+      ]
+    }
+  ],
+  "passed_checks": 2,
+  "issues": [
+    {
+      "file": "app/auth.py",
+      "line": 19,
+      "type": "weak_secrets",
+      "content": "def __init__(self, secret_key=None, algorithm=\"HS256\"):",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "app/auth_module.py",
+      "line": 30,
+      "type": "hardcoded_passwords",
+      "content": "if not DEFAULT_ADMIN_PASSWORD:",
+      "severity": "HIGH"
+    },
+    {
+      "file": "app/auth_module.py",
+      "line": 31,
+      "type": "hardcoded_passwords",
+      "content": "raise ValueError(\"DEFAULT_ADMIN_PASSWORD environment variable is required\")",
+      "severity": "HIGH"
+    },
+    {
+      "file": "app/auth_module.py",
+      "line": 36,
+      "type": "hardcoded_passwords",
+      "content": "\"password_hash\": generate_password_hash(DEFAULT_ADMIN_PASSWORD),",
+      "severity": "HIGH"
+    },
+    {
+      "file": "app/auth_module.py",
+      "line": 95,
+      "type": "hardcoded_passwords",
+      "content": "\"password\": \"use environment variable DEFAULT_ADMIN_PASSWORD\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "app/auth_module.py",
+      "line": 36,
+      "type": "hardcoded_passwords",
+      "content": "\"password_hash\": generate_password_hash(DEFAULT_ADMIN_PASSWORD),",
+      "severity": "HIGH"
+    },
+    {
+      "file": "app/auth_module.py",
+      "line": 95,
+      "type": "hardcoded_passwords",
+      "content": "\"password\": \"use environment variable DEFAULT_ADMIN_PASSWORD\"",
+      "severity": "HIGH"
+    },
+    {
+      "file": "tests/test_chatops.py",
+      "line": 94,
+      "type": "api_keys",
+      "content": "handler = GPTHandler(api_key=\"test-key\")",
+      "severity": "HIGH"
+    },
+    {
+      "file": "tests/test_chatops.py",
+      "line": 94,
+      "type": "api_keys",
+      "content": "handler = GPTHandler(api_key=\"test-key\")",
+      "severity": "HIGH"
+    },
+    {
+      "file": "tests/test_ai_handler.py",
+      "line": 152,
+      "type": "api_keys",
+      "content": "mock_openai.assert_called_once_with(api_key=\"test-key\")",
+      "severity": "HIGH"
+    }
+  ]
+}

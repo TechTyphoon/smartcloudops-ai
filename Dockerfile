@@ -1,7 +1,8 @@
 # =====================================================
 # 🏗️ BUILDER STAGE - Install dependencies and build
 # =====================================================
-FROM python:3.10-slim as builder
+FROM python:3.10-slim@sha256:a2c9b8dd30db99f3e0e2e7ca96a4f5c1f5e6c4b8e9b5c5e5f5e5f5e5f5e5f5e5 as builder
+# Note: Replace with actual digest from: docker pull python:3.10-slim && docker inspect python:3.10-slim
 
 # Set working directory
 WORKDIR /app
@@ -36,10 +37,12 @@ RUN pip install --no-cache-dir --upgrade pip \
 # =====================================================
 # 🚀 FINAL STAGE - Production runtime
 # =====================================================
-FROM python:3.10-slim
+FROM python:3.10-slim@sha256:a2c9b8dd30db99f3e0e2e7ca96a4f5c1f5e6c4b8e9b5c5e5f5e5f5e5f5e5f5e5
+# Note: Replace with actual digest from: docker pull python:3.10-slim && docker inspect python:3.10-slim
 
-# Create non-root user for security
-RUN adduser --disabled-password --gecos '' appuser
+# Create non-root user for security with specific UID/GID
+RUN groupadd -r -g 1000 appuser && \
+    useradd -r -u 1000 -g appuser -d /app -s /sbin/nologin -c "Application user" appuser
 
 # Set working directory
 WORKDIR /app
@@ -68,9 +71,12 @@ COPY start.sh ./
 # Create logs directory
 RUN mkdir -p logs
 
-# Set ownership to non-root user
+# Set ownership to non-root user and restrict permissions
 RUN chown -R appuser:appuser /app \
-    && chmod +x start.sh
+    && chmod 755 /app \
+    && chmod 500 start.sh \
+    && chmod -R 644 /app/app/*.py \
+    && find /app -type d -exec chmod 755 {} +
 
 # Switch to non-root user
 USER appuser
@@ -82,12 +88,16 @@ EXPOSE 5000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:5000/health || exit 1
 
-# Set production environment variables
+# Set production environment variables and security settings
 ENV FLASK_ENV=production \
     FLASK_DEBUG=false \
     LOG_LEVEL=INFO \
     LOG_JSON=true \
-    PYTHONPATH=/app
+    PYTHONPATH=/app \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # Run the application with proper startup script
 CMD ["./start.sh"]

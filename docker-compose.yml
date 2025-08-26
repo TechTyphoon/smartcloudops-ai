@@ -60,7 +60,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: redis-cache-server
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
     ports:
       - "6379:6379"
     volumes:
@@ -112,8 +112,8 @@ services:
     ports:
       - "13000:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD is required}
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
     volumes:
       - grafana_data:/var/lib/grafana
       - ./terraform/configs/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro
@@ -138,9 +138,9 @@ services:
     image: postgres:17-alpine
     container_name: postgres-database
     environment:
-      - POSTGRES_USER=${POSTGRES_USER:-cloudops}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-cloudops}
-      - POSTGRES_DB=${POSTGRES_DB:-cloudops}
+      - POSTGRES_USER=${POSTGRES_USER:?POSTGRES_USER is required}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      - POSTGRES_DB=${POSTGRES_DB:-smartcloudops}
     ports:
       - "5434:5432"
     volumes:
