@@ -30,7 +30,7 @@ jobs:
     - name: Install dependencies
       working-directory: smartcloudops-ai
       run: |
-        npm ci
+        npm ci --legacy-peer-deps
         npm install -g @lhci/cli@0.12.x
     
     - name: Build application
