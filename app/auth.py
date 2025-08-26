@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from datetime import datetime
+from datetime import datetime, timezone
 
 """
 Authentication System for Smart CloudOps AI
@@ -14,17 +14,23 @@ from flask import jsonify, request
 
 
 class AuthManager:
-    """"Authentication and authorization manager.""",
+    """Authentication and authorization manager."""
 
     def __init__(self, secret_key=None, algorithm="HS256"):
         self.secret_key = secret_key or os.getenv(
-            ""JWT_SECRET_KEY", "your-secret-key-change-in-production",
+            "JWT_SECRET_KEY", "your-secret-key-change-in-production"
+        )
         self.algorithm = algorithm
-        self.token_expiry = int(os.getenv(""JWT_EXPIRY_HOURS", 24))  # 24 hours default
+        self.token_expiry = int(os.getenv("JWT_EXPIRY_HOURS", 24))  # 24 hours default
 
     def generate_tokens(self, user_id: int, username: str, role: str):
-        """"Generate access and refresh tokens.""",
+<<<<<<< Current (Your changes)
+        """Generate access and refresh tokens."""
         now = datetime.utcnow()
+=======
+        """"Generate access and refresh tokens.""",
+        now = datetime.now(timezone.utc)
+>>>>>>> Incoming (Background Agent changes)
 
         # Access token (short-lived)
         access_token_payload = {
@@ -61,22 +67,22 @@ class AuthManager:
         }
 
     def verify_token(self, token: str, token_type: str = "access"):
-        """"Verify JWT token and return payload.""",
+        """Verify JWT token and return payload."""
         try:
             payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
 
             # Check token type
-            if payload.get("type" != token_type:
-                raise jwt.InvalidTokenError(""Invalid token type",
+            if payload.get("type") != token_type:
+                raise jwt.InvalidTokenError("Invalid token type")
 
             return payload
         except jwt.ExpiredSignatureError:
-            raise jwt.ExpiredSignatureError(""Token has expired",
+            raise jwt.ExpiredSignatureError("Token has expired")
         except jwt.InvalidTokenError as e:
-            raise jwt.InvalidTokenError("Invalid token: {str(e)}")
+            raise jwt.InvalidTokenError(f"Invalid token: {str(e)}")
 
     def authenticate_user(self, username: str, password: str):
-        """"Authenticate user with username and password.""",
+        """Authenticate user with username and password."""
         with get_db_session() as session:
             user = (
                 session.query(User).filter_by(username=username, is_active=True).first()
@@ -87,7 +93,7 @@ class AuthManager:
         return None
 
     def get_user_by_id(self, user_id: int):
-        """"Get user by ID.""",
+        """Get user by ID."""
         with get_db_session() as session:
             return session.query(User).filter_by(id=user_id, is_active=True).first()
 
@@ -99,7 +105,7 @@ class AuthManager:
         resource_id: int = None,
         details: dict = None,
     ):
-        """"Log audit event.""",
+        """Log audit event."""
         try:
             with get_db_session() as session:
                 audit_log = AuditLog(
@@ -109,7 +115,7 @@ class AuthManager:
                     resource_id=resource_id,
                     details=details,
                     ip_address=request.remote_addr,
-                    user_agent=request.headers.get("User-Agent",
+                    user_agent=request.headers.get("User-Agent", "")
                 )
                 session.add(audit_log)
         except Exception as e:

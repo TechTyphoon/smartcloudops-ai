@@ -8,7 +8,7 @@ import json
 import hashlib
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 import logging
@@ -239,7 +239,7 @@ class DataPipelineManager:
                 source_path = None
             
             # Generate version ID
-            timestamp = datetime.utcnow()
+            timestamp = datetime.now(timezone.utc)
             version_id = f"{dataset_name}_{timestamp.strftime('%Y%m%d_%H%M%S')}_{self._generate_short_hash(df)}"
             
             # Calculate hashes
@@ -479,7 +479,7 @@ class DataPipelineManager:
     
     def _assess_data_quality(self, df: pd.DataFrame, dataset_name: str, version_id: str) -> QualityReport:
         """Comprehensive data quality assessment"""
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(timezone.utc)
         
         # Calculate quality scores
         completeness_score = self._calculate_completeness_score(df)
@@ -788,12 +788,12 @@ class DataPipelineManager:
     
     def _start_pipeline_run(self, pipeline_name: str, stage: PipelineStage):
         """Start a new pipeline run"""
-        run_id = f"run_{int(datetime.utcnow().timestamp())}_{pipeline_name}"
+        run_id = f"run_{int(datetime.now(timezone.utc).timestamp())}_{pipeline_name}"
         
         self.current_run = PipelineRun(
             run_id=run_id,
             pipeline_name=pipeline_name,
-            started_at=datetime.utcnow(),
+            started_at=datetime.now(timezone.utc),
             ended_at=None,
             duration_seconds=None,
             stage=stage,
@@ -819,7 +819,7 @@ class DataPipelineManager:
         if not self.current_run:
             return
         
-        self.current_run.ended_at = datetime.utcnow()
+        self.current_run.ended_at = datetime.now(timezone.utc)
         self.current_run.duration_seconds = (
             self.current_run.ended_at - self.current_run.started_at
         ).total_seconds()
@@ -836,14 +836,14 @@ class DataPipelineManager:
     def _log_pipeline_event(self, message: str):
         """Log an event in the current pipeline run"""
         if self.current_run:
-            self.current_run.logs.append(f"{datetime.utcnow().isoformat()}: {message}")
+            self.current_run.logs.append(f"{datetime.now(timezone.utc).isoformat()}: {message}")
         logger.info(message)
     
     def _log_pipeline_error(self, message: str):
         """Log an error in the current pipeline run"""
         if self.current_run:
             self.current_run.error_count += 1
-            self.current_run.logs.append(f"{datetime.utcnow().isoformat()}: ERROR: {message}")
+            self.current_run.logs.append(f"{datetime.now(timezone.utc).isoformat()}: ERROR: {message}")
         logger.error(message)
     
     # ===== UTILITY METHODS =====

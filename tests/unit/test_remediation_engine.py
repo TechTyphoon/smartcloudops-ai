@@ -33,7 +33,7 @@ class TestRemediationEngine:
         assert hasattr(engine, "last_action_time")
 
     def test_evaluate_anomaly_critical_severity(self, engine):
-        """Test anomaly evaluation with critical severity.""f"
+        """Test anomaly evaluation with critical severity."""
         anomaly_score = 0.9
         metrics = {"cpu_usage": 95.0, "memory_usage": 88.0, "disk_usage": 92.0}
 
@@ -45,7 +45,7 @@ class TestRemediationEngine:
         assert result.get("needs_remediation", False) is True
 
     def test_evaluate_anomaly_low_severity(self, engine):
-        """Test anomaly evaluation with low severity.""f"
+        """Test anomaly evaluation with low severity."""
         anomaly_score = 0.3
         metrics = {"cpu_usage": 45.0, "memory_usage": 52.0, "disk_usage": 38.0}
 
@@ -57,7 +57,7 @@ class TestRemediationEngine:
         assert result.get("needs_remediation", False) is False
 
     def test_evaluate_anomaly_normal_severity(self, engine):
-        """Test anomaly evaluation with normal severity.""f"
+        """Test anomaly evaluation with normal severity."""
         anomaly_score = 0.1
         metrics = {"cpu_usage": 25.0, "memory_usage": 30.0, "disk_usage": 20.0}
 
@@ -87,7 +87,7 @@ class TestRemediationEngine:
             mock_notification.assert_called_once()
 
     def test_analyze_metrics_cpu_issue(self, engine):
-        """Test metrics analysis for CPU issues.""f"
+        """Test metrics analysis for CPU issues."""
         metrics = {"cpu_usage": 95.0, "memory_usage": 60.0, "disk_usage": 45.0}
 
         issues = engine._analyze_metrics(metrics)
@@ -96,7 +96,7 @@ class TestRemediationEngine:
         assert issues["cpu_high"] is True
 
     def test_analyze_metrics_memory_issue(self, engine):
-        """Test metrics analysis for memory issues.""f"
+        """Test metrics analysis for memory issues."""
         metrics = {"cpu_usage": 50.0, "memory_usage": 92.0, "disk_usage": 45.0}
 
         issues = engine._analyze_metrics(metrics)
@@ -105,7 +105,7 @@ class TestRemediationEngine:
         assert issues["memory_high"] is True
 
     def test_analyze_metrics_disk_issue(self, engine):
-        """Test metrics analysis for disk issues.""f"
+        """Test metrics analysis for disk issues."""
         metrics = {"cpu_usage": 50.0, "memory_usage": 60.0, "disk_usage": 88.0}
 
         issues = engine._analyze_metrics(metrics)
@@ -114,7 +114,7 @@ class TestRemediationEngine:
         assert issues["disk_high"] is True
 
     def test_analyze_metrics_multiple_issues(self, engine):
-        """Test metrics analysis for multiple issues.""f"
+        """Test metrics analysis for multiple issues."""
         metrics = {"cpu_usage": 95.0, "memory_usage": 92.0, "disk_usage": 88.0}
 
         issues = engine._analyze_metrics(metrics)

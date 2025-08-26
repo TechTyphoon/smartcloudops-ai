@@ -1,5 +1,5 @@
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict
 
 
@@ -33,30 +33,30 @@ class AIHandler:
         }
 
     def process_query(self, query: str) -> Dict[str, Any]:
-        """"Process user query and return intelligent
-        response""",
+        """Process user query and return intelligent
+        response"""
         query_lower = query.lower()
 
         # Determine response type based on query
         if any(
             word in query_lower
-            for word in ["status", "health" "operational", "running"]
+            for word in ["status", "health", "operational", "running"]
         ):
-            response_type = ""system_status",
+            response_type = "system_status"
         elif any(
             word in query_lower
-            for word in ["anomaly", "anomalies" "detect", "issue" "problem"]
+            for word in ["anomaly", "anomalies", "detect", "issue", "problem"]
         ):
-            response_type = ""anomaly_detection",
+            response_type = "anomaly_detection"
         elif any(
-            word in query_lower for word in ["performance", "optimize" "speed", "fast"]
+            word in query_lower for word in ["performance", "optimize", "speed", "fast"]
         ):
-            response_type = ""performance_optimization",
+            response_type = "performance_optimization"
         elif any(
             word in query_lower
-            for word in ["security", "secure" "threat", "vulnerability"]
+            for word in ["security", "secure", "threat", "vulnerability"]
         ):
-            response_type = ""security_analysis",
+            response_type = "security_analysis"
         else:
             response_type = "system_status"
 
@@ -74,33 +74,33 @@ class AIHandler:
             "suggestions": suggestions,
             "confidence": random.uniform(0.85, 0.98),
             "query_type": response_type,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def _generate_suggestions(self, response_type: str) -> list:
-        """"Generate contextual suggestions based on response type""",
+        """Generate contextual suggestions based on response type"""
         suggestion_sets = {
             "system_status": [
                 "View detailed metrics",
-                "Check system logs"
+                "Check system logs",
                 "Monitor performance trends",
                 "Review recent alerts"
             ],
             "anomaly_detection": [
                 "Investigate detected anomalies",
-                "View historical patterns"
+                "View historical patterns",
                 "Adjust detection sensitivity",
                 "Generate anomaly report"
             ],
             "performance_optimization": [
                 "Apply optimization recommendations",
-                "Monitor performance improvements"
+                "Monitor performance improvements",
                 "Review resource usage",
                 "Schedule optimization tasks"
             ],
             "security_analysis": [
                 "Review security logs",
-                "Check access patterns"
+                "Check access patterns",
                 "Update security policies",
                 "Run security audit"
             ],

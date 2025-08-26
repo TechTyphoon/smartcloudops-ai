@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from datetime import datetime
+from datetime import datetime, timezone
 
 """
 Monitoring Module for Smart CloudOps AI
@@ -38,7 +38,7 @@ def update_system_metrics():
         SYSTEM_METRICS["cpu_percent"] = psutil.cpu_percent(interval=1)
         SYSTEM_METRICS["memory_percent"] = psutil.virtual_memory().percent
         SYSTEM_METRICS["disk_percent"] = psutil.disk_usage("/").percent
-        SYSTEM_METRICS["last_updated"] = datetime.utcnow().isoformat()
+        SYSTEM_METRICS["last_updated"] = datetime.now(timezone.utc).isoformat()
     except Exception as e:
         logger.error("Error updating system metrics: {e}")
 
@@ -63,7 +63,7 @@ def health_check():
         # Check critical services
         health_status = {
             "status": "healthy",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "version": "1.0.0",
             "services": {
                 "app": "healthy",
@@ -139,7 +139,7 @@ def health_check():
                 {
                     "status": "unhealthy",
                     "error": "Health check failed",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             ),
             503,
@@ -155,7 +155,7 @@ def system_status():
 
         status = {
             "status": "success",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "system": {
                 "cpu_percent": SYSTEM_METRICS["cpu_percent"],
                 "memory_percent": SYSTEM_METRICS["memory_percent"],
@@ -237,10 +237,10 @@ def alerts():
 
         # Process alert (simplified)
         alert = {
-            "id": "alert_{datetime.utcnow().timestamp()}",
+            "id": "alert_{datetime.now(timezone.utc).timestamp()}",
             "severity": data.get("severity", "info",
             "message": data.get("message", ""),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "source": data.get("source", "unknown",
         }
 

@@ -5,7 +5,7 @@ Handles all machine learning model management, training, and operations
 """
 
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional
 
 
@@ -241,9 +241,9 @@ class MLService:
             "accuracy": None,
             "loss": None,
             "training_time": None,
-            "started_at": datetime.utcnow().isoformat() + "Z",
+            "started_at": datetime.now(timezone.utc).isoformat() + "Z",
             "completed_at": None,
-            "estimated_completion": (datetime.utcnow() + timedelta(minutes=random.randint(15, 45))).isoformat() + "Z"
+            "estimated_completion": (datetime.now(timezone.utc) + timedelta(minutes=random.randint(15, 45))).isoformat() + "Z"
         }
         
         self.mock_training_jobs.append(new_job)
@@ -260,7 +260,7 @@ class MLService:
         for job in self.mock_training_jobs:
             if job["status"] == "running" and random.random() < 0.3:  # 30% chance to complete
                 job["status"] = "completed"
-                job["completed_at"] = datetime.utcnow().isoformat() + "Z"
+                job["completed_at"] = datetime.now(timezone.utc).isoformat() + "Z"
                 job["accuracy"] = round(random.uniform(0.8, 0.95), 3)
                 job["loss"] = round(random.uniform(0.05, 0.2), 3)
                 job["training_time"] = random.randint(1200, 3600)
@@ -417,7 +417,7 @@ class MLService:
             "model_id": model_id,
             "deployment_status": "success",
             "endpoint_url": f"/api/ml/models/{model_id}/predict",
-            "deployment_time": datetime.utcnow().isoformat() + "Z",
+            "deployment_time": datetime.now(timezone.utc).isoformat() + "Z",
             "version": deployment_config.get("version", "1.0.0") if deployment_config else "1.0.0",
             "replicas": deployment_config.get("replicas", 3) if deployment_config else 3,
             "resource_allocation": {

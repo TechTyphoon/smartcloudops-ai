@@ -74,6 +74,14 @@ def _register_blueprints(app: Flask):
     app.register_blueprint(core_bp)
     logger.info("✅ Core API blueprint registered")
     
+    # ChatOps API
+    try:
+        from app.api.chat import chat_bp
+        app.register_blueprint(chat_bp)
+        logger.info("✅ ChatOps API registered")
+    except ImportError as e:
+        logger.warning(f"ChatOps API not available: {e}")
+    
     # MLOps API if service is available
     if hasattr(app, 'mlops_service') and app.mlops_service:
         from app.api.mlops import mlops_bp

@@ -9,7 +9,7 @@ import pickle
 import sqlite3
 import time
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -139,7 +139,7 @@ class ModelRegistry:
             training_data_hash=training_data_hash,
             hyperparameters=hyperparameters or {},
             metrics=metrics or {},
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
             created_by=created_by,
             status=ModelStatus.DEVELOPMENT,
             tags=tags or [],

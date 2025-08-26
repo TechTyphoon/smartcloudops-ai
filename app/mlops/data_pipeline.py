@@ -6,7 +6,7 @@ Phase 2A Week 3: Data Pipeline Automation with quality monitoring and versioning
 
 import json
 import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 import logging
@@ -275,9 +275,9 @@ class DataPipelineManager:
                 df = data.copy()
                 source_path = None
             
-            # Generate version ID
-            timestamp = datetime.utcnow()
-            version_id = f"{dataset_name}_{timestamp.strftime('%Y%m%d_%H%M%S')}_{self._generate_short_hash(df)}"
+            # Generate version ID with microsecond precision for uniqueness
+            timestamp = datetime.now(timezone.utc)
+            version_id = f"{dataset_name}_{timestamp.strftime('%Y%m%d_%H%M%S_%f')}_{self._generate_short_hash(df)}"
             
             # Calculate hashes
             data_hash = self._calculate_dataframe_hash(df)
@@ -516,7 +516,7 @@ class DataPipelineManager:
     
     def _assess_data_quality(self, df: pd.DataFrame, dataset_name: str, version_id: str) -> QualityReport:
         """Comprehensive data quality assessment"""
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(timezone.utc)
         
         # Calculate quality scores
         completeness_score = self._calculate_completeness_score(df)
@@ -547,8 +547,8 @@ class DataPipelineManager:
             overall_status = DataQualityStatus.FAILED
         
         # Detailed analysis
-        missing_values = df.isnull().sum().to_dict()
-        duplicate_rows = df.duplicated().sum()
+        missing_values = {k: int(v) if isinstance(v, np.integer) else v for k, v in df.isnull().sum().to_dict().items()}
+        duplicate_rows = int(df.duplicated().sum())
         outliers = self._detect_outliers(df)
         schema_violations = self._check_schema_violations(df)
         data_drift = self._detect_data_drift(df, dataset_name)
@@ -592,11 +592,17 @@ class DataPipelineManager:
     def _calculate_completeness_score(self, df: pd.DataFrame) -> float:
         """Calculate data completeness score"""
         total_cells = df.size
+        if total_cells == 0:
+            # Empty dataframe has poor completeness
+            return 0.0
         missing_cells = df.isnull().sum().sum()
         return max(0.0, 1.0 - (missing_cells / total_cells))
     
     def _calculate_consistency_score(self, df: pd.DataFrame) -> float:
         """Calculate data consistency score"""
+        if df.empty:
+            # Empty dataframe has poor consistency
+            return 0.0
         # Simplified consistency check - can be enhanced
         consistency_issues = 0
         total_checks = 0
@@ -613,6 +619,9 @@ class DataPipelineManager:
     
     def _calculate_accuracy_score(self, df: pd.DataFrame) -> float:
         """Calculate data accuracy score"""
+        if df.empty:
+            # Empty dataframe has poor accuracy
+            return 0.0
         # Simplified accuracy assessment
         accuracy_issues = 0
         total_checks = 0
@@ -628,6 +637,9 @@ class DataPipelineManager:
     
     def _calculate_timeliness_score(self, df: pd.DataFrame) -> float:
         """Calculate data timeliness score"""
+        if df.empty:
+            # Empty dataframe has poor timeliness
+            return 0.0
         # Look for datetime columns and assess recency
         datetime_cols = df.select_dtypes(include=['datetime64']).columns
         
@@ -638,7 +650,7 @@ class DataPipelineManager:
         for col in datetime_cols:
             if df[col].notna().any():
                 latest_date = df[col].max()
-                days_old = (datetime.now() - latest_date).days
+                days_old = (datetime.now(timezone.utc) - latest_date).days
                 # Score decreases as data gets older
                 score = max(0.0, 1.0 - (days_old / 365))  # 1 year = 0 score
                 timeliness_scores.append(score)
@@ -647,6 +659,9 @@ class DataPipelineManager:
     
     def _calculate_validity_score(self, df: pd.DataFrame) -> float:
         """Calculate data validity score"""
+        if df.empty:
+            # Empty dataframe has poor validity
+            return 0.0
         validity_issues = 0
         total_checks = 0
         
@@ -668,6 +683,28 @@ class DataPipelineManager:
         
         return max(0.0, 1.0 - (validity_issues / max(1, total_checks)))
     
+    def _serialize_to_json(self, obj: Any) -> str:
+        """Serialize object to JSON, handling numpy types"""
+        def convert_numpy(o):
+            if isinstance(o, np.integer):
+                return int(o)
+            elif isinstance(o, np.floating):
+                return float(o)
+            elif isinstance(o, np.ndarray):
+                return o.tolist()
+            elif isinstance(o, (np.bool_, bool)):
+                return bool(o)
+            return o
+        
+        if isinstance(obj, dict):
+            obj = {k: convert_numpy(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            obj = [convert_numpy(item) for item in obj]
+        else:
+            obj = convert_numpy(obj)
+        
+        return json.dumps(obj)
+    
     def _detect_outliers(self, df: pd.DataFrame) -> Dict[str, int]:
         """Detect outliers in numeric columns"""
         outliers = {}
@@ -681,7 +718,7 @@ class DataPipelineManager:
             
             outlier_count = ((df[col] < lower_bound) | (df[col] > upper_bound)).sum()
             if outlier_count > 0:
-                outliers[col] = outlier_count
+                outliers[col] = int(outlier_count) if isinstance(outlier_count, np.integer) else outlier_count
         
         return outliers
     
@@ -825,12 +862,12 @@ class DataPipelineManager:
     
     def _start_pipeline_run(self, pipeline_name: str, stage: PipelineStage):
         """Start a new pipeline run"""
-        run_id = f"run_{int(datetime.utcnow().timestamp())}_{pipeline_name}"
+        run_id = f"run_{int(datetime.now(timezone.utc).timestamp())}_{pipeline_name}"
         
         self.current_run = PipelineRun(
             run_id=run_id,
             pipeline_name=pipeline_name,
-            started_at=datetime.utcnow(),
+            started_at=datetime.now(timezone.utc),
             ended_at=None,
             duration_seconds=None,
             stage=stage,
@@ -856,7 +893,7 @@ class DataPipelineManager:
         if not self.current_run:
             return
         
-        self.current_run.ended_at = datetime.utcnow()
+        self.current_run.ended_at = datetime.now(timezone.utc)
         self.current_run.duration_seconds = (
             self.current_run.ended_at - self.current_run.started_at
         ).total_seconds()
@@ -873,14 +910,14 @@ class DataPipelineManager:
     def _log_pipeline_event(self, message: str):
         """Log an event in the current pipeline run"""
         if self.current_run:
-            self.current_run.logs.append(f"{datetime.utcnow().isoformat()}: {message}")
+            self.current_run.logs.append(f"{datetime.now(timezone.utc).isoformat()}: {message}")
         logger.info(message)
     
     def _log_pipeline_error(self, message: str):
         """Log an error in the current pipeline run"""
         if self.current_run:
             self.current_run.error_count += 1
-            self.current_run.logs.append(f"{datetime.utcnow().isoformat()}: ERROR: {message}")
+            self.current_run.logs.append(f"{datetime.now(timezone.utc).isoformat()}: ERROR: {message}")
         logger.error(message)
     
     # ===== UTILITY METHODS =====
@@ -960,13 +997,13 @@ class DataPipelineManager:
             report.accuracy_score,
             report.timeliness_score,
             report.validity_score,
-            json.dumps(report.missing_values),
-            report.duplicate_rows,
-            json.dumps(report.outliers),
-            json.dumps(report.schema_violations),
+            self._serialize_to_json(report.missing_values),
+            int(report.duplicate_rows) if isinstance(report.duplicate_rows, np.integer) else report.duplicate_rows,
+            self._serialize_to_json(report.outliers),
+            self._serialize_to_json(report.schema_violations),
             report.data_drift_detected,
-            json.dumps(report.issues_found),
-            json.dumps(report.recommendations)
+            self._serialize_to_json(report.issues_found),
+            self._serialize_to_json(report.recommendations)
         ))
         
         conn.commit()

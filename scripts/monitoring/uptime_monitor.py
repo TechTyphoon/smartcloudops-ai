@@ -26,14 +26,14 @@ def check_service(name, url):
             "status": "UP" if response.status_code == 200 else "DOWN",
             "response_code": response.status_code,
             "response_time": response.elapsed.total_seconds(),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
         return {
             "service": name,
             "status": "DOWN",
             "error": str(e),
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
 
@@ -41,7 +41,7 @@ def upload_to_s3(data):
     """Upload uptime data to S3"""
     try:
         s3 = boto3.client("s3")
-        key = f"uptime-logs/{datetime.utcnow().strftime('%Y/%m/%d/%H%Mf')}.json"
+        key = f"uptime-logs/{datetime.now(timezone.utc).strftime('%Y/%m/%d/%H%Mf')}.json"
         s3.put_object(
             Bucket=S3_BUCKET,
             Key=key,

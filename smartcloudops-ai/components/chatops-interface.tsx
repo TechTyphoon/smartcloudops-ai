@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Send, Bot, User } from "lucide-react"
-import { apiService } from "@/lib/api"
+import { getChatResponse } from "@/lib/api-client"
 
 interface Message {
   id: string
@@ -47,11 +47,11 @@ export function ChatOpsInterface() {
     setError(null)
 
     try {
-      const response = await apiService.sendChatMessage(input)
+      const response = await getChatResponse(input)
       
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: response.message,
+        content: response.response,
         sender: "ai",
         timestamp: new Date(),
         suggestions: response.suggestions || [],

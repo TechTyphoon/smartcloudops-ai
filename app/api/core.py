@@ -5,7 +5,7 @@ Phase 2C Week 1: Performance & Scaling - Modular Blueprint Structure
 
 import os
 from flask import Blueprint, jsonify, current_app
-from datetime import datetime
+from datetime import datetime, timezone
 
 core_bp = Blueprint('core', __name__)
 
@@ -16,7 +16,7 @@ def root():
         "name": "SmartCloudOps AI",
         "version": "2.0.0",
         "status": "operational",
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
         "features": {
             "mlops": hasattr(current_app, 'mlops_service') and current_app.mlops_service is not None,
             "performance_monitoring": _check_performance_available(),
@@ -42,7 +42,7 @@ def health():
     """Health check endpoint"""
     health_data = {
         "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
         "service": "SmartCloudOps AI",
         "version": "2.0.0",
         "environment": os.getenv("FLASK_ENV", "development"),
@@ -59,7 +59,7 @@ def status():
     """Enhanced status endpoint with performance information"""
     status_data = {
         "status": "healthy",
-        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
         "version": "2.0.0",
         "environment": os.getenv("FLASK_ENV", "development"),
         "features": {

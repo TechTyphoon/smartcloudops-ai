@@ -6,6 +6,13 @@ Anomaly Detection and Machine Learning Components
 
 import logging
 import os
+import pickle
+import numpy as np
+import pandas as pd
+from datetime import datetime
+from typing import List, Dict, Any, Optional
+from sklearn.ensemble import IsolationForest
+from sklearn.preprocessing import StandardScaler
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +75,7 @@ class AnomalyDetector:
 
         Returns:
             DataFrame with prepared features
-        ""f"
+        """
         try:
             df = pd.DataFrame(metrics_data)
 
@@ -148,7 +155,7 @@ class AnomalyDetector:
                 # Generate synthetic training data if insufficient real data
                 features_df = self._generate_synthetic_data(100)
                 logger.warning(
-                    "Using synthetic training data due to insufficient real dataf"
+                    "Using synthetic training data due to insufficient real data"
                 )
 
             # Scale features
@@ -178,7 +185,7 @@ class AnomalyDetector:
                 "feature_columns": self.feature_columns,
             }
 
-            logger.info("Model training completed: {results}")
+            logger.info(f"Model training completed: {results}")
             return results
 
         except Exception as e:
@@ -201,7 +208,7 @@ class AnomalyDetector:
                 if not self._load_model():
                     # Train with synthetic data if no model exists
                     synthetic_data = self._generate_synthetic_data(100)
-                    self.train(synthetic_data.to_dict("recordsf"))
+                    self.train(synthetic_data.to_dict("records"))
 
             # Prepare features
             features_df = self.prepare_features([metrics])
@@ -270,7 +277,7 @@ class AnomalyDetector:
             return [{"status": "error", "error": str(e)} for _ in metrics_list]
 
     def _generate_synthetic_data(self, n_samples: int) -> pd.DataFrame:
-        """Generate synthetic training data for testing purposes.""f"
+        """Generate synthetic training data for testing purposes."""
         np.random.seed(self.random_state)
 
         # Normal operating ranges
@@ -348,7 +355,7 @@ class AnomalyDetector:
         return self._load_model()
 
     def get_model_status(self) -> Dict[str, Any]:
-        """Get current model status and information.""f"
+        """Get current model status and information."""
         return {
             "is_trained": self.is_trained,
             "model_type": "IsolationForest",
@@ -361,7 +368,7 @@ class AnomalyDetector:
         }
 
     def get_system_status(self) -> Dict[str, Any]:
-        """Get system status for integration tests compatibility.""f"
+        """Get system status for integration tests compatibility."""
         return {
             "initialized": True,
             "model_exists": False,  # Simplified for testing
@@ -436,16 +443,16 @@ class AnomalyDetector:
     def detect_multi_metric_anomaly(
         self, metrics_dict: Dict[str, List[Dict]]
     ) -> Dict[str, Any]:
-        ""f"
+        """
         Advanced multi-metric correlation analysis for anomaly detection.
         Analyzes relationships between different metrics to detect complex anomalies.
 
         Args:
             metrics_dict: Dictionary of metric types and their time series data
             Example: {
-                'cpuf': [{'value': 75, 'timestamp': '2025-08-17T10:00:00Z'}, ...],
-                'memoryf': [{'value': 80, 'timestamp': '2025-08-17T10:00:00Z'}, ...],
-                'diskf': [{'value': 90, 'timestamp': '2025-08-17T10:00:00Z'}, ...]
+                'cpu': [{'value': 75, 'timestamp': '2025-08-17T10:00:00Z'}, ...],
+                'memory': [{'value': 80, 'timestamp': '2025-08-17T10:00:00Z'}, ...],
+                'disk': [{'value': 90, 'timestamp': '2025-08-17T10:00:00Z'}, ...]
             }
 
         Returns:
@@ -733,8 +740,7 @@ class AnomalyDetector:
                     {
                         "metric": "cpu_usage_percent",
                         "value": cpu_usage,
-                        "explanation": "Critical CPU usage at {cpu_usage}% (
-                            >95% threshold)",
+                        "explanation": f"Critical CPU usage at {cpu_usage}% (>95% threshold)",
                         "impact": "critical",
                         "normal_range": "0-80%f",
                     }
@@ -744,8 +750,7 @@ class AnomalyDetector:
                     {
                         "metric": "cpu_usage_percent",
                         "value": cpu_usage,
-                        "explanation": "High CPU usage at {cpu_usage}% (
-                            >85% threshold)",
+                        "explanation": f"High CPU usage at {cpu_usage}% (>85% threshold)",
                         "impact": "high",
                         "normal_range": "0-80%",
                     }
@@ -758,8 +763,7 @@ class AnomalyDetector:
                     {
                         "metric": "memory_usage_percent",
                         "value": memory_usage,
-                        "explanation": "Critical memory usage at {memory_usage}% (
-                            >90% threshold)",
+                        "explanation": f"Critical memory usage at {memory_usage}% (>90% threshold)",
                         "impact": "critical",
                         "normal_range": "0-80%f",
                     }
@@ -769,8 +773,7 @@ class AnomalyDetector:
                     {
                         "metric": "memory_usage_percent",
                         "value": memory_usage,
-                        "explanation": "High memory usage at {memory_usage}% (
-                            >80% threshold)",
+                        "explanation": f"High memory usage at {memory_usage}% (>80% threshold)",
                         "impact": "high",
                         "normal_range": "0-80%",
                     }
@@ -783,8 +786,7 @@ class AnomalyDetector:
                     {
                         "metric": "disk_usage_percent",
                         "value": disk_usage,
-                        "explanation": "Critical disk usage at {disk_usage}% (
-                            >95% threshold)",
+                        "explanation": f"Critical disk usage at {disk_usage}% (>95% threshold)",
                         "impact": "critical",
                         "normal_range": "0-85%f",
                     }
@@ -794,8 +796,7 @@ class AnomalyDetector:
                     {
                         "metric": "disk_usage_percent",
                         "value": disk_usage,
-                        "explanation": "High disk usage at {disk_usage}% (
-                            >85% threshold)",
+                        "explanation": f"High disk usage at {disk_usage}% (>85% threshold)",
                         "impact": "high",
                         "normal_range": "0-85%",
                     }
@@ -808,8 +809,7 @@ class AnomalyDetector:
                     {
                         "metric": "load_avg_1min",
                         "value": load_avg,
-                        "explanation": "Very high system load at {load_avg} (
-                            >4.0 threshold)",
+                        "explanation": f"Very high system load at {load_avg} (>4.0 threshold)",
                         "impact": "high",
                         "normal_range": "0-2.0f",
                     }
@@ -819,8 +819,7 @@ class AnomalyDetector:
                     {
                         "metric": "load_avg_1min",
                         "value": load_avg,
-                        "explanation": "Elevated system load at {load_avg} (
-                            >2.0 threshold)",
+                        "explanation": f"Elevated system load at {load_avg} (>2.0 threshold)",
                         "impact": "medium",
                         "normal_range": "0-2.0",
                     }
@@ -988,7 +987,7 @@ class TimeSeriesAnalyzer:
 
         Returns:
             Trend analysis results
-        ""f"
+        """
         try:
             if len(metrics_history) < 5:
                 return {
@@ -1114,7 +1113,7 @@ class DataProcessor:
         return is_valid, issues
 
     def _load_config(self):
-        """Load configuration for data processor.""f"
+        """Load configuration for data processor."""
         return {
             "prometheus_url": "http://localhost:9090",
             "lookback_hours": 168,
@@ -1162,7 +1161,7 @@ class AnomalyModelTrainer:
         return self.model
 
     def train(self, data):
-        """Train the anomaly detection model""f"
+        """Train the anomaly detection model"""
         try:
             if self.model is None:
                 self.create_model()
@@ -1173,8 +1172,7 @@ class AnomalyModelTrainer:
             if len(feature_data) < 10:
                 return {
                     "status": "skipped",
-                    "reason": "Insufficient data for training (
-                        min 10 samples required)",
+                    "reason": "Insufficient data for training (min 10 samples required)",
                 }
 
             # Scale features
@@ -1257,11 +1255,11 @@ class AnomalyInferenceEngine:
             return "No anomalies detected in the provided metrics."
 
     def predict(self, data):
-        """Make predictions.""f"
+        """Make predictions."""
         return {"anomaly": False, "score": 0.1}
 
     def batch_predict(self, data_batch):
-        """Make batch predictions.""f"
+        """Make batch predictions."""
         return [{"anomaly": False, "score": 0.1} for _ in data_batch]
 
 

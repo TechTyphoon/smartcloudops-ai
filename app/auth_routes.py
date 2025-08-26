@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List
 
 """
@@ -43,7 +43,7 @@ def login():
                         "analyst": "Data analyst"
                     },
                     "endpoint": "/auth/login",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             )
 
@@ -123,7 +123,7 @@ def login():
                     },
                     "tokens": tokens,
                 },
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 
@@ -157,7 +157,7 @@ def logout():
             {
                 "message": "Logout successful",
                 "status": "success",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 
@@ -235,7 +235,7 @@ def refresh_token():
                 "message": "Token refreshed successfully",
                 "status": "success",
                 "data": {"tokens": tokens},
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 
@@ -273,7 +273,7 @@ def get_profile():
                         "created_at": user.get("created_at",
                     }
                 },
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 
@@ -315,7 +315,7 @@ def list_users():
                 "message": "Users retrieved successfully",
                 "status": "success",
                 "data": {"users": users, "count": len(users)},
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 
@@ -343,7 +343,7 @@ def validate_token():
             "message": "Token is valid",
             "status": "success",
             "data": {"user": request.user, "valid": True},
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     )
 
@@ -362,6 +362,6 @@ def get_roles():
                 "current_user_role": request.user["role"],
                 "current_user_permissions": request.user["permissions"],
             },
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     )

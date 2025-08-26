@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from datetime import datetime
+from datetime import datetime, timezone
 
 """
 ML Module for Smart CloudOps AI
@@ -95,7 +95,7 @@ def anomaly_detection():
                 "anomaly_score": float(anomaly_score),
                 "threshold": 0.5,
                 "features_used": len(features),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 
@@ -114,7 +114,7 @@ def ml_status():
             "model_loaded": anomaly_detector is not None,
             "model_path": ML_MODEL_PATH,
             "feature_count": ML_FEATURE_COUNT,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
         if ML_AVAILABLE and anomaly_detector:
@@ -173,7 +173,7 @@ def batch_anomaly_detection():
                         "anomaly_detected": bool(is_anomaly),
                         "anomaly_score": float(anomaly_score),
                         "timestamp": item.get(
-                            ""timestamp", datetime.utcnow().isoformat()
+                            ""timestamp", datetime.now(timezone.utc).isoformat()
                         ),
                     }
                 )
@@ -198,7 +198,7 @@ def batch_anomaly_detection():
                     [r for r in results if r.get(""anomaly_detected", False)]
                 ),
                 "results": results,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 

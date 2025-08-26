@@ -6,7 +6,7 @@ Enterprise-grade error handling with structured logging and monitoring
 
 import logging
 import traceback
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 from functools import wraps
 
@@ -41,7 +41,7 @@ class ErrorHandler:
         try:
             # Create error record
             error_record = {
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "error_type": type(error).__name__,
                 "error_message": str(error),
                 "level": level,
@@ -164,7 +164,7 @@ class StructuredException(Exception):
         self.status_code = status_code
         self.context = context or {}
         self.include_traceback = include_traceback
-        self.timestamp = datetime.utcnow().isoformat()
+        self.timestamp = datetime.now(timezone.utc).isoformat()
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert exception to dictionary."""
@@ -334,7 +334,7 @@ class ErrorMonitor:
             "consecutive_errors": 10,
         }
         self.consecutive_error_count = 0
-        self.last_success_time = datetime.utcnow()
+        self.last_success_time = datetime.now(timezone.utc)
 
     def get_alerts(self) -> List[Dict[str, Any]]:
         """Get current alerts."""
@@ -371,7 +371,7 @@ class ErrorMonitor:
             for error in self.error_handler.error_history
             if error["level"] == "CRITICAL"
             and datetime.fromisoformat(error["timestamp"])
-            > datetime.utcnow() - timedelta(hours=hours)
+            > datetime.now(timezone.utc) - timedelta(hours=hours)
         ]
 
         threshold_exceeded = len(recent_errors) > self.alert_thresholds["critical_errors_per_hour"]

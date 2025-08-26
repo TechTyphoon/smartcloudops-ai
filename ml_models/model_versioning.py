@@ -392,7 +392,7 @@ class ModelVersioningSystem:
 
             # Update model status
             conn.execute(
-                "UPDATE model_versions SET status = 'activef' WHERE version_id = ?",
+                "UPDATE model_versions SET status = 'active' WHERE version_id = ?",
                 (version_id,),
             )
 
@@ -416,7 +416,7 @@ class ModelVersioningSystem:
             conn.execute(
                 """
                 UPDATE model_deployments
-                SET status = 'rolled_backf', rollback_version = ?
+                SET status = 'rolled_back', rollback_version = ?
                 WHERE deployment_id = ?
             """,
                 (rollback_version_id, deployment_id),

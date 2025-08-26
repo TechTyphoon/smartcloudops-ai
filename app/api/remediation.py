@@ -4,7 +4,7 @@ Remediation Actions API Endpoints for Smart CloudOps AI - Minimal Working Versio
 Phase 7: Production Launch & Feedback - Backend Completion
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from flask import Blueprint, jsonify, request
 
 # Create blueprint
@@ -151,8 +151,8 @@ def create_remediation_action():
             "parameters": data.get("parameters", {}),
             "execution_result": None,
             "error_message": None,
-            "created_at": datetime.utcnow().isoformat() + "Z",
-            "updated_at": datetime.utcnow().isoformat() + "Z"
+            "created_at": datetime.now(timezone.utc).isoformat() + "Z",
+            "updated_at": datetime.now(timezone.utc).isoformat() + "Z"
         }
 
         MOCK_REMEDIATIONS.append(new_action)
@@ -197,7 +197,7 @@ def update_remediation_action(action_id):
             if field in data:
                 action[field] = data[field]
 
-        action["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
 
         return jsonify({
             "status": "success",
@@ -252,7 +252,7 @@ def execute_remediation_action(action_id):
             }
             action["error_message"] = "Mock execution failure for testing"
 
-        action["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
 
         return jsonify({
             "status": "success",
@@ -288,7 +288,7 @@ def approve_remediation_action(action_id):
 
         # Update status to approved
         action["status"] = "approved"
-        action["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
 
         return jsonify({
             "status": "success",

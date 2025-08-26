@@ -7,7 +7,7 @@ Phase 2A: Enhanced MLflow integration with graceful degradation
 import os
 import logging
 from typing import Dict, Any, Optional, List, Union
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 
 logger = logging.getLogger(__name__)
@@ -127,7 +127,7 @@ class MLflowManager:
             "environment": os.getenv("ENVIRONMENT", "development"),
             "version": os.getenv("APP_VERSION", "1.0.0"),
             "framework": "Phase2A-Enhanced",
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
         
         if tags:
@@ -144,12 +144,12 @@ class MLflowManager:
     
     def _fallback_start_run(self, run_name: str, tags: Dict[str, str]) -> Dict:
         """Fallback run creation when MLflow is not available."""
-        run_id = f"fallback_{int(datetime.utcnow().timestamp())}_{run_name}"
+        run_id = f"fallback_{int(datetime.now(timezone.utc).timestamp())}_{run_name}"
         run_data = {
             "run_id": run_id,
             "run_name": run_name,
             "tags": tags,
-            "start_time": datetime.utcnow().isoformat(),
+            "start_time": datetime.now(timezone.utc).isoformat(),
             "status": "RUNNING",
             "params": {},
             "metrics": {},
@@ -202,7 +202,7 @@ class MLflowManager:
             metrics_data = {
                 "metrics": metrics,
                 "step": step,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
             metrics_file = os.path.join(self.fallback_storage_path, "latest_metrics.json")
             with open(metrics_file, 'w') as f:
@@ -232,7 +232,7 @@ class MLflowManager:
             artifact_entry = {
                 "local_path": local_path,
                 "artifact_path": artifact_path,
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
             
             # Load existing artifacts
@@ -280,7 +280,7 @@ class MLflowManager:
             model_dir = os.path.join(self.fallback_storage_path, "models")
             os.makedirs(model_dir, exist_ok=True)
             
-            timestamp = int(datetime.utcnow().timestamp())
+            timestamp = int(datetime.now(timezone.utc).timestamp())
             model_file = os.path.join(model_dir, f"{artifact_path}_{timestamp}.pkl")
             
             with open(model_file, 'wb') as f:
@@ -341,7 +341,7 @@ class MLflowManager:
                 "model_uri": model_uri,
                 "description": description,
                 "tags": tags or {},
-                "registered_at": datetime.utcnow().isoformat(),
+                "registered_at": datetime.now(timezone.utc).isoformat(),
                 "status": "registered"
             }
             

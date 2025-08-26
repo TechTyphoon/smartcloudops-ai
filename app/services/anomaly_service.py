@@ -4,7 +4,7 @@ Anomaly Service - Business Logic Layer
 Handles all anomaly-related business operations
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
 
 
@@ -124,8 +124,8 @@ class AnomalyService:
             "anomaly_score": anomaly_data["anomaly_score"],
             "confidence": anomaly_data["confidence"],
             "source": anomaly_data.get("source", "manual"),
-            "created_at": datetime.utcnow().isoformat() + "Z",
-            "updated_at": datetime.utcnow().isoformat() + "Z"
+            "created_at": datetime.now(timezone.utc).isoformat() + "Z",
+            "updated_at": datetime.now(timezone.utc).isoformat() + "Z"
         }
         
         self.mock_data.append(new_anomaly)
@@ -167,7 +167,7 @@ class AnomalyService:
             
             anomaly[field] = value
         
-        anomaly["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        anomaly["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
         return anomaly
     
     def delete_anomaly(self, anomaly_id: int) -> Optional[Dict]:
@@ -200,7 +200,7 @@ class AnomalyService:
             return None
         
         anomaly["status"] = "acknowledged"
-        anomaly["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        anomaly["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
         return anomaly
     
     def resolve_anomaly(self, anomaly_id: int) -> Optional[Dict]:
@@ -218,7 +218,7 @@ class AnomalyService:
             return None
         
         anomaly["status"] = "resolved"
-        anomaly["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        anomaly["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
         return anomaly
     
     def get_anomaly_statistics(self) -> Dict:
