@@ -1,7 +1,7 @@
 {
-  "total_issues": 38,
+  "total_issues": 34,
   "critical": 0,
-  "high": 34,
+  "high": 30,
   "medium": 4,
   "low": 0,
   "warnings": [
@@ -88,24 +88,24 @@
       "severity": "HIGH"
     },
     {
-      "file": "tests/test_chatops.py",
-      "line": 94,
+      "file": "scripts/utils/env_manager.py",
+      "line": 42,
+      "type": "weak_secrets",
+      "content": "\"export AWS_SECRET_ACCESS_KEY='your_aws_secret'  # Replace with actual secret\"",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "scripts/utils/env_manager.py",
+      "line": 37,
       "type": "api_keys",
-      "content": "handler = GPTHandler(api_key=\"test-key\")",
+      "content": "print(\"export GEMINI_API_KEY='your_gemini_key_here'  # Replace with actual key\")",
       "severity": "HIGH"
     },
     {
-      "file": "tests/test_chatops.py",
-      "line": 94,
+      "file": "scripts/utils/env_manager.py",
+      "line": 38,
       "type": "api_keys",
-      "content": "handler = GPTHandler(api_key=\"test-key\")",
-      "severity": "HIGH"
-    },
-    {
-      "file": "tests/test_ai_handler.py",
-      "line": 152,
-      "type": "api_keys",
-      "content": "mock_openai.assert_called_once_with(api_key=\"test-key\")",
+      "content": "print(\"export OPENAI_API_KEY='your_openai_key_here'  # Replace with actual key\")",
       "severity": "HIGH"
     }
   ]

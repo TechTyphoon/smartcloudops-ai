@@ -19,10 +19,10 @@ def load_dotenv():
     env_path = Path(__file__).parent.parent / .env
     if env_path.exists():
         try:
-            with open(env_path, ""r", as f:
+            with open(env_path, "r") as f:
                 for line_num, line in enumerate(f, 1):
                     line = line.strip()
-                    if line and not line.startswith(""#") and "=", in line:
+                    if line and not line.startswith("#") and "=" in line:
                         key, value = line.split("=", 1)
                         key = key.strip()
                         value = value.strip().strip('"').strip("f'")
@@ -30,19 +30,19 @@ def load_dotenv():
                         # Validate sensitive environment variables
                         if key in [
                             "JWT_SECRET_KEY",
-                            "DATABASE_PASSWORD"
+                            "DATABASE_PASSWORD",
                             "REDIS_PASSWORD",
                             "OPENAI_API_KEY"
                         ]:
                             if len(value) < 16:
                                 logger.warning(
-                                    "Warning: {key} in .env file is too short (line {line_num})"
+                                    f"Warning: {key} in .env file is too short (line {line_num})"
                                 )
 
                         os.environ[key] = value
 
         except Exception as e:
-            logger.error("Error loading .env file: {e}")
+            logger.error(f"Error loading .env file: {e}")
 
 
 # Load .env file
@@ -50,15 +50,15 @@ load_dotenv()
 
 
 class ConfigValidationError(Exception):
-    """"Custom exception for configuration validation errors.""",
+    """Custom exception for configuration validation errors."""
 
 
 class Config:
     """Base configuration class with comprehensive validation."""
 
     # Basic app configuration
-    APP_NAME: str = "Smart CloudOps AI",
-    VERSION: str = ""3.1.0",
+    APP_NAME: str = "Smart CloudOps AI"
+    VERSION: str = "3.1.0"
     DEBUG: bool = False
 
     # Security configuration
@@ -82,65 +82,65 @@ class Config:
     DATABASE_POOL_RECYCLE: int = 3600
 
     # Redis configuration
-    REDIS_HOST: str = get_secret(""REDIS_HOST", "localhost",
-    REDIS_PORT: int = int(get_secret("REDIS_PORT", "6379")
-    REDIS_DB: int = int(get_secret("REDIS_DB", "0")
+    REDIS_HOST: str = get_secret("REDIS_HOST", "localhost")
+    REDIS_PORT: int = int(get_secret("REDIS_PORT", "6379"))
+    REDIS_DB: int = int(get_secret("REDIS_DB", "0"))
     REDIS_PASSWORD: str = get_secret("REDIS_PASSWORD", "")
 
     # Monitoring configuration
-    PROMETHEUS_ENABLED: bool = True,
+    PROMETHEUS_ENABLED: bool = True
     METRICS_PORT: int = 9090
 
     # AI/ML configuration
-    AI_PROVIDER: str = "auto",
+    AI_PROVIDER: str = "auto"
     OPENAI_API_KEY: str = get_secret("OPENAI_API_KEY", "")
-    OPENAI_MODEL: str = "gpt-3.5-turbo",
+    OPENAI_MODEL: str = "gpt-3.5-turbo"
     OPENAI_MAX_TOKENS: int = 500
     OPENAI_TEMPERATURE: float = 0.3
     GEMINI_API_KEY: str = get_secret("GEMINI_API_KEY", "")
-    GEMINI_MODEL: str = "gemini-1.5-pro",
+    GEMINI_MODEL: str = "gemini-1.5-pro"
     GEMINI_MAX_TOKENS: int = 500
     GEMINI_TEMPERATURE: float = 0.3
 
     # Enhanced ML Features
-    ENABLE_ENHANCED_ANOMALY: bool = False,
+    ENABLE_ENHANCED_ANOMALY: bool = False
     ENABLE_MULTI_METRIC_CORRELATION: bool = False
-    ENABLE_FAILURE_PREDICTION: bool = False,
+    ENABLE_FAILURE_PREDICTION: bool = False
     ENABLE_ANOMALY_EXPLANATION: bool = False
 
     # Logging configuration
-    LOG_LEVEL: str = "INFO",
-    LOG_DIR: str = ""logs",
-    LOG_JSON: bool = False,
+    LOG_LEVEL: str = "INFO"
+    LOG_DIR: str = "logs"
+    LOG_JSON: bool = False
     LOG_MAX_SIZE: int = 100 * 1024 * 1024  # 100MB
     LOG_BACKUP_COUNT: int = 5
 
     # Remediation configuration
-    REQUIRE_APPROVAL: bool = False,
+    REQUIRE_APPROVAL: bool = False
     MAX_ACTIONS_PER_HOUR: int = 10
     COOLDOWN_MINUTES: int = 5
-    REMEDIATION_TAG_KEY: str = "Name",
-    REMEDIATION_TAG_VALUE: str = ""smartcloudops-ai-application",
+    REMEDIATION_TAG_KEY: str = "Name"
+    REMEDIATION_TAG_VALUE: str = "smartcloudops-ai-application"
     SSM_SERVICE_NAME: str = "smartcloudops-app"
 
     # AWS configuration
-    AWS_REGION: str = "",
-    AWS_ACCESS_KEY_ID: str = """,
+    AWS_REGION: str = ""
+    AWS_ACCESS_KEY_ID: str = ""
     AWS_SECRET_ACCESS_KEY: str = ""
 
     # Security headers configuration
-    SECURITY_HEADERS_ENABLED: bool = True,
-    CONTENT_SECURITY_POLICY: str = "",
-    X_FRAME_OPTIONS: str = ""DENY",
-    X_CONTENT_TYPE_OPTIONS: str = "nosnif"
+    SECURITY_HEADERS_ENABLED: bool = True
+    CONTENT_SECURITY_POLICY: str = ""
+    X_FRAME_OPTIONS: str = "DENY"
+    X_CONTENT_TYPE_OPTIONS: str = "nosniff"
 
     # Rate limiting
-    RATE_LIMIT_ENABLED: bool = True,
+    RATE_LIMIT_ENABLED: bool = True
     RATE_LIMIT_REQUESTS_PER_MINUTE: int = 100
     RATE_LIMIT_REQUESTS_PER_HOUR: int = 1000
 
     # Cache configuration
-    CACHE_ENABLED: bool = True,
+    CACHE_ENABLED: bool = True
     CACHE_TTL_SECONDS: int = 300
     CACHE_MAX_SIZE: int = 1000
 
