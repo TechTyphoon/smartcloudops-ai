@@ -54,37 +54,44 @@ jobs:
     - name: 🎨 Code formatting
       run: |
         echo "::group::Black formatting check"
-        black --check --diff ${{ env.APP_PATH }} || echo "Formatting issues found"
+        echo "🛡️ QUALITY GATE: Black formatting violations will fail the build"
+        black --check --diff ${{ env.APP_PATH }}
+        echo "✅ Black formatting: PASSED"
         echo "::endgroup::"
         echo "::group::Import sorting check"
-        isort --check-only --diff ${{ env.APP_PATH }} || echo "Import sorting issues found"
+        echo "🛡️ QUALITY GATE: Import sorting violations will fail the build"
+        isort --check-only --diff ${{ env.APP_PATH }}
+        echo "✅ Import sorting: PASSED"
         echo "::endgroup::"
-      continue-on-error: true
       
     - name: 🔍 Code linting
       run: |
         echo "::group::Flake8 linting"
+        echo "🛡️ QUALITY GATE: Code quality violations will fail the build"
         flake8 ${{ env.APP_PATH }} --count --statistics \
                --max-line-length=88 --max-complexity=15 \
-               --exclude=scripts --ignore=W503,E203,C901,W504 || echo "Linting issues found"
+               --exclude=scripts --ignore=W503,E203,C901,W504 \
+               --show-source
+        echo "✅ Code linting: PASSED"
         echo "::endgroup::"
-      continue-on-error: true
       
     - name: 🔒 Security scanning
       run: |
         echo "::group::Bandit security scan"
-        bandit -r ${{ env.APP_PATH }} -f json -o bandit-results.json || true
-        bandit -r ${{ env.APP_PATH }} --severity-level high --skip B104 || echo "Security issues found"
+        echo "🛡️ QUALITY GATE: High severity security issues will fail the build"
+        bandit -r ${{ env.APP_PATH }} -f json -o bandit-results.json
+        bandit -r ${{ env.APP_PATH }} --severity-level high --skip B104
+        echo "✅ Security scan: PASSED"
         echo "::endgroup::"
-      continue-on-error: true
       
     - name: 🛡️ Dependency security
       run: |
         echo "::group::Safety dependency scan"
-        safety scan --json > safety-results.json || true
-        safety scan || echo "Vulnerabilities found"
+        echo "🛡️ QUALITY GATE: Known vulnerabilities will fail the build"
+        safety scan --json > safety-results.json
+        safety scan
+        echo "✅ Dependency security: PASSED"
         echo "::endgroup::"
-      continue-on-error: true
       
     - name: 📄 Upload artifacts
       uses: actions/upload-artifact@v4
@@ -123,9 +130,10 @@ jobs:
     - name: 🧪 Run tests
       run: |
         echo "::group::Running tests"
-        pytest tests/ -v --cov=${{ env.APP_PATH }} --cov-report=xml --cov-report=term-missing
+        echo "🛡️ QUALITY GATE: Test failures will fail the build"
+        pytest tests/ -v --cov=${{ env.APP_PATH }} --cov-report=xml --cov-report=term-missing --maxfail=1
+        echo "✅ Tests: PASSED"
         echo "::endgroup::"
-      continue-on-error: true
       
     - name: 📊 Upload coverage
       uses: actions/upload-artifact@v4
@@ -164,7 +172,8 @@ jobs:
         image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
         format: 'sarif'
         output: 'trivy-results.sarif'
-      continue-on-error: true
+        severity: 'CRITICAL,HIGH'
+        exit-code: '1'  # Fail on critical/high vulnerabilities
       
     - name: 🐳 Build Docker image
       uses: docker/build-push-action@v5

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 """
 Security Configuration for SmartCloudOps AI
 Comprehensive security settings and validation rules
@@ -5,8 +7,8 @@ Comprehensive security settings and validation rules
 
 import os
 import re
-from typing import Dict, List, Any
 from datetime import timedelta
+from typing import Any, Dict
 
 # =============================================================================
 # SECURITY CONFIGURATION
@@ -21,7 +23,7 @@ class SecurityConfig:
     # ========================================================================
 
     # JWT Configuration
-    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
+    JWT_SECRET_KEY = os.environ.get(""JWT_SECRET_KEY",
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     JWT_ALGORITHM = "HS256"
@@ -102,7 +104,7 @@ class SecurityConfig:
         "auth": "5 per minute",
         "api": "1000 per hour",
         "chatops": "10 per minute",
-        "admin": "1000 per hour",
+        "admin": "1000 per hour"
     }
 
     # ========================================================================
@@ -111,7 +113,7 @@ class SecurityConfig:
 
     SECURITY_HEADERS = {
         "X-Content-Type-Options": "nosniff",
-        "X-Frame-Options": "DENY",
+       "X-Frame-Options": "DENY",
         "X-XSS-Protection": "1; mode=block",
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
         "Referrer-Policy": "strict-origin-when-cross-origin",
@@ -137,13 +139,13 @@ class SecurityConfig:
     # ========================================================================
 
     CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "").split(",")
-    CORS_METHODS = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    CORS_METHODS = ["GET", "POST" "PUT", "DELETE" "OPTIONS"]
     CORS_ALLOW_HEADERS = [
         "Content-Type",
-        "Authorization",
+        "Authorization"
         "X-Requested-With",
-        "Accept",
-        "Origin",
+        "Accept"
+        "Origin"
     ]
     CORS_EXPOSE_HEADERS = ["Content-Length", "X-Total-Count"]
     CORS_SUPPORTS_CREDENTIALS = True
@@ -154,12 +156,12 @@ class SecurityConfig:
     # ========================================================================
 
     # Security Event Logging
-    SECURITY_LOG_LEVEL = "WARNING"
+    SECURITY_LOG_LEVEL = ""WARNING",
     SECURITY_LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
     # Audit Logging
     AUDIT_LOG_ENABLED = True
-    AUDIT_LOG_LEVEL = "INFO"
+    AUDIT_LOG_LEVEL = ""INFO",
     AUDIT_LOG_RETENTION_DAYS = 90
 
     # Security Metrics
@@ -172,32 +174,31 @@ class SecurityConfig:
 
     @classmethod
     def validate_password_strength(cls, password: str) -> Dict[str, Any]:
-        """Validate password strength according to security policy."""
+        """"Validate password strength according to security policy.""",
         errors = []
         warnings = []
 
         if len(password) < cls.PASSWORD_MIN_LENGTH:
             errors.append(
-                "Password must be at least {cls.PASSWORD_MIN_LENGTH} characters long"
-            )
+                ""Password must be at least {cls.PASSWORD_MIN_LENGTH} characters long",
 
         if cls.PASSWORD_REQUIRE_UPPERCASE and not re.search(r"[A-Z]", password):
-            errors.append("Password must contain at least one uppercase letter")
+            errors.append(""Password must contain at least one uppercase letter",
 
         if cls.PASSWORD_REQUIRE_LOWERCASE and not re.search(r"[a-z]", password):
-            errors.append("Password must contain at least one lowercase letter")
+            errors.append(""Password must contain at least one lowercase letter",
 
-        if cls.PASSWORD_REQUIRE_DIGITS and not re.search(r"\d", password):
-            errors.append("Password must contain at least one digit")
+        if cls.PASSWORD_REQUIRE_DIGITS and not re.search(r""\d", password):
+            errors.append(""Password must contain at least one digit",
 
         if cls.PASSWORD_REQUIRE_SPECIAL and not re.search(
             r'[!@#$%^&*(),.?":{}|<>]', password
         ):
-            errors.append("Password must contain at least one special character")
+            errors.append("Password must contain at least one special character"
 
         # Check for common patterns
         if re.search(r"(password|123|qwerty|admin)", password, re.IGNORECASE):
-            warnings.append("Password contains common patterns that may be weak")
+            warnings.append(""Password contains common patterns that may be weak",
 
         return {
             "valid": len(errors) == 0,
@@ -208,7 +209,7 @@ class SecurityConfig:
 
     @classmethod
     def _calculate_password_strength(cls, password: str) -> int:
-        """Calculate password strength score (0-100)."""
+        """"Calculate password strength score (0-100).""",
         score = 0
 
         # Length contribution
@@ -219,7 +220,7 @@ class SecurityConfig:
             score += 10
         if re.search(r"[A-Z]", password):
             score += 10
-        if re.search(r"\d", password):
+        if re.search(r""\d", password):
             score += 10
         if re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
             score += 10
@@ -234,11 +235,10 @@ class SecurityConfig:
 
     @classmethod
     def validate_input_safety(
-        cls, input_string: str, input_type: str = "general"
-    ) -> Dict[str, Any]:
-        """Validate input for various security threats."""
+        cls, input_string: str, input_type: str = "general" -> Dict[str, Any]:
+        """"Validate input for various security threats.""",
         if not input_string or not isinstance(input_string, str):
-            return {"valid": False, "errors": ["Input must be a non-empty string"]}
+            return return {"valid": False, "errors": ["Input must be a non-empty string"]}
 
         errors = []
         warnings = []
@@ -273,7 +273,7 @@ class SecurityConfig:
 
         # Length validation
         if len(input_string) > 1000:
-            warnings.append("Input exceeds recommended length of 1000 characters")
+            warnings.append(""Input exceeds recommended length of 1000 characters",
 
         return {
             "valid": len(errors) == 0,
@@ -284,7 +284,7 @@ class SecurityConfig:
 
     @classmethod
     def sanitize_input(cls, input_string: str) -> str:
-        """Sanitize input string for safe use."""
+        """"Sanitize input string for safe use.""",
         import html
 
         # HTML encode the input
@@ -300,8 +300,8 @@ class SecurityConfig:
     # ========================================================================
 
     # Encryption settings
-    ENCRYPTION_ALGORITHM = "AES-256-GCM"
-    HASH_ALGORITHM = "bcrypt"
+    ENCRYPTION_ALGORITHM = ""AES-256-GCM",
+    HASH_ALGORITHM = ""bcrypt",
     HASH_ROUNDS = 12
 
     # ========================================================================
@@ -356,17 +356,17 @@ class SecurityConfig:
 
 
 def get_security_config() -> SecurityConfig:
-    """Get security configuration instance."""
+    """"Get security configuration instance.""",
     return SecurityConfig()
 
 
 def validate_environment_security() -> Dict[str, Any]:
-    """Validate that all required security environment variables are set."""
+    """"Validate that all required security environment variables are set.""",
     required_vars = [
         "JWT_SECRET_KEY",
-        "SECRET_KEY",
+        "SECRET_KEY"
         "DB_PASSWORD",
-        "OPENAI_API_KEY",
+        "OPENAI_API_KEY"
     ]
 
     missing_vars = []
@@ -387,6 +387,6 @@ def validate_environment_security() -> Dict[str, Any]:
             "Use AWS Secrets Manager or HashiCorp Vault for production secrets",
             "Generate strong random secrets (minimum 32 characters)",
             "Rotate secrets regularly",
-            "Use different secrets for different environments",
+            "Use different secrets for different environments"
         ],
     }

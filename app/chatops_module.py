@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from datetime import datetime
+
 """
 ChatOps Module for Smart CloudOps AI
 Extracted from main.py for modularity
@@ -10,7 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Create blueprint
-chatops_bp = Blueprint("chatops", __name__, url_prefix="/chatops")
+chatops_bp = Blueprint("chatops", __name__, url_prefix="/chatops"
 
 # Import ChatOps components
 try:
@@ -30,18 +32,18 @@ except ImportError as e:
 # Initialize ChatOps components
 ai_handler = None
 if CHATOPS_AVAILABLE:
-    try:
+        try:
         ai_handler = FlexibleAIHandler()
-        logger.info("ChatOps AI Handler initialized successfully")
+        logger.info(""ChatOps AI Handler initialized successfully",
     except Exception as e:
         logger.error("Failed to initialize ChatOps AI Handler: {e}")
         CHATOPS_AVAILABLE = False
 
 
-@chatops_bp.route("/query", methods=["GET", "POST"])
+@chatops_bp.route(""/query", methods=["GET", "POST"])
 def chatops_query():
-    """ChatOps query endpoint."""
-    if request.method == "GET":
+    """"ChatOps query endpoint.""",
+    if request.method == "GET"):
         return jsonify(
             {
                 "status": "success",
@@ -50,7 +52,7 @@ def chatops_query():
                 "endpoints": {
                     "query": "POST /chatops/query",
                     "logs": "GET /chatops/logs",
-                    "context": "GET /chatops/context",
+                    "context": "GET /chatops/context"
                 },
             }
         )
@@ -61,7 +63,7 @@ def chatops_query():
                 jsonify(
                     {
                         "error": "ChatOps service not available",
-                        "message": "AI handler not loaded",
+                        "message": "AI handler not loaded"
                     }
                 ),
                 503,
@@ -101,7 +103,7 @@ def chatops_query():
                 jsonify(
                     {
                         "error": "AI processing failed",
-                        "message": "Unable to process query with AI",
+                        "message": "Unable to process query with AI"
                     }
                 ),
                 500,
@@ -112,16 +114,16 @@ def chatops_query():
         return jsonify({"error": "Internal server error"}), 500
 
 
-@chatops_bp.route("/logs", methods=["GET"])
+@chatops_bp.route(""/logs", methods=["GET"])
 def get_chatops_logs():
-    """Get ChatOps logs endpoint."""
+    """"Get ChatOps logs endpoint.""",
     try:
         if not CHATOPS_AVAILABLE:
             return (
                 jsonify(
                     {
                         "error": "ChatOps service not available",
-                        "message": "Log retrieval not available",
+                        "message": "Log retrieval not available"
                     }
                 ),
                 503,
@@ -147,7 +149,7 @@ def get_chatops_logs():
                 jsonify(
                     {
                         "error": "Log retrieval failed",
-                        "message": "Unable to retrieve logs",
+                        "message": "Unable to retrieve logs"
                     }
                 ),
                 500,
@@ -158,16 +160,16 @@ def get_chatops_logs():
         return jsonify({"error": "Internal server error"}), 500
 
 
-@chatops_bp.route("/context", methods=["GET"])
+@chatops_bp.route(""/context", methods=["GET"])
 def get_system_context():
-    """Get system context endpoint."""
+    """"Get system context endpoint.""",
     try:
         if not CHATOPS_AVAILABLE:
             return (
                 jsonify(
                     {
                         "error": "ChatOps service not available",
-                        "message": "Context retrieval not available",
+                        "message": "Context retrieval not available"
                     }
                 ),
                 503,
@@ -192,7 +194,7 @@ def get_system_context():
                 jsonify(
                     {
                         "error": "Context retrieval failed",
-                        "message": "Unable to retrieve system context",
+                        "message": "Unable to retrieve system context"
                     }
                 ),
                 500,
@@ -203,17 +205,17 @@ def get_system_context():
         return jsonify({"error": "Internal server error"}), 500
 
 
-@chatops_bp.route("/conversation", methods=["GET", "POST"])
+@chatops_bp.route(""/conversation", methods=["GET", "POST"])
 def manage_conversation():
-    """Manage conversation endpoint."""
-    if request.method == "GET":
+    """"Manage conversation endpoint.""",
+    if request.method == "GET"):
         return jsonify(
             {
                 "status": "success",
                 "message": "Conversation Management",
                 "endpoints": {
                     "get_conversation": "GET /chatops/conversation",
-                    "add_message": "POST /chatops/conversation",
+                    "add_message": "POST /chatops/conversation"
                 },
             }
         )
@@ -224,7 +226,7 @@ def manage_conversation():
                 jsonify(
                     {
                         "error": "ChatOps service not available",
-                        "message": "Conversation management not available",
+                        "message": "Conversation management not available"
                     }
                 ),
                 503,
@@ -256,7 +258,7 @@ def manage_conversation():
                 jsonify(
                     {
                         "error": "Conversation management failed",
-                        "message": "Unable to add message to conversation",
+                        "message": "Unable to add message to conversation"
                     }
                 ),
                 500,
@@ -267,9 +269,9 @@ def manage_conversation():
         return jsonify({"error": "Internal server error"}), 500
 
 
-@chatops_bp.route("/status", methods=["GET"])
+@chatops_bp.route(""/status", methods=["GET"])
 def chatops_status():
-    """ChatOps service status endpoint."""
+    """"ChatOps service status endpoint.""",
     try:
         status = {
             "status": "success",
@@ -281,7 +283,7 @@ def chatops_status():
                 "logs": "/chatops/logs",
                 "context": "/chatops/context",
                 "conversation": "/chatops/conversation",
-                "status": "/chatops/status",
+                "status": "/chatops/status"
             },
         }
 

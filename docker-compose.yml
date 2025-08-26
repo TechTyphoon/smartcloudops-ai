@@ -18,26 +18,24 @@ services:
       - REMEDIATION_TAG_KEY=Name
       - REMEDIATION_TAG_VALUE=smartcloudops-ai-application
       - SSM_SERVICE_NAME=smartcloudops-app
-      - AWS_REGION=ap-south-1
+      - AWS_REGION=${AWS_REGION:-us-east-1}
       - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL}
-      - DATABASE_URL=${DATABASE_URL:-postgresql+psycopg://cloudops:cloudops_postgres_2024@postgres:5432/cloudops}
+      - DATABASE_URL=${DATABASE_URL}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - DISABLE_AWS_SERVICES=true
-      - DISABLE_ELASTICSEARCH=true
-      - USE_LOCAL_STORAGE=true
+      - DISABLE_AWS_SERVICES=${DISABLE_AWS_SERVICES:-true}
+      - DISABLE_ELASTICSEARCH=${DISABLE_ELASTICSEARCH:-true}
+      - USE_LOCAL_STORAGE=${USE_LOCAL_STORAGE:-true}
       - FLASK_DEBUG=false
-      - CORS_ORIGINS=http://localhost:3000
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000}
       - CORS_SUPPORTS_CREDENTIALS=true
       - SECURITY_HEADERS_ENABLED=true
       - RATE_LIMIT_ENABLED=true
       - CACHE_ENABLED=true
-      - AI_PROVIDER=local
-      - DISABLE_ELASTICSEARCH=true
-      - DISABLE_AWS_SERVICES=true
+      - AI_PROVIDER=${AI_PROVIDER:-local}
     deploy:
       resources:
         limits:
@@ -62,7 +60,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: redis-cache-server
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
     ports:
       - "6379:6379"
     volumes:

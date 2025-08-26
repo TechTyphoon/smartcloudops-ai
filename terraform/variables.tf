@@ -66,10 +66,11 @@ variable "private_subnet_2_cidr" {
 }
 
 variable "allowed_cidr_blocks" {
-  description = "CIDR blocks allowed to access the infrastructure"
+  description = "CIDR blocks allowed to access the infrastructure (RESTRICT IN PRODUCTION!)"
   type        = list(string)
-  # Allow access from anywhere for development; restrict in production
-  default = ["152.57.28.188/32"]
+  # WARNING: For production, this should be restricted to specific office/team IPs only
+  # Current setting allows access from anywhere - CHANGE FOR PRODUCTION!
+  default = ["0.0.0.0/0"]  # TEMPORARY FOR DEVELOPMENT - RESTRICT FOR PRODUCTION
 }
 
 # EC2 Configuration

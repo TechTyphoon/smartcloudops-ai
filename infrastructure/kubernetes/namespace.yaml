@@ -1,0 +1,30 @@
+# SmartCloudOps AI - Kubernetes Namespace
+# Phase 3 Week 5: Infrastructure as Code (IaC) - Namespace Configuration
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: smartcloudops
+  labels:
+    name: smartcloudops
+    app.kubernetes.io/name: smartcloudops-ai
+    app.kubernetes.io/part-of: smartcloudops-platform
+    app.kubernetes.io/managed-by: kubernetes
+    environment: production
+  annotations:
+    description: "SmartCloudOps AI Platform Namespace"
+    contact: "infrastructure-team@smartcloudops.ai"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: smartcloudops-monitoring
+  labels:
+    name: smartcloudops-monitoring
+    app.kubernetes.io/name: smartcloudops-monitoring
+    app.kubernetes.io/part-of: smartcloudops-platform
+    app.kubernetes.io/managed-by: kubernetes
+    environment: production
+  annotations:
+    description: "SmartCloudOps AI Monitoring and Observability Namespace"
+    contact: "infrastructure-team@smartcloudops.ai"

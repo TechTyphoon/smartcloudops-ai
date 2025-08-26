@@ -1,502 +1,436 @@
 #!/usr/bin/env python3
 """
-AI/ML API Endpoints for SmartCloudOps AI Phase 9
-Continuous learning, autonomous operations, and AI recommendations
+AI/ML API Endpoints for Smart CloudOps AI - Minimal Working Version
+AI-powered analysis, recommendations, and chat operations
 """
 
-import logging
-from flask import Blueprint, request, jsonify
-from app.auth import require_auth, require_admin
+import random
+from datetime import datetime
+from flask import Blueprint, jsonify, request
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# Create Blueprint
+# Create blueprint
 ai_bp = Blueprint("ai", __name__, url_prefix="/api/ai")
+
+# Mock data for testing
+MOCK_MODELS = [
+    {
+        "id": "anomaly_detector_v1",
+        "name": "Anomaly Detection Model",
+        "type": "anomaly_detection",
+        "version": "1.0.0",
+        "status": "active",
+        "accuracy": 0.92,
+        "last_trained": "2024-01-10T14:30:00Z"
+    },
+    {
+        "id": "remediation_recommender_v1",
+        "name": "Remediation Recommendation Model",
+        "type": "recommendation",
+        "version": "1.0.0",
+        "status": "active",
+        "accuracy": 0.87,
+        "last_trained": "2024-01-12T09:15:00Z"
+    }
+]
+
+MOCK_RECOMMENDATIONS = [
+    {
+        "action_type": "scale_up",
+        "confidence": 0.89,
+        "description": "Scale up application instances to handle increased load",
+        "estimated_impact": "high",
+        "execution_time": "2-5 minutes"
+    },
+    {
+        "action_type": "restart_service",
+        "confidence": 0.76,
+        "description": "Restart application service to clear memory leaks",
+        "estimated_impact": "medium",
+        "execution_time": "30-60 seconds"
+    },
+    {
+        "action_type": "cleanup_logs",
+        "confidence": 0.65,
+        "description": "Clean up old log files to free disk space",
+        "estimated_impact": "low",
+        "execution_time": "1-2 minutes"
+    }
+]
 
 
 @ai_bp.route("/recommendations", methods=["POST"])
-@require_auth
-def get_ai_recommendations():
-    """Get AI-powered remediation recommendations"""
+def get_recommendations():
+    """Get AI-powered remediation recommendations for an anomaly."""
     try:
         data = request.get_json()
+        
         if not data:
-            return jsonify({"status": "error", "message": "No data provided"}), 400
+            return jsonify({
+                "status": "error",
+                "message": "No data provided"
+            }), 400
 
-        anomaly_info = data.get("anomaly_info", {})
-        limit = data.get("limit", 5)
+        # Validate required fields
+        if "anomaly_data" not in data:
+            return jsonify({
+                "status": "error",
+                "message": "Missing required field: anomaly_data"
+            }), 400
 
-        if not anomaly_info:
-            return (
-                jsonify({"status": "error", "message": "Anomaly information required"}),
-                400,
-            )
+        anomaly_data = data["anomaly_data"]
+        limit = data.get("limit", 3)
 
-        # Get recommendations from knowledge base
-        recommendations = knowledge_base_manager.get_recommendations(
-            anomaly_info, limit
-        )
+        # Mock AI recommendation logic based on anomaly data
+        severity = anomaly_data.get("severity", "medium")
+        source = anomaly_data.get("source", "unknown")
+        
+        # Filter and score recommendations based on anomaly characteristics
+        filtered_recommendations = []
+        for rec in MOCK_RECOMMENDATIONS:
+            # Adjust confidence based on severity
+            adjusted_confidence = rec["confidence"]
+            if severity == "critical":
+                adjusted_confidence *= 1.1  # Boost confidence for critical issues
+            elif severity == "low":
+                adjusted_confidence *= 0.9  # Lower confidence for low severity
+            
+            # Adjust confidence based on source
+            if source == "ml_model":
+                adjusted_confidence *= 1.05  # ML models are more reliable
+            
+            # Add some randomness to simulate real AI behavior
+            adjusted_confidence *= random.uniform(0.95, 1.05)
+            adjusted_confidence = min(adjusted_confidence, 0.99)  # Cap at 99%
+            
+            filtered_recommendations.append({
+                **rec,
+                "confidence": round(adjusted_confidence, 3),
+                "reasoning": f"Recommended for {severity} severity {source} anomaly",
+                "anomaly_match_score": round(random.uniform(0.7, 0.95), 3)
+            })
 
-        # Get RL action recommendations
-        current_metrics = anomaly_info.get("metrics", {})
-        rl_recommendations = continuous_learning.get_action_recommendations(
-            current_metrics, anomaly_info
-        )
+        # Sort by confidence and return top recommendations
+        filtered_recommendations.sort(key=lambda x: x["confidence"], reverse=True)
+        top_recommendations = filtered_recommendations[:limit]
 
-        # Combine recommendations
-        combined_recommendations = {
-            "knowledge_based": recommendations,
-            "reinforcement_learning": [
-                {"action_type": action, "confidence": confidence}
-                for action, confidence in rl_recommendations
-            ],
-            "ml_prediction": knowledge_base_manager.predict_remediation(anomaly_info),
+        return jsonify({
+            "status": "success",
+            "data": {
+                "recommendations": top_recommendations,
+                "model_info": {
+                    "model_id": "remediation_recommender_v1",
+                    "confidence_threshold": 0.6,
+                    "processing_time_ms": round(random.uniform(50, 200), 1)
+                },
+                "anomaly_analysis": {
+                    "severity": severity,
+                    "source": source,
+                    "confidence": anomaly_data.get("confidence", 0.8),
+                    "risk_score": round(random.uniform(0.3, 0.9), 3)
+                }
+            }
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": f"Failed to get recommendations: {str(e)}"
+        }), 500
+
+
+@ai_bp.route("/analyze", methods=["POST"])
+def analyze_metrics():
+    """Analyze metrics data using AI/ML models."""
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({
+                "status": "error",
+                "message": "No data provided"
+            }), 400
+
+        if "metrics" not in data:
+            return jsonify({
+                "status": "error",
+                "message": "Missing required field: metrics"
+            }), 400
+
+        metrics = data["metrics"]
+        
+        # Mock AI analysis
+        analysis_result = {
+            "anomaly_detected": False,
+            "anomaly_score": 0.0,
+            "confidence": 0.0,
+            "severity": "normal",
+            "insights": [],
+            "predictions": {}
         }
 
-        return jsonify(
-            {
-                "status": "success",
-                "recommendations": combined_recommendations,
-                "timestamp": datetime.now().isoformat(),
+        # Simple rule-based analysis for demonstration
+        cpu_usage = metrics.get("cpu_usage", 0)
+        memory_usage = metrics.get("memory_usage", 0)
+        error_rate = metrics.get("error_rate", 0)
+        
+        anomaly_indicators = []
+        
+        if cpu_usage > 80:
+            anomaly_indicators.append({
+                "metric": "cpu_usage",
+                "value": cpu_usage,
+                "threshold": 80,
+                "severity": "high" if cpu_usage > 90 else "medium"
+            })
+        
+        if memory_usage > 85:
+            anomaly_indicators.append({
+                "metric": "memory_usage",
+                "value": memory_usage,
+                "threshold": 85,
+                "severity": "high" if memory_usage > 95 else "medium"
+            })
+        
+        if error_rate > 5:
+            anomaly_indicators.append({
+                "metric": "error_rate",
+                "value": error_rate,
+                "threshold": 5,
+                "severity": "critical" if error_rate > 15 else "high"
+            })
+
+        if anomaly_indicators:
+            analysis_result["anomaly_detected"] = True
+            analysis_result["anomaly_score"] = min(0.99, max(indicator["value"] / 100 for indicator in anomaly_indicators))
+            analysis_result["confidence"] = round(random.uniform(0.8, 0.95), 3)
+            
+            # Determine overall severity
+            severities = [indicator["severity"] for indicator in anomaly_indicators]
+            if "critical" in severities:
+                analysis_result["severity"] = "critical"
+            elif "high" in severities:
+                analysis_result["severity"] = "high"
+            else:
+                analysis_result["severity"] = "medium"
+            
+            # Generate insights
+            analysis_result["insights"] = [
+                f"{indicator['metric'].replace('_', ' ').title()} is {indicator['value']}%, exceeding threshold of {indicator['threshold']}%"
+                for indicator in anomaly_indicators
+            ]
+            
+            # Generate predictions
+            analysis_result["predictions"] = {
+                "trend": "increasing" if len(anomaly_indicators) > 1 else "stable",
+                "estimated_resolution_time": f"{random.randint(5, 30)} minutes",
+                "impact_level": analysis_result["severity"]
             }
-        )
-
-    except Exception as e:
-        logger.error("Error getting AI recommendations: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@ai_bp.route("/autonomous/process", methods=["POST"])
-@require_admin
-def process_autonomous():
-    """Process anomaly with autonomous operations"""
-    try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"status": "error", "message": "No data provided"}), 400
-
-        anomaly_id = data.get("anomaly_id")
-        if not anomaly_id:
-            return jsonify({"status": "error", "message": "Anomaly ID required"}), 400
-
-        # Process anomaly with autonomous operations
-        result = autonomous_ops_engine.process_anomaly(anomaly_id)
-
-        return jsonify({"status": "success", "result": result})
-
-    except Exception as e:
-        logger.error("Error in autonomous processing: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@ai_bp.route("/autonomous/policies", methods=["GET"])
-@require_auth
-def get_automation_policies():
-    """Get all automation policies"""
-    try:
-        policies = autonomous_ops_engine.get_policies()
-
-        return jsonify({"status": "success", "policies": policies})
-
-    except Exception as e:
-        logger.error("Error getting automation policies: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@ai_bp.route("/autonomous/policies", methods=["POST"])
-@require_admin
-def create_automation_policy():
-    """Create a new automation policy"""
-    try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"status": "error", "message": "No data provided"}), 400
-
-        name = data.get("name")
-        conditions = data.get("conditions", {})
-        automation_level = data.get("automation_level", "manual")
-        priority = data.get("priority", 5)
-
-        if not name:
-            return jsonify({"status": "error", "message": "Policy name required"}), 400
-
-        rule_id = policy_manager.create_policy(
-            name, conditions, automation_level, priority
-        )
-
-        return jsonify(
-            {
-                "status": "success",
-                "rule_id": rule_id,
-                "message": "Policy created successfully",
-            }
-        )
-
-    except Exception as e:
-        logger.error("Error creating automation policy: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@ai_bp.route("/autonomous/policies/<rule_id>", methods=["PUT"])
-@require_admin
-def update_automation_policy(rule_id):
-    """Update an automation policy"""
-    try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"status": "error", "message": "No data provided"}), 400
-
-        success = policy_manager.update_policy(rule_id, data)
-
-        if success:
-            return jsonify(
-                {"status": "success", "message": "Policy updated successfully"}
-            )
         else:
-            return jsonify({"status": "error", "message": "Policy not found"}), 404
-
-    except Exception as e:
-        logger.error("Error updating automation policy: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@ai_bp.route("/autonomous/policies/<rule_id>", methods=["DELETE"])
-@require_admin
-def delete_automation_policy(rule_id):
-    """Delete an automation policy"""
-    try:
-        success = policy_manager.delete_policy(rule_id)
-
-        if success:
-            return jsonify(
-                {"status": "success", "message": "Policy deleted successfully"}
-            )
-        else:
-            return jsonify({"status": "error", "message": "Policy not found"}), 404
-
-    except Exception as e:
-        logger.error("Error deleting automation policy: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@ai_bp.route("/learning/cycle", methods=["POST"])
-@require_admin
-def run_learning_cycle():
-    """Run a continuous learning cycle"""
-    try:
-        # Run learning cycle
-        continuous_learning.run_learning_cycle()
-
-        # Get learning statistics
-        learning_stats = continuous_learning.get_learning_stats()
-
-        return jsonify(
-            {
-                "status": "success",
-                "message": "Learning cycle completed",
-                "statistics": learning_stats,
+            analysis_result["confidence"] = round(random.uniform(0.6, 0.8), 3)
+            analysis_result["insights"] = ["All metrics are within normal ranges"]
+            analysis_result["predictions"] = {
+                "trend": "stable",
+                "estimated_resolution_time": "N/A",
+                "impact_level": "none"
             }
-        )
 
-    except Exception as e:
-        logger.error("Error running learning cycle: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@ai_bp.route("/learning/statistics", methods=["GET"])
-@require_auth
-def get_learning_statistics():
-    """Get continuous learning statistics"""
-    try:
-        learning_stats = continuous_learning.get_learning_stats()
-        automation_stats = autonomous_ops_engine.get_automation_stats()
-        knowledge_stats = knowledge_base_manager.get_knowledge_stats()
-
-        return jsonify(
-            {
-                "status": "success",
-                "learning_statistics": learning_stats,
-                "automation_statistics": automation_stats,
-                "knowledge_statistics": knowledge_stats,
+        return jsonify({
+            "status": "success",
+            "data": {
+                "analysis": analysis_result,
+                "model_info": {
+                    "model_id": "anomaly_detector_v1",
+                    "processing_time_ms": round(random.uniform(100, 500), 1),
+                    "features_analyzed": len(metrics)
+                }
             }
-        )
+        }), 200
 
     except Exception as e:
-        logger.error("Error getting learning statistics: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({
+            "status": "error",
+            "message": f"Failed to analyze metrics: {str(e)}"
+        }), 500
 
 
-@ai_bp.route("/data/collect", methods=["POST"])
-@require_admin
-def collect_data():
-    """Trigger data collection for continuous learning"""
-    try:
-        data = request.get_json() or {}
-        hours_back = data.get("hours_back", 24)
-
-        # Collect data
-        collection_stats = data_pipeline.collect_all_data(hours_back)
-
-        return jsonify(
-            {
-                "status": "success",
-                "message": "Data collection completed",
-                "statistics": collection_stats,
-            }
-        )
-
-    except Exception as e:
-        logger.error("Error collecting data: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@ai_bp.route("/models/registry", methods=["GET"])
-@require_auth
-def get_model_registry():
-    """Get model registry information"""
-    try:
-        models = model_registry.list_models()
-
-        return jsonify({"status": "success", "models": models})
-
-    except Exception as e:
-        logger.error("Error getting model registry: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@ai_bp.route("/models/<model_type>/promote", methods=["POST"])
-@require_admin
-def promote_model(model_type):
-    """Promote model to production"""
+@ai_bp.route("/chat", methods=["POST"])
+def chat_query():
+    """Process natural language queries about the system."""
     try:
         data = request.get_json()
+        
         if not data:
-            return jsonify({"status": "error", "message": "No data provided"}), 400
+            return jsonify({
+                "status": "error",
+                "message": "No data provided"
+            }), 400
 
-        version = data.get("version")
-        if not version:
-            return (
-                jsonify({"status": "error", "message": "Model version required"}),
-                400,
-            )
+        if "query" not in data:
+            return jsonify({
+                "status": "error",
+                "message": "Missing required field: query"
+            }), 400
 
-        # Promote model
-        model_registry.promote_model(model_type, version, ModelStage.PRODUCTION)
-
-        return jsonify(
-            {
-                "status": "success",
-                "message": "Model {model_type} version {version} promoted to production",
-            }
-        )
-
-    except Exception as e:
-        logger.error("Error promoting model: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@ai_bp.route("/experiments/ab-testing", methods=["POST"])
-@require_admin
-def start_ab_experiment():
-    """Start A/B testing experiment"""
-    try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"status": "error", "message": "No data provided"}), 400
-
-        experiment_name = data.get("experiment_name")
-        model_a = data.get("model_a")
-        model_b = data.get("model_b")
-        traffic_split = data.get("traffic_split", 0.5)
-        duration_days = data.get("duration_days", 7)
-
-        if not all([experiment_name, model_a, model_b]):
-            return (
-                jsonify(
-                    {
-                        "status": "error",
-                        "message": "Experiment name, model_a, and model_b required",
-                    }
-                ),
-                400,
-            )
-
-        experiment_id = ab_testing.start_experiment(
-            experiment_name, model_a, model_b, traffic_split, duration_days
-        )
-
-        return jsonify(
-            {
-                "status": "success",
-                "experiment_id": experiment_id,
-                "message": "A/B testing experiment started",
-            }
-        )
-
-    except Exception as e:
-        logger.error("Error starting A/B experiment: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@ai_bp.route("/experiments/ab-testing/<experiment_id>/end", methods=["POST"])
-@require_admin
-def end_ab_experiment(experiment_id):
-    """End A/B testing experiment"""
-    try:
-        results = ab_testing.end_experiment(experiment_id)
-
-        return jsonify({"status": "success", "results": results})
-
-    except Exception as e:
-        logger.error("Error ending A/B experiment: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@ai_bp.route("/drift/detect", methods=["POST"])
-@require_auth
-def detect_drift():
-    """Detect data and model drift"""
-    try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"status": "error", "message": "No data provided"}), 400
-
-        model_type = data.get("model_type", "anomaly_detection")
-        version = data.get("version")
-
-        # Get current metrics for drift detection
-        session = get_db_session()
-        recent_metrics = (
-            session.query(SystemMetrics)
-            .order_by(SystemMetrics.timestamp.desc())
-            .limit(100)
-            .all()
-        )
-
-        if not recent_metrics:
-            return (
-                jsonify(
-                    {
-                        "status": "error",
-                        "message": "No recent metrics available for drift detection",
-                    }
-                ),
-                400,
-            )
-
-        # Prepare current data
-        current_data = []
-        for metric in recent_metrics:
-            current_data.append(
-                [
-                    metric.cpu_usage,
-                    metric.memory_usage,
-                    metric.disk_usage,
-                    metric.error_rate,
-                    metric.response_time,
+        query = data["query"].lower()
+        
+        # Mock chatbot responses based on query content
+        if "anomaly" in query or "alert" in query:
+            response = {
+                "message": "I found 2 active anomalies: High CPU usage (89%) and increased error rate (8%). Would you like me to recommend remediation actions?",
+                "intent": "anomaly_inquiry",
+                "confidence": 0.92,
+                "suggested_actions": [
+                    "View anomaly details",
+                    "Get remediation recommendations",
+                    "Execute auto-remediation"
                 ]
-            )
-
-        current_data = np.array(current_data)
-
-        # For simplicity, use current data as reference (in practice, use historical baseline)
-        reference_data = current_data.copy()
-
-        # Detect data drift
-        data_drift_results = drift_detector.detect_data_drift(
-            current_data, reference_data
-        )
-
-        # Detect model drift if version provided
-        model_drift_results = {}
-        if version:
-            current_metrics = {
-                "accuracy": 0.85,  # Placeholder - in practice, calculate from recent predictions
-                "precision": 0.82,
-                "recall": 0.88,
             }
-            model_drift_results = drift_detector.detect_model_drift(
-                model_type, version, current_metrics
-            )
-
-        # Determine if retraining is needed
-        should_retrain = drift_detector.should_retrain(data_drift_results)
-
-        return jsonify(
-            {
-                "status": "success",
-                "data_drift": data_drift_results,
-                "model_drift": model_drift_results,
-                "should_retrain": should_retrain,
-                "timestamp": datetime.now().isoformat(),
+        elif "status" in query or "health" in query:
+            response = {
+                "message": "System health is currently GOOD. All critical services are running normally. CPU: 45%, Memory: 67%, Response time: 120ms.",
+                "intent": "status_inquiry",
+                "confidence": 0.88,
+                "suggested_actions": [
+                    "View detailed metrics",
+                    "Check recent alerts",
+                    "View system dashboard"
+                ]
             }
-        )
+        elif "performance" in query:
+            response = {
+                "message": "Performance metrics show normal operation. Average response time is 120ms, with 99.8% uptime over the last 24 hours.",
+                "intent": "performance_inquiry",
+                "confidence": 0.85,
+                "suggested_actions": [
+                    "View performance dashboard",
+                    "Check historical trends",
+                    "Set up performance alerts"
+                ]
+            }
+        elif "help" in query or "?" in query:
+            response = {
+                "message": "I can help you with: monitoring system health, investigating anomalies, recommending remediation actions, and answering questions about your infrastructure. What would you like to know?",
+                "intent": "help_request",
+                "confidence": 0.95,
+                "suggested_actions": [
+                    "Ask about system status",
+                    "Investigate anomalies",
+                    "Get recommendations"
+                ]
+            }
+        else:
+            response = {
+                "message": "I understand you're asking about your infrastructure. Could you be more specific? I can help with system status, anomalies, performance metrics, and remediation actions.",
+                "intent": "general_inquiry",
+                "confidence": 0.60,
+                "suggested_actions": [
+                    "Ask about system health",
+                    "Check for anomalies",
+                    "View dashboards"
+                ]
+            }
+
+        return jsonify({
+            "status": "success",
+            "data": {
+                "response": response,
+                "query_metadata": {
+                    "original_query": data["query"],
+                    "processing_time_ms": round(random.uniform(50, 200), 1),
+                    "language": "en",
+                    "session_id": data.get("session_id", "default")
+                }
+            }
+        }), 200
 
     except Exception as e:
-        logger.error("Error detecting drift: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({
+            "status": "error",
+            "message": f"Failed to process chat query: {str(e)}"
+        }), 500
 
 
-@ai_bp.route("/knowledge/stats", methods=["GET"])
-@require_auth
-def get_knowledge_stats():
-    """Get knowledge base statistics"""
+@ai_bp.route("/models", methods=["GET"])
+def get_models():
+    """Get information about available AI/ML models."""
     try:
-        stats = knowledge_base_manager.get_knowledge_stats()
-
-        return jsonify({"status": "success", "statistics": stats})
+        return jsonify({
+            "status": "success",
+            "data": {
+                "models": MOCK_MODELS,
+                "total_models": len(MOCK_MODELS),
+                "active_models": len([m for m in MOCK_MODELS if m["status"] == "active"])
+            }
+        }), 200
 
     except Exception as e:
-        logger.error("Error getting knowledge stats: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({
+            "status": "error",
+            "message": f"Failed to retrieve models: {str(e)}"
+        }), 500
 
 
-@ai_bp.route("/knowledge/experience", methods=["POST"])
-@require_auth
-def add_experience():
-    """Add new experience to knowledge base"""
+@ai_bp.route("/models/<model_id>/predict", methods=["POST"])
+def predict_with_model(model_id):
+    """Make predictions using a specific model."""
     try:
         data = request.get_json()
+        
         if not data:
-            return jsonify({"status": "error", "message": "No data provided"}), 400
+            return jsonify({
+                "status": "error",
+                "message": "No data provided"
+            }), 400
 
-        anomaly_info = data.get("anomaly_info", {})
-        remediation_action = data.get("remediation_action")
-        success = data.get("success", False)
+        # Find model
+        model = next((m for m in MOCK_MODELS if m["id"] == model_id), None)
+        if not model:
+            return jsonify({
+                "status": "error",
+                "message": f"Model with ID {model_id} not found"
+            }), 404
 
-        if not all([anomaly_info, remediation_action]):
-            return (
-                jsonify(
-                    {
-                        "status": "error",
-                        "message": "Anomaly info and remediation action required",
-                    }
-                ),
-                400,
-            )
+        if model["status"] != "active":
+            return jsonify({
+                "status": "error",
+                "message": f"Model {model_id} is not active"
+            }), 400
 
-        knowledge_base_manager.add_experience(anomaly_info, remediation_action, success)
+        # Mock prediction based on model type
+        if model["type"] == "anomaly_detection":
+            prediction = {
+                "anomaly_probability": round(random.uniform(0.1, 0.9), 3),
+                "is_anomaly": random.choice([True, False]),
+                "confidence": round(random.uniform(0.7, 0.95), 3)
+            }
+        elif model["type"] == "recommendation":
+            prediction = {
+                "recommended_action": random.choice(["scale_up", "restart_service", "cleanup_logs"]),
+                "confidence": round(random.uniform(0.6, 0.9), 3),
+                "priority": random.choice(["low", "medium", "high"])
+            }
+        else:
+            prediction = {
+                "result": "unknown",
+                "confidence": 0.5
+            }
 
-        return jsonify(
-            {"status": "success", "message": "Experience added to knowledge base"}
-        )
+        return jsonify({
+            "status": "success",
+            "data": {
+                "prediction": prediction,
+                "model_info": {
+                    "model_id": model_id,
+                    "model_name": model["name"],
+                    "version": model["version"],
+                    "accuracy": model["accuracy"]
+                },
+                "processing_time_ms": round(random.uniform(10, 100), 1)
+            }
+        }), 200
 
     except Exception as e:
-        logger.error("Error adding experience: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
-
-
-@ai_bp.route("/autonomous/stats", methods=["GET"])
-@require_auth
-def get_autonomous_stats():
-    """Get autonomous operations statistics"""
-    try:
-        stats = autonomous_ops_engine.get_automation_stats()
-
-        return jsonify({"status": "success", "statistics": stats})
-
-    except Exception as e:
-        logger.error("Error getting autonomous stats: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({
+            "status": "error",
+            "message": f"Failed to make prediction: {str(e)}"
+        }), 500

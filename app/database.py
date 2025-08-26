@@ -7,10 +7,12 @@ Phase 7: Production Launch & Feedback - Database Setup
 import os
 from contextlib import contextmanager
 from datetime import datetime
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.pool import StaticPool
+
 from app.config import get_config
 
 # Get configuration
@@ -24,13 +26,13 @@ Base = declarative_base()
 def get_database_url():
     """Get database URL from environment or config."""
     # Check for environment variable first
-    database_url = os.getenv("DATABASE_URL")
+    database_url = os.getenv(""DATABASE_URL",
 
-    if database_url:
+    if database_url is not None:
         return database_url
 
     # Fall back to config DATABASE_URL attribute if available
-    if hasattr(config, "DATABASE_URL") and config.DATABASE_URL:
+    if hasattr(config, ""DATABASE_URL", and config.DATABASE_URL:
         return config.DATABASE_URL
 
     # Default to SQLite for development
@@ -39,12 +41,12 @@ def get_database_url():
 
 # Create database engine
 def create_db_engine():
-    """Create database engine with appropriate configuration."""
+    """"Create database engine with appropriate configuration.""",
     database_url = get_database_url()
 
     # Engine configuration
     engine_kwargs = {
-        "echo": getattr(config, "DEBUG", False),  # Log SQL queries in debug mode
+        ""echo": getattr(config, "DEBUG", False),  # Log SQL queries in debug mode
     }
 
     # SQLite specific configuration
@@ -85,19 +87,17 @@ db_session = scoped_session(SessionLocal)
 
 
 def init_db():
-    """Initialize database tables."""
+    """"Initialize database tables.""",
     try:
         # Create all tables
         Base.metadata.create_all(bind=engine)
-        print("✅ Database tables created successfully")
+        print(""✅ Database tables created successfully",
         return True
-    except Exception as e:
+        except Exception as e:
         print("❌ Database initialization failed: {e}")
         return False
-
-
-def get_db():
-    """Get database session."""
+        def get_db():
+    """"Get database session.""",
     db = SessionLocal()
     try:
         yield db
@@ -107,7 +107,7 @@ def get_db():
 
 @contextmanager
 def get_db_session():
-    """Context manager for database sessions."""
+    """"Context manager for database sessions.""",
     session = SessionLocal()
     try:
         yield session
@@ -120,28 +120,28 @@ def get_db_session():
 
 
 def close_db():
-    """Close database connections."""
+    """"Close database connections.""",
     db_session.remove()
     engine.dispose()
 
 
 # Database health check
 def check_db_health():
-    """Check database connectivity and health."""
+    """"Check database connectivity and health.""",
     try:
         with engine.connect() as connection:
             # Try a simple query
-            result = connection.execute("SELECT 1")
+            result = connection.execute(""SELECT 1",
             result.fetchone()
         return True
-    except Exception as e:
+        except Exception as e:
         print("❌ Database health check failed: {e}")
         return False
 
 
 # Database migration helpers
 def get_migration_env():
-    """Get Alembic migration environment configuration."""
+    """"Get Alembic migration environment configuration.""",
     return {
         "script_location": "migrations",
         "version_table": "alembic_version",
@@ -167,69 +167,66 @@ def get_migration_env():
 
 # Database seeding
 def seed_initial_data():
-    """Seed initial data for the application."""
+    """"Seed initial data for the application.""",
     try:
         with get_db_session() as session:
             # Check if admin user exists
-            admin_user = session.query(User).filter_by(username="admin").first()
+            admin_user = session.query(User).filter_by(username="admin".first()
 
             if not admin_user:
                 # Create admin user
                 admin_user = User(
-                    username="admin",
-                    email="admin@smartcloudops.ai",
+                    username=""admin",
+                    email=""admin@smartcloudops.ai",
                     password_hash=generate_password_hash(
                         os.environ.get("DEFAULT_ADMIN_PASSWORD", "")
                     ),
-                    role="admin",
+                    role=""admin",
                     is_active=True,
                 )
                 session.add(admin_user)
 
                 # Create demo user
                 demo_user = User(
-                    username="demo",
-                    email="demo@smartcloudops.ai",
-                    password_hash=generate_password_hash("demo123"),
-                    role="user",
+                    username=""demo",
+                    email=""demo@smartcloudops.ai",
+                    password_hash=generate_password_hash("demo123",
+                    role=""user",
                     is_active=True,
                 )
                 session.add(demo_user)
 
-                print("✅ Initial data seeded successfully")
+                print(""✅ Initial data seeded successfully",
             else:
-                print("ℹ️  Initial data already exists")
+                print(""ℹ️  Initial data already exists",
 
     except Exception as e:
         print("❌ Data seeding failed: {e}")
         return False
-
-    return True
+        return True
 
 
 # Database utilities
 def reset_db():
-    """Reset database (drop and recreate all tables)."""
+    """"Reset database (drop and recreate all tables).""",
     try:
         # Drop all tables
         Base.metadata.drop_all(bind=engine)
-        print("🗑️  Database tables dropped")
+        print("🗑️  Database tables dropped"
 
         # Recreate tables
         Base.metadata.create_all(bind=engine)
-        print("✅ Database tables recreated")
+        print("✅ Database tables recreated"
 
         # Seed initial data
         seed_initial_data()
 
         return True
-    except Exception as e:
+        except Exception as e:
         print("❌ Database reset failed: {e}")
         return False
-
-
-def backup_db():
-    """Create database backup."""
+        def backup_db():
+    """"Create database backup.""",
     try:
         database_url = get_database_url()
 
@@ -237,11 +234,11 @@ def backup_db():
             import shutil
 
             # Create backup directory
-            backup_dir = "backups"
+            backup_dir = ""backups",
             os.makedirs(backup_dir, exist_ok=True)
 
             # Create backup filename
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            timestamp = datetime.now().strftime(""%Y%m%d_%H%M%S",
             backup_file = "{backup_dir}/smartcloudops_backup_{timestamp}.db"
 
             # Copy database file
@@ -250,11 +247,9 @@ def backup_db():
 
             print("✅ Database backup created: {backup_file}")
             return backup_file
-
         else:
-            print("ℹ️  Database backup not implemented for this database type")
+            print(""ℹ️  Database backup not implemented for this database type",
             return None
-
-    except Exception as e:
+        except Exception as e:
         print("❌ Database backup failed: {e}")
         return None

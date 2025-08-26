@@ -1,0 +1,76 @@
+# SmartCloudOps AI - Kubernetes Services
+# Phase 3 Week 5: Infrastructure as Code (IaC) - Service Configuration
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: smartcloudops-api
+  namespace: smartcloudops
+  labels:
+    app.kubernetes.io/name: smartcloudops-ai
+    app.kubernetes.io/component: api-server
+    app.kubernetes.io/part-of: smartcloudops-platform
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "5000"
+    prometheus.io/path: "/api/metrics"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 9090
+      targetPort: metrics
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: smartcloudops-ai
+    app.kubernetes.io/component: api-server
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: smartcloudops-api-headless
+  namespace: smartcloudops
+  labels:
+    app.kubernetes.io/name: smartcloudops-ai
+    app.kubernetes.io/component: api-server
+    app.kubernetes.io/part-of: smartcloudops-platform
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: smartcloudops-ai
+    app.kubernetes.io/component: api-server
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: smartcloudops-worker
+  namespace: smartcloudops
+  labels:
+    app.kubernetes.io/name: smartcloudops-ai
+    app.kubernetes.io/component: worker
+    app.kubernetes.io/part-of: smartcloudops-platform
+spec:
+  type: ClusterIP
+  clusterIP: None  # Headless service for workers
+  ports:
+    - name: worker
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: smartcloudops-ai
+    app.kubernetes.io/component: worker

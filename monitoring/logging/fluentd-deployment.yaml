@@ -1,0 +1,470 @@
+# SmartCloudOps AI - Fluentd Deployment
+# Phase 3 Week 6: Monitoring & Logging - Log Collection and Processing
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: fluentd
+    app.kubernetes.io/component: log-collector
+    app.kubernetes.io/part-of: smartcloudops-platform
+    app.kubernetes.io/version: "1.16.0"
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: fluentd
+      app.kubernetes.io/component: log-collector
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: fluentd
+        app.kubernetes.io/component: log-collector
+        app.kubernetes.io/part-of: smartcloudops-platform
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "24231"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: fluentd
+      priorityClassName: system-node-critical
+      securityContext:
+        runAsNonRoot: false  # Required for reading host logs
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
+        - operator: "Exists"
+          effect: "NoExecute"
+        - operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: fluentd
+          image: fluent/fluentd-kubernetes-daemonset:v1.16.0-debian-elasticsearch8-amd64-1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 9880
+              protocol: TCP
+            - name: metrics
+              containerPort: 24231
+              protocol: TCP
+          env:
+            # Elasticsearch Configuration
+            - name: FLUENT_ELASTICSEARCH_HOST
+              value: "elasticsearch"
+            - name: FLUENT_ELASTICSEARCH_PORT
+              value: "9200"
+            - name: FLUENT_ELASTICSEARCH_SCHEME
+              value: "https"
+            - name: FLUENT_ELASTICSEARCH_SSL_VERIFY
+              value: "false"
+            - name: FLUENT_ELASTICSEARCH_USER
+              value: "elastic"
+            - name: FLUENT_ELASTICSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch-secrets
+                  key: elastic-password
+            - name: FLUENT_ELASTICSEARCH_INDEX_NAME
+              value: "smartcloudops-logs"
+            - name: FLUENT_ELASTICSEARCH_TYPE_NAME
+              value: "_doc"
+            
+            # Buffer Configuration
+            - name: FLUENT_BUFFER_FLUSH_THREAD_COUNT
+              value: "8"
+            - name: FLUENT_BUFFER_FLUSH_INTERVAL
+              value: "5s"
+            - name: FLUENT_BUFFER_CHUNK_LIMIT_SIZE
+              value: "2M"
+            - name: FLUENT_BUFFER_QUEUE_LIMIT_LENGTH
+              value: "128"
+            - name: FLUENT_BUFFER_RETRY_MAX_INTERVAL
+              value: "30"
+            - name: FLUENT_BUFFER_RETRY_FOREVER
+              value: "true"
+            
+            # System Configuration
+            - name: FLUENT_SYSTEMD_CONF
+              value: "disable"
+            - name: FLUENT_PROMETHEUS_CONF
+              value: "enable"
+            - name: FLUENT_PROMETHEUS_PORT
+              value: "24231"
+            
+            # Log Level
+            - name: FLUENT_LOG_LEVEL
+              value: "info"
+          
+          resources:
+            requests:
+              cpu: 100m
+              memory: 200Mi
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+          
+          livenessProbe:
+            httpGet:
+              path: /fluentd.healthcheck?json=%7B%22ping%22%3A+%22pong%22%7D
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          
+          readinessProbe:
+            httpGet:
+              path: /fluentd.healthcheck?json=%7B%22ping%22%3A+%22pong%22%7D
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          
+          volumeMounts:
+            - name: config
+              mountPath: /fluentd/etc/
+              readOnly: true
+            - name: varlog
+              mountPath: /var/log
+              readOnly: true
+            - name: varlibdockercontainers
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+            - name: varlibkubeletpods
+              mountPath: /var/lib/kubelet/pods
+              readOnly: true
+            - name: buffer
+              mountPath: /fluentd/buffer
+      
+      volumes:
+        - name: config
+          configMap:
+            name: fluentd-config
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: varlibdockercontainers
+          hostPath:
+            path: /var/lib/docker/containers
+        - name: varlibkubeletpods
+          hostPath:
+            path: /var/lib/kubelet/pods
+        - name: buffer
+          emptyDir: {}
+      
+      nodeSelector:
+        kubernetes.io/arch: amd64
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fluentd
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: fluentd
+    app.kubernetes.io/component: log-collector
+    app.kubernetes.io/part-of: smartcloudops-platform
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "24231"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9880
+      targetPort: http
+      protocol: TCP
+    - name: metrics
+      port: 24231
+      targetPort: metrics
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: fluentd
+    app.kubernetes.io/component: log-collector
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fluentd
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: fluentd
+    app.kubernetes.io/component: service-account
+    app.kubernetes.io/part-of: smartcloudops-platform
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: fluentd
+  labels:
+    app.kubernetes.io/name: fluentd
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: smartcloudops-platform
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "namespaces"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["replicasets"]
+    verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: fluentd
+  labels:
+    app.kubernetes.io/name: fluentd
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/part-of: smartcloudops-platform
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: fluentd
+subjects:
+  - kind: ServiceAccount
+    name: fluentd
+    namespace: smartcloudops-monitoring
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: fluentd
+    app.kubernetes.io/component: configuration
+    app.kubernetes.io/part-of: smartcloudops-platform
+data:
+  fluent.conf: |
+    @include systemd.conf
+    @include kubernetes.conf
+    @include prometheus.conf
+    @include conf.d/*.conf
+    
+    <match **>
+      @type elasticsearch
+      host "#{ENV['FLUENT_ELASTICSEARCH_HOST']}"
+      port "#{ENV['FLUENT_ELASTICSEARCH_PORT']}"
+      scheme "#{ENV['FLUENT_ELASTICSEARCH_SCHEME'] || 'http'}"
+      ssl_verify "#{ENV['FLUENT_ELASTICSEARCH_SSL_VERIFY'] || 'true'}"
+      user "#{ENV['FLUENT_ELASTICSEARCH_USER'] || use_default}"
+      password "#{ENV['FLUENT_ELASTICSEARCH_PASSWORD'] || use_default}"
+      index_name "#{ENV['FLUENT_ELASTICSEARCH_INDEX_NAME'] || 'logstash'}"
+      type_name "#{ENV['FLUENT_ELASTICSEARCH_TYPE_NAME'] || 'fluentd'}"
+      include_tag_key true
+      tag_key @log_name
+      time_key @timestamp
+      time_key_format %Y-%m-%dT%H:%M:%S.%NZ
+      include_timestamp true
+      reload_connections false
+      reconnect_on_error true
+      reload_on_failure true
+      log_es_400_reason false
+      logstash_prefix smartcloudops-logs
+      logstash_dateformat %Y.%m.%d
+      logstash_format true
+      template_name smartcloudops-logs
+      template_file /fluentd/etc/elasticsearch-template.json
+      template_overwrite false
+      sniffer_class_name Fluent::Plugin::ElasticsearchSimpleSniffer
+      suppress_type_name true
+      
+      <buffer>
+        @type file
+        path /fluentd/buffer/kubernetes.system.buffer
+        flush_mode interval
+        retry_type exponential_backoff
+        flush_thread_count "#{ENV['FLUENT_BUFFER_FLUSH_THREAD_COUNT'] || '8'}"
+        flush_interval "#{ENV['FLUENT_BUFFER_FLUSH_INTERVAL'] || '5s'}"
+        retry_forever "#{ENV['FLUENT_BUFFER_RETRY_FOREVER'] || 'true'}"
+        retry_max_interval "#{ENV['FLUENT_BUFFER_RETRY_MAX_INTERVAL'] || '30'}"
+        chunk_limit_size "#{ENV['FLUENT_BUFFER_CHUNK_LIMIT_SIZE'] || '2M'}"
+        queue_limit_length "#{ENV['FLUENT_BUFFER_QUEUE_LIMIT_LENGTH'] || '128'}"
+        overflow_action block
+      </buffer>
+    </match>
+  
+  kubernetes.conf: |
+    <source>
+      @type tail
+      @id in_tail_container_logs
+      path /var/log/containers/*.log
+      pos_file /var/log/fluentd-containers.log.pos
+      tag raw.kubernetes.*
+      read_from_head true
+      <parse>
+        @type multi_format
+        <pattern>
+          format json
+          time_key time
+          time_format %Y-%m-%dT%H:%M:%S.%NZ
+        </pattern>
+        <pattern>
+          format /^(?<time>.+) (?<stream>stdout|stderr) [^ ]* (?<log>.*)$/
+          time_format %Y-%m-%dT%H:%M:%S.%N%:z
+        </pattern>
+      </parse>
+    </source>
+    
+    # Detect exceptions and retry records in JSON format
+    <filter raw.kubernetes.**>
+      @type detect_exceptions
+      remove_tag_prefix raw
+      message log
+      stream stream
+      multiline_flush_interval 5
+      max_bytes 500000
+      max_lines 1000
+    </filter>
+    
+    # Concatenate multi-line logs
+    <filter **>
+      @type concat
+      key message
+      multiline_end_regexp /\n$/
+      separator ""
+    </filter>
+    
+    # Enrich records with Kubernetes metadata
+    <filter kubernetes.**>
+      @type kubernetes_metadata
+      @id filter_kube_metadata
+      kubernetes_url "#{ENV['FLUENT_FILTER_KUBERNETES_URL'] || 'https://' + ENV.fetch('KUBERNETES_SERVICE_HOST') + ':' + ENV.fetch('KUBERNETES_SERVICE_PORT') + '/api'}"
+      verify_ssl "#{ENV['KUBERNETES_VERIFY_SSL'] || true}"
+      ca_file "#{ENV['KUBERNETES_CA_FILE']}"
+      skip_labels "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_LABELS'] || 'false'}"
+      skip_container_metadata "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_CONTAINER_METADATA'] || 'false'}"
+      skip_master_url "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_MASTER_URL'] || 'false'}"
+      skip_namespace_metadata "#{ENV['FLUENT_KUBERNETES_METADATA_SKIP_NAMESPACE_METADATA'] || 'false'}"
+      watch "#{ENV['FLUENT_KUBERNETES_WATCH'] || 'true'}"
+      de_dot false
+      annotation_match [ ".*" ]
+    </filter>
+    
+    # Parse application logs based on namespace and application
+    <filter kubernetes.var.log.containers.**smartcloudops**.log>
+      @type parser
+      key_name log
+      reserve_data true
+      remove_key_name_field true
+      emit_invalid_record_to_error false
+      <parse>
+        @type multi_format
+        <pattern>
+          format json
+          time_key timestamp
+          time_format %Y-%m-%dT%H:%M:%S.%NZ
+        </pattern>
+        <pattern>
+          format none
+        </pattern>
+      </parse>
+    </filter>
+    
+    # Filter out health check logs
+    <filter kubernetes.**>
+      @type grep
+      <exclude>
+        key log
+        pattern /health/
+      </exclude>
+    </filter>
+    
+    # Add common fields
+    <filter kubernetes.**>
+      @type record_transformer
+      <record>
+        cluster_name smartcloudops-production
+        environment production
+        log_type kubernetes
+      </record>
+    </filter>
+  
+  prometheus.conf: |
+    # Prometheus monitoring configuration
+    <source>
+      @type prometheus
+      bind 0.0.0.0
+      port 24231
+      metrics_path /metrics
+    </source>
+    
+    <source>
+      @type prometheus_output_monitor
+      interval 10
+      <labels>
+        hostname ${hostname}
+      </labels>
+    </source>
+  
+  elasticsearch-template.json: |
+    {
+      "index_patterns": ["smartcloudops-logs-*"],
+      "template": {
+        "settings": {
+          "index": {
+            "number_of_shards": 3,
+            "number_of_replicas": 1,
+            "refresh_interval": "5s",
+            "codec": "best_compression"
+          }
+        },
+        "mappings": {
+          "properties": {
+            "@timestamp": {
+              "type": "date"
+            },
+            "kubernetes": {
+              "properties": {
+                "namespace_name": {
+                  "type": "keyword"
+                },
+                "pod_name": {
+                  "type": "keyword"
+                },
+                "container_name": {
+                  "type": "keyword"
+                },
+                "host": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "log": {
+              "type": "text",
+              "analyzer": "standard"
+            },
+            "level": {
+              "type": "keyword"
+            },
+            "message": {
+              "type": "text",
+              "analyzer": "standard"
+            },
+            "trace_id": {
+              "type": "keyword"
+            },
+            "span_id": {
+              "type": "keyword"
+            }
+          }
+        }
+      }
+    }

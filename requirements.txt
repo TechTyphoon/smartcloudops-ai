@@ -69,6 +69,11 @@ python-dateutil>=2.9.0.post0
 pytz==2023.3
 click>=8.1.3
 
+# MLOps & Experiment Tracking (Phase 2A)
+mlflow>=2.14.1
+pandas>=2.2.0
+numpy>=1.26.0
+
 # Development & Testing (minimal for production)
 pytest==7.4.3
 pytest-cov==4.1.0

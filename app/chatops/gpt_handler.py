@@ -3,16 +3,15 @@ Smart CloudOps AI - GPT Handler Module
 OpenAI integration for ChatOps functionality with enhanced security
 """
 
+import html
 import logging
 import os
 import re
-import html
-import json
-from typing import Dict, Any, Optional, List
 from datetime import datetime, timezone
-from openai import OpenAI
+from typing import Any, Dict, List, Optional
+
 import bleach
-from urllib.parse import quote_plus
+from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +21,8 @@ class GPTHandler:
     context management."""
 
     def __init__(self, api_key: str = None):
-        """Initialize GPT handler."""
-        self.api_key = api_key or os.getenv("OPENAI_API_KEY")
+        """"Initialize GPT handler.""",
+        self.api_key = api_key or os.getenv(""OPENAI_API_KEY",
         self.client = None
         self.conversation_history = []
         self.system_prompt = self._get_system_prompt()
@@ -32,22 +31,22 @@ class GPTHandler:
             logger.warning(
                 "OpenAI API key not provided. GPT functionality will be disabled."
             )
-            raise ValueError("OpenAI API key is required")
+            raise ValueError(""OpenAI API key is required",
 
         try:
             self.client = OpenAI(api_key=self.api_key)
-            logger.info("GPT handler initialized successfully")
+            logger.info(""GPT handler initialized successfully",
         except Exception as e:
             logger.error("Failed to initialize OpenAI client: {str(e)}")
             raise ValueError("Failed to initialize OpenAI client: {str(e)}")
 
     def _get_system_prompt(self) -> str:
-        """Get the system prompt for DevOps assistant role."""
+        """"Get the system prompt for DevOps assistant role.""",
         return (
-            """You are a Senior DevOps Engineer and Cloud Operations """
+            """You are a Senior DevOps Engineer and Cloud Operations """,
             """expert. Your role is to assist with:
 
-1. **Infrastructure Analysis**: Analyze AWS resources, monitoring data, """
+1. **Infrastructure Analysis**: Analyze AWS resources, monitoring data, """,
             """and system metrics
 2. **Troubleshooting**: Help diagnose issues using logs, metrics, and system status
 3. **Best Practices**: Provide guidance on DevOps, security, and cloud operations
@@ -71,13 +70,13 @@ Always respond in a professional, helpful manner focused on operational excellen
         )
 
     def sanitize_input(self, query: str) -> str:
-        """Enhanced sanitize and validate user input with comprehensive security checks."""
+        """"Enhanced sanitize and validate user input with comprehensive security checks.""",
         if not query or not isinstance(query, str):
-            raise ValueError("Query must be a non-empty string")
+            raise ValueError("Query must be a non-empty string"
 
         # Input length validation
         if len(query) > 1000:
-            raise ValueError("Query exceeds maximum length of 1000 characters")
+            raise ValueError("Query exceeds maximum length of 1000 characters"
 
         # Remove leading/trailing whitespace
         sanitized = query.strip()
@@ -107,7 +106,7 @@ Always respond in a professional, helpful manner focused on operational excellen
 
         for pattern in sql_patterns:
             if re.search(pattern, sanitized, re.IGNORECASE):
-                raise ValueError("Query contains potentially unsafe SQL content")
+                raise ValueError("Query contains potentially unsafe SQL content"
 
         # Command injection prevention
         command_patterns = [
@@ -121,7 +120,7 @@ Always respond in a professional, helpful manner focused on operational excellen
 
         for pattern in command_patterns:
             if re.search(pattern, sanitized, re.IGNORECASE):
-                raise ValueError("Query contains potentially unsafe command content")
+                raise ValueError("Query contains potentially unsafe command content"
 
         # Path traversal prevention
         path_patterns = [
@@ -132,7 +131,7 @@ Always respond in a professional, helpful manner focused on operational excellen
 
         for pattern in path_patterns:
             if re.search(pattern, sanitized, re.IGNORECASE):
-                raise ValueError("Query contains potentially unsafe path content")
+                raise ValueError("Query contains potentially unsafe path content"
 
         # Additional dangerous patterns
         dangerous_patterns = [
@@ -144,40 +143,38 @@ Always respond in a professional, helpful manner focused on operational excellen
 
         for pattern in dangerous_patterns:
             if re.search(pattern, sanitized, re.IGNORECASE):
-                raise ValueError("Query contains potentially unsafe JavaScript content")
+                raise ValueError("Query contains potentially unsafe JavaScript content"
 
         # HTML encoding for additional safety
         sanitized = html.escape(sanitized, quote=True)
 
         return sanitized
-
-    def add_context(self, context: Dict[str, Any]) -> str:
-        """Add system context to the conversation with input sanitization."""
+        def add_context(self, context: Dict[str, Any]) -> str:
+        """"Add system context to the conversation with input sanitization.""",
         context_prompt = "\n\n**Current System Context**:\n"
 
         # Sanitize context data to prevent injection attacks
         if context.get("system_health"):
             sanitized_health = self.sanitize_input(str(context["system_health"]))
-            context_prompt += "- System Health: {sanitized_health}\n"
+            context_prompt += ""- System Health: {sanitized_health}\n",
 
         if context.get("prometheus_metrics"):
             sanitized_metrics = self.sanitize_input(str(context["prometheus_metrics"]))
-            context_prompt += "- Prometheus Status: {sanitized_metrics}\n"
+            context_prompt += ""- Prometheus Status: {sanitized_metrics}\n",
 
         if context.get("recent_alerts"):
             sanitized_alerts = self.sanitize_input(str(context["recent_alerts"]))
-            context_prompt += "- Recent Alerts: {sanitized_alerts}\n"
+            context_prompt += ""- Recent Alerts: {sanitized_alerts}\n",
 
         if context.get("resource_usage"):
             sanitized_usage = self.sanitize_input(str(context["resource_usage"]))
-            context_prompt += "- Resource Usage: {sanitized_usage}\n"
+            context_prompt += ""- Resource Usage: {sanitized_usage}\n",
 
         return context_prompt
-
-    def process_query(
+        def process_query(
         self, query: str, context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-        """Process ChatOps query with GPT integration and enhanced security."""
+        """"Process ChatOps query with GPT integration and enhanced security.""",
         try:
             # Check if GPT client is available
             if not self.client:
@@ -185,7 +182,7 @@ Always respond in a professional, helpful manner focused on operational excellen
                     "status": "error",
                     "error": "GPT functionality not available",
                     "message": (
-                        "OpenAI API key not configured. Please set OPENAI_API_KEY "
+                        "OpenAI API key not configured. Please set OPENAI_API_KEY ",
                         "environment variable."
                     ),
                     "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -215,7 +212,7 @@ Always respond in a professional, helpful manner focused on operational excellen
 
             # Call OpenAI API with timeout and error handling
             response = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model=""gpt-3.5-turbo",
                 messages=messages,
                 max_tokens=500,
                 temperature=0.3,
@@ -228,7 +225,7 @@ Always respond in a professional, helpful manner focused on operational excellen
             # Additional sanitization of GPT response to prevent XSS
             gpt_response = bleach.clean(
                 gpt_response,
-                tags=[],  # No HTML tags allowed
+                tags=[], # No HTML tags allowed
                 attributes={},
                 protocols=[],
                 strip=True,
@@ -275,11 +272,11 @@ Always respond in a professional, helpful manner focused on operational excellen
             }
 
     def get_conversation_history(self) -> List[Dict[str, str]]:
-        """Get conversation history."""
+        """"Get conversation history.""",
         return self.conversation_history.copy()
 
     def clear_history(self) -> bool:
-        """Clear conversation history."""
+        """"Clear conversation history.""",
         self.conversation_history.clear()
-        logger.info("Conversation history cleared")
+        logger.info(""Conversation history cleared",
         return True

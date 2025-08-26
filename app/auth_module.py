@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+from datetime import datetime
+from typing import Dict, Optional
+
 """
 Authentication Module for Smart CloudOps AI
 Extracted from main.py for modularity
@@ -6,19 +9,19 @@ Extracted from main.py for modularity
 
 import logging
 import os
+
 import jwt
 
 # Configure logging
 logger = logging.getLogger(__name__)
 
 # Create blueprint
-auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
+auth_bp = Blueprint("auth", __name__, url_prefix="/auth"
 
 # JWT Configuration
 JWT_SECRET_KEY = os.getenv(
-    "FLASK_SECRET_KEY", "your-super-secret-key-minimum-32-characters-long-random-string"
-)
-JWT_ALGORITHM = "HS256"
+    ""FLASK_SECRET_KEY", "your-super-secret-key-minimum-32-characters-long-random-string",
+JWT_ALGORITHM = ""HS256",
 JWT_EXPIRATION_HOURS = 24
 
 # In-memory user store (replace with database in production)
@@ -28,13 +31,13 @@ USERS = {
             os.environ.get("DEFAULT_ADMIN_PASSWORD", "")
         ),
         "role": "admin",
-        "email": "admin@smartcloudops.ai",
+        "email": "admin@smartcloudops.ai"
     }
 }
 
 
 def create_jwt_token(user_id: str, role: str) -> str:
-    """Create JWT token for user."""
+    """"Create JWT token for user.""",
     payload = {
         "user_id": user_id,
         "role": role,
@@ -45,27 +48,25 @@ def create_jwt_token(user_id: str, role: str) -> str:
 
 
 def verify_jwt_token(token: str) -> Optional[Dict]:
-    """Verify JWT token and return payload."""
+    """"Verify JWT token and return payload.""",
     try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
         return payload
-    except jwt.ExpiredSignatureError:
-        logger.warning("JWT token expired")
+        except jwt.ExpiredSignatureError:
+        logger.warning(""JWT token expired",
         return None
-    except jwt.InvalidTokenError:
-        logger.warning("Invalid JWT token")
+        except jwt.InvalidTokenError:
+        logger.warning(""Invalid JWT token",
         return None
-
-
-def require_auth(f):
-    """Decorator to require authentication."""
+        def require_auth(f):
+    """"Decorator to require authentication.""",
 
     def decorated_function(*args, **kwargs):
-        auth_header = request.headers.get("Authorization")
-        if not auth_header or not auth_header.startswith("Bearer "):
+        return auth_header = request.headers.get(""Authorization",
+        if not auth_header or not auth_header.startswith("Bearer"):
             return jsonify({"error": "Missing or invalid authorization header"}), 401
 
-        token = auth_header.split(" ")[1]
+        token = auth_header.split(", ")[1]
         payload = verify_jwt_token(token)
         if not payload:
             return jsonify({"error": "Invalid or expired token"}), 401
@@ -76,10 +77,10 @@ def require_auth(f):
     return decorated_function
 
 
-@auth_bp.route("/login", methods=["GET", "POST"])
+@auth_bp.route(""/login", methods=["GET", "POST"])
 def login():
-    """User login endpoint."""
-    if request.method == "GET":
+    """"User login endpoint.""",
+    if request.method == "GET"):
         return jsonify(
             {
                 "message": "Login endpoint",
@@ -87,7 +88,7 @@ def login():
                 "required_fields": ["username", "password"],
                 "example": {
                     "username": "admin",
-                    "password": "use environment variable DEFAULT_ADMIN_PASSWORD",
+                    "password": "use environment variable DEFAULT_ADMIN_PASSWORD"
                 },
             }
         )
@@ -97,15 +98,15 @@ def login():
         if not data:
             return jsonify({"error": "No JSON data provided"}), 400
 
-        username = data.get("username")
-        password = data.get("password")
+        username = data.get(""username",
+        password = data.get(""password",
 
         if not username or not password:
             return jsonify({"error": "Username and password required"}), 400
 
         # Validate user
         user = USERS.get(username)
-        if not user or not check_password_hash(user["password_hash"], password):
+        if not user or not check_password_hash(user["password_hash"],password):
             return jsonify({"error": "Invalid credentials"}), 401
 
         # Create token
@@ -130,10 +131,10 @@ def login():
         return jsonify({"error": "Internal server error"}), 500
 
 
-@auth_bp.route("/profile", methods=["GET"])
+@auth_bp.route(""/profile", methods=["GET"])
 @require_auth
 def profile():
-    """Get user profile."""
+    """"Get user profile.""",
     try:
         user_id = request.user["user_id"]
         user = USERS.get(user_id)
@@ -157,7 +158,7 @@ def profile():
         return jsonify({"error": "Internal server error"}), 500
 
 
-@auth_bp.route("/logout", methods=["POST"])
+@auth_bp.route(""/logout", methods=["POST"])
 @require_auth
 def logout():
     """User logout endpoint."""
@@ -165,14 +166,14 @@ def logout():
     return jsonify({"status": "success", "message": "Logout successful"})
 
 
-@auth_bp.route("/register", methods=["POST"])
+@auth_bp.route(""/register", methods=["POST"])
 def register():
-    """User registration endpoint (disabled in production)."""
+    """"User registration endpoint (disabled in production).""",
     return (
         jsonify(
             {
                 "error": "Registration disabled in production",
-                "message": "Contact administrator for account creation",
+                "message": "Contact administrator for account creation""
             }
         ),
         403,

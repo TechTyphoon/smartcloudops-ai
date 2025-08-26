@@ -1,0 +1,358 @@
+# SmartCloudOps AI - Elasticsearch Deployment
+# Phase 3 Week 6: Monitoring & Logging - Centralized Logging with Elasticsearch
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: elasticsearch
+    app.kubernetes.io/component: logging
+    app.kubernetes.io/part-of: smartcloudops-platform
+    app.kubernetes.io/version: "8.9.0"
+spec:
+  serviceName: elasticsearch
+  replicas: 3
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: elasticsearch
+      app.kubernetes.io/component: logging
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: elasticsearch
+        app.kubernetes.io/component: logging
+        app.kubernetes.io/part-of: smartcloudops-platform
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9114"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: elasticsearch
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      initContainers:
+        - name: increase-vm-max-map
+          image: busybox:1.35
+          command: ["sysctl", "-w", "vm.max_map_count=262144"]
+          securityContext:
+            privileged: true
+        - name: increase-fd-ulimit
+          image: busybox:1.35
+          command: ["sh", "-c", "ulimit -n 65536"]
+          securityContext:
+            privileged: true
+      containers:
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 9200
+              protocol: TCP
+            - name: transport
+              containerPort: 9300
+              protocol: TCP
+          env:
+            - name: node.name
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: cluster.name
+              value: "smartcloudops-logs"
+            - name: cluster.initial_master_nodes
+              value: "elasticsearch-0,elasticsearch-1,elasticsearch-2"
+            - name: discovery.seed_hosts
+              value: "elasticsearch-headless"
+            - name: ES_JAVA_OPTS
+              value: "-Xms2g -Xmx2g"
+            - name: network.host
+              value: "0.0.0.0"
+            - name: transport.host
+              value: "0.0.0.0"
+            - name: http.port
+              value: "9200"
+            - name: transport.port
+              value: "9300"
+            - name: xpack.security.enabled
+              value: "true"
+            - name: xpack.security.transport.ssl.enabled
+              value: "true"
+            - name: xpack.security.transport.ssl.verification_mode
+              value: "certificate"
+            - name: xpack.security.transport.ssl.client_authentication
+              value: "required"
+            - name: xpack.security.transport.ssl.keystore.path
+              value: "/usr/share/elasticsearch/config/certs/elasticsearch.p12"
+            - name: xpack.security.transport.ssl.truststore.path
+              value: "/usr/share/elasticsearch/config/certs/elasticsearch.p12"
+            - name: xpack.security.http.ssl.enabled
+              value: "true"
+            - name: xpack.security.http.ssl.keystore.path
+              value: "/usr/share/elasticsearch/config/certs/elasticsearch.p12"
+            - name: xpack.monitoring.collection.enabled
+              value: "true"
+            - name: ELASTIC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch-secrets
+                  key: elastic-password
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 4Gi
+            limits:
+              cpu: 2000m
+              memory: 6Gi
+          livenessProbe:
+            httpGet:
+              path: /_cluster/health?local=true
+              port: http
+              scheme: HTTPS
+            initialDelaySeconds: 90
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /_cluster/health?wait_for_status=green&timeout=1s
+              port: http
+              scheme: HTTPS
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/elasticsearch/data
+            - name: config
+              mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+              subPath: elasticsearch.yml
+              readOnly: true
+            - name: certs
+              mountPath: /usr/share/elasticsearch/config/certs
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+        
+        - name: elasticsearch-exporter
+          image: quay.io/prometheuscommunity/elasticsearch-exporter:v1.6.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: metrics
+              containerPort: 9114
+              protocol: TCP
+          env:
+            - name: ES_URI
+              value: "https://localhost:9200"
+            - name: ES_USERNAME
+              value: "elastic"
+            - name: ES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: elasticsearch-secrets
+                  key: elastic-password
+            - name: ES_SSL_SKIP_VERIFY
+              value: "true"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: config
+          configMap:
+            name: elasticsearch-config
+        - name: certs
+          secret:
+            secretName: elasticsearch-certs
+        - name: tmp
+          emptyDir: {}
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      tolerations:
+        - key: "logging"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          app.kubernetes.io/name: elasticsearch
+          app.kubernetes.io/component: storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: gp3
+        resources:
+          requests:
+            storage: 100Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: elasticsearch
+    app.kubernetes.io/component: logging
+    app.kubernetes.io/part-of: smartcloudops-platform
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9114"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 9200
+      targetPort: http
+      protocol: TCP
+    - name: transport
+      port: 9300
+      targetPort: transport
+      protocol: TCP
+    - name: metrics
+      port: 9114
+      targetPort: metrics
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: elasticsearch
+    app.kubernetes.io/component: logging
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch-headless
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: elasticsearch
+    app.kubernetes.io/component: logging
+    app.kubernetes.io/part-of: smartcloudops-platform
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: http
+      port: 9200
+      targetPort: http
+      protocol: TCP
+    - name: transport
+      port: 9300
+      targetPort: transport
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: elasticsearch
+    app.kubernetes.io/component: logging
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: elasticsearch
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: elasticsearch
+    app.kubernetes.io/component: service-account
+    app.kubernetes.io/part-of: smartcloudops-platform
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch-config
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: elasticsearch
+    app.kubernetes.io/component: configuration
+    app.kubernetes.io/part-of: smartcloudops-platform
+data:
+  elasticsearch.yml: |
+    cluster.name: smartcloudops-logs
+    network.host: 0.0.0.0
+    
+    # Security
+    xpack.security.enabled: true
+    xpack.security.transport.ssl.enabled: true
+    xpack.security.transport.ssl.verification_mode: certificate
+    xpack.security.transport.ssl.client_authentication: required
+    xpack.security.transport.ssl.keystore.path: /usr/share/elasticsearch/config/certs/elasticsearch.p12
+    xpack.security.transport.ssl.truststore.path: /usr/share/elasticsearch/config/certs/elasticsearch.p12
+    xpack.security.http.ssl.enabled: true
+    xpack.security.http.ssl.keystore.path: /usr/share/elasticsearch/config/certs/elasticsearch.p12
+    
+    # Monitoring
+    xpack.monitoring.collection.enabled: true
+    xpack.monitoring.exporters.prometheus.type: http
+    xpack.monitoring.exporters.prometheus.host: ["prometheus:9090"]
+    
+    # Index lifecycle management
+    xpack.ilm.enabled: true
+    
+    # Machine learning
+    xpack.ml.enabled: true
+    
+    # Snapshot settings
+    path.repo: ["/usr/share/elasticsearch/backup"]
+    
+    # Performance tuning
+    indices.memory.index_buffer_size: 10%
+    indices.memory.min_index_buffer_size: 48mb
+    indices.memory.max_index_buffer_size: 2gb
+    
+    # Logging
+    logger.root: INFO
+    logger.org.elasticsearch.discovery: WARN
+    logger.org.elasticsearch.cluster.service: WARN
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: elasticsearch-secrets
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: elasticsearch
+    app.kubernetes.io/component: secrets
+    app.kubernetes.io/part-of: smartcloudops-platform
+type: Opaque
+data:
+  # Base64 encoded values - change in production
+  elastic-password: ZWxhc3RpYy1zdXBlci1zZWNyZXQtcGFzc3dvcmQ=  # elastic-super-secret-password
+  
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: elasticsearch-certs
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: elasticsearch
+    app.kubernetes.io/component: certificates
+    app.kubernetes.io/part-of: smartcloudops-platform
+type: Opaque
+data:
+  # Placeholder certificate data - generate proper certificates in production
+  elasticsearch.p12: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0t  # Base64 encoded P12 certificate

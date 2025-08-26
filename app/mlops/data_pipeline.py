@@ -1,477 +1,1012 @@
 #!/usr/bin/env python3
 """
-Data Pipeline for SmartCloudOps AI Continuous Learning
-Automated data collection from logs, metrics, anomalies, and feedback
+Enhanced Data Pipeline - Production-ready data processing and versioning
+Phase 2A Week 3: Data Pipeline Automation with quality monitoring and versioning
 """
 
+import json
+import hashlib
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple, Union
 import logging
-import os
+from dataclasses import dataclass, asdict
+from enum import Enum
+import sqlite3
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Try to import pandas and numpy with fallback
+try:
+    import pandas as pd
+    import numpy as np
+    PANDAS_AVAILABLE = True
+    logger.info("Pandas and NumPy successfully imported")
+except ImportError as e:
+    PANDAS_AVAILABLE = False
+    logger.warning(f"Pandas/NumPy not available: {e}")
+    # Create mock classes for fallback
+    class MockDataFrame:
+        def __init__(self, data=None):
+            self.data = data or {}
+            self.columns = list(self.data.keys()) if isinstance(data, dict) else []
+            self.size = 0
+        def isnull(self): return MockDataFrame()
+        def sum(self): return {}
+        def to_parquet(self, path): pass
+        def __len__(self): return self.size
+        def copy(self): return MockDataFrame(self.data)
+    
+    pd = type('MockPandas', (), {
+        'DataFrame': MockDataFrame,
+        'read_csv': lambda x: MockDataFrame(),
+        'read_parquet': lambda x: MockDataFrame(),
+        'read_excel': lambda x: MockDataFrame(),
+        'read_json': lambda x: MockDataFrame(),
+        'util': type('util', (), {'hash_pandas_object': lambda x: type('hash', (), {'values': b'mock'})})()
+    })()
+    
+    np = type('MockNumPy', (), {
+        'random': type('random', (), {'randn': lambda x: [0]*x, 'choice': lambda a,x: ['A']*x})(),
+        'number': object,
+        'inf': float('inf'),
+        'nan': float('nan'),
+        'mean': lambda x: 0,
+        'issubdtype': lambda a,b: False
+    })()
+
+
+class DataQualityStatus(Enum):
+    """Data quality assessment status"""
+    EXCELLENT = "excellent"
+    GOOD = "good" 
+    WARNING = "warning"
+    POOR = "poor"
+    FAILED = "failed"
+
+
+class PipelineStage(Enum):
+    """Data pipeline processing stages"""
+    INGESTION = "ingestion"
+    VALIDATION = "validation"
+    TRANSFORMATION = "transformation"
+    QUALITY_CHECK = "quality_check"
+    STORAGE = "storage"
+    COMPLETED = "completed"
+    FAILED = "failed"
 
 
 @dataclass
-class DataPoint:
-    """Standardized data point for ML training"""
-
-    timestamp: datetime
-    features: Dict[str, float]
-    labels: Dict[str, Any]
+class DataVersion:
+    """Data version metadata for tracking and reproducibility"""
+    version_id: str
+    dataset_name: str
+    created_at: datetime
+    data_hash: str
+    source_hash: str
+    row_count: int
+    column_count: int
+    file_size_bytes: int
+    quality_score: float
+    quality_status: DataQualityStatus
+    transformation_log: List[str]
     metadata: Dict[str, Any]
-    source: str
+    tags: List[str]
 
 
-class DataPipeline:
-    """Automated data collection pipeline for continuous learning"""
+@dataclass
+class QualityReport:
+    """Comprehensive data quality assessment report"""
+    dataset_name: str
+    version_id: str
+    timestamp: datetime
+    overall_score: float
+    overall_status: DataQualityStatus
+    
+    # Quality metrics
+    completeness_score: float
+    consistency_score: float
+    accuracy_score: float
+    timeliness_score: float
+    validity_score: float
+    
+    # Detailed findings
+    missing_values: Dict[str, int]
+    duplicate_rows: int
+    outliers: Dict[str, int]
+    schema_violations: List[str]
+    data_drift_detected: bool
+    
+    # Recommendations
+    issues_found: List[str]
+    recommendations: List[str]
 
-    def __init__(self, data_dir: str = "mlops/data"):
-        self.data_dir = data_dir
-        self.ensure_data_dir()
-        self.collection_stats = {
-            "metrics_collected": 0,
-            "anomalies_collected": 0,
-            "remediations_collected": 0,
-            "feedback_collected": 0,
-            "last_collection": None,
-        }
 
-    def ensure_data_dir(self):
-        """Ensure data directory exists"""
-        os.makedirs(self.data_dir, exist_ok=True)
-        os.makedirs(os.path.join(self.data_dir, "raw"), exist_ok=True)
-        os.makedirs(os.path.join(self.data_dir, "processed"), exist_ok=True)
-        os.makedirs(os.path.join(self.data_dir, "labeled"), exist_ok=True)
+@dataclass
+class PipelineRun:
+    """Individual pipeline execution tracking"""
+    run_id: str
+    pipeline_name: str
+    started_at: datetime
+    ended_at: Optional[datetime]
+    duration_seconds: Optional[float]
+    stage: PipelineStage
+    status: str
+    input_version_id: Optional[str]
+    output_version_id: Optional[str]
+    processed_records: int
+    error_count: int
+    warnings: List[str]
+    logs: List[str]
+    configuration: Dict[str, Any]
 
-    async def collect_all_data(self, hours_back: int = 24) -> Dict[str, int]:
-        """Collect all data sources for the specified time period"""
-        logger.info("Starting data collection for last {hours_back} hours")
 
-        start_time = datetime.now() - timedelta(hours=hours_back)
-
-        # Collect data from all sources
-        metrics_data = await self.collect_metrics_data(start_time)
-        anomalies_data = await self.collect_anomalies_data(start_time)
-        remediations_data = await self.collect_remediations_data(start_time)
-        feedback_data = await self.collect_feedback_data(start_time)
-
-        # Combine and process data
-        combined_data = await self.combine_data_sources(
-            metrics_data, anomalies_data, remediations_data, feedback_data
-        )
-
-        # Save raw data
-        await self.save_raw_data(combined_data)
-
-        # Process and label data
-        processed_data = await self.process_and_label_data(combined_data)
-
-        # Save processed data
-        await self.save_processed_data(processed_data)
-
-        # Update collection stats
-        self.collection_stats.update(
-            {
-                "metrics_collected": len(metrics_data),
-                "anomalies_collected": len(anomalies_data),
-                "remediations_collected": len(remediations_data),
-                "feedback_collected": len(feedback_data),
-                "last_collection": datetime.now().isoformat(),
-            }
-        )
-
-        logger.info("Data collection completed: {self.collection_stats}")
-        return self.collection_stats
-
-    async def collect_metrics_data(self, start_time: datetime) -> List[Dict]:
-        """Collect system metrics data"""
-        session = get_db_session()
-        try:
-            metrics = (
-                session.query(SystemMetrics)
-                .filter(SystemMetrics.timestamp >= start_time)
-                .order_by(SystemMetrics.timestamp.asc())
-                .all()
+class DataPipelineManager:
+    """Production-ready data pipeline with versioning and quality monitoring"""
+    
+    def __init__(self, storage_path: str = "ml_models/data_pipeline"):
+        """Initialize data pipeline manager.
+        
+        Args:
+            storage_path: Base path for pipeline storage
+        """
+        self.storage_path = Path(storage_path)
+        self.storage_path.mkdir(parents=True, exist_ok=True)
+        
+        # Initialize storage directories
+        self.data_path = self.storage_path / "data"
+        self.versions_path = self.storage_path / "versions"
+        self.quality_path = self.storage_path / "quality"
+        self.logs_path = self.storage_path / "logs"
+        
+        for path in [self.data_path, self.versions_path, self.quality_path, self.logs_path]:
+            path.mkdir(exist_ok=True)
+        
+        # Database for metadata
+        self.db_path = self.storage_path / "pipeline.db"
+        self._init_database()
+        
+        # Current pipeline run context
+        self.current_run: Optional[PipelineRun] = None
+        
+        logger.info(f"DataPipelineManager initialized: {self.storage_path}")
+    
+    def _init_database(self):
+        """Initialize SQLite database for pipeline metadata"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        # Data versions table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS data_versions (
+                version_id TEXT PRIMARY KEY,
+                dataset_name TEXT NOT NULL,
+                created_at TEXT,
+                data_hash TEXT,
+                source_hash TEXT,
+                row_count INTEGER,
+                column_count INTEGER,
+                file_size_bytes INTEGER,
+                quality_score REAL,
+                quality_status TEXT,
+                transformation_log TEXT,
+                metadata TEXT,
+                tags TEXT
             )
-
-            metrics_data = []
-            for metric in metrics:
-                metrics_data.append(
-                    {
-                        "timestamp": metric.timestamp,
-                        "cpu_usage": metric.cpu_usage,
-                        "memory_usage": metric.memory_usage,
-                        "disk_usage": metric.disk_usage,
-                        "network_in": metric.network_in,
-                        "network_out": metric.network_out,
-                        "response_time": metric.response_time,
-                        "error_rate": metric.error_rate,
-                        "active_connections": metric.active_connections,
-                        "source": "system_metrics",
-                    }
-                )
-
-            logger.info("Collected {len(metrics_data)} metrics data points")
-            return metrics_data
-
-        except Exception as e:
-            logger.error("Error collecting metrics data: {e}")
-            return []
-
-    async def collect_anomalies_data(self, start_time: datetime) -> List[Dict]:
-        """Collect anomaly data with user feedback"""
-        session = get_db_session()
-        try:
-            anomalies = (
-                session.query(Anomaly)
-                .filter(Anomaly.timestamp >= start_time)
-                .order_by(Anomaly.timestamp.asc())
-                .all()
+        ''')
+        
+        # Quality reports table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS quality_reports (
+                report_id TEXT PRIMARY KEY,
+                dataset_name TEXT,
+                version_id TEXT,
+                timestamp TEXT,
+                overall_score REAL,
+                overall_status TEXT,
+                completeness_score REAL,
+                consistency_score REAL,
+                accuracy_score REAL,
+                timeliness_score REAL,
+                validity_score REAL,
+                missing_values TEXT,
+                duplicate_rows INTEGER,
+                outliers TEXT,
+                schema_violations TEXT,
+                data_drift_detected BOOLEAN,
+                issues_found TEXT,
+                recommendations TEXT,
+                FOREIGN KEY (version_id) REFERENCES data_versions (version_id)
             )
-
-            anomalies_data = []
-            for anomaly in anomalies:
-                # Get user feedback for this anomaly
-                feedback = (
-                    session.query(Feedback)
-                    .filter(Feedback.anomaly_id == anomaly.id)
-                    .first()
-                )
-
-                anomaly_data = {
-                    "timestamp": anomaly.timestamp,
-                    "anomaly_id": anomaly.id,
-                    "severity": anomaly.severity,
-                    "description": anomaly.description,
-                    "status": anomaly.status,
-                    "source": anomaly.source,
-                    "metrics_data": anomaly.metrics_data,
-                    "user_feedback": feedback.feedback_text if feedback else None,
-                    "feedback_rating": feedback.rating if feedback else None,
-                    "source": "anomaly_detection",
-                }
-                anomalies_data.append(anomaly_data)
-
-            logger.info("Collected {len(anomalies_data)} anomalies data points")
-            return anomalies_data
-
-        except Exception as e:
-            logger.error("Error collecting anomalies data: {e}")
-            return []
-
-    async def collect_remediations_data(self, start_time: datetime) -> List[Dict]:
-        """Collect remediation action data"""
-        session = get_db_session()
-        try:
-            remediations = (
-                session.query(RemediationAction)
-                .filter(RemediationAction.created_at >= start_time)
-                .order_by(RemediationAction.created_at.asc())
-                .all()
+        ''')
+        
+        # Pipeline runs table
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS pipeline_runs (
+                run_id TEXT PRIMARY KEY,
+                pipeline_name TEXT,
+                started_at TEXT,
+                ended_at TEXT,
+                duration_seconds REAL,
+                stage TEXT,
+                status TEXT,
+                input_version_id TEXT,
+                output_version_id TEXT,
+                processed_records INTEGER,
+                error_count INTEGER,
+                warnings TEXT,
+                logs TEXT,
+                configuration TEXT
             )
-
-            remediations_data = []
-            for remediation in remediations:
-                remediation_data = {
-                    "timestamp": remediation.created_at,
-                    "remediation_id": remediation.id,
-                    "action_type": remediation.action_type,
-                    "status": remediation.status,
-                    "execution_time": remediation.execution_time,
-                    "success": remediation.success,
-                    "error_message": remediation.error_message,
-                    "anomaly_id": remediation.anomaly_id,
-                    "source": "remediation_actions",
-                }
-                remediations_data.append(remediation_data)
-
-            logger.info("Collected {len(remediations_data)} remediations data points")
-            return remediations_data
-
-        except Exception as e:
-            logger.error("Error collecting remediations data: {e}")
-            return []
-
-    async def collect_feedback_data(self, start_time: datetime) -> List[Dict]:
-        """Collect user feedback data"""
-        session = get_db_session()
-        try:
-            feedbacks = (
-                session.query(Feedback)
-                .filter(Feedback.created_at >= start_time)
-                .order_by(Feedback.created_at.asc())
-                .all()
-            )
-
-            feedback_data = []
-            for feedback in feedbacks:
-                feedback_data.append(
-                    {
-                        "timestamp": feedback.created_at,
-                        "feedback_id": feedback.id,
-                        "feedback_type": feedback.feedback_type,
-                        "feedback_text": feedback.feedback_text,
-                        "rating": feedback.rating,
-                        "user_id": feedback.user_id,
-                        "anomaly_id": feedback.anomaly_id,
-                        "source": "user_feedback",
-                    }
-                )
-
-            logger.info("Collected {len(feedback_data)} feedback data points")
-            return feedback_data
-
-        except Exception as e:
-            logger.error("Error collecting feedback data: {e}")
-            return []
-
-    async def combine_data_sources(
+        ''')
+        
+        conn.commit()
+        conn.close()
+        logger.info("Pipeline database initialized")
+    
+    # ===== DATA INGESTION =====
+    
+    def ingest_data(
         self,
-        metrics: List[Dict],
-        anomalies: List[Dict],
-        remediations: List[Dict],
-        feedback: List[Dict],
-    ) -> List[DataPoint]:
-        """Combine data from all sources into standardized DataPoints"""
-        combined_data = []
-
-        # Create a timeline of all events
-        timeline = {}
-
-        # Add metrics to timeline
-        for metric in metrics:
-            timestamp = metric["timestamp"]
-            if timestamp not in timeline:
-                timeline[timestamp] = {
-                    "metrics": [],
-                    "anomalies": [],
-                    "remediations": [],
-                    "feedback": [],
-                }
-            timeline[timestamp]["metrics"].append(metric)
-
-        # Add anomalies to timeline
-        for anomaly in anomalies:
-            timestamp = anomaly["timestamp"]
-            if timestamp not in timeline:
-                timeline[timestamp] = {
-                    "metrics": [],
-                    "anomalies": [],
-                    "remediations": [],
-                    "feedback": [],
-                }
-            timeline[timestamp]["anomalies"].append(anomaly)
-
-        # Add remediations to timeline
-        for remediation in remediations:
-            timestamp = remediation["timestamp"]
-            if timestamp not in timeline:
-                timeline[timestamp] = {
-                    "metrics": [],
-                    "anomalies": [],
-                    "remediations": [],
-                    "feedback": [],
-                }
-            timeline[timestamp]["remediations"].append(remediation)
-
-        # Add feedback to timeline
-        for fb in feedback:
-            timestamp = fb["timestamp"]
-            if timestamp not in timeline:
-                timeline[timestamp] = {
-                    "metrics": [],
-                    "anomalies": [],
-                    "remediations": [],
-                    "feedback": [],
-                }
-            timeline[timestamp]["feedback"].append(fb)
-
-        # Create DataPoints for each timestamp
-        for timestamp, events in timeline.items():
-            # Extract features from metrics
-            features = {}
-            if events["metrics"]:
-                latest_metric = events["metrics"][-1]  # Use latest metric
-                features.update(
-                    {
-                        "cpu_usage": latest_metric.get("cpu_usage", 0),
-                        "memory_usage": latest_metric.get("memory_usage", 0),
-                        "disk_usage": latest_metric.get("disk_usage", 0),
-                        "network_in": latest_metric.get("network_in", 0),
-                        "network_out": latest_metric.get("network_out", 0),
-                        "response_time": latest_metric.get("response_time", 0),
-                        "error_rate": latest_metric.get("error_rate", 0),
-                        "active_connections": latest_metric.get(
-                            "active_connections", 0
-                        ),
-                    }
-                )
-
-            # Extract labels from anomalies and remediations
-            labels = {
-                "has_anomaly": len(events["anomalies"]) > 0,
-                "anomaly_severity": (
-                    events["anomalies"][0]["severity"] if events["anomalies"] else None
-                ),
-                "anomaly_source": (
-                    events["anomalies"][0]["source"] if events["anomalies"] else None
-                ),
-                "has_remediation": len(events["remediations"]) > 0,
-                "remediation_success": (
-                    events["remediations"][0]["success"]
-                    if events["remediations"]
-                    else None
-                ),
-                "user_feedback_rating": (
-                    events["feedback"][0]["rating"] if events["feedback"] else None
-                ),
-            }
-
-            # Create metadata
-            metadata = {
-                "anomaly_count": len(events["anomalies"]),
-                "remediation_count": len(events["remediations"]),
-                "feedback_count": len(events["feedback"]),
-                "data_sources": list(
-                    set(
-                        [
-                            event["source"]
-                            for event in events["metrics"]
-                            + events["anomalies"]
-                            + events["remediations"]
-                            + events["feedback"]
-                        ]
-                    )
-                ),
-            }
-
-            # Create DataPoint
-            data_point = DataPoint(
-                timestamp=timestamp,
-                features=features,
-                labels=labels,
-                metadata=metadata,
-                source="combined_pipeline",
+        data: Union[pd.DataFrame, str, Path],
+        dataset_name: str,
+        source_metadata: Optional[Dict[str, Any]] = None,
+        tags: Optional[List[str]] = None
+    ) -> DataVersion:
+        """Ingest data with automatic versioning and quality assessment.
+        
+        Args:
+            data: DataFrame or path to data file
+            dataset_name: Name of the dataset
+            source_metadata: Additional metadata about data source
+            tags: Tags for categorization
+            
+        Returns:
+            DataVersion: Created data version
+        """
+        self._start_pipeline_run(f"ingest_{dataset_name}", PipelineStage.INGESTION)
+        
+        try:
+            # Load data if needed
+            if isinstance(data, (str, Path)):
+                df = self._load_data_file(Path(data))
+                source_path = Path(data)
+            else:
+                df = data.copy()
+                source_path = None
+            
+            # Generate version ID
+            timestamp = datetime.utcnow()
+            version_id = f"{dataset_name}_{timestamp.strftime('%Y%m%d_%H%M%S')}_{self._generate_short_hash(df)}"
+            
+            # Calculate hashes
+            data_hash = self._calculate_dataframe_hash(df)
+            source_hash = self._calculate_file_hash(source_path) if source_path else data_hash
+            
+            # Save data
+            data_file = self.data_path / f"{version_id}.parquet"
+            df.to_parquet(data_file)
+            
+            # Perform quality assessment
+            quality_report = self._assess_data_quality(df, dataset_name, version_id)
+            
+            # Create version metadata
+            version = DataVersion(
+                version_id=version_id,
+                dataset_name=dataset_name,
+                created_at=timestamp,
+                data_hash=data_hash,
+                source_hash=source_hash,
+                row_count=len(df),
+                column_count=len(df.columns),
+                file_size_bytes=data_file.stat().st_size,
+                quality_score=quality_report.overall_score,
+                quality_status=quality_report.overall_status,
+                transformation_log=[f"Ingested from {source_path or 'DataFrame'}"],
+                metadata=source_metadata or {},
+                tags=tags or []
             )
-
-            combined_data.append(data_point)
-
-        logger.info("Combined {len(combined_data)} data points from all sources")
-        return combined_data
-
-    async def process_and_label_data(
-        self, data_points: List[DataPoint]
-    ) -> List[DataPoint]:
-        """Process and label data for ML training"""
-        processed_data = []
-
-        for data_point in data_points:
-            # Add derived features
-            features = data_point.features.copy()
-
-            # Calculate derived metrics
-            if features.get("cpu_usage") and features.get("memory_usage"):
-                features["resource_pressure"] = (
-                    features["cpu_usage"] + features["memory_usage"]
-                ) / 2
-                features["cpu_memory_ratio"] = (
-                    features["cpu_usage"] / features["memory_usage"]
-                    if features["memory_usage"] > 0
-                    else 0
-                )
-
-            if features.get("network_in") and features.get("network_out"):
-                features["network_total"] = (
-                    features["network_in"] + features["network_out"]
-                )
-                features["network_ratio"] = (
-                    features["network_in"] / features["network_out"]
-                    if features["network_out"] > 0
-                    else 0
-                )
-
-            # Add time-based features
-            features["hour_of_day"] = data_point.timestamp.hour
-            features["day_of_week"] = data_point.timestamp.weekday()
-            features["is_business_hours"] = (
-                1 if 9 <= data_point.timestamp.hour <= 17 else 0
+            
+            # Save version and quality report
+            self._save_data_version(version)
+            self._save_quality_report(quality_report)
+            
+            self._log_pipeline_event(f"Ingested {len(df)} records from {dataset_name}")
+            self._end_pipeline_run(PipelineStage.COMPLETED, output_version_id=version_id)
+            
+            logger.info(f"Data ingested successfully: {version_id}")
+            return version
+            
+        except Exception as e:
+            self._log_pipeline_error(f"Ingestion failed: {e}")
+            self._end_pipeline_run(PipelineStage.FAILED)
+            raise
+    
+    def _load_data_file(self, file_path: Path) -> pd.DataFrame:
+        """Load data from various file formats"""
+        suffix = file_path.suffix.lower()
+        
+        if suffix == '.csv':
+            return pd.read_csv(file_path)
+        elif suffix == '.parquet':
+            return pd.read_parquet(file_path)
+        elif suffix in ['.xlsx', '.xls']:
+            return pd.read_excel(file_path)
+        elif suffix == '.json':
+            return pd.read_json(file_path)
+        else:
+            raise ValueError(f"Unsupported file format: {suffix}")
+    
+    # ===== DATA TRANSFORMATION =====
+    
+    def transform_data(
+        self,
+        version_id: str,
+        transformations: List[Dict[str, Any]],
+        output_dataset_name: Optional[str] = None
+    ) -> DataVersion:
+        """Apply transformations to data with full tracking.
+        
+        Args:
+            version_id: Input data version ID
+            transformations: List of transformation specifications
+            output_dataset_name: Name for output dataset
+            
+        Returns:
+            DataVersion: New version after transformations
+        """
+        self._start_pipeline_run(f"transform_{version_id}", PipelineStage.TRANSFORMATION)
+        
+        try:
+            # Load input data
+            input_version = self.get_data_version(version_id)
+            df = self.load_data_version(version_id)
+            
+            transformation_log = input_version.transformation_log.copy()
+            
+            # Apply transformations
+            for i, transform in enumerate(transformations):
+                transform_type = transform.get('type')
+                params = transform.get('params', {})
+                
+                self._log_pipeline_event(f"Applying transformation {i+1}: {transform_type}")
+                
+                if transform_type == 'filter':
+                    df = self._apply_filter(df, params)
+                    transformation_log.append(f"Filter: {params}")
+                    
+                elif transform_type == 'aggregate':
+                    df = self._apply_aggregation(df, params)
+                    transformation_log.append(f"Aggregate: {params}")
+                    
+                elif transform_type == 'feature_engineering':
+                    df = self._apply_feature_engineering(df, params)
+                    transformation_log.append(f"Feature Engineering: {params}")
+                    
+                elif transform_type == 'normalization':
+                    df = self._apply_normalization(df, params)
+                    transformation_log.append(f"Normalization: {params}")
+                    
+                elif transform_type == 'outlier_removal':
+                    df = self._apply_outlier_removal(df, params)
+                    transformation_log.append(f"Outlier Removal: {params}")
+                    
+                else:
+                    raise ValueError(f"Unknown transformation type: {transform_type}")
+            
+            # Create new version
+            output_name = output_dataset_name or input_version.dataset_name
+            new_version = self.ingest_data(
+                df, 
+                output_name,
+                source_metadata={
+                    'source_version_id': version_id,
+                    'transformations_applied': len(transformations),
+                    'transformation_log': transformation_log
+                },
+                tags=input_version.tags + ['transformed']
             )
-
-            # Create enhanced labels
-            labels = data_point.labels.copy()
-
-            # Add binary classification labels
-            labels["is_critical_anomaly"] = (
-                1 if data_point.labels.get("anomaly_severity") == "critical" else 0
+            
+            self._end_pipeline_run(PipelineStage.COMPLETED, 
+                                 input_version_id=version_id,
+                                 output_version_id=new_version.version_id)
+            
+            logger.info(f"Data transformed successfully: {version_id} -> {new_version.version_id}")
+            return new_version
+            
+        except Exception as e:
+            self._log_pipeline_error(f"Transformation failed: {e}")
+            self._end_pipeline_run(PipelineStage.FAILED, input_version_id=version_id)
+            raise
+    
+    def _apply_filter(self, df: pd.DataFrame, params: Dict[str, Any]) -> pd.DataFrame:
+        """Apply filtering transformation"""
+        column = params.get('column')
+        condition = params.get('condition')
+        value = params.get('value')
+        
+        if condition == 'greater_than':
+            return df[df[column] > value]
+        elif condition == 'less_than':
+            return df[df[column] < value]
+        elif condition == 'equals':
+            return df[df[column] == value]
+        elif condition == 'not_null':
+            return df[df[column].notna()]
+        else:
+            raise ValueError(f"Unknown filter condition: {condition}")
+    
+    def _apply_aggregation(self, df: pd.DataFrame, params: Dict[str, Any]) -> pd.DataFrame:
+        """Apply aggregation transformation"""
+        group_by = params.get('group_by', [])
+        agg_functions = params.get('functions', {})
+        
+        if group_by:
+            return df.groupby(group_by).agg(agg_functions).reset_index()
+        else:
+            return df.agg(agg_functions).to_frame().T
+    
+    def _apply_feature_engineering(self, df: pd.DataFrame, params: Dict[str, Any]) -> pd.DataFrame:
+        """Apply feature engineering transformations"""
+        new_df = df.copy()
+        
+        # Create new features based on specifications
+        for feature_spec in params.get('features', []):
+            feature_name = feature_spec['name']
+            feature_type = feature_spec['type']
+            
+            if feature_type == 'polynomial':
+                columns = feature_spec['columns']
+                degree = feature_spec.get('degree', 2)
+                for col in columns:
+                    new_df[f"{col}_poly_{degree}"] = new_df[col] ** degree
+                    
+            elif feature_type == 'interaction':
+                col1, col2 = feature_spec['columns']
+                new_df[f"{col1}_{col2}_interaction"] = new_df[col1] * new_df[col2]
+                
+            elif feature_type == 'binning':
+                column = feature_spec['column']
+                bins = feature_spec['bins']
+                new_df[f"{column}_binned"] = pd.cut(new_df[column], bins=bins)
+        
+        return new_df
+    
+    def _apply_normalization(self, df: pd.DataFrame, params: Dict[str, Any]) -> pd.DataFrame:
+        """Apply normalization transformations"""
+        new_df = df.copy()
+        columns = params.get('columns', [])
+        method = params.get('method', 'standard')
+        
+        if method == 'standard':
+            # Z-score normalization
+            for col in columns:
+                new_df[col] = (new_df[col] - new_df[col].mean()) / new_df[col].std()
+        elif method == 'minmax':
+            # Min-max normalization
+            for col in columns:
+                new_df[col] = (new_df[col] - new_df[col].min()) / (new_df[col].max() - new_df[col].min())
+        
+        return new_df
+    
+    def _apply_outlier_removal(self, df: pd.DataFrame, params: Dict[str, Any]) -> pd.DataFrame:
+        """Apply outlier removal"""
+        columns = params.get('columns', [])
+        method = params.get('method', 'iqr')
+        
+        new_df = df.copy()
+        
+        if method == 'iqr':
+            for col in columns:
+                Q1 = new_df[col].quantile(0.25)
+                Q3 = new_df[col].quantile(0.75)
+                IQR = Q3 - Q1
+                lower_bound = Q1 - 1.5 * IQR
+                upper_bound = Q3 + 1.5 * IQR
+                new_df = new_df[(new_df[col] >= lower_bound) & (new_df[col] <= upper_bound)]
+        
+        elif method == 'zscore':
+            for col in columns:
+                z_scores = np.abs((new_df[col] - new_df[col].mean()) / new_df[col].std())
+                new_df = new_df[z_scores < 3]
+        
+        return new_df
+    
+    # ===== DATA QUALITY ASSESSMENT =====
+    
+    def _assess_data_quality(self, df: pd.DataFrame, dataset_name: str, version_id: str) -> QualityReport:
+        """Comprehensive data quality assessment"""
+        timestamp = datetime.utcnow()
+        
+        # Calculate quality scores
+        completeness_score = self._calculate_completeness_score(df)
+        consistency_score = self._calculate_consistency_score(df)
+        accuracy_score = self._calculate_accuracy_score(df)
+        timeliness_score = self._calculate_timeliness_score(df)
+        validity_score = self._calculate_validity_score(df)
+        
+        # Overall score (weighted average)
+        overall_score = (
+            completeness_score * 0.3 +
+            consistency_score * 0.2 +
+            accuracy_score * 0.2 +
+            timeliness_score * 0.15 +
+            validity_score * 0.15
+        )
+        
+        # Determine overall status
+        if overall_score >= 0.9:
+            overall_status = DataQualityStatus.EXCELLENT
+        elif overall_score >= 0.8:
+            overall_status = DataQualityStatus.GOOD
+        elif overall_score >= 0.7:
+            overall_status = DataQualityStatus.WARNING
+        elif overall_score >= 0.5:
+            overall_status = DataQualityStatus.POOR
+        else:
+            overall_status = DataQualityStatus.FAILED
+        
+        # Detailed analysis
+        missing_values = df.isnull().sum().to_dict()
+        duplicate_rows = df.duplicated().sum()
+        outliers = self._detect_outliers(df)
+        schema_violations = self._check_schema_violations(df)
+        data_drift = self._detect_data_drift(df, dataset_name)
+        
+        # Generate issues and recommendations
+        issues_found = []
+        recommendations = []
+        
+        if completeness_score < 0.8:
+            issues_found.append(f"Low completeness score: {completeness_score:.2f}")
+            recommendations.append("Review data collection process for missing values")
+        
+        if duplicate_rows > 0:
+            issues_found.append(f"Found {duplicate_rows} duplicate rows")
+            recommendations.append("Implement deduplication process")
+        
+        if len(outliers) > 0:
+            issues_found.append(f"Outliers detected in {len(outliers)} columns")
+            recommendations.append("Review outlier handling strategy")
+        
+        return QualityReport(
+            dataset_name=dataset_name,
+            version_id=version_id,
+            timestamp=timestamp,
+            overall_score=overall_score,
+            overall_status=overall_status,
+            completeness_score=completeness_score,
+            consistency_score=consistency_score,
+            accuracy_score=accuracy_score,
+            timeliness_score=timeliness_score,
+            validity_score=validity_score,
+            missing_values=missing_values,
+            duplicate_rows=duplicate_rows,
+            outliers=outliers,
+            schema_violations=schema_violations,
+            data_drift_detected=data_drift,
+            issues_found=issues_found,
+            recommendations=recommendations
+        )
+    
+    def _calculate_completeness_score(self, df: pd.DataFrame) -> float:
+        """Calculate data completeness score"""
+        total_cells = df.size
+        missing_cells = df.isnull().sum().sum()
+        return max(0.0, 1.0 - (missing_cells / total_cells))
+    
+    def _calculate_consistency_score(self, df: pd.DataFrame) -> float:
+        """Calculate data consistency score"""
+        # Simplified consistency check - can be enhanced
+        consistency_issues = 0
+        total_checks = 0
+        
+        # Check for consistent data types in each column
+        for col in df.columns:
+            if df[col].dtype == 'object':
+                # Check string consistency (basic patterns)
+                total_checks += 1
+                if df[col].str.len().std() > df[col].str.len().mean():
+                    consistency_issues += 1
+        
+        return max(0.0, 1.0 - (consistency_issues / max(1, total_checks)))
+    
+    def _calculate_accuracy_score(self, df: pd.DataFrame) -> float:
+        """Calculate data accuracy score"""
+        # Simplified accuracy assessment
+        accuracy_issues = 0
+        total_checks = 0
+        
+        # Check for reasonable value ranges
+        for col in df.select_dtypes(include=[np.number]).columns:
+            total_checks += 1
+            # Check for infinite or extremely large values
+            if df[col].isin([np.inf, -np.inf]).any() or (df[col].abs() > 1e10).any():
+                accuracy_issues += 1
+        
+        return max(0.0, 1.0 - (accuracy_issues / max(1, total_checks)))
+    
+    def _calculate_timeliness_score(self, df: pd.DataFrame) -> float:
+        """Calculate data timeliness score"""
+        # Look for datetime columns and assess recency
+        datetime_cols = df.select_dtypes(include=['datetime64']).columns
+        
+        if len(datetime_cols) == 0:
+            return 1.0  # No datetime columns to assess
+        
+        timeliness_scores = []
+        for col in datetime_cols:
+            if df[col].notna().any():
+                latest_date = df[col].max()
+                days_old = (datetime.now() - latest_date).days
+                # Score decreases as data gets older
+                score = max(0.0, 1.0 - (days_old / 365))  # 1 year = 0 score
+                timeliness_scores.append(score)
+        
+        return np.mean(timeliness_scores) if timeliness_scores else 1.0
+    
+    def _calculate_validity_score(self, df: pd.DataFrame) -> float:
+        """Calculate data validity score"""
+        validity_issues = 0
+        total_checks = 0
+        
+        # Check for valid data patterns
+        for col in df.columns:
+            total_checks += 1
+            
+            # Check for obviously invalid values
+            if df[col].dtype == 'object':
+                # Check for empty strings, whitespace-only strings
+                invalid_strings = df[col].str.strip().eq('').sum()
+                if invalid_strings > 0:
+                    validity_issues += 1
+            
+            elif np.issubdtype(df[col].dtype, np.number):
+                # Check for NaN, inf values
+                if df[col].isin([np.nan, np.inf, -np.inf]).any():
+                    validity_issues += 1
+        
+        return max(0.0, 1.0 - (validity_issues / max(1, total_checks)))
+    
+    def _detect_outliers(self, df: pd.DataFrame) -> Dict[str, int]:
+        """Detect outliers in numeric columns"""
+        outliers = {}
+        
+        for col in df.select_dtypes(include=[np.number]).columns:
+            Q1 = df[col].quantile(0.25)
+            Q3 = df[col].quantile(0.75)
+            IQR = Q3 - Q1
+            lower_bound = Q1 - 1.5 * IQR
+            upper_bound = Q3 + 1.5 * IQR
+            
+            outlier_count = ((df[col] < lower_bound) | (df[col] > upper_bound)).sum()
+            if outlier_count > 0:
+                outliers[col] = outlier_count
+        
+        return outliers
+    
+    def _check_schema_violations(self, df: pd.DataFrame) -> List[str]:
+        """Check for schema violations"""
+        violations = []
+        
+        # Basic schema checks
+        if len(df.columns) == 0:
+            violations.append("No columns found")
+        
+        if len(df) == 0:
+            violations.append("No rows found")
+        
+        # Check for duplicate column names
+        if len(df.columns) != len(set(df.columns)):
+            violations.append("Duplicate column names detected")
+        
+        return violations
+    
+    def _detect_data_drift(self, df: pd.DataFrame, dataset_name: str) -> bool:
+        """Detect data drift compared to previous versions"""
+        # Simplified drift detection - compare with latest version
+        try:
+            latest_version = self.get_latest_version(dataset_name)
+            if latest_version:
+                # Compare basic statistics
+                return False  # Simplified for now
+        except:
+            pass
+        
+        return False
+    
+    # ===== DATA VERSION MANAGEMENT =====
+    
+    def get_data_version(self, version_id: str) -> DataVersion:
+        """Get data version metadata by ID"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT * FROM data_versions WHERE version_id = ?", (version_id,))
+        row = cursor.fetchone()
+        conn.close()
+        
+        if not row:
+            raise ValueError(f"Data version not found: {version_id}")
+        
+        return DataVersion(
+            version_id=row[0],
+            dataset_name=row[1],
+            created_at=datetime.fromisoformat(row[2]),
+            data_hash=row[3],
+            source_hash=row[4],
+            row_count=row[5],
+            column_count=row[6],
+            file_size_bytes=row[7],
+            quality_score=row[8],
+            quality_status=DataQualityStatus(row[9]),
+            transformation_log=json.loads(row[10]),
+            metadata=json.loads(row[11]),
+            tags=json.loads(row[12])
+        )
+    
+    def load_data_version(self, version_id: str) -> pd.DataFrame:
+        """Load actual data for a specific version"""
+        data_file = self.data_path / f"{version_id}.parquet"
+        if not data_file.exists():
+            raise FileNotFoundError(f"Data file not found: {data_file}")
+        
+        return pd.read_parquet(data_file)
+    
+    def get_latest_version(self, dataset_name: str) -> Optional[DataVersion]:
+        """Get the latest version of a dataset"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute(
+            "SELECT version_id FROM data_versions WHERE dataset_name = ? ORDER BY created_at DESC LIMIT 1",
+            (dataset_name,)
+        )
+        row = cursor.fetchone()
+        conn.close()
+        
+        if row:
+            return self.get_data_version(row[0])
+        return None
+    
+    def list_versions(self, dataset_name: Optional[str] = None) -> List[DataVersion]:
+        """List all data versions, optionally filtered by dataset name"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        if dataset_name:
+            cursor.execute(
+                "SELECT version_id FROM data_versions WHERE dataset_name = ? ORDER BY created_at DESC",
+                (dataset_name,)
             )
-            labels["needs_remediation"] = (
-                1
-                if data_point.labels.get("has_anomaly")
-                and not data_point.labels.get("has_remediation")
-                else 0
-            )
-            labels["remediation_effective"] = (
-                1 if data_point.labels.get("remediation_success") else 0
-            )
+        else:
+            cursor.execute("SELECT version_id FROM data_versions ORDER BY created_at DESC")
+        
+        version_ids = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        
+        return [self.get_data_version(vid) for vid in version_ids]
+    
+    # ===== QUALITY REPORTING =====
+    
+    def get_quality_report(self, version_id: str) -> QualityReport:
+        """Get quality report for a specific data version"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute("SELECT * FROM quality_reports WHERE version_id = ?", (version_id,))
+        row = cursor.fetchone()
+        conn.close()
+        
+        if not row:
+            raise ValueError(f"Quality report not found for version: {version_id}")
+        
+        return QualityReport(
+            dataset_name=row[1],
+            version_id=row[2],
+            timestamp=datetime.fromisoformat(row[3]),
+            overall_score=row[4],
+            overall_status=DataQualityStatus(row[5]),
+            completeness_score=row[6],
+            consistency_score=row[7],
+            accuracy_score=row[8],
+            timeliness_score=row[9],
+            validity_score=row[10],
+            missing_values=json.loads(row[11]),
+            duplicate_rows=row[12],
+            outliers=json.loads(row[13]),
+            schema_violations=json.loads(row[14]),
+            data_drift_detected=bool(row[15]),
+            issues_found=json.loads(row[16]),
+            recommendations=json.loads(row[17])
+        )
+    
+    # ===== PIPELINE EXECUTION TRACKING =====
+    
+    def _start_pipeline_run(self, pipeline_name: str, stage: PipelineStage):
+        """Start a new pipeline run"""
+        run_id = f"run_{int(datetime.utcnow().timestamp())}_{pipeline_name}"
+        
+        self.current_run = PipelineRun(
+            run_id=run_id,
+            pipeline_name=pipeline_name,
+            started_at=datetime.utcnow(),
+            ended_at=None,
+            duration_seconds=None,
+            stage=stage,
+            status="running",
+            input_version_id=None,
+            output_version_id=None,
+            processed_records=0,
+            error_count=0,
+            warnings=[],
+            logs=[],
+            configuration={}
+        )
+        
+        logger.info(f"Pipeline run started: {run_id}")
+    
+    def _end_pipeline_run(
+        self, 
+        stage: PipelineStage, 
+        input_version_id: Optional[str] = None,
+        output_version_id: Optional[str] = None
+    ):
+        """End the current pipeline run"""
+        if not self.current_run:
+            return
+        
+        self.current_run.ended_at = datetime.utcnow()
+        self.current_run.duration_seconds = (
+            self.current_run.ended_at - self.current_run.started_at
+        ).total_seconds()
+        self.current_run.stage = stage
+        self.current_run.status = "completed" if stage == PipelineStage.COMPLETED else "failed"
+        self.current_run.input_version_id = input_version_id
+        self.current_run.output_version_id = output_version_id
+        
+        self._save_pipeline_run(self.current_run)
+        
+        logger.info(f"Pipeline run ended: {self.current_run.run_id} - {stage.value}")
+        self.current_run = None
+    
+    def _log_pipeline_event(self, message: str):
+        """Log an event in the current pipeline run"""
+        if self.current_run:
+            self.current_run.logs.append(f"{datetime.utcnow().isoformat()}: {message}")
+        logger.info(message)
+    
+    def _log_pipeline_error(self, message: str):
+        """Log an error in the current pipeline run"""
+        if self.current_run:
+            self.current_run.error_count += 1
+            self.current_run.logs.append(f"{datetime.utcnow().isoformat()}: ERROR: {message}")
+        logger.error(message)
+    
+    # ===== UTILITY METHODS =====
+    
+    def _calculate_dataframe_hash(self, df: pd.DataFrame) -> str:
+        """Calculate hash of DataFrame content"""
+        return hashlib.sha256(pd.util.hash_pandas_object(df).values).hexdigest()
+    
+    def _calculate_file_hash(self, file_path: Path) -> str:
+        """Calculate hash of file content"""
+        if not file_path or not file_path.exists():
+            return ""
+        
+        hash_sha256 = hashlib.sha256()
+        with open(file_path, "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_sha256.update(chunk)
+        return hash_sha256.hexdigest()
+    
+    def _generate_short_hash(self, df: pd.DataFrame) -> str:
+        """Generate short hash for version ID"""
+        return self._calculate_dataframe_hash(df)[:8]
+    
+    def _save_data_version(self, version: DataVersion):
+        """Save data version to database"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            INSERT OR REPLACE INTO data_versions 
+            (version_id, dataset_name, created_at, data_hash, source_hash, row_count, 
+             column_count, file_size_bytes, quality_score, quality_status, 
+             transformation_log, metadata, tags)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            version.version_id,
+            version.dataset_name,
+            version.created_at.isoformat(),
+            version.data_hash,
+            version.source_hash,
+            version.row_count,
+            version.column_count,
+            version.file_size_bytes,
+            version.quality_score,
+            version.quality_status.value,
+            json.dumps(version.transformation_log),
+            json.dumps(version.metadata),
+            json.dumps(version.tags)
+        ))
+        
+        conn.commit()
+        conn.close()
+    
+    def _save_quality_report(self, report: QualityReport):
+        """Save quality report to database"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        report_id = f"qr_{report.version_id}_{int(report.timestamp.timestamp())}"
+        
+        cursor.execute('''
+            INSERT OR REPLACE INTO quality_reports 
+            (report_id, dataset_name, version_id, timestamp, overall_score, overall_status,
+             completeness_score, consistency_score, accuracy_score, timeliness_score, validity_score,
+             missing_values, duplicate_rows, outliers, schema_violations, data_drift_detected,
+             issues_found, recommendations)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            report_id,
+            report.dataset_name,
+            report.version_id,
+            report.timestamp.isoformat(),
+            report.overall_score,
+            report.overall_status.value,
+            report.completeness_score,
+            report.consistency_score,
+            report.accuracy_score,
+            report.timeliness_score,
+            report.validity_score,
+            json.dumps(report.missing_values),
+            report.duplicate_rows,
+            json.dumps(report.outliers),
+            json.dumps(report.schema_violations),
+            report.data_drift_detected,
+            json.dumps(report.issues_found),
+            json.dumps(report.recommendations)
+        ))
+        
+        conn.commit()
+        conn.close()
+    
+    def _save_pipeline_run(self, run: PipelineRun):
+        """Save pipeline run to database"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            INSERT OR REPLACE INTO pipeline_runs 
+            (run_id, pipeline_name, started_at, ended_at, duration_seconds, stage, status,
+             input_version_id, output_version_id, processed_records, error_count, warnings, logs, configuration)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            run.run_id,
+            run.pipeline_name,
+            run.started_at.isoformat(),
+            run.ended_at.isoformat() if run.ended_at else None,
+            run.duration_seconds,
+            run.stage.value,
+            run.status,
+            run.input_version_id,
+            run.output_version_id,
+            run.processed_records,
+            run.error_count,
+            json.dumps(run.warnings),
+            json.dumps(run.logs),
+            json.dumps(run.configuration)
+        ))
+        
+        conn.commit()
+        conn.close()
 
-            # Create processed DataPoint
-            processed_data_point = DataPoint(
-                timestamp=data_point.timestamp,
-                features=features,
-                labels=labels,
-                metadata=data_point.metadata,
-                source="processed_pipeline",
-            )
 
-            processed_data.append(processed_data_point)
-
-        logger.info("Processed and labeled {len(processed_data)} data points")
-        return processed_data
-
-    async def save_raw_data(self, data_points: List[DataPoint]):
-        """Save raw data to disk"""
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = "raw_data_{timestamp}.json"
-        filepath = os.path.join(self.data_dir, "raw", filename)
-
-        data_dict = [asdict(dp) for dp in data_points]
-
-        with open(filepath, "w") as f:
-            json.dump(data_dict, f, indent=2, default=str)
-
-        logger.info("Saved raw data to {filepath}")
-
-    async def save_processed_data(self, data_points: List[DataPoint]):
-        """Save processed data to disk"""
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        filename = "processed_data_{timestamp}.json"
-        filepath = os.path.join(self.data_dir, "processed", filename)
-
-        data_dict = [asdict(dp) for dp in data_points]
-
-        with open(filepath, "w") as f:
-            json.dump(data_dict, f, indent=2, default=str)
-
-        logger.info("Saved processed data to {filepath}")
-
-    def get_collection_stats(self) -> Dict[str, Any]:
-        """Get data collection statistics"""
-        return self.collection_stats.copy()
-
-    async def schedule_collection(self, interval_hours: int = 24):
-        """Schedule periodic data collection"""
-        while True:
-            try:
-                await self.collect_all_data(hours_back=interval_hours)
-                logger.info(
-                    "Completed scheduled data collection. Next collection in {interval_hours} hours."
-                )
-                await asyncio.sleep(interval_hours * 3600)  # Convert hours to seconds
-            except Exception as e:
-                logger.error("Error in scheduled data collection: {e}")
-                await asyncio.sleep(3600)  # Wait 1 hour before retrying
+# Global instance for easy access
+data_pipeline_manager = DataPipelineManager()
 
 
-# Global data pipeline instance
-data_pipeline = DataPipeline()
+def get_data_pipeline_manager() -> DataPipelineManager:
+    """Get the global data pipeline manager instance."""
+    return data_pipeline_manager

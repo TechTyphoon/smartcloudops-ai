@@ -105,42 +105,48 @@ jobs:
     - name: 🎨 Python code formatting (Black)
       run: |
         echo "::group::Checking Python code formatting"
-        black --check --diff ${{ env.APP_PATH }} || echo "Black formatting issues found, but continuing..."
+        echo "🛡️ QUALITY GATE: Black formatting violations will fail the build"
+        black --check --diff ${{ env.APP_PATH }}
+        echo "✅ Black formatting: PASSED"
         echo "::endgroup::"
-      continue-on-error: true
         
     - name: 📐 Python import sorting (isort) 
       run: |
         echo "::group::Checking Python import order"
-        isort --check-only --diff ${{ env.APP_PATH }} || echo "Import sorting issues found, but continuing..."
+        echo "🛡️ QUALITY GATE: Import sorting violations will fail the build"
+        isort --check-only --diff ${{ env.APP_PATH }}
+        echo "✅ Import sorting: PASSED"
         echo "::endgroup::"
-      continue-on-error: true
         
     - name: 🔍 Python linting (Flake8)
       run: |
         echo "::group::Python code linting"
+        echo "🛡️ QUALITY GATE: Code quality violations will fail the build"
         flake8 ${{ env.APP_PATH }} --count --statistics \
-               --max-line-length=88 --max-complexity=15 \
+               --max-line-length=88 --max-complexity=10 \
                --exclude=scripts \
-               --ignore=W503,E203,C901,W504 || echo "Linting issues found, but continuing..."
+               --ignore=W503,E203,W504 \
+               --show-source
+        echo "✅ Code linting: PASSED"
         echo "::endgroup::"
-      continue-on-error: true
         
     - name: 🔒 Python security scan (Bandit)
       run: |
         echo "::group::Python security scanning"
-        bandit -r ${{ env.APP_PATH }} -f json -o bandit-results.json || true
-        bandit -r ${{ env.APP_PATH }} --severity-level high --skip B104 || echo "Security issues found, but continuing..."
+        echo "🛡️ QUALITY GATE: High severity security issues will fail the build"
+        bandit -r ${{ env.APP_PATH }} -f json -o bandit-results.json
+        bandit -r ${{ env.APP_PATH }} --severity-level high --skip B104,B603
+        echo "✅ Security scan: PASSED"
         echo "::endgroup::"
-      continue-on-error: true
         
     - name: 🛡️ Python dependency security (Safety)
       run: |
         echo "::group::Python dependency vulnerabilities"
-        safety scan --json > safety-results.json || true
-        safety scan || echo "Some vulnerabilities found, but continuing..."
+        echo "🛡️ QUALITY GATE: Known vulnerabilities will fail the build"
+        safety scan --json > safety-results.json
+        safety scan
+        echo "✅ Dependency security: PASSED"
         echo "::endgroup::"
-      continue-on-error: true
 
     # Security: Add Trivy vulnerability scanner for dependencies
     - name: 🔍 Trivy vulnerability scanner
@@ -151,7 +157,22 @@ jobs:
         format: 'sarif'
         output: 'trivy-fs-results.sarif'
         severity: 'CRITICAL,HIGH'
-      continue-on-error: true
+        exit-code: '1'  # Fail on critical/high vulnerabilities
+        
+    - name: ✅ Quality Gate Summary
+      run: |
+        echo "::group::Quality Gate Summary"
+        echo "🎉 ALL QUALITY CHECKS PASSED!"
+        echo "✅ Code formatting (Black): ENFORCED"
+        echo "✅ Import sorting (isort): ENFORCED"
+        echo "✅ Code quality (Flake8): ENFORCED"
+        echo "✅ Security scanning (Bandit): ENFORCED"
+        echo "✅ Dependency security (Safety): ENFORCED"
+        echo "✅ Vulnerability scanning (Trivy): ENFORCED"
+        echo ""
+        echo "🛡️ Zero tolerance policy: All checks must pass"
+        echo "🚀 Build is ready for testing and deployment"
+        echo "::endgroup::"
         
     - name: 📋 Generate version
       id: version
@@ -368,7 +389,6 @@ jobs:
         format: 'sarif'
         output: 'trivy-results-${{ matrix.target }}.sarif'
         severity: 'CRITICAL,HIGH'
-      continue-on-error: true
         
     - name: 📤 Upload Trivy scan results to GitHub Security
       uses: github/codeql-action/upload-sarif@v3
@@ -398,22 +418,19 @@ jobs:
     - name: 🔍 Terraform format check
       run: |
         cd terraform
-        terraform fmt -check -recursive || echo "Terraform formatting issues found, but continuing..."
-      continue-on-error: true
+        terraform fmt -check -recursive
         
     - name: ✅ Terraform validate
       run: |
         cd terraform
-        terraform init -backend=false || echo "Terraform init failed, continuing..."
-        terraform validate || echo "Terraform validation failed, continuing..."
-      continue-on-error: true
+        terraform init -backend=false
+        terraform validate
         
     - name: 📋 Terraform plan (dry-run)
       run: |
         cd terraform
         # Dry run without actual backend
-        terraform plan -input=false -out=tfplan || echo "Plan requires AWS credentials"
-      continue-on-error: true
+        terraform plan -input=false -out=tfplan
 
   # =====================================================
   # 🚀 STAGE 6: DEPLOYMENT (Conditional)

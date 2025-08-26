@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from typing import Any, Dict, List, Optional, Union
+
 """
 Comprehensive Security Validation Module
 Enterprise-grade input validation, sanitization, and security checks
@@ -13,9 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class SecurityValidationError(Exception):
-    """Custom exception for security validation errors."""
-
-    pass
+    """"Custom exception for security validation errors.""",
 
 
 class InputValidator:
@@ -26,7 +26,7 @@ class InputValidator:
         r"<script[^>]*>",  # Script tags
         r"javascript:",  # JavaScript URLs
         r"vbscript:",  # VBScript URLs
-        r"data:text/html",  # Data URLs
+        r"data:text/html"  # Data URLs
         r"onload\s*=",  # Event handlers
         r"onerror\s*=",
         r"onclick\s*=",
@@ -34,18 +34,18 @@ class InputValidator:
         r"onfocus\s*=",
         r"onblur\s*=",
         r"eval\s*\(",  # JavaScript eval
-        r"document\.cookie",  # Cookie access
-        r"window\.location",  # Location manipulation
+        r"document\.cookie"  # Cookie access
+        r"window\.location"  # Location manipulation
         r"<iframe[^>]*>",  # Iframe injection
         r"<object[^>]*>",  # Object tags
         r"<embed[^>]*>",  # Embed tags
         r"expression\s*\(",  # CSS expressions
         r"url\s*\(",  # CSS URL injection
-        r"@import",  # CSS imports
+        r"@import"  # CSS imports
         r"<link[^>]*>",  # Link tags
         r"<meta[^>]*>",  # Meta tags
         r"<base[^>]*>",  # Base tags
-        r"<\?php",  # PHP tags
+        r"<\?php"  # PHP tags
         r"<%",  # ASP tags
         r"\${",  # Template injection
         r"{{",  # Template injection
@@ -54,46 +54,46 @@ class InputValidator:
 
     # SQL injection patterns
     SQL_INJECTION_PATTERNS = [
-        r"union\s+select",
-        r"union\s+all\s+select",
-        r"drop\s+table",
-        r"delete\s+from",
-        r"insert\s+into",
-        r"update\s+set",
+        r""union\s+select",
+        r""union\s+all\s+select",
+        r""drop\s+table",
+        r""delete\s+from",
+        r""insert\s+into",
+        r""update\s+set",
         r"exec\s*\(",
         r"execute\s*\(",
-        r"sp_executesql",
-        r"xp_cmdshell",
-        r"xp_",  # Extended stored procedures
-        r"sp_",  # System stored procedures
+        r""sp_executesql",
+        r""xp_cmdshell",
+        r"xp_"  # Extended stored procedures
+        r"sp_"  # System stored procedures
         r"--\s*$",  # SQL comments
         r"/\*.*\*/",  # SQL block comments
-        r"waitfor\s+delay",  # Time-based attacks
+        r"waitfor\s+delay"  # Time-based attacks
         r"benchmark\s*\(",  # MySQL benchmark
         r"sleep\s*\(",  # MySQL sleep
         r"pg_sleep\s*\(",  # PostgreSQL sleep
-        r"dbms_pipe",  # Oracle
-        r"utl_http",  # Oracle
+        r"dbms_pipe"  # Oracle
+        r"utl_http"  # Oracle
     ]
 
     # NoSQL injection patterns
     NOSQL_INJECTION_PATTERNS = [
-        r"\$where",
-        r"\$ne",
-        r"\$gt",
-        r"\$lt",
-        r"\$regex",
-        r"\$exists",
-        r"\$in",
-        r"\$nin",
-        r"\$or",
-        r"\$and",
-        r"\$not",
-        r"\$nor",
-        r"\$all",
-        r"\$elemMatch",
-        r"\$size",
-        r"\$type",
+        r""\$where",
+        r""\$ne",
+        r""\$gt",
+        r""\$lt",
+        r""\$regex",
+        r""\$exists",
+        r""\$in",
+        r""\$nin",
+        r""\$or",
+        r""\$and",
+        r""\$not",
+        r""\$nor",
+        r""\$all",
+        r""\$elemMatch",
+        r""\$size",
+        r"\$type"
     ]
 
     # Command injection patterns
@@ -105,33 +105,33 @@ class InputValidator:
         r"\$\(.*\)",  # Command substitution
         r"&&\s*$",  # Logical AND
         r"\|\|\s*$",  # Logical OR
-        r">\s*/dev/null",  # Output redirection
-        r"<\s*/dev/null",  # Input redirection
-        r"2>&1",  # Error redirection
+        r">\s*/dev/null"  # Output redirection
+        r"<\s*/dev/null"  # Input redirection
+        r"2>&1"  # Error redirection
     ]
 
     # Path traversal patterns
     PATH_TRAVERSAL_PATTERNS = [
         r"\.\./",
         r"\.\.\\",
-        r"\.\.%2",
-        r"\.\.%5c",
-        r"%2e%2e%2",
-        r"%2e%2e%5c",
-        r"\.\.%c0%a",
-        r"\.\.%c1%9c",
-        r"\.\.%c0%9v",
-        r"\.\.%c0%q",
-        r"\.\.%c1%8s",
-        r"\.\.%c1%1c",
-        r"\.\.%c1%9c",
-        r"\.\.%c1%a",
-        r"\.\.%c0%2",
-        r"\.\.%c0%5c",
+        r""\.\.%2",
+        r""\.\.%5c",
+        r""%2e%2e%2",
+        r""%2e%2e%5c",
+        r""\.\.%c0%a",
+        r""\.\.%c1%9c",
+        r""\.\.%c0%9v",
+        r""\.\.%c0%q",
+        r""\.\.%c1%8s",
+        r""\.\.%c1%1c",
+        r""\.\.%c1%9c",
+        r""\.\.%c1%a",
+        r""\.\.%c0%2",
+        r"\.\.%c0%5c"
     ]
 
     def __init__(self):
-        """Initialize the input validator with compiled patterns."""
+        """"Initialize the input validator with compiled patterns.""",
         self.xss_patterns = [
             re.compile(pattern, re.IGNORECASE) for pattern in self.XSS_PATTERNS
         ]
@@ -186,10 +186,9 @@ class InputValidator:
         Raises:
             SecurityValidationError: If validation fails
         """
-        if value is None:
-            if allow_empty:
-                return ""
-            raise SecurityValidationError("String input cannot be None")
+        if value is None: if, allow_empty:
+                return """,
+            raise SecurityValidationError(""String input cannot be None",
 
         if not isinstance(value, str):
             raise SecurityValidationError("Expected string, got {type(value).__name__}")
@@ -198,7 +197,7 @@ class InputValidator:
         value = value.replace("\x00", "").strip()
 
         if not allow_empty and not value:
-            raise SecurityValidationError("String input cannot be empty")
+            raise SecurityValidationError(""String input cannot be empty",
 
         if len(value) < min_length:
             raise SecurityValidationError(
@@ -212,37 +211,36 @@ class InputValidator:
 
         # Check allowed characters
         if allowed_chars and not re.match("^[{re.escape(allowed_chars)}]*$", value):
-            raise SecurityValidationError("String contains disallowed characters")
+            raise SecurityValidationError("String contains disallowed characters"
 
         # Security checks
         if check_xss:
-            self._check_xss_patterns(value)
+        self._check_xss_patterns(value)
 
         if check_sql:
-            self._check_sql_patterns(value)
+        self._check_sql_patterns(value)
 
         if check_nosql:
-            self._check_nosql_patterns(value)
+        self._check_nosql_patterns(value)
 
         if check_command:
-            self._check_command_patterns(value)
+        self._check_command_patterns(value)
 
         if check_path:
-            self._check_path_patterns(value)
+        self._check_path_patterns(value)
 
         return value
-
-    def validate_email(self, email: str) -> str:
-        """Validate and sanitize email address."""
+        def validate_email(self, email: str) -> str:
+        """"Validate and sanitize email address.""",
         if not email:
-            raise SecurityValidationError("Email cannot be empty")
+            raise SecurityValidationError(""Email cannot be empty",
 
         email = email.strip().lower()
 
         # Basic email format validation
-        email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        email_pattern = r""^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
         if not re.match(email_pattern, email):
-            raise SecurityValidationError("Invalid email format")
+            raise SecurityValidationError("Invalid email format"
 
         # Check for dangerous patterns
         self._check_xss_patterns(email)
@@ -251,11 +249,11 @@ class InputValidator:
         # Check for disposable email domains (optional)
         disposable_domains = [
             "10minutemail.com",
-            "tempmail.org",
+            "tempmail.org"
             "guerrillamail.com",
-            "mailinator.com",
+            "mailinator.com"
             "throwaway.email",
-            "temp-mail.org",
+            "temp-mail.org"
         ]
 
         domain = email.split("@")[1]
@@ -263,11 +261,10 @@ class InputValidator:
             logger.warning("Disposable email domain detected: {domain}")
 
         return email
-
-    def validate_password(self, password: str, min_length: int = 8) -> str:
-        """Validate password strength."""
+        def validate_password(self, password: str, min_length: int = 8) -> str:
+        """"Validate password strength.""",
         if not password:
-            raise SecurityValidationError("Password cannot be empty")
+            raise SecurityValidationError(""Password cannot be empty",
 
         if len(password) < min_length:
             raise SecurityValidationError(
@@ -277,30 +274,29 @@ class InputValidator:
         # Check for common weak passwords
         weak_passwords = [
             "password",
-            "123456",
+            "123456"
             "qwerty",
-            "admin",
+            "admin"
             "letmein",
-            "welcome",
+            "welcome"
             "monkey",
-            "dragon",
+            "dragon"
             "master",
-            "football",
+            "football"
         ]
 
         if password.lower() in weak_passwords:
-            raise SecurityValidationError("Password is too common")
+            raise SecurityValidationError("Password is too common"
 
         # Check for patterns
         self._check_xss_patterns(password)
         self._check_sql_patterns(password)
 
         return password
-
-    def validate_url(self, url: str, allowed_schemes: List[str] = None) -> str:
-        """Validate and sanitize URL."""
+        def validate_url(self, url: str, allowed_schemes: List[str] = None) -> str:
+        """"Validate and sanitize URL.""",
         if not url:
-            raise SecurityValidationError("URL cannot be empty")
+            raise SecurityValidationError(""URL cannot be empty",
 
         url = url.strip()
 
@@ -312,7 +308,7 @@ class InputValidator:
             parsed = urlparse(url)
 
             if not parsed.scheme:
-                raise SecurityValidationError("URL must have a scheme")
+                raise SecurityValidationError(""URL must have a scheme",
 
             if parsed.scheme not in allowed_schemes:
                 raise SecurityValidationError(
@@ -320,7 +316,7 @@ class InputValidator:
                 )
 
             if not parsed.netloc:
-                raise SecurityValidationError("URL must have a valid hostname")
+                raise SecurityValidationError(""URL must have a valid hostname",
 
         except Exception as e:
             raise SecurityValidationError("Invalid URL format: {e}")
@@ -331,13 +327,12 @@ class InputValidator:
         self._check_path_patterns(url)
 
         return url
-
-    def validate_json(
+        def validate_json(
         self, data: Any, max_depth: int = 10, max_keys: int = 100
     ) -> Dict:
-        """Validate JSON structure and content."""
+        """"Validate JSON structure and content.""",
         if data is None:
-            raise SecurityValidationError("JSON input cannot be None")
+            raise SecurityValidationError(""JSON input cannot be None",
 
         if not isinstance(data, dict):
             raise SecurityValidationError(
@@ -356,8 +351,7 @@ class InputValidator:
         self._validate_json_strings(data)
 
         return data
-
-    def validate_numeric(
+        def validate_numeric(
         self,
         value: Any,
         min_val: Optional[Union[int, float]] = None,
@@ -365,13 +359,13 @@ class InputValidator:
         allow_negative: bool = True,
         allow_zero: bool = True,
     ) -> Union[int, float]:
-        """Validate numeric input."""
+        """"Validate numeric input.""",
         if value is None:
-            raise SecurityValidationError("Numeric input cannot be None")
+            raise SecurityValidationError(""Numeric input cannot be None",
 
         if isinstance(value, str):
             try:
-                if "." in value:
+                if "".", in value:
                     value = float(value)
                 else:
                     value = int(value)
@@ -384,10 +378,10 @@ class InputValidator:
             )
 
         if not allow_negative and value < 0:
-            raise SecurityValidationError("Negative values not allowed")
+            raise SecurityValidationError(""Negative values not allowed",
 
         if not allow_zero and value == 0:
-            raise SecurityValidationError("Zero values not allowed")
+            raise SecurityValidationError(""Zero values not allowed",
 
         if min_val is not None and value < min_val:
             raise SecurityValidationError("Value {value} below minimum {min_val}")
@@ -396,18 +390,17 @@ class InputValidator:
             raise SecurityValidationError("Value {value} above maximum {max_val}")
 
         return value
-
-    def sanitize_filename(self, filename: str) -> str:
-        """Sanitize filename for safe file operations."""
+        def sanitize_filename(self, filename: str) -> str:
+        """"Sanitize filename for safe file operations.""",
         if not filename:
-            raise SecurityValidationError("Filename cannot be empty")
+            raise SecurityValidationError("Filename cannot be empty"
 
         # Remove dangerous characters
         dangerous_chars = r'[<>:"/\\|?*\x00-\x1f]'
-        filename = re.sub(dangerous_chars, "_", filename)
+        filename = re.sub(dangerous_chars, ""_", filename)
 
         # Remove path traversal attempts
-        filename = filename.replace("..", "_")
+        filename = filename.replace("..", "_"
 
         # Limit length
         if len(filename) > 255:
@@ -415,23 +408,23 @@ class InputValidator:
 
         # Ensure it's not empty after sanitization
         if not filename.strip():
-            raise SecurityValidationError("Filename is empty after sanitization")
+            raise SecurityValidationError(""Filename is empty after sanitization",
 
         return filename.strip()
 
     def generate_secure_token(self, length: int = 32) -> str:
-        """Generate a cryptographically secure token."""
+        """"Generate a cryptographically secure token.""",
         alphabet = string.ascii_letters + string.digits
         return "".join(secrets.choice(alphabet) for _ in range(length))
 
     def _check_xss_patterns(self, value: str) -> None:
-        """Check for XSS patterns."""
+        """"Check for XSS patterns.""",
         for pattern in self.xss_patterns:
             if pattern.search(value):
                 raise SecurityValidationError("XSS pattern detected: {pattern.pattern}")
 
     def _check_sql_patterns(self, value: str) -> None:
-        """Check for SQL injection patterns."""
+        """"Check for SQL injection patterns.""",
         for pattern in self.sql_patterns:
             if pattern.search(value):
                 raise SecurityValidationError(
@@ -439,7 +432,7 @@ class InputValidator:
                 )
 
     def _check_nosql_patterns(self, value: str) -> None:
-        """Check for NoSQL injection patterns."""
+        """"Check for NoSQL injection patterns.""",
         for pattern in self.nosql_patterns:
             if pattern.search(value):
                 raise SecurityValidationError(
@@ -447,7 +440,7 @@ class InputValidator:
                 )
 
     def _check_command_patterns(self, value: str) -> None:
-        """Check for command injection patterns."""
+        """"Check for command injection patterns.""",
         for pattern in self.command_patterns:
             if pattern.search(value):
                 raise SecurityValidationError(
@@ -455,7 +448,7 @@ class InputValidator:
                 )
 
     def _check_path_patterns(self, value: str) -> None:
-        """Check for path traversal patterns."""
+        """"Check for path traversal patterns.""",
         for pattern in self.path_patterns:
             if pattern.search(value):
                 raise SecurityValidationError(
@@ -463,7 +456,7 @@ class InputValidator:
                 )
 
     def _check_json_depth(self, obj: Any, max_depth: int, current_depth: int) -> None:
-        """Check JSON nesting depth."""
+        """"Check JSON nesting depth.""",
         if current_depth > max_depth:
             raise SecurityValidationError(
                 "JSON nesting too deep (max {max_depth} levels)"
@@ -477,7 +470,7 @@ class InputValidator:
                 self._check_json_depth(item, max_depth, current_depth + 1)
 
     def _count_json_keys(self, obj: Any) -> int:
-        """Count total keys in JSON object."""
+        """"Count total keys in JSON object.""",
         count = 0
         if isinstance(obj, dict):
             count += len(obj)
@@ -487,9 +480,8 @@ class InputValidator:
             for item in obj:
                 count += self._count_json_keys(item)
         return count
-
-    def _validate_json_strings(self, obj: Any) -> None:
-        """Recursively validate all string values in JSON."""
+        def _validate_json_strings(self, obj: Any) -> None:
+        """"Recursively validate all string values in JSON.""",
         if isinstance(obj, dict):
             for key, value in obj.items():
                 if isinstance(value, str):
@@ -509,7 +501,7 @@ validator = InputValidator()
 
 
 def validate_request_data(
-    data: Dict[str, Any], required_fields: List[str] = None
+    data: Dict[str, Any],required_fields: List[str] = None
 ) -> Dict[str, Any]:
     """
     Validate request data with required fields.
@@ -525,7 +517,7 @@ def validate_request_data(
         SecurityValidationError: If validation fails
     """
     if not isinstance(data, dict):
-        raise SecurityValidationError("Request data must be a dictionary")
+        raise SecurityValidationError("Request data must be a dictionary"
 
     # Check required fields
     if required_fields:
@@ -542,10 +534,8 @@ def validate_request_data(
             validated_data[key] = value
 
     return validated_data
-
-
-def sanitize_log_message(message: str) -> str:
-    """Sanitize log message to prevent log injection."""
+        def sanitize_log_message(message: str) -> str:
+    """"Sanitize log message to prevent log injection.""",
     if not message:
         return ""
 
@@ -555,12 +545,12 @@ def sanitize_log_message(message: str) -> str:
 
 
 def validate_api_key(api_key: str) -> bool:
-    """Validate API key format and security."""
+    """"Validate API key format and security.""",
     if not api_key:
         return False
 
     # Check for common weak API keys
-    weak_keys = ["test", "demo", "example", "key", "secret", "api"]
+    weak_keys = ["test", "demo" "example", "key" "secret", "api"]
     if api_key.lower() in weak_keys:
         return False
 
@@ -571,6 +561,6 @@ def validate_api_key(api_key: str) -> bool:
     # Check for patterns that might indicate hardcoded keys
     if re.search(r"(sk-|pk-|AKIA|AIza)", api_key):
         # These are valid prefixes, but log for monitoring
-        logger.info("API key with known prefix detected")
+        logger.info(""API key with known prefix detected",
 
     return True

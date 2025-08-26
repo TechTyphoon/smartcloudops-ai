@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
-Monitoring: Prometheus Metrics Module
+Monitoring: Prometheus Metrics Module - Minimal Working Version
 Centralized metrics collection for application monitoring
 """
 
 import logging
 import threading
+
+from prometheus_client import (
     CollectorRegistry,
     Counter,
     Gauge,
@@ -26,8 +28,6 @@ class MetricsCollector:
     def __init__(self, registry=None):
         """Initialize all Prometheus metrics with optional custom registry"""
         self.registry = registry or CollectorRegistry()
-
-        # Use custom registry to avoid conflicts
         self._init_metrics()
 
     def _init_metrics(self):
@@ -114,7 +114,6 @@ class MetricsCollector:
             registry=self.registry,
         )
 
-        # Performance Metrics
         self.response_time_summary = Summary(
             "response_time_seconds",
             "Response time summary",
@@ -122,6 +121,7 @@ class MetricsCollector:
             registry=self.registry,
         )
 
+        # Resource Metrics
         self.memory_usage = Gauge(
             "memory_usage_bytes",
             "Memory usage in bytes",
@@ -133,21 +133,6 @@ class MetricsCollector:
             "cpu_usage_percentage",
             "CPU usage percentage",
             ["component"],
-            registry=self.registry,
-        )
-
-        # GOD MODE Metrics
-        self.god_mode_requests = Counter(
-            "god_mode_requests_total",
-            "Total GOD MODE API requests",
-            ["endpoint", "method", "status"],
-            registry=self.registry,
-        )
-
-        self.god_mode_latency = Histogram(
-            "god_mode_request_duration_seconds",
-            "GOD MODE API request latency",
-            ["endpoint"],
             registry=self.registry,
         )
 
@@ -191,27 +176,25 @@ class MetricsCollector:
             self.request_count.labels(
                 method=method, endpoint=endpoint, status_code=status_code
             ).inc()
-
             self.request_latency.labels(method=method, endpoint=endpoint).observe(
                 duration
             )
-
         except Exception as e:
-            logger.error("Failed to record request metrics: {e}")
+            logger.error(f"Error recording request metrics: {e}")
 
     def record_ml_prediction(self, model_type: str, status: str = "success"):
         """Record ML prediction metrics"""
         try:
             self.ml_predictions.labels(model_type=model_type, status=status).inc()
         except Exception as e:
-            logger.error("Failed to record ML prediction metrics: {e}")
+            logger.error(f"Error recording ML prediction metrics: {e}")
 
     def record_anomaly(self, severity: str, model_type: str = "default"):
         """Record anomaly detection metrics"""
         try:
             self.ml_anomalies.labels(severity=severity, model_type=model_type).inc()
         except Exception as e:
-            logger.error("Failed to record anomaly metrics: {e}")
+            logger.error(f"Error recording anomaly metrics: {e}")
 
     def record_remediation_action(
         self, action_type: str, severity: str, status: str = "success"
@@ -230,21 +213,21 @@ class MetricsCollector:
                 ).inc()
 
         except Exception as e:
-            logger.error("Failed to record remediation metrics: {e}")
+            logger.error(f"Error recording remediation metrics: {e}")
 
     def set_system_health(self, component: str, score: float):
         """Set system health score"""
         try:
             self.system_health.labels(component=component).set(score)
         except Exception as e:
-            logger.error("Failed to set system health: {e}")
+            logger.error(f"Error setting system health metrics: {e}")
 
     def set_active_connections(self, connection_type: str, count: int):
         """Set active connections count"""
         try:
             self.active_connections.labels(connection_type=connection_type).set(count)
         except Exception as e:
-            logger.error("Failed to set active connections: {e}")
+            logger.error(f"Error setting connection metrics: {e}")
 
     def record_auth_attempt(self, method: str, status: str):
         """Record authentication attempt"""
@@ -255,21 +238,7 @@ class MetricsCollector:
                 self.auth_failures.labels(reason=status).inc()
 
         except Exception as e:
-            logger.error("Failed to record auth metrics: {e}")
-
-    def record_god_mode_request(
-        self, endpoint: str, method: str, status: str, duration: float
-    ):
-        """Record GOD MODE request metrics"""
-        try:
-            self.god_mode_requests.labels(
-                endpoint=endpoint, method=method, status=status
-            ).inc()
-
-            self.god_mode_latency.labels(endpoint=endpoint).observe(duration)
-
-        except Exception as e:
-            logger.error("Failed to record GOD MODE metrics: {e}")
+            logger.error(f"Error recording auth metrics: {e}")
 
 
 # Global metrics instance with singleton pattern
@@ -283,7 +252,3 @@ def get_metrics():
                 _metrics_instance = MetricsCollector()
 
     return _metrics_instance
-
-
-# Initialize global metrics instance
-metrics = get_metrics()

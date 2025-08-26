@@ -1,0 +1,323 @@
+# SmartCloudOps AI - Kubernetes ConfigMaps
+# Phase 3 Week 5: Infrastructure as Code (IaC) - Configuration Management
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smartcloudops-config
+  namespace: smartcloudops
+  labels:
+    app.kubernetes.io/name: smartcloudops-ai
+    app.kubernetes.io/component: configuration
+    app.kubernetes.io/part-of: smartcloudops-platform
+data:
+  # Application Configuration
+  ENVIRONMENT: "production"
+  DEBUG: "false"
+  LOG_LEVEL: "INFO"
+  
+  # Flask Configuration
+  FLASK_ENV: "production"
+  FLASK_DEBUG: "false"
+  
+  # Database Configuration
+  DATABASE_HOST: "smartcloudops-rds.cluster-xyz.us-west-2.rds.amazonaws.com"
+  DATABASE_PORT: "5432"
+  DATABASE_NAME: "smartcloudops"
+  DATABASE_SSL_MODE: "require"
+  
+  # Redis Configuration
+  REDIS_HOST: "smartcloudops-redis.xyz.cache.amazonaws.com"
+  REDIS_PORT: "6379"
+  REDIS_SSL: "true"
+  
+  # Cache Configuration
+  CACHE_ENABLED: "true"
+  CACHE_DEFAULT_TTL: "3600"
+  CACHE_MAX_SIZE: "10000"
+  
+  # Performance Configuration
+  PERFORMANCE_CACHING: "true"
+  DATABASE_OPTIMIZATION: "true"
+  BACKGROUND_TASKS: "true"
+  MEMORY_MONITORING: "true"
+  
+  # Monitoring Configuration
+  MONITORING_ENABLED: "true"
+  HEALTH_CHECK_INTERVAL: "30"
+  METRICS_RETENTION_DAYS: "30"
+  
+  # MLOps Configuration
+  MLOPS_EXPERIMENTS_ENABLED: "true"
+  MLOPS_MODELS_ENABLED: "true"
+  MLOPS_DATA_PIPELINE_ENABLED: "true"
+  
+  # Security Configuration
+  RATE_LIMIT_ENABLED: "true"
+  MAX_REQUESTS_PER_MINUTE: "100"
+  SSL_ENABLED: "true"
+  
+  # CORS Configuration
+  CORS_ORIGINS: "https://smartcloudops.ai,https://api.smartcloudops.ai"
+  
+  # API Configuration
+  API_VERSION: "v1"
+  API_PREFIX: "/api"
+  
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smartcloudops-nginx-config
+  namespace: smartcloudops
+  labels:
+    app.kubernetes.io/name: smartcloudops-ai
+    app.kubernetes.io/component: reverse-proxy
+    app.kubernetes.io/part-of: smartcloudops-platform
+data:
+  nginx.conf: |
+    user nginx;
+    worker_processes auto;
+    error_log /var/log/nginx/error.log warn;
+    pid /var/run/nginx.pid;
+
+    events {
+        worker_connections 1024;
+        use epoll;
+        multi_accept on;
+    }
+
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+
+        # Logging
+        log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                        '$status $body_bytes_sent "$http_referer" '
+                        '"$http_user_agent" "$http_x_forwarded_for" '
+                        'rt=$request_time uct="$upstream_connect_time" '
+                        'uht="$upstream_header_time" urt="$upstream_response_time"';
+
+        access_log /var/log/nginx/access.log main;
+
+        # Performance
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
+        keepalive_timeout 65;
+        types_hash_max_size 2048;
+        client_max_body_size 16M;
+
+        # Gzip
+        gzip on;
+        gzip_vary on;
+        gzip_proxied any;
+        gzip_comp_level 6;
+        gzip_types
+            text/plain
+            text/css
+            text/xml
+            text/javascript
+            application/json
+            application/javascript
+            application/xml+rss
+            application/atom+xml
+            image/svg+xml;
+
+        # Rate limiting
+        limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+        limit_req_zone $binary_remote_addr zone=static:10m rate=30r/s;
+
+        # Upstream backend
+        upstream smartcloudops_backend {
+            least_conn;
+            server smartcloudops-api:5000 max_fails=3 fail_timeout=30s;
+            keepalive 32;
+        }
+
+        # Main server block
+        server {
+            listen 80;
+            server_name _;
+
+            # Health check endpoint
+            location /health {
+                access_log off;
+                return 200 "healthy\n";
+                add_header Content-Type text/plain;
+            }
+
+            # API routes
+            location /api/ {
+                limit_req zone=api burst=20 nodelay;
+                
+                # CORS headers
+                add_header 'Access-Control-Allow-Origin' '$http_origin' always;
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+                add_header 'Access-Control-Allow-Headers' 'Accept,Authorization,Cache-Control,Content-Type,DNT,If-Modified-Since,Keep-Alive,Origin,User-Agent,X-Requested-With' always;
+                add_header 'Access-Control-Allow-Credentials' 'true' always;
+
+                if ($request_method = 'OPTIONS') {
+                    add_header 'Access-Control-Max-Age' 1728000;
+                    add_header 'Content-Type' 'text/plain charset=UTF-8';
+                    add_header 'Content-Length' 0;
+                    return 204;
+                }
+
+                # Proxy settings
+                proxy_pass http://smartcloudops_backend;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection 'upgrade';
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_cache_bypass $http_upgrade;
+                proxy_read_timeout 300s;
+                proxy_connect_timeout 75s;
+            }
+
+            # Static files
+            location /static/ {
+                limit_req zone=static burst=50 nodelay;
+                alias /app/static/;
+                expires 1y;
+                add_header Cache-Control "public, immutable";
+            }
+
+            # Root redirect
+            location / {
+                return 301 /api/;
+            }
+        }
+    }
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smartcloudops-prometheus-config
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/part-of: smartcloudops-platform
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+      external_labels:
+        cluster: 'smartcloudops-production'
+        environment: 'production'
+
+    rule_files:
+      - "smartcloudops_rules.yml"
+
+    scrape_configs:
+      # Prometheus itself
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+
+      # Kubernetes API Server
+      - job_name: 'kubernetes-apiservers'
+        kubernetes_sd_configs:
+          - role: endpoints
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: default;kubernetes;https
+
+      # Kubernetes nodes
+      - job_name: 'kubernetes-nodes'
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+          - target_label: __address__
+            replacement: kubernetes.default.svc:443
+          - source_labels: [__meta_kubernetes_node_name]
+            regex: (.+)
+            target_label: __metrics_path__
+            replacement: /api/v1/nodes/${1}/proxy/metrics
+
+      # SmartCloudOps application
+      - job_name: 'smartcloudops-app'
+        kubernetes_sd_configs:
+          - role: endpoints
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_service_label_(.+)
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [__meta_kubernetes_service_name]
+            action: replace
+            target_label: kubernetes_name
+
+  smartcloudops_rules.yml: |
+    groups:
+      - name: smartcloudops.rules
+        rules:
+          # Application availability
+          - alert: SmartCloudOpsDown
+            expr: up{job="smartcloudops-app"} == 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "SmartCloudOps application is down"
+              description: "SmartCloudOps application has been down for more than 1 minute."
+
+          # High response time
+          - alert: HighResponseTime
+            expr: histogram_quantile(0.95, rate(flask_request_duration_seconds_bucket[5m])) > 2
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High response time"
+              description: "95th percentile response time is above 2 seconds for 5 minutes."
+
+          # High error rate
+          - alert: HighErrorRate
+            expr: rate(flask_request_exceptions_total[5m]) > 0.1
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "High error rate"
+              description: "Error rate is above 10% for 5 minutes."
+
+          # High memory usage
+          - alert: HighMemoryUsage
+            expr: (process_resident_memory_bytes / 1024 / 1024) > 1024
+            for: 10m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High memory usage"
+              description: "Memory usage is above 1GB for 10 minutes."

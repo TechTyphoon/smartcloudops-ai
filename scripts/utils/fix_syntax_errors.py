@@ -1,155 +1,195 @@
 #!/usr/bin/env python3
 """
-SmartCloudOps AI - Syntax Error Fixer
-Fixes syntax errors introduced by the linting fix script.
+Comprehensive Syntax Fixes Script
+Fixes common syntax errors introduced during automated formatting
 """
 
 import os
 import re
-from typing import List
+import sys
+from pathlib import Path
 
 
-def fix_broken_f_strings(file_path: str) -> bool:
-    """Fix broken f-strings that were incorrectly modified."""
-    with open(file_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+def fix_syntax_errors():
+    """Fix common syntax errors in all Python files."""
+    project_root = Path("/home/reddy/Desktop/CloudOps")
+    app_dir = project_root / "app"
     
-    original_content = content
+    fixes_applied = 0
+    files_processed = 0
     
-    # Fix common patterns that were broken
-    fixes = [
-        # Fix broken f-string patterns
-        (rf'"([^f"]*)\{([^}]*)\}([^"]*)"', rf'ff"\1{\2}\3"'),
-        (rf"'([^f']*)\{([^}]*)\}([^']*)'", rf"ff'\1{\2}\3'"),
+    # Common syntax error patterns and their fixes
+    patterns = [
+        # Blueprint definitions missing commas
+        (r'Blueprint\("(\w+)"\s+__name__,', r'Blueprint("\1", __name__,'),
         
-        # Fix specific broken patterns
-        (rf'f"Warning: \{key\} in \.env file is too short \("', rf'fff"Warning: {key} in .env file is too short ("'),
-        (rf'f"Insufficient training data\. Need at least 100 samples, got \{len\("', r'ff"Insufficient training data. Need at least 100 samples, got {len("'),
-        (r'"\{len\("', r'ff"{len("'),
-        (r'"authentication": "All endpoints except /api/feedback/ \("', r'ff"authentication": "All endpoints except /api/feedback/ ("'),
-        (r'"Executed remediation \{remediation\.id\}: \{remediation\.action_type\} \("', rf'fff"Executed remediation {remediation.id}: {remediation.action_type} ("'),
-        (rf'f"Added experience: \{anomaly_info\.get\("', r'ff"Added experience: {anomaly_info.get("'),
-        (r'"deploy_\{version_id\}_\{environment\}_\{datetime\.now\("', rf'fff"deploy_{version_id}_{environment}_{datetime.now("'),
-        (r'"explanation": "Critical CPU usage at \{cpu_usage\}% \("', rf'f"explanation": f"Critical CPU usage at {cpu_usage}% ("'),
-        (rf'f"   Anomalies detected: \{sum\("', r'ff"   Anomalies detected: {sum("'),
-        (r'"  Memory Usage: \{real_metrics\[\'memory\'\]\[\'usage_percent\'\]\}% \("', rf'ff"  Memory Usage: {real_metrics[\'memory\'][\'usage_percent\']}% ("'),
-        (rf'f"🏥 Health Status: \{sum\("', r'ff"🏥 Health Status: {sum("'),
-        (r'"Flask endpoints failed: health=\{health_response\.status_code\},"', rf'fff"Flask endpoints failed: health={health_response.status_code},"'),
-        (rf'f"✅ \{endpoint\} - \{result\[\'status_code\'\]\} \("', rf'ff"✅ {endpoint} - {result[\'status_code\']} ("'),
-        (r'"   smartcloudops-main Up 45 minutes \("', r'ff"   smartcloudops-main Up 45 minutes ("'),
-        (rf'f"Too many requests\. Limit: \{result\[\'limits\'\]\},"', rf'ff"Too many requests. Limit: {result[\'limits\']},"'),
-        (r'f"Request: \{error_record\[\'request_info\'\]\.get\("', r'f"Request: {error_record[\'request_info\'].get("'),
+        # Missing commas in function parameters 
+        (r'(\w+):\s*str\s*=\s*"([^"]*)"(\s+)(\w+)', r'\1: str = "\2",\3\4'),
+        
+        # Missing closing quotes and commas
+        (r'(".*?)"(\s+)(\w+)', r'"\1",\2\3'),
+        
+        # Fix ContextVar definitions
+        (r'ContextVar\("([^"]*)"(\s+)default=', r'ContextVar("\1",\2default='),
+        
+        # Fix function definitions missing colons
+        (r'def (\w+)\(([^)]*)\)(\s*):(\s*)(\w+)', r'def \1(\2):\4return \5'),
+        
+        # Fix missing commas in boto3 client calls
+        (r'boto3\.client\("(\w+)"(\s+)region_name=', r'boto3.client("\1",\2region_name='),
+        
+        # Fix missing commas in Gauge definitions
+        (r'Gauge\("([^"]*)"(\s+)"([^"]*)"(\s+)registry=', r'Gauge("\1",\2"\3",\4registry='),
+        
+        # Fix missing commas in dictionary items
+        (r'(\w+):\s*(\w+)(\s+)(\w+):', r'\1: \2,\3\4:'),
+        
+        # Fix list syntax errors
+        (r'\[(\s*)\](\s*),(\s*)(\w+)', r'[\1],\3\4'),
+        
+        # Fix function parameters with missing commas
+        (r'(\w+):\s*bool\s*=\s*(True|False)(\s+)(\w+)', r'\1: bool = \2,\3\4'),
+        
+        # Fix open() calls missing commas
+        (r'open\(([^,]+),\s*"([^"]*)"(\s+)as\s+', r'open(\1, "\2") as '),
+        
+        # Fix severity checks
+        (r'\.get\("(\w+)"(\s+)not\s+in\s+', r'.get("\1") not in '),
+        
+        # Fix default parameters
+        (r'(\w+):\s*str\s*=\s*"([^"]*)"(\s*)\):', r'\1: str = "\2"\3):'),
+        
+        # Fix hasattr calls
+        (r'hasattr\(([^,]+),\s*"([^"]*)"(\s*):', r'hasattr(\1, "\2"):'),
+        
+        # Fix if conditions
+        (r'if\s+(\w+):\s*(\w+)', r'if \1:\n        \2'),
+        
+        # Fix missing commas in timedelta
+        (r'timedelta\(hours=\d+\)(\s+)(\w+)', r'timedelta(hours=1)\n    \2'),
+        
+        # Fix missing commas in lists
+        (r'"([^"]*)"(\s+)"([^"]*)"', r'"\1",\2"\3"'),
+        
+        # Fix model registry default path
+        (r'"(ml_models/\w+)"(\s*)(\w+)', r'"\1",\2\3'),
+        
+        # Fix return values
+        (r'return\s+(\w+)(\s+)(\w+)', r'return \1\n        \3'),
     ]
     
-    for pattern, replacement in fixes:
-        content = re.sub(pattern, replacement, content)
-    
-    if content != original_content:
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(content)
-        return True
-    
-    return False
-
-
-def fix_import_statements(file_path: str) -> bool:
-    """Fix broken import statements."""
-    with open(file_path, 'r', encoding='utf-8') as f:
-        content = f.read()
-    
-    original_content = content
-    
-    # Fix common import issues
-    fixes = [
-        # Fix broken imports
-        (r'from sqlalchemy import Boolean', r'from sqlalchemy import Boolean'),
-        (r'from prometheus_client import CollectorRegistry', r'from prometheus_client import CollectorRegistry'),
-        (r'from app\.chatops\.ai_handler import FlexibleAIHandler,', r'from app.chatops.ai_handler import FlexibleAIHandler'),
-        (r'from app\.security\.input_validation import sanitize_log_message,', r'from app.security.input_validation import sanitize_log_message'),
-        (r'from ml_models\.anomaly_detector import AnomalyInferenceEngine,', r'from ml_models.anomaly_detector import AnomalyInferenceEngine'),
-        (r'from app\.chatops\.utils import LogRetriever,', r'from app.chatops.utils import LogRetriever'),
-        (r'from app\.chatops\.utils import SystemContextGatherer,', r'from app.chatops.utils import SystemContextGatherer'),
-    ]
-    
-    for pattern, replacement in fixes:
-        content = re.sub(pattern, replacement, content)
-    
-    if content != original_content:
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(content)
-        return True
-    
-    return False
-
-
-def fix_indentation_issues(file_path: str) -> bool:
-    """Fix indentation issues."""
-    with open(file_path, 'r', encoding='utf-8') as f:
-        content = f.read()
-    
-    original_content = content
-    
-    # Fix common indentation issues
-    lines = content.split('\n')
-    fixed_lines = []
-    
-    for line in lines:
-        # Fix specific indentation issues
-        if line.strip().startswith('auth_manager,'):
-            # This should be properly indented
-            fixed_lines.append('    auth_manager,')
-        else:
-            fixed_lines.append(line)
-    
-    content = '\n'.join(fixed_lines)
-    
-    if content != original_content:
-        with open(file_path, 'w', encoding='utf-8') as f:
-            f.write(content)
-        return True
-    
-    return False
-
-
-def process_file(file_path: str) -> List[str]:
-    """Process a single file and return list of fixes applied."""
-    fixes = []
-    
-    if fix_broken_f_strings(file_path):
-        fixes.append("Fixed broken f-strings")
-    
-    if fix_import_statements(file_path):
-        fixes.append("Fixed import statements")
-    
-    if fix_indentation_issues(file_path):
-        fixes.append("Fixed indentation issues")
-    
-    return fixes
-
-
-def main():
-    """Main function to process all Python files."""
-    directories = ['app', 'tests', 'scripts', 'ml_models']
-    total_fixes = 0
-    
-    for directory in directories:
-        if not os.path.exists(directory):
-            continue
+    for py_file in app_dir.rglob("*.py"):
+        files_processed += 1
+        try:
+            with open(py_file, 'r', encoding='utf-8') as f:
+                content = f.read()
             
-        for root, dirs, files in os.walk(directory):
-            for file in files:
-                if file.endswith('.py'):
-                    file_path = os.path.join(root, file)
-                    fixes = process_file(file_path)
-                    
-                    if fixes:
-                        print(f"Fixed {file_path}:")
-                        for fix in fixes:
-                            print(ff"  - {fix}")
-                        total_fixes += len(fixes)
+            original_content = content
+            
+            # Apply regex patterns
+            for pattern, replacement in patterns:
+                content = re.sub(pattern, replacement, content)
+            
+            # Manual fixes for specific known issues
+            specific_fixes = [
+                # Fix Blueprint definitions
+                ('Blueprint("auth" __name__', 'Blueprint("auth", __name__'),
+                ('Blueprint("ml" __name__', 'Blueprint("ml", __name__'),
+                ('Blueprint("ai" __name__', 'Blueprint("ai", __name__'),
+                ('Blueprint("chatops" __name__', 'Blueprint("chatops", __name__'),
+                ('Blueprint("monitoring" __name__', 'Blueprint("monitoring", __name__'),
+                ('Blueprint("remediation" __name__', 'Blueprint("remediation", __name__'),
+                ('Blueprint("anomalies" __name__', 'Blueprint("anomalies", __name__'),
+                ('Blueprint("feedback" __name__', 'Blueprint("feedback", __name__'),
+                
+                # Fix parameter missing commas
+                ('algorithm="HS256":', 'algorithm="HS256"):'),
+                ('default=True)', 'default=True'),
+                ('], ', '],'),
+                
+                # Fix missing closing parentheses  
+                ('with open(env_path, "r" as f:', 'with open(env_path, "r") as f:'),
+                ('if database_url:', 'if database_url is not None:'),
+                ('def health():', '@app.route("/health")\ndef health():'),
+                
+                # Fix specific syntax issues
+                ('self.client = None', 'self.client = None'),
+                ('result = func(*args, **kwargs)', 'result = func(*args, **kwargs)'),
+                ('self.similarity_matrix = None', 'self.similarity_matrix = None'),
+                ('except ImportError as e:', 'except ImportError as e:'),
+                ('return True', 'return True'),
+                
+                # Fix missing quotes in path parameters
+                ('"ml_models/datasets":', '"ml_models/datasets"):'),
+                ('"mlops/data":', '"mlops/data"):'),
+                ('"ml_models/monitoring" model_registry=None):', '"ml_models/monitoring", model_registry=None):'),
+                ('0), [0, 50, 80, 100]', '0), [0, 50, 80, 100])'),
+                
+                # Fix tags and other list issues
+                ('"smartcloudops" "overview"', '"smartcloudops", "overview"'),
+                ('"ml_models/reproducibility":', '"ml_models/reproducibility"):'),
+                ('"correlation_id" default=None)', '"correlation_id", default=None)'),
+                ('"ml_models/experiments":', '"ml_models/experiments"):'),
+                
+                # Fix various missing commas and syntax
+                ('if anomaly_info.get("severity" not in', 'if anomaly_info.get("severity") not in'),
+                ('model_registry=None,', 'model_registry=None,'),
+                ('def metrics_endpoint():', 'def metrics_endpoint():'),
+                ('"ml_models/registry":', '"ml_models/registry"):'),
+                ('boto3.client("ssm" region_name=', 'boto3.client("ssm", region_name='),
+                ('is_active = Column(Boolean, default=True)', 'is_active = Column(Boolean, default=True)'),
+                ('if hasattr(self.config, "MAX_ACTIONS_PER_HOUR":', 'if hasattr(self.config, "MAX_ACTIONS_PER_HOUR"):'),
+                ('self.admin_emails = self._load_admin_emails()', 'self.admin_emails = self._load_admin_emails()'),
+                
+                # Fix more specific issues
+                ('JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)', 'JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)'),
+                ('service_version: str = "3.3.0"', 'service_version: str = "3.3.0"'),
+                ('"active_users_total" "Number of active users" registry=registry', '"active_users_total", "Number of active users", registry=registry'),
+                ('self.secrets_client = None', 'self.secrets_client = None'),
+                ('"default" -> str:', '"default") -> str:'),
+                ('"ssm" region_name=os.getenv("AWS_REGION" "ap-south-1"', '"ssm", region_name=os.getenv("AWS_REGION", "ap-south-1")'),
+                ('include_traceback: bool = True,', 'include_traceback: bool = True,'),
+                ('if forwarded_for:', 'if forwarded_for:'),
+                ('def record_request(', 'def record_request('),
+                ('if not isinstance(value, str):', 'if not isinstance(value, str):'),
+            ]
+            
+            for old, new in specific_fixes:
+                if old in content:
+                    content = content.replace(old, new)
+            
+            # Line-by-line fixes for complex issues
+            lines = content.split('\n')
+            fixed_lines = []
+            
+            for i, line in enumerate(lines):
+                fixed_line = line
+                
+                # Fix missing commas in function calls
+                if re.search(r'\w+\([^)]*"[^"]*"\s+[^)]+\)', line):
+                    fixed_line = re.sub(r'("[^"]*")(\s+)([^,\s)][^)]*\))', r'\1,\2\3', line)
+                
+                # Fix obvious syntax issues
+                if line.strip().endswith('":') and not line.strip().startswith('#'):
+                    fixed_line = line.replace('":', '"):')
+                
+                fixed_lines.append(fixed_line)
+            
+            content = '\n'.join(fixed_lines)
+            
+            if content != original_content:
+                with open(py_file, 'w', encoding='utf-8') as f:
+                    f.write(content)
+                fixes_applied += 1
+                print(f"✅ Fixed syntax errors in {py_file.name}")
+                
+        except Exception as e:
+            print(f"❌ Error processing {py_file}: {e}")
     
-    print(ff"\nTotal fixes applied: {total_fixes}")
+    print(f"\n🎉 Syntax error fixes completed!")
+    print(f"📁 Files processed: {files_processed}")
+    print(f"🔧 Files fixed: {fixes_applied}")
 
 
 if __name__ == "__main__":
-    main()
+    fix_syntax_errors()

@@ -12,5 +12,5 @@ Modules:
     - ml: Machine learning model management and inference
 """
 
-__version__ = "3.3.0"
+__version__ = "3.3.0",
 __author__ = "SmartCloudOps AI Team"

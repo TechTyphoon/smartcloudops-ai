@@ -1,0 +1,298 @@
+# SmartCloudOps AI - Grafana Configuration
+# Phase 3 Week 6: Monitoring & Logging - Grafana Config
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/component: configuration
+    app.kubernetes.io/part-of: smartcloudops-platform
+data:
+  database-host: "smartcloudops-rds.cluster-xyz.us-west-2.rds.amazonaws.com"
+  database-name: "grafana"
+  grafana.ini: |
+    [default]
+    instance_name = SmartCloudOps AI Grafana
+
+    [server]
+    protocol = http
+    http_port = 3000
+    domain = grafana.smartcloudops.ai
+    root_url = https://grafana.smartcloudops.ai
+    serve_from_sub_path = true
+    enable_gzip = true
+
+    [database]
+    type = postgres
+    ssl_mode = require
+    max_idle_conn = 25
+    max_open_conn = 300
+    conn_max_lifetime = 14400
+
+    [session]
+    provider = postgres
+    provider_config = user=grafana password=$__env{GF_DATABASE_PASSWORD} host=$__env{GF_DATABASE_HOST} port=5432 dbname=grafana sslmode=require
+    cookie_name = grafana_sess
+    cookie_secure = true
+    session_life_time = 86400
+
+    [dataproxy]
+    timeout = 30
+    send_user_header = true
+
+    [analytics]
+    reporting_enabled = false
+    check_for_updates = false
+
+    [security]
+    admin_user = $__env{GF_SECURITY_ADMIN_USER}
+    admin_password = $__env{GF_SECURITY_ADMIN_PASSWORD}
+    secret_key = $__env{GF_SECURITY_SECRET_KEY}
+    login_remember_days = 7
+    cookie_secure = true
+    strict_transport_security = true
+    content_type_protection = true
+    x_content_type_options = true
+    x_xss_protection = true
+
+    [users]
+    allow_sign_up = false
+    allow_org_create = false
+    auto_assign_org = true
+    auto_assign_org_id = 1
+    auto_assign_org_role = Viewer
+    verify_email_enabled = false
+    default_theme = dark
+
+    [auth]
+    oauth_auto_login = true
+    disable_login_form = false
+    disable_signout_menu = false
+
+    [auth.generic_oauth]
+    enabled = true
+    name = AWS Cognito
+    allow_sign_up = true
+    client_id = $__env{GF_AUTH_GENERIC_OAUTH_CLIENT_ID}
+    client_secret = $__env{GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET}
+    scopes = openid profile email
+    auth_url = https://smartcloudops.auth.us-west-2.amazoncognito.com/oauth2/authorize
+    token_url = https://smartcloudops.auth.us-west-2.amazoncognito.com/oauth2/token
+    api_url = https://smartcloudops.auth.us-west-2.amazoncognito.com/oauth2/userInfo
+    team_ids =
+    allowed_organizations =
+    role_attribute_path = contains(groups[*], 'admin') && 'Admin' || contains(groups[*], 'editor') && 'Editor' || 'Viewer'
+
+    [log]
+    mode = console
+    level = info
+    format = json
+
+    [log.console]
+    level = info
+    format = json
+
+    [metrics]
+    enabled = true
+    interval_seconds = 10
+
+    [alerting]
+    enabled = true
+    execute_alerts = true
+    error_or_timeout = alerting
+    nodata_or_nullvalues = no_data
+    concurrent_render_limit = 5
+
+    [smtp]
+    enabled = true
+    host = smtp.amazonaws.com:587
+    user = $__env{GF_SMTP_USER}
+    password = $__env{GF_SMTP_PASSWORD}
+    skip_verify = false
+    from_address = alerts@smartcloudops.ai
+    from_name = SmartCloudOps AI Alerts
+    ehlo_identity = grafana.smartcloudops.ai
+
+    [unified_alerting]
+    enabled = true
+    disabled_orgs =
+    admin_config_poll_interval = 60s
+    alertmanager_config_poll_interval = 60s
+    ha_listen_address = ""
+    ha_advertise_address = ""
+    ha_peers = ""
+    ha_peer_timeout = 15s
+    ha_gossip_interval = 200ms
+    ha_push_pull_interval = 60s
+
+    [enterprise]
+    license_path =
+
+    [feature_toggles]
+    enable = ngalert
+
+    [panels]
+    disable_sanitize_html = false
+
+    [plugins]
+    allow_loading_unsigned_plugins =
+    plugin_admin_enabled = true
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources-config
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/component: datasources
+    app.kubernetes.io/part-of: smartcloudops-platform
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus:9090
+        isDefault: true
+        editable: true
+        jsonData:
+          httpMethod: POST
+          prometheusType: Prometheus
+          prometheusVersion: 2.45.0
+          cacheLevel: 'High'
+          disableMetricsLookup: false
+          incrementalQuerying: false
+          exemplarTraceIdDestinations:
+            - name: trace_id
+              datasourceUid: jaeger_uid
+        secureJsonData: {}
+        
+      - name: Loki
+        type: loki
+        access: proxy
+        url: http://loki:3100
+        isDefault: false
+        editable: true
+        jsonData:
+          maxLines: 1000
+          derivedFields:
+            - datasourceUid: jaeger_uid
+              matcherRegex: '"trace_id":"([^"]*)"'
+              name: trace_id
+              url: '$${__value.raw}'
+        
+      - name: Jaeger
+        type: jaeger
+        uid: jaeger_uid
+        access: proxy
+        url: http://jaeger-query:16686
+        isDefault: false
+        editable: true
+        jsonData:
+          tracesToLogs:
+            datasourceUid: loki_uid
+            tags: ['job', 'instance', 'pod', 'namespace']
+            mappedTags: [
+              { key: 'service.name', value: 'service' },
+              { key: 'service.namespace', value: 'namespace' }
+            ]
+            mapTagNamesEnabled: true
+            spanStartTimeShift: '1h'
+            spanEndTimeShift: '1h'
+            filterByTraceID: false
+            filterBySpanID: false
+        
+      - name: Elasticsearch
+        type: elasticsearch
+        access: proxy
+        url: http://elasticsearch:9200
+        database: "smartcloudops-logs-*"
+        isDefault: false
+        editable: true
+        jsonData:
+          interval: Daily
+          timeField: "@timestamp"
+          esVersion: "8.0.0"
+          maxConcurrentShardRequests: 5
+          logMessageField: message
+          logLevelField: level
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards-config
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/component: dashboards
+    app.kubernetes.io/part-of: smartcloudops-platform
+data:
+  dashboard-provider.yaml: |
+    apiVersion: 1
+    providers:
+      - name: 'SmartCloudOps Dashboards'
+        orgId: 1
+        folder: 'SmartCloudOps AI'
+        type: file
+        disableDeletion: false
+        updateIntervalSeconds: 30
+        allowUiUpdates: true
+        options:
+          path: /var/lib/grafana/dashboards/smartcloudops
+      - name: 'Infrastructure Dashboards'
+        orgId: 1
+        folder: 'Infrastructure'
+        type: file
+        disableDeletion: false
+        updateIntervalSeconds: 30
+        allowUiUpdates: true
+        options:
+          path: /var/lib/grafana/dashboards/infrastructure
+      - name: 'Application Dashboards'
+        orgId: 1
+        folder: 'Applications'
+        type: file
+        disableDeletion: false
+        updateIntervalSeconds: 30
+        allowUiUpdates: true
+        options:
+          path: /var/lib/grafana/dashboards/applications
+      - name: 'MLOps Dashboards'
+        orgId: 1
+        folder: 'MLOps'
+        type: file
+        disableDeletion: false
+        updateIntervalSeconds: 30
+        allowUiUpdates: true
+        options:
+          path: /var/lib/grafana/dashboards/mlops
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-secrets
+  namespace: smartcloudops-monitoring
+  labels:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/component: secrets
+    app.kubernetes.io/part-of: smartcloudops-platform
+type: Opaque
+data:
+  # Base64 encoded values - change in production
+  admin-user: YWRtaW4=  # admin
+  admin-password: c21hcnRjbG91ZG9wcy1hZG1pbi1wYXNzd29yZA==  # smartcloudops-admin-password
+  database-user: Z3JhZmFuYQ==  # grafana
+  database-password: Z3JhZmFuYS1kYi1wYXNzd29yZA==  # grafana-db-password
+  session-config: dXNlcj1ncmFmYW5hIHBhc3N3b3JkPWdyYWZhbmEtZGItcGFzc3dvcmQgaG9zdD1zbWFydGNsb3Vkb3BzLXJkcyBwb3J0PTU0MzIgZGJuYW1lPWdyYWZhbmEgc3NsbW9kZT1yZXF1aXJl  # session config
+  oauth-client-id: Y29nbml0by1jbGllbnQtaWQ=  # cognito-client-id
+  oauth-client-secret: Y29nbml0by1jbGllbnQtc2VjcmV0  # cognito-client-secret
+  smtp-user: c210cC11c2Vy  # smtp-user
+  smtp-password: c210cC1wYXNzd29yZA==  # smtp-password

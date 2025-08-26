@@ -1,30 +1,39 @@
 """
-SmartCloudOps AI - MLOps Framework
-Production-ready ML lifecycle management with versioning, tracking, and reproducibility
+SmartCloudOps AI - MLOps Module
+Production-ready MLOps capabilities for experiment tracking, model management, and automated operations
+
+Phase 2A: Working modules only - Conservative import approach
 """
 
-from .model_registry import ModelRegistry, ModelVersion, ModelMetadata
-from .experiment_tracker import ExperimentTracker, Experiment, ExperimentRun
-from .dataset_manager import DatasetManager, DatasetVersion, DatasetValidation
-from .training_pipeline import TrainingPipeline, TrainingConfig, TrainingJob
-from .model_monitor import ModelMonitor, ModelPerformanceMetrics
-from .reproducibility import ReproducibilityManager, EnvironmentSnapshot
+# Start with minimal working imports
+try:
+    from .experiment_tracker import ExperimentTracker, get_experiment_tracker
+    EXPERIMENT_TRACKER_AVAILABLE = True
+except ImportError:
+    EXPERIMENT_TRACKER_AVAILABLE = False
 
-__all__ = [
-    'ModelRegistry',
-    'ModelVersion', 
-    'ModelMetadata',
-    'ExperimentTracker',
-    'Experiment',
-    'ExperimentRun',
-    'DatasetManager',
-    'DatasetVersion',
-    'DatasetValidation',
-    'TrainingPipeline',
-    'TrainingConfig',
-    'TrainingJob',
-    'ModelMonitor',
-    'ModelPerformanceMetrics',
-    'ReproducibilityManager',
-    'EnvironmentSnapshot'
-]
+try:
+    from .model_registry import ModelRegistry, get_model_registry
+    MODEL_REGISTRY_AVAILABLE = True
+except ImportError:
+    MODEL_REGISTRY_AVAILABLE = False
+
+# Export available components
+__all__ = []
+
+if EXPERIMENT_TRACKER_AVAILABLE:
+    __all__.extend(["ExperimentTracker", "get_experiment_tracker"])
+
+if MODEL_REGISTRY_AVAILABLE:
+    __all__.extend(["ModelRegistry", "get_model_registry"])
+
+# Status tracking
+AVAILABLE_MODULES = {
+    "experiment_tracker": EXPERIMENT_TRACKER_AVAILABLE,
+    "model_registry": MODEL_REGISTRY_AVAILABLE,
+}
+
+
+def get_available_modules():
+    """Get status of available MLOps modules."""
+    return AVAILABLE_MODULES

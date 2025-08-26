@@ -1,327 +1,220 @@
-# SmartCloudOps AI - Configuration Management
+# 📁 SmartCloudOps AI - Configuration Guide
 
-This directory contains all configuration files for SmartCloudOps AI, including monitoring dashboards, security settings, and deployment configurations.
+This directory contains all configuration files for the SmartCloudOps AI platform. The configuration system has been consolidated to reduce redundancy and improve maintainability.
 
-## 📁 Configuration Structure
+## 🏗️ Configuration Structure
 
 ```
 configs/
-├── 📁 monitoring/              # Monitoring configurations
-│   ├── 📁 dashboards/         # Grafana dashboard definitions
-│   │   ├── docker-containers.json
-│   │   ├── ml-anomaly.json
-│   │   └── system-overview.json
-│   ├── grafana-datasources.yml # Grafana data source configuration
-│   └── prometheus.yml         # Prometheus configuration
-├── 📁 production/              # Production deployment configs
-│   └── docker-compose.production.yml
-├── 📁 security/                # Security configurations
-│   └── 📁 ssl/                # SSL certificates and keys
-├── 📄 grafana_ai_dashboards.json # AI-specific Grafana dashboards
-├── 📄 production-deployment.yaml # Production deployment config
-├── 📄 remediation-rules.yaml   # Auto-remediation rules
-└── 📄 security-alerts.yml      # Security alerting rules
+├── README.md                           # This file - Configuration guide
+├── env.production.override             # Production environment overrides
+├── monitoring/                         # Monitoring stack configurations
+│   ├── prometheus.yml                  # Prometheus configuration
+│   ├── grafana-datasources.yml         # Grafana data sources
+│   └── dashboards/                     # Grafana dashboard definitions
+├── production/                         # Production deployment files
+│   ├── docker-compose.production.yml   # Production Docker setup
+│   └── nginx.conf                      # Production Nginx configuration
+├── security/                           # Security configurations
+│   ├── security-alerts.yml             # Security alert rules
+│   └── ssl/                           # SSL certificate storage
+├── nginx.conf                          # Development Nginx configuration
+├── nginx-server.conf                   # Alternative Nginx setup
+└── remediation-rules.yaml              # Automated remediation rules
 ```
 
-## 🚀 Quick Start
+## 🔧 Environment Configuration
 
-### Environment Setup
+### Primary Configuration Files
+
+1. **`../env.template`** - Master configuration template
+   - Contains all available configuration options
+   - Secure defaults for development
+   - Comprehensive documentation for each setting
+   - Copy to `.env` and customize for your environment
+
+2. **`env.production.override`** - Production overrides
+   - Production-specific security settings
+   - AWS integration configurations
+   - Performance optimizations
+   - Use with env.template for production deployment
+
+### Deprecated/Removed Files
+- ~~`env.secure`~~ → Merged into `env.template`
+- ~~`deployment.env`~~ → Merged into `env.template`
+- ~~`env.production`~~ → Replaced with `env.production.override`
+
+## 🚀 Quick Setup
+
+### Development Environment
 ```bash
-# Copy environment template
-cp ../env.example .env
+# 1. Copy the template
+cp env.template .env
 
-# Edit configuration
+# 2. Edit configuration for your local setup
 nano .env
 ```
 
-### Monitoring Setup
+### Production Environment
 ```bash
-# Deploy monitoring stack
-docker-compose -f ../docker-compose.yml up -d prometheus grafana
+# 1. Copy the template
+cp env.template .env.production
 
-# Import dashboards
-# Access Grafana at http://localhost:13000 (admin/admin)
-# Import dashboards from configs/monitoring/dashboards/
+# 2. Apply production overrides
+cat configs/env.production.override >> .env.production
+
+# 3. Set secure values for production variables
+nano .env.production
 ```
+
+## 🔐 Security Configuration
+
+### Required Production Changes
+1. **Generate secure keys**:
+   ```bash
+   python -c "import secrets; print('SECRET_KEY=' + secrets.token_urlsafe(32))"
+   python -c "import secrets; print('JWT_SECRET_KEY=' + secrets.token_urlsafe(32))"
+   ```
+
+2. **Enable security headers**:
+   ```env
+   SECURITY_HEADERS_ENABLED=true
+   SECURE_COOKIES=true
+   SESSION_COOKIE_SECURE=true
+   ```
+
+3. **Configure database credentials**:
+   - Use AWS Secrets Manager for RDS passwords
+   - Enable SSL connections
+   - Use connection pooling
+
+4. **Set up AI API keys**:
+   - Store in AWS Secrets Manager
+   - Use environment variables for access
+   - Rotate keys regularly
 
 ## 📊 Monitoring Configuration
 
-### Prometheus Configuration (`monitoring/prometheus.yml`)
+### Prometheus (`monitoring/prometheus.yml`)
+- Scrape configurations for all services
+- Alerting rules for anomaly detection
+- Data retention policies
+
+### Grafana (`monitoring/grafana-datasources.yml`)
+- Prometheus data source configuration
+- Dashboard provisioning
+- User authentication settings
+
+### Dashboards (`monitoring/dashboards/`)
+- `system-overview.json` - System health overview
+- `ml-anomaly.json` - ML model monitoring
+- `docker-containers.json` - Container metrics
+
+## 🔄 Automated Remediation
+
+### Rules Configuration (`remediation-rules.yaml`)
 ```yaml
-global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
-
-scrape_configs:
-  - job_name: 'smartcloudops-app'
-    static_configs:
-      - targets: ['smartcloudops-main:5000']
-    metrics_path: '/metrics'
-    scrape_interval: 10s
-
-  - job_name: 'node-exporter'
-    static_configs:
-      - targets: ['node-exporter:9100']
-```
-
-### Grafana Data Sources (`monitoring/grafana-datasources.yml`)
-```yaml
-apiVersion: 1
-
-datasources:
-  - name: Prometheus
-    type: prometheus
-    access: proxy
-    url: http://prometheus:9090
-    isDefault: true
-```
-
-### Grafana Dashboards
-- **System Overview**: Real-time system health monitoring
-- **ML Anomaly**: Machine learning anomaly detection metrics
-- **Docker Containers**: Container performance and resource usage
-
-## 🔒 Security Configuration
-
-### Security Alerts (`security-alerts.yml`)
-```yaml
-groups:
-  - name: security_alerts
-    rules:
-      - alert: HighCPUUsage
-        expr: cpu_usage > 90
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "High CPU usage detected"
-          description: "CPU usage is above 90% for 5 minutes"
-```
-
-### Remediation Rules (`remediation-rules.yaml`)
-```yaml
-remediation_rules:
-  - name: high_cpu_remediation
+rules:
+  - name: high_cpu_usage
     condition: cpu_usage > 90
     duration: 5m
     action: scale_up
-    parameters:
-      scale_factor: 1.5
-      max_instances: 10
+    cooldown: 10m
 ```
 
-## 🐳 Docker Configuration
+## 🌐 Network Configuration
 
-### Production Docker Compose (`production/docker-compose.production.yml`)
-```yaml
-version: '3.8'
-services:
-  smartcloudops-main:
-    image: smartcloudops-ai:latest
-    environment:
-      - FLASK_ENV=production
-      - DATABASE_URL=${DATABASE_URL}
-    deploy:
-      replicas: 3
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 2G
-```
+### Nginx Configuration
+- `nginx.conf` - Development proxy configuration
+- `nginx-server.conf` - Alternative server setup
+- `production/nginx.conf` - Production-ready configuration with SSL
 
-## 🔧 Configuration Management
+### Security Headers
+- Content Security Policy (CSP)
+- X-Frame-Options
+- X-Content-Type-Options
+- Strict-Transport-Security (HSTS)
 
-### Environment Variables
+## 📦 Container Configuration
+
+### Docker Compose Files
+- `../docker-compose.yml` - Development stack
+- `production/docker-compose.production.yml` - Production stack
+- `../demo/docker-compose.demo.yml` - Demo environment
+
+## 🔍 Configuration Validation
+
+Run the configuration validator:
 ```bash
-# Database Configuration
-DATABASE_URL=postgresql://user:pass@localhost/smartcloudops
-REDIS_HOST=redis
-REDIS_PORT=6379
-
-# Security Configuration
-JWT_SECRET_KEY=your-secret-key
-JWT_ACCESS_TOKEN_EXPIRES=3600
-
-# AI Services
-OPENAI_API_KEY=your-openai-key
-GEMINI_API_KEY=your-gemini-key
-
-# Monitoring
-PROMETHEUS_URL=http://prometheus:9090
-GRAFANA_URL=http://grafana:3000
+python scripts/testing/verify_setup.py
 ```
+
+## 📚 Environment Variables Reference
+
+### Core Variables
+| Variable | Description | Default | Production Required |
+|----------|-------------|---------|-------------------|
+| `FLASK_ENV` | Flask environment | `development` | `production` |
+| `SECRET_KEY` | Flask secret key | Random | ✅ Required |
+| `JWT_SECRET_KEY` | JWT signing key | Random | ✅ Required |
+| `DATABASE_URL` | Database connection | SQLite | PostgreSQL ✅ |
+
+### AWS Variables
+| Variable | Description | Required for AWS |
+|----------|-------------|------------------|
+| `AWS_REGION` | AWS region | ✅ |
+| `DB_HOST` | RDS endpoint | ✅ |
+| `REDIS_HOST` | ElastiCache endpoint | ✅ |
+
+### AI/ML Variables
+| Variable | Description | Required for AI |
+|----------|-------------|-----------------|
+| `OPENAI_API_KEY` | OpenAI API key | Optional |
+| `GEMINI_API_KEY` | Google Gemini key | Optional |
+
+## 🚨 Security Best Practices
+
+1. **Never commit secrets** to version control
+2. **Use AWS Secrets Manager** for production secrets
+3. **Enable security headers** in production
+4. **Use strong random keys** (minimum 32 characters)
+5. **Enable SSL/TLS** for all connections
+6. **Regularly rotate** API keys and passwords
+7. **Use IAM roles** instead of access keys when possible
+
+## 🆘 Troubleshooting
+
+### Common Configuration Issues
+
+1. **Database connection fails**:
+   - Check `DATABASE_URL` format
+   - Verify database credentials
+   - Ensure database server is running
+
+2. **AI features not working**:
+   - Verify API keys are set correctly
+   - Check `AI_PROVIDER` setting
+   - Ensure network connectivity to AI services
+
+3. **Monitoring not working**:
+   - Check Prometheus configuration
+   - Verify service discovery settings
+   - Ensure all services are accessible
 
 ### Configuration Validation
 ```bash
-# Validate Prometheus configuration
-promtool check config monitoring/prometheus.yml
+# Test configuration loading
+python -c "from app.config import get_config; print('Config loaded successfully')"
 
-# Validate Grafana configuration
-# Check syntax in Grafana UI
-
-# Validate Docker Compose
-docker-compose -f docker-compose.yml config
+# Validate environment
+python scripts/testing/verify_setup.py
 ```
-
-## 📈 Dashboard Configuration
-
-### System Overview Dashboard
-- **CPU Usage**: Real-time CPU utilization
-- **Memory Usage**: Memory consumption trends
-- **Disk I/O**: Storage performance metrics
-- **Network Traffic**: Network utilization
-- **Application Metrics**: API response times and error rates
-
-### ML Anomaly Dashboard
-- **Anomaly Scores**: Real-time anomaly detection scores
-- **Model Performance**: ML model accuracy and latency
-- **Feature Importance**: Key features affecting predictions
-- **Training Metrics**: Model training performance
-
-### Docker Containers Dashboard
-- **Container Health**: Container status and health checks
-- **Resource Usage**: CPU, memory, and disk usage per container
-- **Network Metrics**: Container network performance
-- **Log Analysis**: Container log patterns and errors
-
-## 🔄 Configuration Deployment
-
-### Automated Deployment
-```bash
-# Deploy all configurations
-./scripts/deploy/deploy_complete_stack.sh
-
-# Deploy monitoring only
-./scripts/deploy/deploy_monitoring_server.sh
-
-# Deploy production stack
-./scripts/deploy/deploy_production_stack.sh
-```
-
-### Manual Deployment
-```bash
-# Copy configurations to containers
-docker cp configs/monitoring/prometheus.yml prometheus:/etc/prometheus/
-docker cp configs/monitoring/grafana-datasources.yml grafana:/etc/grafana/provisioning/datasources/
-
-# Restart services
-docker-compose restart prometheus grafana
-```
-
-## 🔍 Configuration Troubleshooting
-
-### Common Issues
-
-1. **Prometheus Configuration Errors**
-   ```bash
-   # Check configuration syntax
-   promtool check config monitoring/prometheus.yml
-   
-   # View Prometheus logs
-   docker-compose logs prometheus
-   ```
-
-2. **Grafana Dashboard Issues**
-   ```bash
-   # Check Grafana logs
-   docker-compose logs grafana
-   
-   # Verify data source connectivity
-   # Check in Grafana UI: Configuration > Data Sources
-   ```
-
-3. **Security Configuration Problems**
-   ```bash
-   # Validate security rules
-   python -c "import yaml; yaml.safe_load(open('security-alerts.yml'))"
-   
-   # Check SSL certificates
-   openssl x509 -in security/ssl/cert.pem -text -noout
-   ```
-
-### Debug Mode
-```bash
-# Enable debug logging
-export LOG_LEVEL=DEBUG
-export FLASK_DEBUG=1
-
-# Run with verbose output
-docker-compose up -d --verbose
-```
-
-## 📚 Configuration Best Practices
-
-### Security
-- **Secrets Management**: Use environment variables for sensitive data
-- **SSL/TLS**: Always use HTTPS in production
-- **Access Control**: Implement proper authentication and authorization
-- **Audit Logging**: Enable comprehensive audit trails
-
-### Monitoring
-- **Alert Thresholds**: Set appropriate alert thresholds
-- **Dashboard Design**: Create intuitive and informative dashboards
-- **Data Retention**: Configure appropriate data retention policies
-- **Performance**: Optimize queries for better performance
-
-### Deployment
-- **Environment Separation**: Use different configs for dev/staging/prod
-- **Version Control**: Track configuration changes in version control
-- **Validation**: Validate configurations before deployment
-- **Backup**: Regularly backup configuration files
-
-## 🔄 Configuration Updates
-
-### Rolling Updates
-```bash
-# Update configuration without downtime
-docker-compose up -d --no-deps --build smartcloudops-main
-
-# Verify update
-curl http://localhost:5000/health
-```
-
-### Configuration Reload
-```bash
-# Reload Prometheus configuration
-curl -X POST http://localhost:9090/-/reload
-
-# Reload Grafana configuration
-# Restart Grafana container or use API
-```
-
-## 📊 Configuration Monitoring
-
-### Configuration Health Checks
-```bash
-# Check configuration status
-curl http://localhost:5000/config/status
-
-# Validate configuration
-curl http://localhost:5000/config/validate
-```
-
-### Configuration Metrics
-- **Configuration Version**: Track configuration versions
-- **Validation Status**: Monitor configuration validation
-- **Deployment Status**: Track configuration deployment
-- **Error Rates**: Monitor configuration-related errors
-
-## 🤝 Contributing
-
-### Adding New Configurations
-1. **Follow Naming Convention**: Use descriptive names
-2. **Document Changes**: Update this README
-3. **Test Configuration**: Validate before deployment
-4. **Version Control**: Commit configuration changes
-5. **Backup**: Create backups before major changes
-
-### Configuration Review Checklist
-- [ ] Configuration is properly documented
-- [ ] Security settings are appropriate
-- [ ] Performance impact is considered
-- [ ] Configuration is tested in staging
-- [ ] Rollback plan is available
 
 ---
 
-**SmartCloudOps AI v3.3.0** - Configuration Management
+## 📞 Support
+
+For configuration support:
+- Check the [troubleshooting guide](../docs/troubleshooting.md)
+- Review [deployment documentation](../DEPLOYMENT_GUIDE.md)
+- Submit issues on GitHub
