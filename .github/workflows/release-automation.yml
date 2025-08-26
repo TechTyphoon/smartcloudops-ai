@@ -12,26 +12,15 @@ on:
           - patch
           - minor
           - major
-          - prerelease
-      prerelease_type:
-        description: 'Pre-release type (if prerelease selected)'
-        required: false
-        default: 'rc'
-        type: choice
-        options:
-          - rc
-          - beta
-          - alpha
       dry_run:
-        description: 'Dry run (don\'t create actual release)'
+        description: 'Dry run (dont create actual release)'
         required: false
-        default: false
+        default: true
         type: boolean
 
 permissions:
-  contents: write
-  packages: write
-  pull-requests: write
+  contents: read
+  packages: read
 
 jobs:
   create-release:
@@ -43,7 +32,6 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-        token: ${{ secrets.GITHUB_TOKEN }}
         
     - name: 🔧 Setup Git
       run: |
@@ -80,17 +68,6 @@ jobs:
           "patch")
             NEW_VERSION="v${MAJOR}.${MINOR}.$((PATCH+1))"
             ;;
-          "prerelease")
-            if [[ "$LATEST_TAG" == *"-"* ]]; then
-              # Increment existing prerelease
-              PRERELEASE_NUM=$(echo $LATEST_TAG | grep -o '[0-9]*$' || echo "0")
-              BASE_VERSION=$(echo $LATEST_TAG | cut -d'-' -f1)
-              NEW_VERSION="${BASE_VERSION}-${{ inputs.prerelease_type }}.$((PRERELEASE_NUM+1))"
-            else
-              # First prerelease for this version
-              NEW_VERSION="v${MAJOR}.${MINOR}.$((PATCH+1))-${{ inputs.prerelease_type }}.1"
-            fi
-            ;;
         esac
         
         echo "New version: $NEW_VERSION"
@@ -99,118 +76,92 @@ jobs:
     - name: 📝 Generate changelog
       id: changelog
       run: |
-        echo "## 🚀 What's Changed" > CHANGELOG.md
-        echo "" >> CHANGELOG.md
+        echo "## 🚀 Changes in this release" > CHANGELOG_TEMP.md
+        echo "" >> CHANGELOG_TEMP.md
         
         # Get commits since last tag
         LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
         if [[ -n "$LATEST_TAG" ]]; then
-          echo "### 🆕 New Features" >> CHANGELOG.md
-          git log ${LATEST_TAG}..HEAD --grep="feat" --pretty=format:"- %s" >> CHANGELOG.md || true
-          echo "" >> CHANGELOG.md
-          
-          echo "### 🐛 Bug Fixes" >> CHANGELOG.md
-          git log ${LATEST_TAG}..HEAD --grep="fix" --pretty=format:"- %s" >> CHANGELOG.md || true
-          echo "" >> CHANGELOG.md
-          
-          echo "### 🔧 Improvements" >> CHANGELOG.md
-          git log ${LATEST_TAG}..HEAD --grep="refactor\|perf\|style" --pretty=format:"- %s" >> CHANGELOG.md || true
-          echo "" >> CHANGELOG.md
-          
-          echo "### 📚 Documentation" >> CHANGELOG.md
-          git log ${LATEST_TAG}..HEAD --grep="docs" --pretty=format:"- %s" >> CHANGELOG.md || true
-          echo "" >> CHANGELOG.md
-          
-          echo "### 🔒 Security" >> CHANGELOG.md
-          git log ${LATEST_TAG}..HEAD --grep="security" --pretty=format:"- %s" >> CHANGELOG.md || true
-          echo "" >> CHANGELOG.md
-          
-          echo "### 🏗️ Build & CI" >> CHANGELOG.md
-          git log ${LATEST_TAG}..HEAD --grep="build\|ci" --pretty=format:"- %s" >> CHANGELOG.md || true
-          echo "" >> CHANGELOG.md
-          
-          echo "### Other Changes" >> CHANGELOG.md
-          git log ${LATEST_TAG}..HEAD --pretty=format:"- %s" --invert-grep --grep="feat\|fix\|refactor\|perf\|style\|docs\|security\|build\|ci" >> CHANGELOG.md || true
+          git log ${LATEST_TAG}..HEAD --pretty=format:"- %s" >> CHANGELOG_TEMP.md
         else
-          echo "### Initial Release" >> CHANGELOG.md
-          git log --pretty=format:"- %s" --max-count=20 >> CHANGELOG.md
+          git log --pretty=format:"- %s" --max-count=10 >> CHANGELOG_TEMP.md
         fi
         
-        echo "" >> CHANGELOG.md
-        echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${LATEST_TAG}...${{ steps.version.outputs.version }}" >> CHANGELOG.md
+        echo "" >> CHANGELOG_TEMP.md
+        echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/v0.0.0...${{ steps.version.outputs.version }}" >> CHANGELOG_TEMP.md
         
-        # Set output
-        CHANGELOG_CONTENT=$(cat CHANGELOG.md)
+        CHANGELOG=$(cat CHANGELOG_TEMP.md)
         echo "changelog<<EOF" >> $GITHUB_OUTPUT
-        echo "$CHANGELOG_CONTENT" >> $GITHUB_OUTPUT
+        echo "$CHANGELOG" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
         
-    - name: 📦 Update version files
+    - name: 📊 Generate SBOM
       run: |
-        # Update package.json if it exists
-        if [ -f "package.json" ]; then
-          sed -i 's/"version": "[^"]*"/"version": "${{ steps.version.outputs.version }}"/' package.json
+        echo "# Software Bill of Materials (SBOM)" > SBOM.md
+        echo "Generated on: $(date)" >> SBOM.md
+        echo "" >> SBOM.md
+        echo "## Python Dependencies" >> SBOM.md
+        if [[ -f "requirements.txt" ]]; then
+          echo "### Production Dependencies" >> SBOM.md
+          cat requirements.txt >> SBOM.md
+        fi
+        echo "" >> SBOM.md
+        echo "## Node.js Dependencies" >> SBOM.md
+        if [[ -f "smartcloudops-ai/package.json" ]]; then
+          echo "### Frontend Dependencies" >> SBOM.md
+          cat smartcloudops-ai/package.json | jq '.dependencies' >> SBOM.md
         fi
         
-        # Update setup.py if it exists
-        if [ -f "setup.py" ]; then
-          sed -i 's/version="[^"]*"/version="${{ steps.version.outputs.version }}"/' setup.py
-        fi
-        
-        # Update __init__.py if it exists
-        if [ -f "app/__init__.py" ]; then
-          sed -i 's/__version__ = "[^"]*"/__version__ = "${{ steps.version.outputs.version }}"/' app/__init__.py
-        fi
-        
-        # Update Helm Chart.yaml
-        if [ -f "deploy/helm/smartcloudops-ai/Chart.yaml" ]; then
-          sed -i 's/version: .*/version: ${{ steps.version.outputs.version }}/' deploy/helm/smartcloudops-ai/Chart.yaml
-          sed -i 's/appVersion: .*/appVersion: "${{ steps.version.outputs.version }}"/' deploy/helm/smartcloudops-ai/Chart.yaml
-        fi
-        
-    - name: 🏷️ Create tag and push
-      if: inputs.dry_run == false
+    - name: 📦 Create release package
       run: |
-        git add -A
-        git commit -m "🏷️ Release ${{ steps.version.outputs.version }}" || echo "No changes to commit"
-        git tag -a ${{ steps.version.outputs.version }} -m "Release ${{ steps.version.outputs.version }}"
-        git push origin ${{ steps.version.outputs.version }}
-        git push origin HEAD
+        # Create release directory
+        mkdir -p release
         
-    - name: 📄 Create release notes file
-      run: |
-        echo "${{ steps.changelog.outputs.changelog }}" > RELEASE_NOTES.md
+        # Copy essential files
+        cp -r app/ release/
+        cp -r smartcloudops-ai/ release/
+        cp -r docs/ release/
+        cp -r deploy/ release/
+        cp -r tests/ release/
+        cp requirements.txt release/
+        cp Dockerfile* release/
+        cp docker-compose.yml release/
+        cp README.md release/
+        cp CHANGELOG.md release/ 2>/dev/null || echo "No CHANGELOG.md found"
+        cp SBOM.md release/
         
-    - name: 🚀 Create GitHub Release
-      if: inputs.dry_run == false
-      uses: softprops/action-gh-release@v1
+        # Create tarball
+        tar -czf smartcloudops-ai-${{ steps.version.outputs.version }}.tar.gz -C release .
+        
+        # Generate checksums
+        sha256sum smartcloudops-ai-${{ steps.version.outputs.version }}.tar.gz > checksums.txt
+        sha256sum SBOM.md >> checksums.txt
+        
+    - name: 📄 Upload release artifacts
+      uses: actions/upload-artifact@v4
       with:
-        tag_name: ${{ steps.version.outputs.version }}
-        name: "Release ${{ steps.version.outputs.version }}"
-        body_path: RELEASE_NOTES.md
-        draft: false
-        prerelease: ${{ contains(steps.version.outputs.version, '-') }}
-        generate_release_notes: true
+        name: release-${{ steps.version.outputs.version }}
+        path: |
+          smartcloudops-ai-${{ steps.version.outputs.version }}.tar.gz
+          SBOM.md
+          checksums.txt
+        retention-days: 90
         
-    - name: 📋 Dry run summary
-      if: inputs.dry_run == true
+    - name: 📋 Release summary
       run: |
-        echo "# 🏷️ Release Dry Run Summary" >> $GITHUB_STEP_SUMMARY
+        echo "# 🏷️ Release Summary" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "## 📊 Release Information" >> $GITHUB_STEP_SUMMARY
+        echo "## 📋 Release Information" >> $GITHUB_STEP_SUMMARY
         echo "- **Version**: ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Release Type**: ${{ inputs.release_type }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Prerelease**: ${{ contains(steps.version.outputs.version, '-') }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Type**: ${{ inputs.release_type }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Dry Run**: ${{ inputs.dry_run }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## 📦 Artifacts" >> $GITHUB_STEP_SUMMARY
+        echo "- **Package**: smartcloudops-ai-${{ steps.version.outputs.version }}.tar.gz" >> $GITHUB_STEP_SUMMARY
+        echo "- **SBOM**: SBOM.md" >> $GITHUB_STEP_SUMMARY
+        echo "- **Checksums**: checksums.txt" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "## 📝 Changelog Preview" >> $GITHUB_STEP_SUMMARY
-        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        head -20 RELEASE_NOTES.md >> $GITHUB_STEP_SUMMARY
-        echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "## 📂 Files to be updated" >> $GITHUB_STEP_SUMMARY
-        echo "- Chart.yaml" >> $GITHUB_STEP_SUMMARY
-        echo "- package.json (if exists)" >> $GITHUB_STEP_SUMMARY
-        echo "- setup.py (if exists)" >> $GITHUB_STEP_SUMMARY
-        echo "- app/__init__.py (if exists)" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "**Note**: This was a dry run. No actual release was created."
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        cat CHANGELOG_TEMP.md >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
