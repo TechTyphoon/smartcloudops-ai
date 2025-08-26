@@ -112,7 +112,7 @@ def setup_logging(
     # Log startup message
     logger = logging.getLogger(__name__)
     logger.info(
-        "Logging configuredf",
+        "Logging configured",
         extra={
             "log_level": log_level,
             "log_file": log_file,
@@ -144,7 +144,7 @@ def log_request_info(logger: logging.Logger, request, response=None, duration=No
         request: Flask request object
         response: Flask response object (optional)
         duration: Request duration in seconds (optional)
-    ""f"
+    """
     log_data = {
         "method": request.method,
         "url": request.url,
@@ -173,7 +173,7 @@ def log_error(logger: logging.Logger, error: Exception, context: dict = None):
         logger: Logger instance
         error: Exception that occurred
         context: Additional context information
-    ""f"
+    """
     log_data = {
         "error_type": type(error).__name__,
         "error_message": str(error),

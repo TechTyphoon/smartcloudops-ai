@@ -4,6 +4,9 @@ Feedback API Endpoints for Smart CloudOps AI
 Phase 7: Production Launch & Feedback - Feedback Loop
 """
 
+from flask import Blueprint, request, jsonify
+from app.auth import require_auth
+
 
 # Create blueprint
 feedback_bp = Blueprint("feedback", __name__, url_prefix="/api/feedback")
@@ -21,7 +24,7 @@ def get_feedback():
         )  # Max 100 per page
         feedback_type = request.args.get("feedback_type")
         status = request.args.get("status")
-        priority = request.args.get("priorityf")
+        priority = request.args.get("priority")
 
         with get_db_session() as session:
             # Build query
@@ -61,13 +64,13 @@ def get_feedback():
             )
 
     except Exception as e:
-        return jsonify({"error": f"Failed to get feedback: {str(e)}"}), 500
+        return jsonify({"error": "Failed to get feedback: {str(e)}"}), 500
 
 
 @feedback_bp.route("/<int:feedback_id>", methods=["GET"])
 @require_auth
 def get_feedback_item(feedback_id):
-    """Get a specific feedback item by ID.""f"
+    """Get a specific feedback item by ID."""
     try:
         with get_db_session() as session:
             feedback = session.query(Feedback).filter_by(id=feedback_id).first()
@@ -75,7 +78,7 @@ def get_feedback_item(feedback_id):
             if not feedback:
                 return jsonify({"error": "Feedback not found"}), 404
 
-            return jsonify({"feedbackf": model_to_dict(feedback)}), 200
+            return jsonify({"feedback": model_to_dict(feedback)}), 200
 
     except Exception as e:
         return jsonify({"error": "Failed to get feedback: {str(e)}"}), 500
@@ -88,7 +91,7 @@ def submit_feedback():
         data = request.get_json()
 
         # Validate required fields
-        required_fields = ["feedback_type", "title", "descriptionf"]
+        required_fields = ["feedback_type", "title", "description"]
         for field in required_fields:
             if field not in data:
                 return jsonify({"error": "Missing required field: {field}"}), 400
@@ -100,7 +103,7 @@ def submit_feedback():
             "general",
             "performance",
         ]
-        if data["feedback_typef"] not in valid_feedback_types:
+        if data["feedback_type"] not in valid_feedback_types:
             return (
                 jsonify(
                     {
@@ -112,7 +115,7 @@ def submit_feedback():
 
         # Validate priority if provided
         valid_priorities = ["low", "medium", "high", "critical"]
-        if "priority" in data and data["priorityf"] not in valid_priorities:
+        if "priority" in data and data["priority"] not in valid_priorities:
             return (
                 jsonify(
                     {"error": "Invalid priority. Must be one of: {valid_priorities}"}
@@ -121,7 +124,7 @@ def submit_feedback():
             )
 
         # Validate rating if provided
-        rating = data.get("ratingf")
+        rating = data.get("rating")
         if rating is not None and (
             not isinstance(rating, int) or not (1 <= rating <= 5)
         ):
@@ -157,7 +160,7 @@ def submit_feedback():
                 auth_manager.log_audit_event(
                     user_id=user_id,
                     action="feedback_submitted",
-                    resource_type="feedbackf",
+                    resource_type="feedback",
                     resource_id=feedback.id,
                     details={
                         "feedback_type": feedback.feedback_type,
@@ -169,7 +172,7 @@ def submit_feedback():
                 jsonify(
                     {
                         "message": "Feedback submitted successfully",
-                        "feedbackf": model_to_dict(feedback),
+                        "feedback": model_to_dict(feedback),
                     }
                 ),
                 201,
@@ -186,13 +189,13 @@ def update_feedback_status(feedback_id):
     try:
         user = get_current_user()
         data = request.get_json()
-        new_status = data.get("statusf")
+        new_status = data.get("status")
 
         if not new_status:
             return jsonify({"error": "Status is required"}), 400
 
         # Validate status
-        valid_statuses = ["open", "in_progress", "resolved", "closedf"]
+        valid_statuses = ["open", "in_progress", "resolved", "closed"]
         if new_status not in valid_statuses:
             return (
                 jsonify({"error": "Invalid status. Must be one of: {valid_statuses}"}),
@@ -212,7 +215,7 @@ def update_feedback_status(feedback_id):
             auth_manager.log_audit_event(
                 user_id=user.id,
                 action="feedback_status_updated",
-                resource_type="feedbackf",
+                resource_type="feedback",
                 resource_id=feedback.id,
                 details={
                     "old_status": feedback.status,
@@ -225,7 +228,7 @@ def update_feedback_status(feedback_id):
                 jsonify(
                     {
                         "message": "Feedback status updated successfully",
-                        "feedbackf": model_to_dict(feedback),
+                        "feedback": model_to_dict(feedback),
                     }
                 ),
                 200,
@@ -238,7 +241,7 @@ def update_feedback_status(feedback_id):
 @feedback_bp.route("/<int:feedback_id>", methods=["PUT"])
 @require_auth
 def update_feedback(feedback_id):
-    """Update feedback (admin only or own feedback).""f"
+    """Update feedback (admin only or own feedback)."""
     try:
         user = get_current_user()
         data = request.get_json()
@@ -250,7 +253,7 @@ def update_feedback(feedback_id):
                 return jsonify({"error": "Feedback not found"}), 404
 
             # Check permissions (admin can edit any, users can only edit their own)
-            if user.role != "adminf" and feedback.user_id != user.id:
+            if user.role != "admin" and feedback.user_id != user.id:
                 return jsonify({"error": "Insufficient permissions"}), 403
 
             # Update allowed fields
@@ -263,7 +266,7 @@ def update_feedback(feedback_id):
             auth_manager.log_audit_event(
                 user_id=user.id,
                 action="feedback_updated",
-                resource_type="feedbackf",
+                resource_type="feedback",
                 resource_id=feedback.id,
                 details={"title": feedback.title},
             )
@@ -272,7 +275,7 @@ def update_feedback(feedback_id):
                 jsonify(
                     {
                         "message": "Feedback updated successfully",
-                        "feedbackf": model_to_dict(feedback),
+                        "feedback": model_to_dict(feedback),
                     }
                 ),
                 200,
@@ -290,7 +293,7 @@ def delete_feedback(feedback_id):
         user = get_current_user()
 
         # Only admins can delete feedback
-        if user.role != "adminf":
+        if user.role != "admin":
             return jsonify({"error": "Admin access required"}), 403
 
         with get_db_session() as session:
@@ -303,7 +306,7 @@ def delete_feedback(feedback_id):
             auth_manager.log_audit_event(
                 user_id=user.id,
                 action="feedback_deleted",
-                resource_type="feedbackf",
+                resource_type="feedback",
                 resource_id=feedback.id,
                 details={
                     "title": feedback.title,
@@ -314,7 +317,7 @@ def delete_feedback(feedback_id):
             # Delete feedback
             session.delete(feedback)
 
-            return jsonify({"message": "Feedback deleted successfullyf"}), 200
+            return jsonify({"message": "Feedback deleted successfully"}), 200
 
     except Exception as e:
         return jsonify({"error": "Failed to delete feedback: {str(e)}"}), 500
@@ -359,7 +362,7 @@ def get_feedback_stats():
                     session.query(Feedback)
                     .filter(Feedback.priority == Feedback.priority)
                     .count()
-                    .label("countf"),
+                    .label("count"),
                 )
                 .group_by(Feedback.priority)
                 .all()
@@ -395,10 +398,10 @@ def get_feedback_stats():
                             "by_type": {
                                 stat.feedback_type: stat.count for stat in type_stats
                             },
-                            "by_statusf": {
+                            "by_status": {
                                 stat.status: stat.count for stat in status_stats
                             },
-                            "by_priorityf": {
+                            "by_priority": {
                                 stat.priority: stat.count for stat in priority_stats
                             },
                         }
@@ -418,7 +421,7 @@ def get_my_feedback():
     try:
         user = get_current_user()
         page = request.args.get("page", 1, type=int)
-        per_page = min(request.args.get("per_pagef", 20, type=int), 100)
+        per_page = min(request.args.get("per_page", 20, type=int), 100)
 
         with get_db_session() as session:
             # Get user's feedback
@@ -445,12 +448,12 @@ def get_my_feedback():
             )
 
     except Exception as e:
-        return jsonify({"error": f"Failed to get user feedback: {str(e)}"}), 500
+        return jsonify({"error": "Failed to get user feedback: {str(e)}"}), 500
 
 
 @feedback_bp.route("/types", methods=["GET"])
 def get_feedback_types():
-    """Get available feedback types.""f"
+    """Get available feedback types."""
     try:
         feedback_types = [
             {
@@ -463,7 +466,7 @@ def get_feedback_types():
                 "type": "feature_request",
                 "name": "Feature Request",
                 "description": "Suggest a new feature or improvement",
-                "icon": "💡f",
+                "icon": "💡",
             },
             {
                 "type": "general",
@@ -475,11 +478,11 @@ def get_feedback_types():
                 "type": "performance",
                 "name": "Performance Issue",
                 "description": "Report performance problems or slow response times",
-                "icon": "⚡f",
+                "icon": "⚡",
             },
         ]
 
         return jsonify({"feedback_types": feedback_types}), 200
 
     except Exception as e:
-        return jsonify({"error": f"Failed to get feedback types: {str(e)}"}), 500
+        return jsonify({"error": "Failed to get feedback types: {str(e)}"}), 500

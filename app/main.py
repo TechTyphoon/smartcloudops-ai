@@ -21,41 +21,103 @@ License: MIT
 
 import logging
 import os
+import sys
+from datetime import datetime
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+
 # Add project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-# Import API blueprints
+# Import configuration
+from app.config import get_config
+
+# Import database functions (with fallback for missing components)
 try:
+    from app.database import init_db, seed_initial_data, check_db_health
+except ImportError:
+
+    def init_db():
+        pass
+
+    def seed_initial_data():
+        pass
+
+    def check_db_health():
+        return True
+
+
+# Import authentication functions
+try:
+    from app.auth_routes import register_auth_endpoints
+except ImportError:
+
+    def register_auth_endpoints(app):
+        pass
+
+
+# Import API blueprints (re-enabling working modules)
+try:
+    from app.api.anomalies import anomalies_bp
+
     ANOMALIES_AVAILABLE = True
-    REMEDIATION_AVAILABLE = True
-    FEEDBACK_AVAILABLE = True
-    ML_API_AVAILABLE = True
-    AI_API_AVAILABLE = True
-except ImportError as e:
-    print(f"Warning: Some API modules not available: {e}")
+except ImportError:
+    anomalies_bp = None
     ANOMALIES_AVAILABLE = False
-    REMEDIATION_AVAILABLE = False
+
+try:
+    from app.api.feedback import feedback_bp
+
+    FEEDBACK_AVAILABLE = True
+except ImportError:
+    feedback_bp = None
     FEEDBACK_AVAILABLE = False
-    ML_API_AVAILABLE = False
+
+try:
+    from app.api.ai import ai_bp
+
+    AI_API_AVAILABLE = True
+except ImportError:
+    ai_bp = None
     AI_API_AVAILABLE = False
+
+# TODO: Fix remaining modules (remediation, ml)
+try:
+    from app.api.remediation import remediation_bp
+    REMEDIATION_AVAILABLE = True
+    print("✅ Remediation API successfully imported")
+except ImportError as e:
+    remediation_bp = None
+    REMEDIATION_AVAILABLE = False
+    print(f"⚠️ Remediation API not available: {e}")
+
+try:
+    from app.api.ml import ml_bp
+    ML_API_AVAILABLE = True
+    print("✅ ML API successfully imported")
+except ImportError as e:
+    ml_bp = None
+    ML_API_AVAILABLE = False
+    print(f"⚠️ ML API not available: {e}")
 
 # Import existing modules
 try:
     CHATOPS_AVAILABLE = True
 except ImportError as e:
-    print(f"Warning: ChatOps modules not available: {e}")
+    print("Warning: ChatOps modules not available: {e}")
     CHATOPS_AVAILABLE = False
 
 try:
     ML_AVAILABLE = True
 except ImportError as e:
-    print(f"Warning: ML modules not available: {e}")
+    print("Warning: ML modules not available: {e}")
     ML_AVAILABLE = False
 
 try:
     REMEDIATION_ENGINE_AVAILABLE = True
 except ImportError as e:
-    print(f"Warning: Remediation engine not available: {e}")
+    print("Warning: Remediation engine not available: {e}")
     REMEDIATION_ENGINE_AVAILABLE = False
 
 # Configure logging
@@ -93,10 +155,44 @@ def create_app() -> Flask:
 
     # Load configuration
     config = get_config()
-    app.config.update(config)
+    app.config.update(config.to_dict())
+
+    # Setup observability first (import here to avoid circular imports)
+    try:
+        from app.observability.logging_config import setup_logging, get_logger
+        from app.observability.middleware import setup_observability_middleware
+        from app.observability.metrics import metrics_collector
+        
+        # Setup structured logging
+        setup_logging(
+            log_level=getattr(config, 'LOG_LEVEL', 'INFO'),
+            log_format=getattr(config, 'LOG_FORMAT', 'json')
+        )
+        
+        # Get logger for this module
+        logger = get_logger(__name__)
+        logger.info("Starting SmartCloudOps AI application", extra={'version': '3.3.0'})
+        
+        # Setup observability middleware
+        setup_observability_middleware(
+            app,
+            enable_request_logging=True,
+            enable_metrics=True,
+            enable_tracing=getattr(config, 'ENABLE_TRACING', True)
+        )
+        
+        # Initialize metrics with app info
+        metrics_collector.update_health_status('healthy')
+        print("✅ Observability features initialized successfully")
+        
+    except Exception as e:
+        print(f"⚠️ Observability setup failed: {e}")
+        # Continue without observability
+        logger = logging.getLogger(__name__)
 
     # Enable CORS
-    CORS(app, origins=config.get("cors_origins", ["http://localhost:3000"]))
+    cors_origins = getattr(config, "CORS_ORIGINS", ["http://localhost:3000"])
+    CORS(app, origins=cors_origins)
 
     # Initialize database
     try:
@@ -104,7 +200,7 @@ def create_app() -> Flask:
         seed_initial_data()
         logger.info("Database initialized successfully")
     except Exception as e:
-        logger.error(f"Database initialization failed: {e}")
+        logger.error("Database initialization failed: {e}")
 
     # Initialize components
     ai_handler = None
@@ -120,43 +216,43 @@ def create_app() -> Flask:
             system_context = SystemContextGatherer()
             logger.info("ChatOps components initialized successfully")
         except Exception as e:
-            logger.error(f"ChatOps initialization failed: {e}")
+            logger.error("ChatOps initialization failed: {e}")
 
     if ML_AVAILABLE:
         try:
             anomaly_detector = AnomalyDetector()
             logger.info("ML components initialized successfully")
         except Exception as e:
-            logger.error(f"ML initialization failed: {e}")
+            logger.error("ML initialization failed: {e}")
 
     if REMEDIATION_ENGINE_AVAILABLE:
         try:
             remediation_engine = RemediationEngine()
             logger.info("Remediation engine initialized successfully")
         except Exception as e:
-            logger.error(f"Remediation engine initialization failed: {e}")
+            logger.error("Remediation engine initialization failed: {e}")
 
     # Register authentication endpoints
     register_auth_endpoints(app)
 
     # Register API blueprints
-    if ANOMALIES_AVAILABLE:
+    if ANOMALIES_AVAILABLE and anomalies_bp:
         app.register_blueprint(anomalies_bp)
         logger.info("Anomalies API registered")
 
-    if REMEDIATION_AVAILABLE:
+    if REMEDIATION_AVAILABLE and remediation_bp:
         app.register_blueprint(remediation_bp)
         logger.info("Remediation API registered")
 
-    if FEEDBACK_AVAILABLE:
+    if FEEDBACK_AVAILABLE and feedback_bp:
         app.register_blueprint(feedback_bp)
         logger.info("Feedback API registered")
 
-    if ML_API_AVAILABLE:
+    if ML_API_AVAILABLE and ml_bp:
         app.register_blueprint(ml_bp)
         logger.info("ML API registered")
 
-    if AI_API_AVAILABLE:
+    if AI_API_AVAILABLE and ai_bp:
         app.register_blueprint(ai_bp)
         logger.info("AI API registered")
 
@@ -180,7 +276,7 @@ def create_app() -> Flask:
 
         # Log request
         logger.info(
-            f"{request.method} {request.path} - {response.status_code} - {duration:.3f}s"
+            "{request.method} {request.path} - {response.status_code} - {duration:.3f}s"
         )
 
         return response
@@ -188,7 +284,7 @@ def create_app() -> Flask:
     # Health check endpoint
     @app.route("/health")
     def health_check():
-        """Health check endpoint.""f"
+        """Health check endpoint."""
         health_status = {
             "status": "healthy",
             "timestamp": datetime.utcnow().isoformat(),
@@ -219,19 +315,19 @@ def create_app() -> Flask:
     # Status endpoint
     @app.route("/status")
     def status():
-        """Detailed status endpoint.""f"
+        """Detailed status endpoint."""
         return jsonify(
             {
                 "status": "operational",
                 "timestamp": datetime.utcnow().isoformat(),
                 "version": "1.0.0",
-                "environment": config.get("environment", "production"),
+                "environment": getattr(config, "FLASK_ENV", "production"),
                 "components": {
                     "database": {
                         "status": "healthy" if check_db_health() else "unhealthy",
                         "available": True,
                     },
-                    "chatopsf": {
+                    "chatops": {
                         "status": (
                             "healthy"
                             if (CHATOPS_AVAILABLE and ai_handler)
@@ -239,7 +335,7 @@ def create_app() -> Flask:
                         ),
                         "available": CHATOPS_AVAILABLE,
                     },
-                    "mlf": {
+                    "ml": {
                         "status": (
                             "healthy"
                             if (ML_AVAILABLE and anomaly_detector)
@@ -247,7 +343,7 @@ def create_app() -> Flask:
                         ),
                         "available": ML_AVAILABLE,
                     },
-                    "remediationf": {
+                    "remediation": {
                         "status": (
                             "healthy"
                             if (REMEDIATION_ENGINE_AVAILABLE and remediation_engine)
@@ -255,7 +351,7 @@ def create_app() -> Flask:
                         ),
                         "available": REMEDIATION_ENGINE_AVAILABLE,
                     },
-                    "api_endpointsf": {
+                    "api_endpoints": {
                         "anomalies": ANOMALIES_AVAILABLE,
                         "remediation": REMEDIATION_AVAILABLE,
                         "feedback": FEEDBACK_AVAILABLE,
@@ -268,19 +364,18 @@ def create_app() -> Flask:
     # Metrics endpoint for Prometheus
     @app.route("/metrics")
     def metrics():
-        """Prometheus metrics endpoint.""f"
+        """Prometheus metrics endpoint."""
         return generate_latest(), 200, {"Content-Type": CONTENT_TYPE_LATEST}
 
     # Root endpoint
     @app.route("/")
     def root():
-        """Root endpoint with API information.""f"
+        """Root endpoint with API information."""
         return jsonify(
             {
                 "name": "SmartCloudOps AI",
                 "version": "1.0.0",
                 "description": "AI-powered DevOps platform with anomaly detection and automated remediation",
-
                 "phase": "Phase 7 - Production Launch & Feedback",
                 "endpoints": {
                     "health": "/health",
@@ -316,7 +411,7 @@ def create_app() -> Flask:
     # API documentation endpoint
     @app.route("/api/docs")
     def api_docs():
-        """API documentation endpoint.""f"
+        """API documentation endpoint."""
         return jsonify(
             {
                 "title": "SmartCloudOps AI API Documentation",
@@ -331,14 +426,13 @@ def create_app() -> Flask:
                         "GET /api/auth/me": "Get current user info",
                         "POST /api/auth/change-password": "Change user password",
                     },
-                    "anomaliesf": (
+                    "anomalies": (
                         {
                             "GET /api/anomalies/": "Get all anomalies",
                             "GET /api/anomalies/<id>": "Get specific anomaly",
                             "POST /api/anomalies/": "Create new anomaly",
                             "PUT /api/anomalies/<id>": "Update anomaly",
                             "POST /api/anomalies/<id>/acknowledge": "Acknowledge anomaly",
-
                             "POST /api/anomalies/<id>/resolve": "Resolve anomaly",
                             "POST /api/anomalies/<id>/dismiss": "Dismiss anomaly",
                             "GET /api/anomalies/stats": "Get anomaly statistics",
@@ -347,31 +441,24 @@ def create_app() -> Flask:
                         if ANOMALIES_AVAILABLE
                         else "unavailable"
                     ),
-                    "remediationf": (
+                    "remediation": (
                         {
                             "GET /api/remediation/actions": "Get all remediation actions",
-
                             "GET /api/remediation/actions/<id>": "Get specific action",
                             "POST /api/remediation/actions": "Create new action",
                             "PUT /api/remediation/actions/<id>": "Update action",
                             "DELETE /api/remediation/actions/<id>": "Delete action",
                             "POST /api/remediation/actions/<id>/approve": "Approve action",
-
                             "POST /api/remediation/actions/<id>/execute": "Execute action",
-
                             "POST /api/remediation/actions/<id>/cancel": "Cancel action",
-
                             "GET /api/remediation/actions/stats": "Get action statistics",
-
                             "POST /api/remediation/actions/batch": "Create batch actions",
-
                             "GET /api/remediation/available-actions": "Get available action types",
-
                         }
                         if REMEDIATION_AVAILABLE
                         else "unavailable"
                     ),
-                    "feedbackf": (
+                    "feedback": (
                         {
                             "GET /api/feedback/": "Get all feedback",
                             "GET /api/feedback/<id>": "Get specific feedback",
@@ -379,7 +466,6 @@ def create_app() -> Flask:
                             "PUT /api/feedback/<id>": "Update feedback",
                             "DELETE /api/feedback/<id>": "Delete feedback",
                             "POST /api/feedback/<id>/update-status": "Update feedback status",
-
                             "GET /api/feedback/stats": "Get feedback statistics",
                             "GET /api/feedback/my-feedback": "Get user feedback",
                             "GET /api/feedback/types": "Get feedback types",
@@ -387,12 +473,10 @@ def create_app() -> Flask:
                         if FEEDBACK_AVAILABLE
                         else "unavailable"
                     ),
-                    "mlf": (
+                    "ml": (
                         {
                             "POST /api/ml/anomalies": "Detect anomalies in metrics data",
-
                             "GET /api/ml/anomalies/realtime": "Real-time anomaly detection",
-
                             "POST /api/ml/train": "Train anomaly detection model",
                             "GET /api/ml/model/info": "Get model information",
                             "POST /api/ml/model/retrain": "Retrain model with new data",
@@ -402,51 +486,33 @@ def create_app() -> Flask:
                         if ML_API_AVAILABLE
                         else "unavailable"
                     ),
-                    "aif": (
+                    "ai": (
                         {
                             "POST /api/ai/recommendations": "Get AI-powered remediation recommendations",
-
                             "POST /api/ai/autonomous/process": "Process anomaly with autonomous operations",
-
                             "GET /api/ai/autonomous/policies": "Get automation policies",
-
                             "POST /api/ai/autonomous/policies": "Create automation policy",
-
                             "PUT /api/ai/autonomous/policies/<id>": "Update automation policy",
-
                             "DELETE /api/ai/autonomous/policies/<id>": "Delete automation policy",
-
                             "POST /api/ai/learning/cycle": "Run continuous learning cycle",
-
                             "GET /api/ai/learning/statistics": "Get learning statistics",
-
                             "POST /api/ai/data/collect": "Collect data for continuous learning",
-
                             "GET /api/ai/models/registry": "Get model registry information",
-
                             "POST /api/ai/models/<type>/promote": "Promote model to production",
-
                             "POST /api/ai/experiments/ab-testing": "Start A/B testing experiment",
-
                             "POST /api/ai/experiments/ab-testing/<id>/end": "End A/B testing experiment",
-
                             "POST /api/ai/drift/detect": "Detect data and model drift",
                             "GET /api/ai/knowledge/stats": "Get knowledge base statistics",
-
                             "POST /api/ai/knowledge/experience": "Add experience to knowledge base",
-
                             "GET /api/ai/autonomous/stats": "Get autonomous operations statistics",
-
                         }
                         if AI_API_AVAILABLE
                         else "unavailable"
                     ),
                 },
-                "authentication": "All endpoints except /api/feedback/ (
-                    POST) and /api/feedback/types require JWT authentication",
+                "authentication": "All endpoints except /api/feedback/ (POST) and /api/feedback/types require JWT authentication",
                 "rate_limiting": "API endpoints are rate limited. Login endpoints have stricter limits.",
-
-                "error_codesf": {
+                "error_codes": {
                     "400": "Bad Request",
                     "401": "Unauthorized",
                     "403": "Forbidden",
@@ -464,12 +530,12 @@ def create_app() -> Flask:
 
     @app.errorhandler(500)
     def internal_error(error):
-        logger.error(f"Internal server error: {error}")
+        logger.error("Internal server error: {error}")
         return jsonify({"error": "Internal server error"}), 500
 
     @app.errorhandler(Exception)
     def handle_exception(error):
-        logger.error(f"Unhandled exception: {error}")
+        logger.error("Unhandled exception: {error}")
         return jsonify({"error": "An unexpected error occurred"}), 500
 
     logger.info("Flask application created successfully")
@@ -484,12 +550,12 @@ if __name__ == "__main__":
     config = get_config()
 
     # Run the application
-    debug = config.get("debug", False)
-    host = config.get("host", "0.0.0.0")
-    port = config.get("port", 5000)
+    debug = getattr(config, "DEBUG", False)
+    host = getattr(config, "FLASK_HOST", "0.0.0.0")
+    port = getattr(config, "FLASK_PORT", 5000)
 
-    logger.info(f"Starting SmartCloudOps AI on {host}:{port}")
-    logger.info(f"Debug mode: {debug}")
-    logger.info(f"Environment: {config.get('environment', 'production')}")
+    logger.info("Starting SmartCloudOps AI on {host}:{port}")
+    logger.info("Debug mode: {debug}")
+    logger.info("Environment: {getattr(config, 'FLASK_ENV', 'production')}")
 
     app.run(host=host, port=port, debug=debug, threaded=True)

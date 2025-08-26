@@ -107,7 +107,7 @@ class RealTimeAnalyticsDashboard:
         self.db_path = "analytics/dashboard.db"
         self._init_database()
 
-        logger.info(f"Real-time analytics dashboard initialized on {host}:{port}")
+        logger.info("Real-time analytics dashboard initialized on {host}:{port}")
 
     def _init_database(self):
         """Initialize SQLite database for analytics persistence"""
@@ -188,7 +188,7 @@ class RealTimeAnalyticsDashboard:
         )
 
         logger.info(
-            f"Real-time analytics dashboard started on ws://{self.host}:{self.port}"
+            "Real-time analytics dashboard started on ws://{self.host}:{self.port}"
         )
 
     async def stop(self):
@@ -220,7 +220,7 @@ class RealTimeAnalyticsDashboard:
 
             self.clients.add(websocket)
 
-        logger.info(f"Client connected: {client_id}")
+        logger.info("Client connected: {client_id}")
 
         try:
             # Send initial data
@@ -231,15 +231,15 @@ class RealTimeAnalyticsDashboard:
                 await self._handle_client_message(websocket, message, client_id)
 
         except websockets.exceptions.ConnectionClosed:
-            logger.info(f"Client disconnected: {client_id}")
+            logger.info("Client disconnected: {client_id}")
         except Exception as e:
-            logger.error(f"WebSocket error for client {client_id}: {e}")
+            logger.error("WebSocket error for client {client_id}: {e}")
         finally:
             with self.client_lock:
                 self.clients.discard(websocket)
 
     async def _send_initial_data(self, websocket):
-        """Send initial dashboard data to client""f"
+        """Send initial dashboard data to client"""
         data = {
             "type": "initial_data",
             "timestamp": datetime.now().isoformat(),
@@ -267,12 +267,12 @@ class RealTimeAnalyticsDashboard:
                 # Handle insight requests
                 await self._handle_insight_request(websocket, data)
             else:
-                logger.warning(f"Unknown message type: {message_type}")
+                logger.warning("Unknown message type: {message_type}")
 
         except json.JSONDecodeError:
-            logger.error(f"Invalid JSON from client {client_id}")
+            logger.error("Invalid JSON from client {client_id}")
         except Exception as e:
-            logger.error(f"Error handling client message: {e}")
+            logger.error("Error handling client message: {e}")
 
     async def _handle_subscription(self, websocket, data):
         """Handle metric subscriptions"""
@@ -287,7 +287,7 @@ class RealTimeAnalyticsDashboard:
 
     async def _handle_insight_request(self, websocket, data):
         """Handle insight requests"""
-        insight_type = data.get("insight_type", "allf")
+        insight_type = data.get("insight_type", "all")
         insights = self._get_insights_by_type(insight_type)
 
         response = {
@@ -321,7 +321,7 @@ class RealTimeAnalyticsDashboard:
                 time.sleep(self.update_interval)
 
             except Exception as e:
-                logger.error(f"Error in metrics collector: {e}")
+                logger.error("Error in metrics collector: {e}")
                 time.sleep(self.update_interval)
 
     def _collect_system_metrics(self) -> SystemMetrics:
@@ -334,7 +334,7 @@ class RealTimeAnalyticsDashboard:
         memory_usage = memory.percent
 
         # Disk usage
-        disk = psutil.disk_usage("/f")
+        disk = psutil.disk_usage("/")
         disk_usage = disk.percent
 
         # Network I/O
@@ -422,7 +422,7 @@ class RealTimeAnalyticsDashboard:
                 )
                 conn.commit()
         except Exception as e:
-            logger.error(f"Error storing metrics: {e}")
+            logger.error("Error storing metrics: {e}")
 
     def _check_alerts(self, metrics: SystemMetrics):
         """Check for system alerts"""
@@ -431,14 +431,14 @@ class RealTimeAnalyticsDashboard:
             self._create_alert(
                 "critical",
                 "system",
-                f"High CPU usage: {metrics.cpu_usage:.1f}%",
+                "High CPU usage: {metrics.cpu_usage:.1f}%",
                 {"cpu_usage": metrics.cpu_usage},
             )
         elif metrics.cpu_usage > 80:
             self._create_alert(
                 "warning",
                 "system",
-                f"Elevated CPU usage: {metrics.cpu_usage:.1f}%",
+                "Elevated CPU usage: {metrics.cpu_usage:.1f}%",
                 {"cpu_usage": metrics.cpu_usage},
             )
 
@@ -447,14 +447,14 @@ class RealTimeAnalyticsDashboard:
             self._create_alert(
                 "critical",
                 "system",
-                f"Critical memory usage: {metrics.memory_usage:.1f}%",
+                "Critical memory usage: {metrics.memory_usage:.1f}%",
                 {"memory_usage": metrics.memory_usage},
             )
         elif metrics.memory_usage > 85:
             self._create_alert(
                 "warning",
                 "system",
-                f"High memory usage: {metrics.memory_usage:.1f}%",
+                "High memory usage: {metrics.memory_usage:.1f}%",
                 {"memory_usage": metrics.memory_usage},
             )
 
@@ -463,14 +463,14 @@ class RealTimeAnalyticsDashboard:
             self._create_alert(
                 "critical",
                 "system",
-                f"Critical disk usage: {metrics.disk_usage:.1f}%",
+                "Critical disk usage: {metrics.disk_usage:.1f}%",
                 {"disk_usage": metrics.disk_usage},
             )
         elif metrics.disk_usage > 85:
             self._create_alert(
                 "warning",
                 "system",
-                f"High disk usage: {metrics.disk_usage:.1f}%",
+                "High disk usage: {metrics.disk_usage:.1f}%",
                 {"disk_usage": metrics.disk_usage},
             )
 
@@ -479,14 +479,14 @@ class RealTimeAnalyticsDashboard:
             self._create_alert(
                 "critical",
                 "application",
-                f"High error rate: {metrics.error_rate:.2%}",
+                "High error rate: {metrics.error_rate:.2%}",
                 {"error_rate": metrics.error_rate},
             )
         elif metrics.error_rate > 0.05:
             self._create_alert(
                 "warning",
                 "application",
-                f"Elevated error rate: {metrics.error_rate:.2%}",
+                "Elevated error rate: {metrics.error_rate:.2%}",
                 {"error_rate": metrics.error_rate},
             )
 
@@ -525,7 +525,7 @@ class RealTimeAnalyticsDashboard:
                 )
                 conn.commit()
         except Exception as e:
-            logger.error(f"Error storing alert: {e}")
+            logger.error("Error storing alert: {e}")
 
     def _acknowledge_alert(self, alert_id: str):
         """Acknowledge an alert"""
@@ -536,7 +536,7 @@ class RealTimeAnalyticsDashboard:
                 )
                 conn.commit()
         except Exception as e:
-            logger.error(f"Error acknowledging alert: {e}")
+            logger.error("Error acknowledging alert: {e}")
 
     def _analytics_processor(self):
         """Background thread for analytics processing"""
@@ -554,7 +554,7 @@ class RealTimeAnalyticsDashboard:
                 time.sleep(30)  # Process every 30 seconds
 
             except Exception as e:
-                logger.error(f"Error in analytics processor: {e}")
+                logger.error("Error in analytics processor: {e}")
                 time.sleep(30)
 
     def _analyze_metrics(
@@ -629,10 +629,10 @@ class RealTimeAnalyticsDashboard:
                 )
                 conn.commit()
         except Exception as e:
-            logger.error(f"Error storing insight: {e}")
+            logger.error("Error storing insight: {e}")
 
     async def _broadcast_metrics(self, metrics: SystemMetrics):
-        """Broadcast metrics to all connected clients""f"
+        """Broadcast metrics to all connected clients"""
         if not self.clients:
             return
 
@@ -659,7 +659,7 @@ class RealTimeAnalyticsDashboard:
             self.clients -= disconnected_clients
 
     def _get_current_metrics(self) -> Dict[str, Any]:
-        """Get current metrics for dashboard""f"
+        """Get current metrics for dashboard"""
         if self.metrics_history:
             latest = self.metrics_history[-1]
             return asdict(latest)
@@ -684,7 +684,7 @@ class RealTimeAnalyticsDashboard:
         return [asdict(insight) for insight in filtered[-10:]]
 
     def _get_system_status(self) -> Dict[str, Any]:
-        """Get overall system status""f"
+        """Get overall system status"""
         if not self.metrics_history:
             return {"status": "unknown", "message": "No metrics available"}
 
@@ -706,7 +706,7 @@ class RealTimeAnalyticsDashboard:
         ):
             status = "warning"
         else:
-            status = "healthyf"
+            status = "healthy"
 
         return {
             "status": status,
@@ -722,7 +722,7 @@ class AnomalyDetector:
     """Simple anomaly detection for metrics"""
 
     def detect_anomalies(self, values: List[float]) -> Dict[str, Any]:
-        """Detect anomalies in time series data""f"
+        """Detect anomalies in time series data"""
         if len(values) < 5:
             return {"anomalies": [], "confidence": 0.0}
 
@@ -733,7 +733,7 @@ class AnomalyDetector:
         for i, value in enumerate(values):
             if abs(value - mean) > 2 * std:  # 2-sigma rule
                 anomalies.append(
-                    {"index": i, "value": value, "deviationf": abs(value - mean)}
+                    {"index": i, "value": value, "deviation": abs(value - mean)}
                 )
 
         confidence = len(anomalies) / len(values) if values else 0.0
@@ -750,7 +750,7 @@ class TrendAnalyzer:
     """Simple trend analysis for metrics"""
 
     def analyze_trend(self, values: List[float]) -> Dict[str, Any]:
-        """Analyze trend in time series data""f"
+        """Analyze trend in time series data"""
         if len(values) < 3:
             return {"trend": "unknown", "slope": 0.0, "confidence": 0.0}
 
@@ -768,7 +768,7 @@ class TrendAnalyzer:
         elif slope > 0:
             trend = "increasing"
         else:
-            trend = "decreasingf"
+            trend = "decreasing"
 
         return {
             "trend": trend,
@@ -782,7 +782,7 @@ class TimeSeriesForecaster:
     """Simple time series forecasting"""
 
     def forecast(self, values: List[float], steps: int = 5) -> Dict[str, Any]:
-        """Forecast future values""f"
+        """Forecast future values"""
         if len(values) < 10:
             return {"forecast": [], "confidence": 0.0}
 

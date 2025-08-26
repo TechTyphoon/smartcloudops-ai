@@ -1,0 +1,131 @@
+# SmartCloudOps AI - Development Environment Values
+
+# Backend configuration for development
+backend:
+  replicaCount: 1
+  
+  image:
+    repository: smartcloudops/backend
+    tag: "latest"
+    pullPolicy: Always
+    
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+      
+  autoscaling:
+    enabled: false
+    
+  env:
+    FLASK_ENV: development
+    PROMETHEUS_URL: http://prometheus:9090
+    REQUIRE_APPROVAL: "true"
+    MAX_ACTIONS_PER_HOUR: "10"
+    COOLDOWN_MINUTES: "1"
+
+# Frontend configuration for development
+frontend:
+  replicaCount: 1
+  
+  image:
+    repository: smartcloudops/frontend
+    tag: "latest"
+    pullPolicy: Always
+    
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+      
+  autoscaling:
+    enabled: false
+
+# Ingress for development
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: smartcloudops-dev.local
+      paths:
+        - path: /api
+          pathType: Prefix
+          service: backend
+        - path: /
+          pathType: Prefix
+          service: frontend
+  tls: []
+
+# Database for development (smaller resources)
+postgresql:
+  enabled: true
+  auth:
+    database: "cloudops_dev"
+  primary:
+    persistence:
+      enabled: true
+      size: 5Gi
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+# Redis for development
+redis:
+  enabled: true
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: true
+      size: 2Gi
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+
+# Monitoring for development (minimal)
+monitoring:
+  prometheus:
+    enabled: true
+    server:
+      persistentVolume:
+        size: 10Gi
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+          
+  grafana:
+    enabled: true
+    persistence:
+      enabled: false
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+# Security (relaxed for development)
+security:
+  networkPolicies:
+    enabled: false

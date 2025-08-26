@@ -1,11 +1,18 @@
 """
 Smart CloudOps AI - GPT Handler Module
-OpenAI integration for ChatOps functionality
+OpenAI integration for ChatOps functionality with enhanced security
 """
 
 import logging
 import os
 import re
+import html
+import json
+from typing import Dict, Any, Optional, List
+from datetime import datetime, timezone
+from openai import OpenAI
+import bleach
+from urllib.parse import quote_plus
 
 logger = logging.getLogger(__name__)
 
@@ -31,8 +38,8 @@ class GPTHandler:
             self.client = OpenAI(api_key=self.api_key)
             logger.info("GPT handler initialized successfully")
         except Exception as e:
-            logger.error(f"Failed to initialize OpenAI client: {str(e)}")
-            raise ValueError(f"Failed to initialize OpenAI client: {str(e)}")
+            logger.error("Failed to initialize OpenAI client: {str(e)}")
+            raise ValueError("Failed to initialize OpenAI client: {str(e)}")
 
     def _get_system_prompt(self) -> str:
         """Get the system prompt for DevOps assistant role."""
@@ -64,65 +71,113 @@ Always respond in a professional, helpful manner focused on operational excellen
         )
 
     def sanitize_input(self, query: str) -> str:
-        """Sanitize and validate user input."""
+        """Enhanced sanitize and validate user input with comprehensive security checks."""
         if not query or not isinstance(query, str):
             raise ValueError("Query must be a non-empty string")
 
-        # Remove potentially dangerous characters and patterns
+        # Input length validation
+        if len(query) > 1000:
+            raise ValueError("Query exceeds maximum length of 1000 characters")
+
+        # Remove leading/trailing whitespace
         sanitized = query.strip()
 
-        # Remove script tags and their content
-        sanitized = re.sub(
-            r"<script[^>]*>.*?</script>", "", sanitized, flags=re.IGNORECASE | re.DOTALL
+        # Comprehensive XSS prevention using bleach
+        allowed_tags = []  # No HTML tags allowed
+        allowed_attributes = {}  # No attributes allowed
+        allowed_protocols = []  # No protocols allowed
+
+        sanitized = bleach.clean(
+            sanitized,
+            tags=allowed_tags,
+            attributes=allowed_attributes,
+            protocols=allowed_protocols,
+            strip=True,
         )
 
-        # Remove alert calls
-        sanitized = re.sub(r"alert\s*\([^)]*\)", "", sanitized, flags=re.IGNORECASE)
+        # SQL Injection prevention patterns
+        sql_patterns = [
+            r"(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b)",
+            r"(\b(and|or)\b\s+\d+\s*[=<>])",
+            r"(--|#|/\*|\*/)",
+            r"(\bxp_|sp_|fn_)",
+            r"(\bwaitfor\b)",
+            r"(\bdelay\b)",
+        ]
 
-        # Remove other dangerous characters
-        sanitized = re.sub(r'[<>"]f', "", sanitized)
+        for pattern in sql_patterns:
+            if re.search(pattern, sanitized, re.IGNORECASE):
+                raise ValueError("Query contains potentially unsafe SQL content")
 
-        # Limit query length
-        if len(sanitized) > 1000:
-            sanitized = sanitized[:1000] + "..."
+        # Command injection prevention
+        command_patterns = [
+            r"(\b(system|exec|eval|subprocess|os\.system|subprocess\.call)\b)",
+            r"(\b(import\s+os|import\s+subprocess|from\s+os\s+import)\b)",
+            r"(\b(__import__|getattr|setattr|delattr)\b)",
+            r"(\b(globals|locals)\b)",
+            r"(\b(compile|eval|exec)\b)",
+            r"(\b(file|open|read|write)\b)",
+        ]
 
-        # Basic injection prevention
+        for pattern in command_patterns:
+            if re.search(pattern, sanitized, re.IGNORECASE):
+                raise ValueError("Query contains potentially unsafe command content")
+
+        # Path traversal prevention
+        path_patterns = [
+            r"(\.\./|\.\.\\)",
+            r"(\b(cd|chdir|pwd)\b)",
+            r"(\b(ls|dir|cat|type|more|less)\b)",
+        ]
+
+        for pattern in path_patterns:
+            if re.search(pattern, sanitized, re.IGNORECASE):
+                raise ValueError("Query contains potentially unsafe path content")
+
+        # Additional dangerous patterns
         dangerous_patterns = [
-            r"system\s*\(",
-            r"eval\s*\(",
-            r"exec\s*\(",
-            r"import\s+os",
-            r"__import__",
+            r"(\b(alert|confirm|prompt)\b)",
+            r"(\b(document\.|window\.|location\.)\b)",
+            r"(\b(onload|onerror|onclick|onmouseover)\b)",
+            r"(\b(javascript:|vbscript:|data:)\b)",
         ]
 
         for pattern in dangerous_patterns:
             if re.search(pattern, sanitized, re.IGNORECASE):
-                raise ValueError("Query contains potentially unsafe content")
+                raise ValueError("Query contains potentially unsafe JavaScript content")
+
+        # HTML encoding for additional safety
+        sanitized = html.escape(sanitized, quote=True)
 
         return sanitized
 
     def add_context(self, context: Dict[str, Any]) -> str:
-        """Add system context to the conversation."""
+        """Add system context to the conversation with input sanitization."""
         context_prompt = "\n\n**Current System Context**:\n"
 
+        # Sanitize context data to prevent injection attacks
         if context.get("system_health"):
-            context_prompt += f"- System Health: {context['system_health']}\n"
+            sanitized_health = self.sanitize_input(str(context["system_health"]))
+            context_prompt += "- System Health: {sanitized_health}\n"
 
         if context.get("prometheus_metrics"):
-            context_prompt += f"- Prometheus Status: {context['prometheus_metricsf']}\n"
+            sanitized_metrics = self.sanitize_input(str(context["prometheus_metrics"]))
+            context_prompt += "- Prometheus Status: {sanitized_metrics}\n"
 
         if context.get("recent_alerts"):
-            context_prompt += f"- Recent Alerts: {context['recent_alerts']}\n"
+            sanitized_alerts = self.sanitize_input(str(context["recent_alerts"]))
+            context_prompt += "- Recent Alerts: {sanitized_alerts}\n"
 
         if context.get("resource_usage"):
-            context_prompt += f"- Resource Usage: {context['resource_usage']}\n"
+            sanitized_usage = self.sanitize_input(str(context["resource_usage"]))
+            context_prompt += "- Resource Usage: {sanitized_usage}\n"
 
         return context_prompt
 
     def process_query(
         self, query: str, context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-        """Process ChatOps query with GPT integration.""f"
+        """Process ChatOps query with GPT integration and enhanced security."""
         try:
             # Check if GPT client is available
             if not self.client:
@@ -136,41 +191,50 @@ Always respond in a professional, helpful manner focused on operational excellen
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
-            # Sanitize input
+            # Sanitize input with comprehensive validation
             sanitized_query = self.sanitize_input(query)
 
-            # Prepare context
+            # Prepare context with sanitization
             context = context or {}
             context_prompt = self.add_context(context)
 
-            # Build messages
+            # Build messages with sanitized content
             messages = [
-                {"role": "system", "contentf": self.system_prompt + context_prompt},
+                {"role": "system", "content": self.system_prompt + context_prompt},
                 {"role": "user", "content": sanitized_query},
             ]
 
-            # Add conversation history (last 5 exchanges)
+            # Add conversation history (last 10 exchanges) with sanitization
             if self.conversation_history:
                 recent_history = self.conversation_history[-10:]  # Last 5 exchanges
                 messages = (
-                    [{"role": "system", "contentf": self.system_prompt + context_prompt}]
+                    [{"role": "system", "content": self.system_prompt + context_prompt}]
                     + recent_history
                     + [{"role": "user", "content": sanitized_query}]
                 )
 
-            # Call OpenAI API
+            # Call OpenAI API with timeout and error handling
             response = self.client.chat.completions.create(
-                model="gpt-3.5-turbof",
+                model="gpt-3.5-turbo",
                 messages=messages,
                 max_tokens=500,
                 temperature=0.3,
                 timeout=30,
             )
 
-            # Extract response
+            # Extract and sanitize response
             gpt_response = response.choices[0].message.content.strip()
 
-            # Update conversation history
+            # Additional sanitization of GPT response to prevent XSS
+            gpt_response = bleach.clean(
+                gpt_response,
+                tags=[],  # No HTML tags allowed
+                attributes={},
+                protocols=[],
+                strip=True,
+            )
+
+            # Update conversation history with sanitized content
             self.conversation_history.append(
                 {"role": "user", "content": sanitized_query}
             )
@@ -178,11 +242,11 @@ Always respond in a professional, helpful manner focused on operational excellen
                 {"role": "assistant", "content": gpt_response}
             )
 
-            # Keep history manageable
+            # Keep history manageable (security: limit memory usage)
             if len(self.conversation_history) > 20:
                 self.conversation_history = self.conversation_history[-20:]
 
-            logger.info(f"Successfully processed query: {sanitized_query[:50]}...")
+            logger.info("Successfully processed query: {sanitized_query[:50]}...")
 
             return {
                 "status": "success",
@@ -194,7 +258,7 @@ Always respond in a professional, helpful manner focused on operational excellen
             }
 
         except ValueError as e:
-            logger.warning(f"Input validation error: {str(e)}")
+            logger.warning("Input validation error: {str(e)}")
             return {
                 "status": "error",
                 "error": "Invalid input",
@@ -202,7 +266,7 @@ Always respond in a professional, helpful manner focused on operational excellen
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         except Exception as e:
-            logger.error(f"GPT processing error: {str(e)}")
+            logger.error("GPT processing error: {str(e)}")
             return {
                 "status": "error",
                 "error": "Processing failed",

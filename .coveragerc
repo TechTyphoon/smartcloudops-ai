@@ -1,0 +1,94 @@
+[run]
+# Source directories to measure coverage
+source = 
+    app/
+    ml_models/
+
+# Include all Python files
+include = 
+    */app/*
+    */ml_models/*
+    */tests/*
+
+# Exclude patterns
+omit = 
+    */tests/*
+    */test_*
+    */__pycache__/*
+    */venv/*
+    */.venv/*
+    */migrations/*
+    */alembic/*
+    */scripts/*
+    */docs/*
+    */examples/*
+    setup.py
+    manage.py
+    wsgi.py
+    asgi.py
+
+# Branch coverage
+branch = True
+
+# Data file location
+data_file = .coverage
+
+[report]
+# Exclude lines from coverage reports
+exclude_lines =
+    # Have to re-enable the standard pragma
+    pragma: no cover
+
+    # Don't complain about missing debug-only code:
+    def __repr__
+    if self\.debug
+
+    # Don't complain if tests don't hit defensive assertion code:
+    raise AssertionError
+    raise NotImplementedError
+
+    # Don't complain if non-runnable code isn't run:
+    if 0:
+    if __name__ == .__main__.:
+
+    # Don't complain about abstract methods
+    @(abc\.)?abstractmethod
+
+    # Don't complain about type hints
+    : type:
+    -> type:
+    from typing import
+
+    # Don't complain about logging
+    logger\.
+    logging\.
+
+    # Don't complain about debug prints
+    print\(
+
+    # Don't complain about TODO comments
+    # TODO:
+    # FIXME:
+
+# Show missing lines
+show_missing = True
+
+# Precision for percentages
+precision = 2
+
+# Sort by filename
+sort = filename
+
+[html]
+# HTML report directory
+directory = htmlcov
+
+# Title for HTML report
+title = SmartCloudOps AI - Coverage Report
+
+# Extra CSS for styling
+extra_css = 
+
+[xml]
+# XML report output
+output = coverage.xml

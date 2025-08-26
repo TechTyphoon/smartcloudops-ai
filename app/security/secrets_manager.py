@@ -43,7 +43,7 @@ class SecretsManager:
             logger.info("AWS Secrets Manager client initialized successfully")
         except (NoCredentialsError, ClientError) as e:
             logger.warning(
-                f"AWS Secrets Manager not available: {e}. Using environment variables only."
+                "AWS Secrets Manager not available: {e}. Using environment variables only."
             )
             self.secrets_client = None
 
@@ -70,7 +70,7 @@ class SecretsManager:
                     return response["SecretBinary"].decode("utf-8")
             except ClientError as e:
                 logger.debug(
-                    f"Secret {secret_name} not found in AWS Secrets Manager: {e}"
+                    "Secret {secret_name} not found in AWS Secrets Manager: {e}"
                 )
 
         # Fallback to environment variable
@@ -80,17 +80,17 @@ class SecretsManager:
 
         # Try with common prefixes
         for prefix in ["SECRET_", "DB_", "REDIS_", "JWT_", "API_"]:
-            env_value = os.environ.get(f"{prefix}{secret_name}")
+            env_value = os.environ.get("{prefix}{secret_name}")
             if env_value:
                 return env_value
 
         logger.warning(
-            f"Secret {secret_name} not found in AWS Secrets Manager or environment variables"
+            "Secret {secret_name} not found in AWS Secrets Manager or environment variables"
         )
         return default
 
     def get_database_credentials(self) -> Dict[str, str]:
-        """Get database credentials from secrets""f"
+        """Get database credentials from secrets"""
         return {
             "host": self.get_secret("DB_HOST", "localhost"),
             "port": self.get_secret("DB_PORT", "5432"),
@@ -100,7 +100,7 @@ class SecretsManager:
         }
 
     def get_redis_credentials(self) -> Dict[str, str]:
-        """Get Redis credentials from secrets""f"
+        """Get Redis credentials from secrets"""
         return {
             "host": self.get_secret("REDIS_HOST", "localhost"),
             "port": self.get_secret("REDIS_PORT", "6379"),
@@ -109,14 +109,14 @@ class SecretsManager:
         }
 
     def get_api_keys(self) -> Dict[str, str]:
-        """Get API keys from secrets""f"
+        """Get API keys from secrets"""
         return {
             "openai_api_key": self.get_secret("OPENAI_API_KEY", ""),
             "gemini_api_key": self.get_secret("GEMINI_API_KEY", ""),
         }
 
     def get_jwt_secrets(self) -> Dict[str, str]:
-        """Get JWT secrets from secrets""f"
+        """Get JWT secrets from secrets"""
         return {
             "jwt_secret_key": self.get_secret("JWT_SECRET_KEY", ""),
             "jwt_access_token_expires": self.get_secret(
@@ -128,14 +128,14 @@ class SecretsManager:
         }
 
     def get_application_secrets(self) -> Dict[str, str]:
-        """Get application-level secrets""f"
+        """Get application-level secrets"""
         return {
             "secret_key": self.get_secret("SECRET_KEY", ""),
             "flask_secret_key": self.get_secret("FLASK_SECRET_KEY", ""),
         }
 
     def validate_secrets(self) -> Dict[str, bool]:
-        """Validate that all required secrets are available""f"
+        """Validate that all required secrets are available"""
         required_secrets = {
             "database_password": bool(self.get_secret("DB_PASSWORD")),
             "jwt_secret_key": bool(self.get_secret("JWT_SECRET_KEY")),

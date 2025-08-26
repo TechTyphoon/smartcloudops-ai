@@ -5,6 +5,7 @@ Extracted from main.py for modularity
 """
 
 import logging
+
 # Configure logging
 logger = logging.getLogger(__name__)
 
@@ -13,6 +14,7 @@ chatops_bp = Blueprint("chatops", __name__, url_prefix="/chatops")
 
 # Import ChatOps components
 try:
+    from app.chatops.utils import (
         LogRetriever,
         SystemContextGatherer,
         conversation_manager,
@@ -32,14 +34,14 @@ if CHATOPS_AVAILABLE:
         ai_handler = FlexibleAIHandler()
         logger.info("ChatOps AI Handler initialized successfully")
     except Exception as e:
-        logger.error(f"Failed to initialize ChatOps AI Handler: {e}")
+        logger.error("Failed to initialize ChatOps AI Handler: {e}")
         CHATOPS_AVAILABLE = False
 
 
 @chatops_bp.route("/query", methods=["GET", "POST"])
 def chatops_query():
     """ChatOps query endpoint."""
-    if request.method == "GETf":
+    if request.method == "GET":
         return jsonify(
             {
                 "status": "success",
@@ -59,7 +61,7 @@ def chatops_query():
                 jsonify(
                     {
                         "error": "ChatOps service not available",
-                        "message": "AI handler not loadedf",
+                        "message": "AI handler not loaded",
                     }
                 ),
                 503,
@@ -69,7 +71,7 @@ def chatops_query():
         if not data:
             return jsonify({"error": "No JSON data provided"}), 400
 
-        query = data.get("query", "f")
+        query = data.get("query", "")
         if not query:
             return jsonify({"error": "No query provided"}), 400
 
@@ -77,7 +79,7 @@ def chatops_query():
         try:
             validate_query_params(data)
         except ValueError as e:
-            return jsonify({"error": f"Invalid query parameters: {e}"}), 400
+            return jsonify({"error": "Invalid query parameters: {e}"}), 400
 
         # Process query with AI handler
         try:
@@ -94,7 +96,7 @@ def chatops_query():
             )
 
         except Exception as e:
-            logger.error(f"AI processing error: {e}")
+            logger.error("AI processing error: {e}")
             return (
                 jsonify(
                     {
@@ -106,13 +108,13 @@ def chatops_query():
             )
 
     except Exception as e:
-        logger.error(f"ChatOps query error: {e}")
+        logger.error("ChatOps query error: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
 
 @chatops_bp.route("/logs", methods=["GET"])
 def get_chatops_logs():
-    """Get ChatOps logs endpoint.""f"
+    """Get ChatOps logs endpoint."""
     try:
         if not CHATOPS_AVAILABLE:
             return (
@@ -140,7 +142,7 @@ def get_chatops_logs():
             )
 
         except Exception as e:
-            logger.error(f"Log retrieval error: {e}")
+            logger.error("Log retrieval error: {e}")
             return (
                 jsonify(
                     {
@@ -152,13 +154,13 @@ def get_chatops_logs():
             )
 
     except Exception as e:
-        logger.error(f"ChatOps logs error: {e}")
+        logger.error("ChatOps logs error: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
 
 @chatops_bp.route("/context", methods=["GET"])
 def get_system_context():
-    """Get system context endpoint.""f"
+    """Get system context endpoint."""
     try:
         if not CHATOPS_AVAILABLE:
             return (
@@ -185,7 +187,7 @@ def get_system_context():
             )
 
         except Exception as e:
-            logger.error(f"Context retrieval error: {e}")
+            logger.error("Context retrieval error: {e}")
             return (
                 jsonify(
                     {
@@ -197,14 +199,14 @@ def get_system_context():
             )
 
     except Exception as e:
-        logger.error(f"System context error: {e}")
+        logger.error("System context error: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
 
 @chatops_bp.route("/conversation", methods=["GET", "POST"])
 def manage_conversation():
     """Manage conversation endpoint."""
-    if request.method == "GETf":
+    if request.method == "GET":
         return jsonify(
             {
                 "status": "success",
@@ -222,7 +224,7 @@ def manage_conversation():
                 jsonify(
                     {
                         "error": "ChatOps service not available",
-                        "message": "Conversation management not availablef",
+                        "message": "Conversation management not available",
                     }
                 ),
                 503,
@@ -232,7 +234,7 @@ def manage_conversation():
         if not data:
             return jsonify({"error": "No JSON data provided"}), 400
 
-        message = data.get("message", "f")
+        message = data.get("message", "")
         if not message:
             return jsonify({"error": "No message provided"}), 400
 
@@ -249,7 +251,7 @@ def manage_conversation():
             )
 
         except Exception as e:
-            logger.error(f"Conversation management error: {e}")
+            logger.error("Conversation management error: {e}")
             return (
                 jsonify(
                     {
@@ -261,13 +263,13 @@ def manage_conversation():
             )
 
     except Exception as e:
-        logger.error(f"Conversation error: {e}")
+        logger.error("Conversation error: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
 
 @chatops_bp.route("/status", methods=["GET"])
 def chatops_status():
-    """ChatOps service status endpoint.""f"
+    """ChatOps service status endpoint."""
     try:
         status = {
             "status": "success",
@@ -285,7 +287,7 @@ def chatops_status():
 
         if CHATOPS_AVAILABLE and ai_handler:
             status["ai_provider"] = ai_handler.current_provider
-            status["model_infof"] = {
+            status["model_info"] = {
                 "provider": ai_handler.current_provider,
                 "model": ai_handler.current_model,
             }

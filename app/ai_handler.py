@@ -1,27 +1,27 @@
 import random
 
+
 class AIHandler:
     def __init__(self):
         self.demo_responses = {
             "system_status": [
-                "**Current System Status**: ✅ All systems operational\n\n**Infrastructure Health**:\n- Flask Application: Running (
-                    Port 5000)\n- PostgreSQL Database: Connected\n- Prometheus Monitoring: Active (9090)\n- Grafana Dashboard: Accessible (13000)\n- Node Exporter: Collecting metrics (9100)\n\n**ML System Status**:\n- Anomaly Detection: Functional\n- Model: IsolationForest loaded (6 features)\n- Last prediction: No anomalies detected\n\n**Recommendations**:\n1. Monitor system metrics in Grafana\n2. Check application logs for any warnings\n3. Review performance trends",
-                "**System Health Report**: 🟢 Excellent\n\n**Core Services**:\n- Backend API: Healthy (
-                    Response time: 45ms)\n- Database: Connected (Active connections: 3)\n- Monitoring: Active (Metrics collected: 1,247)\n- ML Pipeline: Operational (Model accuracy: 94.2%)\n\n**Performance Metrics**:\n- CPU Usage: 23.4% (Normal)\n- Memory Usage: 67.8% (Optimal)\n- Disk Usage: 41.2% (Good)\n- Network: 12.5 Mbps (Stable)\n\n**Security Status**:\n- All endpoints secured\n- Rate limiting active\n- No security alerts",
+                "**Current System Status**: ✅ All systems operational\n\n**Infrastructure Health**:\n- Flask Application: Running ("
+                "Port 5000)\n- PostgreSQL Database: Connected\n- Prometheus Monitoring: Active (9090)\n- Grafana Dashboard: Accessible (13000)\n- Node Exporter: Collecting metrics (9100)\n\n**ML System Status**:\n- Anomaly Detection: Functional\n- Model: IsolationForest loaded (6 features)\n- Last prediction: No anomalies detected\n\n**Recommendations**:\n1. Monitor system metrics in Grafana\n2. Check application logs for any warnings\n3. Review performance trends",
+                "**System Health Report**: 🟢 Excellent\n\n**Core Services**:\n- Backend API: Healthy ("
+                "Response time: 45ms)\n- Database: Connected (Active connections: 3)\n- Monitoring: Active (Metrics collected: 1,247)\n- ML Pipeline: Operational (Model accuracy: 94.2%)\n\n**Performance Metrics**:\n- CPU Usage: 23.4% (Normal)\n- Memory Usage: 67.8% (Optimal)\n- Disk Usage: 41.2% (Good)\n- Network: 12.5 Mbps (Stable)\n\n**Security Status**:\n- All endpoints secured\n- Rate limiting active\n- No security alerts",
             ],
             "anomaly_detection": [
                 "**Anomaly Detection Report**: 🔍 Analysis Complete\n\n**Current Status**:\n- No anomalies detected in the last 24 hours\n- Model confidence: 96.8%\n- False positive rate: 2.1%\n\n**Monitored Metrics**:\n- CPU utilization patterns\n- Memory consumption trends\n- Disk I/O performance\n- Network traffic analysis\n- Application response times\n\n**Recommendations**:\n1. Continue monitoring for pattern changes\n2. Review historical data for trends\n3. Consider model retraining in 7 days",
-
-                "**Anomaly Alert**: ⚠️ Potential Issue Detected\n\n**Detection Details**:\n- Severity: Medium\n- Confidence: 87.3%\n- Affected metric: CPU usage spike\n- Duration: 15 minutes\n\n**Analysis**:\n- Unusual CPU pattern detected\n- Possible cause: Background process\n- Impact: Minimal (
-                    system still responsive)\n\n**Recommended Actions**:\n1. Investigate background processes\n2. Monitor for escalation\n3. Check application logs",
+                "**Anomaly Alert**: ⚠️ Potential Issue Detected\n\n**Detection Details**:\n- Severity: Medium\n- Confidence: 87.3%\n- Affected metric: CPU usage spike\n- Duration: 15 minutes\n\n**Analysis**:\n- Unusual CPU pattern detected\n- Possible cause: Background process\n- Impact: Minimal ("
+                "system still responsive)\n\n**Recommended Actions**:\n1. Investigate background processes\n2. Monitor for escalation\n3. Check application logs",
             ],
             "performance_optimization": [
-                "**Performance Optimization Analysis**: 🚀 Recommendations\n\n**Current Performance**:\n- Overall Score: 8.7/10\n- Response Time: 45ms (
-                    Excellent)\n- Throughput: 1,247 req/min (Good)\n- Error Rate: 0.02% (Excellent)\n\n**Optimization Opportunities**:\n1. Database query optimization (Potential 15% improvement)\n2. Cache hit rate enhancement (Potential 20% improvement)\n3. Load balancing fine-tuning (Potential 10% improvement)\n\n**Immediate Actions**:\n- Enable query result caching\n- Optimize database indexes\n- Implement connection pooling"
+                "**Performance Optimization Analysis**: 🚀 Recommendations\n\n**Current Performance**:\n- Overall Score: 8.7/10\n- Response Time: 45ms ("
+                "Excellent)\n- Throughput: 1,247 req/min (Good)\n- Error Rate: 0.02% (Excellent)\n\n**Optimization Opportunities**:\n1. Database query optimization (Potential 15% improvement)\n2. Cache hit rate enhancement (Potential 20% improvement)\n3. Load balancing fine-tuning (Potential 10% improvement)\n\n**Immediate Actions**:\n- Enable query result caching\n- Optimize database indexes\n- Implement connection pooling"
             ],
             "security_analysis": [
-                "**Security Analysis Report**: 🛡️ All Clear\n\n**Security Status**:\n- Overall Score: 9.2/10\n- Authentication: Secure\n- Authorization: Properly configured\n- Data encryption: Active\n- Rate limiting: Enabled\n\n**Recent Security Events**:\n- No suspicious activities detected\n- All login attempts legitimate\n- No failed authentication attempts\n- API usage within normal limits\n\n**Recommendations**:\n1. Continue monitoring for unusual patterns\n2. Regular security audits (
-                    next due: 7 days)\n3. Keep security patches updated"
+                "**Security Analysis Report**: 🛡️ All Clear\n\n**Security Status**:\n- Overall Score: 9.2/10\n- Authentication: Secure\n- Authorization: Properly configured\n- Data encryption: Active\n- Rate limiting: Enabled\n\n**Recent Security Events**:\n- No suspicious activities detected\n- All login attempts legitimate\n- No failed authentication attempts\n- API usage within normal limits\n\n**Recommendations**:\n1. Continue monitoring for unusual patterns\n2. Regular security audits ("
+                "next due: 7 days)\n3. Keep security patches updated"
             ],
         }
 
@@ -54,7 +54,7 @@ class AIHandler:
 
         # Get random response from appropriate category
         responses = self.demo_responses.get(
-            response_type, self.demo_responses["system_statusf"]
+            response_type, self.demo_responses["system_status"]
         )
         response = random.choice(responses)
 
@@ -70,7 +70,7 @@ class AIHandler:
         }
 
     def _generate_suggestions(self, response_type: str) -> list:
-        """Generate contextual suggestions based on response type""f"
+        """Generate contextual suggestions based on response type"""
         suggestion_sets = {
             "system_status": [
                 "View detailed metrics",

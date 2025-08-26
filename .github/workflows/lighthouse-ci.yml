@@ -1,0 +1,136 @@
+name: Lighthouse CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lighthouse-ci:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: |
+        npm ci
+        npm install -g @lhci/cli@0.12.x
+    
+    - name: Build application
+      run: npm run build
+      env:
+        NODE_ENV: production
+        NEXT_PUBLIC_API_URL: http://localhost:5000
+    
+    - name: Setup Python for backend
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Start backend server
+      run: |
+        export FLASK_APP=app/main.py
+        export FLASK_ENV=production
+        python -m flask run --host=0.0.0.0 --port=5000 &
+        sleep 10
+      env:
+        DATABASE_URL: sqlite:///test.db
+        SECRET_KEY: test-secret-key-for-lighthouse
+    
+    - name: Wait for backend
+      run: |
+        timeout 30 bash -c 'until curl -f http://localhost:5000/health; do sleep 1; done'
+    
+    - name: Run Lighthouse CI
+      run: lhci autorun
+      env:
+        LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+        LHCI_TOKEN: ${{ secrets.LHCI_TOKEN }}
+        LHCI_BUILD_CONTEXT__CURRENT_HASH: ${{ github.sha }}
+        LHCI_BUILD_CONTEXT__COMMIT_TIME: ${{ github.event.head_commit.timestamp }}
+        LHCI_BUILD_CONTEXT__CURRENT_BRANCH: ${{ github.ref_name }}
+        LHCI_BUILD_CONTEXT__COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        LHCI_BUILD_CONTEXT__AUTHOR: ${{ github.event.head_commit.author.name }}
+        LHCI_BUILD_CONTEXT__AVATAR_URL: ${{ github.event.head_commit.author.avatar_url }}
+    
+    - name: Upload Lighthouse reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: lighthouse-reports
+        path: |
+          ./lighthouse-reports/
+          ./lighthouse-data/
+        retention-days: 30
+    
+    - name: Comment PR with Lighthouse results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Read Lighthouse results
+          const reportsDir = './lighthouse-reports';
+          if (fs.existsSync(reportsDir)) {
+            const files = fs.readdirSync(reportsDir);
+            const jsonReports = files.filter(f => f.endsWith('.json'));
+            
+            if (jsonReports.length > 0) {
+              const reportPath = path.join(reportsDir, jsonReports[0]);
+              const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+              
+              const categories = report.categories;
+              const performance = Math.round(categories.performance.score * 100);
+              const accessibility = Math.round(categories.accessibility.score * 100);
+              const bestPractices = Math.round(categories['best-practices'].score * 100);
+              const seo = Math.round(categories.seo.score * 100);
+              
+              const comment = `## 🚦 Lighthouse CI Results
+              
+              | Category | Score |
+              |----------|-------|
+              | ⚡ Performance | ${performance}/100 |
+              | ♿ Accessibility | ${accessibility}/100 |
+              | ✅ Best Practices | ${bestPractices}/100 |
+              | 🔍 SEO | ${seo}/100 |
+              
+              **Key Metrics:**
+              - First Contentful Paint: ${Math.round(report.audits['first-contentful-paint'].numericValue)}ms
+              - Largest Contentful Paint: ${Math.round(report.audits['largest-contentful-paint'].numericValue)}ms
+              - Speed Index: ${Math.round(report.audits['speed-index'].numericValue)}ms
+              - Total Blocking Time: ${Math.round(report.audits['total-blocking-time'].numericValue)}ms
+              - Cumulative Layout Shift: ${report.audits['cumulative-layout-shift'].numericValue.toFixed(3)}
+              
+              [View detailed report in artifacts](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})
+              `;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
+          }

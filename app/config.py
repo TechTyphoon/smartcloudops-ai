@@ -3,7 +3,15 @@
 import logging
 import os
 import secrets
+from pathlib import Path
+from typing import Dict, List, Any, Optional
+
 logger = logging.getLogger(__name__)
+
+
+def get_secret(key: str, default: str = "") -> str:
+    """Get secret from environment variables with validation."""
+    return os.getenv(key, default)
 
 
 def load_dotenv():
@@ -28,14 +36,13 @@ def load_dotenv():
                         ]:
                             if len(value) < 16:
                                 logger.warning(
-                                    f"Warning: {key} in .env file is too short (
-                                        line {line_num})"
+                                    "Warning: {key} in .env file is too short (line {line_num})"
                                 )
 
                         os.environ[key] = value
 
         except Exception as e:
-            logger.error(f"Error loading .env file: {e}")
+            logger.error("Error loading .env file: {e}")
 
 
 # Load .env file
@@ -281,7 +288,7 @@ class Config:
 
         for origin in cors_origins:
             if origin != "*" and not origin.startswith(("http://", "https://")):
-                errors.append(f"Invalid CORS origin: {origin}")
+                errors.append("Invalid CORS origin: {origin}")
 
     @classmethod
     def validate_config(cls, config_dict: Dict[str, Any]) -> List[str]:
@@ -300,7 +307,7 @@ class Config:
 
     @classmethod
     def from_env(cls) -> "Config":
-        """Create configuration from environment variables.""f"
+        """Create configuration from environment variables."""
         config_dict = {}
 
         # Basic app configuration
@@ -447,7 +454,7 @@ class Config:
         errors = cls.validate_config(config_dict)
         if errors:
             error_message = "Configuration validation failed:\n" + "\n".join(
-                f"- {error}" for error in errors
+                "- {error}" for error in errors
             )
             logger.error(error_message)
             raise ConfigValidationError(error_message)
@@ -460,7 +467,7 @@ class Config:
         return config
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert configuration to dictionary (excluding sensitive data).""f"
+        """Convert configuration to dictionary (excluding sensitive data)."""
         config_dict = {}
         sensitive_keys = [
             "secret_key",
@@ -497,7 +504,7 @@ class Config:
 
             return self.DATABASE_URL
         except Exception as e:
-            logger.error(f"Error validating database URL: {e}")
+            logger.error("Error validating database URL: {e}")
             return None
 
     def is_production(self) -> bool:
@@ -573,7 +580,7 @@ class ProductionConfig(Config):
 def get_config(environment: str = None) -> Config:
     """Get configuration for the specified environment."""
     if environment is None:
-        environment = os.getenv("FLASK_ENV", "developmentf").lower()
+        environment = os.getenv("FLASK_ENV", "development").lower()
 
     config_map = {
         "development": DevelopmentConfig,
@@ -597,7 +604,7 @@ def generate_secure_secret_key() -> str:
 
 
 def validate_environment_variables() -> List[str]:
-    """Validate required environment variables.""f"
+    """Validate required environment variables."""
     errors = []
 
     required_vars = {
@@ -616,7 +623,7 @@ def validate_environment_variables() -> List[str]:
 
     for var in required:
         if not os.getenv(var):
-            errors.append(f"Required environment variable {var} is not set")
+            errors.append("Required environment variable {var} is not set")
     return errors
 
 
@@ -625,5 +632,5 @@ env_errors = validate_environment_variables()
 if env_errors:
     logger.warning(
         "Environment validation warnings:\n"
-        + "\n".join(f"- {error}" for error in env_errors)
+        + "\n".join("- {error}" for error in env_errors)
     )
