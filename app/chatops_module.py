@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from datetime import datetime
+from datetime import datetime, timezone
 
 """
 ChatOps Module for Smart CloudOps AI
@@ -93,7 +93,7 @@ def chatops_query():
                     "status": "success",
                     "query": query,
                     "response": formatted_response,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             )
 
@@ -139,7 +139,7 @@ def get_chatops_logs():
                     "status": "success",
                     "logs": logs,
                     "count": len(logs),
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             )
 
@@ -184,7 +184,7 @@ def get_system_context():
                 {
                     "status": "success",
                     "context": context,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             )
 
@@ -248,7 +248,7 @@ def manage_conversation():
                 {
                     "status": "success",
                     "message": "Message added to conversation",
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             )
 
@@ -277,7 +277,7 @@ def chatops_status():
             "status": "success",
             "chatops_available": CHATOPS_AVAILABLE,
             "ai_handler_loaded": ai_handler is not None,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "endpoints": {
                 "query": "/chatops/query",
                 "logs": "/chatops/logs",

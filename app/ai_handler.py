@@ -1,5 +1,5 @@
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict
 
 
@@ -74,7 +74,7 @@ class AIHandler:
             "suggestions": suggestions,
             "confidence": random.uniform(0.85, 0.98),
             "query_type": response_type,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     def _generate_suggestions(self, response_type: str) -> list:

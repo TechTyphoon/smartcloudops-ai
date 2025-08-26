@@ -6,7 +6,7 @@ ML model management, training, and operations
 
 import os
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from flask import Blueprint, jsonify, request
 
 # Create blueprint
@@ -263,9 +263,9 @@ def train_model():
             "accuracy": None,
             "loss": None,
             "training_time": None,
-            "started_at": datetime.utcnow().isoformat() + "Z",
+            "started_at": datetime.now(timezone.utc).isoformat() + "Z",
             "completed_at": None,
-            "estimated_completion": (datetime.utcnow() + timedelta(minutes=random.randint(15, 45))).isoformat() + "Z"
+            "estimated_completion": (datetime.now(timezone.utc) + timedelta(minutes=random.randint(15, 45))).isoformat() + "Z"
         }
 
         MOCK_TRAINING_JOBS.append(new_job)
@@ -291,7 +291,7 @@ def get_training_jobs():
         for job in MOCK_TRAINING_JOBS:
             if job["status"] == "running" and random.random() < 0.3:  # 30% chance to complete
                 job["status"] = "completed"
-                job["completed_at"] = datetime.utcnow().isoformat() + "Z"
+                job["completed_at"] = datetime.now(timezone.utc).isoformat() + "Z"
                 job["accuracy"] = round(random.uniform(0.8, 0.95), 3)
                 job["loss"] = round(random.uniform(0.05, 0.2), 3)
                 job["training_time"] = random.randint(1200, 3600)
@@ -477,7 +477,7 @@ def deploy_model(model_id):
             "model_id": model_id,
             "deployment_status": "success",
             "endpoint_url": f"/api/ml/models/{model_id}/predict",
-            "deployment_time": datetime.utcnow().isoformat() + "Z",
+            "deployment_time": datetime.now(timezone.utc).isoformat() + "Z",
             "version": "1.0.0",
             "replicas": 3,
             "resource_allocation": {

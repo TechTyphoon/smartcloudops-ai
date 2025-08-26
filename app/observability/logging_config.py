@@ -8,7 +8,7 @@ import logging.config
 import os
 import uuid
 from contextvars import ContextVar
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 from pythonjsonlogger import jsonlogger
@@ -30,7 +30,7 @@ class CorrelationJSONFormatter(jsonlogger.JsonFormatter):
         super().add_fields(log_record, record, message_dict)
 
         # Add timestamp in ISO format
-        log_record["timestamp"] = datetime.utcnow().isoformat() + "Z"
+        log_record["timestamp"] = datetime.now(timezone.utc).isoformat() + "Z"
 
         # Add correlation ID
         corr_id = correlation_id.get()

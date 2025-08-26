@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from datetime import datetime
+from datetime import datetime, timezone
 
 """
 Authentication System for Smart CloudOps AI
@@ -24,7 +24,7 @@ class AuthManager:
 
     def generate_tokens(self, user_id: int, username: str, role: str):
         """"Generate access and refresh tokens.""",
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
 
         # Access token (short-lived)
         access_token_payload = {

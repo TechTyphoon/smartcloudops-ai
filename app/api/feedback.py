@@ -4,7 +4,7 @@ Feedback API Endpoints for Smart CloudOps AI - Minimal Working Version
 User feedback collection and management system
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from flask import Blueprint, jsonify, request
 
 # Create blueprint
@@ -156,8 +156,8 @@ def create_feedback():
             "status": data.get("status", "open"),
             "priority": data.get("priority", "medium"),
             "tags": data.get("tags", []),
-            "created_at": datetime.utcnow().isoformat() + "Z",
-            "updated_at": datetime.utcnow().isoformat() + "Z"
+            "created_at": datetime.now(timezone.utc).isoformat() + "Z",
+            "updated_at": datetime.now(timezone.utc).isoformat() + "Z"
         }
 
         # Validate rating if provided
@@ -218,7 +218,7 @@ def update_feedback(feedback_id):
                 
                 feedback_item[field] = data[field]
 
-        feedback_item["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        feedback_item["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
 
         return jsonify({
             "status": "success",

@@ -4,7 +4,7 @@ Feedback Service - Business Logic Layer
 Handles all user feedback-related business operations
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
 
 
@@ -135,8 +135,8 @@ class FeedbackService:
             "status": feedback_data.get("status", "open"),
             "priority": priority,
             "tags": feedback_data.get("tags", []),
-            "created_at": datetime.utcnow().isoformat() + "Z",
-            "updated_at": datetime.utcnow().isoformat() + "Z"
+            "created_at": datetime.now(timezone.utc).isoformat() + "Z",
+            "updated_at": datetime.now(timezone.utc).isoformat() + "Z"
         }
         
         self.mock_data.append(new_feedback)
@@ -182,7 +182,7 @@ class FeedbackService:
             
             feedback[field] = value
         
-        feedback["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        feedback["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
         return feedback
     
     def delete_feedback(self, feedback_id: int) -> Optional[Dict]:

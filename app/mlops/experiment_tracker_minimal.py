@@ -8,7 +8,7 @@ import sqlite3
 import time
 import uuid
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -134,7 +134,7 @@ class ExperimentTracker:
             description=description,
             objective=objective,
             tags=tags or [],
-            created_at=datetime.utcnow(),
+            created_at=datetime.now(timezone.utc),
             runs=[],
             status="active",
             best_run_id=None
@@ -162,7 +162,7 @@ class ExperimentTracker:
             experiment_id=experiment_id,
             name=run_name,
             status=ExperimentStatus.RUNNING,
-            start_time=datetime.utcnow(),
+            start_time=datetime.now(timezone.utc),
             end_time=None,
             duration_seconds=None,
             parameters=parameters or {},
@@ -221,7 +221,7 @@ class ExperimentTracker:
         
         if self.current_run and self.current_run.run_id == target_run_id:
             self.current_run.status = status
-            self.current_run.end_time = datetime.utcnow()
+            self.current_run.end_time = datetime.now(timezone.utc)
             self.current_run.duration_seconds = (
                 self.current_run.end_time - self.current_run.start_time
             ).total_seconds()

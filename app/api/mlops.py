@@ -6,7 +6,7 @@ Provides comprehensive MLOps experiment tracking, model registry, and data pipel
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
 
 from flask import Blueprint, jsonify, request
@@ -746,7 +746,7 @@ def health_check():
                     "data_pipeline": stats.get("data_pipeline_stats", {}).get("total_datasets", 0) >= 0,
                     "mlflow": "mlflow_experiments" in stats
                 },
-                "timestamp": datetime.utcnow().isoformat() + "Z"
+                "timestamp": datetime.now(timezone.utc).isoformat() + "Z"
             },
             "error": None
         })

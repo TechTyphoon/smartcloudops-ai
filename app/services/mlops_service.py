@@ -4,7 +4,7 @@ MLOpsService - Business logic for MLOps operations
 Phase 2A: MLOps integration with service layer pattern
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 # Import MLOps components
@@ -176,7 +176,7 @@ class MLOpsService:
             "status": experiment_data.get("status", "active"),
             "objective": objective,
             "tags": experiment_data.get("tags", []),
-            "created_at": datetime.utcnow().isoformat() + "Z",
+            "created_at": datetime.now(timezone.utc).isoformat() + "Z",
             "runs_count": 0,
             "best_run_id": None
         }
@@ -207,7 +207,7 @@ class MLOpsService:
                 raise ValueError(f"Missing required field: {field}")
         
         # Create new run
-        run_id = f"run_{experiment_id}_{int(datetime.utcnow().timestamp())}"
+        run_id = f"run_{experiment_id}_{int(datetime.now(timezone.utc).timestamp())}"
         new_run = {
             "id": run_id,
             "experiment_id": experiment_id,
@@ -217,7 +217,7 @@ class MLOpsService:
             "metrics": {},
             "artifacts": [],
             "tags": run_data.get("tags", []),
-            "started_at": datetime.utcnow().isoformat() + "Z",
+            "started_at": datetime.now(timezone.utc).isoformat() + "Z",
             "ended_at": None,
             "duration_seconds": None
         }
@@ -305,7 +305,7 @@ class MLOpsService:
             "algorithm": model_data["algorithm"],
             "framework": model_data["framework"],
             "metrics": model_data.get("metrics", {}),
-            "created_at": datetime.utcnow().isoformat() + "Z",
+            "created_at": datetime.now(timezone.utc).isoformat() + "Z",
             "created_by": model_data.get("created_by", "system"),
             "size_mb": model_data.get("size_mb", 0.0)
         }
@@ -336,7 +336,7 @@ class MLOpsService:
             return None
         
         model["status"] = status
-        model["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        model["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
         
         # TODO: Use actual model registry
         # self.model_registry.update_model_status(

@@ -5,7 +5,7 @@ Handles all remediation action-related business operations
 """
 
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional, Tuple
 
 
@@ -133,8 +133,8 @@ class RemediationService:
             "parameters": action_data.get("parameters", {}),
             "execution_result": None,
             "error_message": None,
-            "created_at": datetime.utcnow().isoformat() + "Z",
-            "updated_at": datetime.utcnow().isoformat() + "Z"
+            "created_at": datetime.now(timezone.utc).isoformat() + "Z",
+            "updated_at": datetime.now(timezone.utc).isoformat() + "Z"
         }
         
         self.mock_data.append(new_action)
@@ -177,7 +177,7 @@ class RemediationService:
             
             action[field] = value
         
-        action["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
         return action
     
     def execute_remediation_action(self, action_id: int) -> Optional[Dict]:
@@ -220,7 +220,7 @@ class RemediationService:
             }
             action["error_message"] = "Mock execution failure for testing"
         
-        action["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
         return action
     
     def approve_remediation_action(self, action_id: int) -> Optional[Dict]:
@@ -244,7 +244,7 @@ class RemediationService:
             raise ValueError(f"Cannot approve action with status: {action['status']}")
         
         action["status"] = "approved"
-        action["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
         return action
     
     def cancel_remediation_action(self, action_id: int) -> Optional[Dict]:
@@ -268,7 +268,7 @@ class RemediationService:
             raise ValueError(f"Cannot cancel action with status: {action['status']}")
         
         action["status"] = "cancelled"
-        action["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
         return action
     
     def get_remediation_statistics(self) -> Dict:
