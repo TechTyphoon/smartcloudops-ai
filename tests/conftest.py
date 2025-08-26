@@ -33,8 +33,8 @@ os.environ.update({
 })
 
 from app import create_app
-from app.database import db
-from app.models import User, Anomaly, Remediation
+from app.database import db_session, init_db
+from app.models import User, Anomaly, RemediationAction
 
 
 @pytest.fixture(scope="session")
@@ -49,9 +49,9 @@ def app():
     })
     
     with app.app_context():
-        db.create_all()
+        init_db()
         yield app
-        db.drop_all()
+        # Cleanup handled by init_db
 
 
 @pytest.fixture(scope="function")

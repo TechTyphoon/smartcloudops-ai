@@ -308,7 +308,7 @@ class TestPasswordSecurity:
         assert "SuperSecret123!@#" not in caplog.text
 
 
-class TestAPISecurityt
+class TestAPISecurity:
     """Test API security features."""
     
     @pytest.mark.security
