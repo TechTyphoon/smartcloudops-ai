@@ -46,7 +46,7 @@ class SecurityConfig:
     # ========================================================================
 
     # SQL Injection Prevention Patterns
-    SQL_INJECTION_PATTERNS = []
+    SQL_INJECTION_PATTERNS = [
         r"(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b)",
         r"(\b(and|or)\b\s+\d+\s*[=<>])",
         r"(--|#|/\*|\*/)",
@@ -60,7 +60,7 @@ class SecurityConfig:
     ]
 
     # Command Injection Prevention Patterns
-    COMMAND_INJECTION_PATTERNS = []
+    COMMAND_INJECTION_PATTERNS = [
         r"(\b(system|exec|eval|subprocess|os\.system|subprocess\.call)\b)",
         r"(\b(import\s+os|import\s+subprocess|from\s+os\s+import)\b)",
         r"(\b(__import__|getattr|setattr|delattr)\b)",
@@ -74,7 +74,7 @@ class SecurityConfig:
     ]
 
     # XSS Prevention Patterns
-    XSS_PATTERNS = []
+    XSS_PATTERNS = [
         r"(\b(alert|confirm|prompt)\b)",
         r"(\b(document\.|window\.|location\.)\b)",
         r"(\b(onload|onerror|onclick|onmouseover|onfocus|onblur)\b)",
@@ -84,7 +84,7 @@ class SecurityConfig:
     ]
 
     # Path Traversal Prevention Patterns
-    PATH_TRAVERSAL_PATTERNS = []
+    PATH_TRAVERSAL_PATTERNS = [
         r"(\.\./|\.\.\\)",
         r"(\b(cd|chdir|pwd)\b)",
         r"(\b(ls|dir|cat|type|more|less)\b)",
@@ -136,14 +136,14 @@ class SecurityConfig:
     # CORS CONFIGURATION
     # ========================================================================
 
-    CORS_ORIGINS = os.environ.get("CORS_ORIGINS", ").split(",")
-    CORS_METHODS = ["GET", "POST" "PUT", "DELETE" "OPTIONS"]
-    CORS_ALLOW_HEADERS = []
+    CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "").split(",")
+    CORS_METHODS = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    CORS_ALLOW_HEADERS = [
         "Content-Type",
-    """Authorization"""
+        "Authorization",
         "X-Requested-With",
-    """Accept"""
-    """Origin"""
+        "Accept",
+        "Origin"
     ]
     CORS_EXPOSE_HEADERS = ["Content-Length", "X-Total-Count"]
     CORS_SUPPORTS_CREDENTIALS = True
@@ -154,12 +154,12 @@ class SecurityConfig:
     # ========================================================================
 
     # Security Event Logging
-    SECURITY_LOG_LEVEL = "WARNING",
+    SECURITY_LOG_LEVEL = "WARNING"
     SECURITY_LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
     # Audit Logging
     AUDIT_LOG_ENABLED = True
-    AUDIT_LOG_LEVEL = "INFO",
+    AUDIT_LOG_LEVEL = "INFO"
     AUDIT_LOG_RETENTION_DAYS = 90
 
     # Security Metrics
@@ -172,33 +172,32 @@ class SecurityConfig:
 
     @classmethod
     def validate_password_strength(cls, password: str) -> Dict[str, Any]:
-        "Validate password strength according to security policy.",
+        """Validate password strength according to security policy."""
         errors = []
         warnings = []
 
         if len(password) < cls.PASSWORD_MIN_LENGTH:
-            errors.append()
-                "Password must be at least {cls.PASSWORD_MIN_LENGTH} characters long",
+            errors.append(
+                f"Password must be at least {cls.PASSWORD_MIN_LENGTH} characters long"
+            )
 
-        if cls.PASSWORD_REQUIRE_UPPERCASE and not re.search(r"[A-Z]", password:
-            errors.append("Password must contain at least one uppercase letter",
-:
-        if cls.PASSWORD_REQUIRE_LOWERCASE and not re.search(r"[a-z]", password:
-            errors.append("Password must contain at least one lowercase letter",
-:
-        if cls.PASSWORD_REQUIRE_DIGITS and not re.search(r"\d", password:
-            errors.append("Password must contain at least one digit",
+        if cls.PASSWORD_REQUIRE_UPPERCASE and not re.search(r"[A-Z]", password):
+            errors.append("Password must contain at least one uppercase letter")
+        if cls.PASSWORD_REQUIRE_LOWERCASE and not re.search(r"[a-z]", password):
+            errors.append("Password must contain at least one lowercase letter")
+        if cls.PASSWORD_REQUIRE_DIGITS and not re.search(r"\d", password):
+            errors.append("Password must contain at least one digit")
 
-        if cls.PASSWORD_REQUIRE_SPECIAL and not re.search():
+        if cls.PASSWORD_REQUIRE_SPECIAL and not re.search(
             r'[!@#$%^&*(),.?":{}|<>]', password
         ):
-            errors.append("Password must contain at least one special character"
+            errors.append("Password must contain at least one special character")
 
         # Check for common patterns
-        if re.search(r"(password|123|qwerty|admin)", password, re.IGNORECASE:
-            warnings.append("Password contains common patterns that may be weak",
+        if re.search(r"(password|123|qwerty|admin)", password, re.IGNORECASE):
+            warnings.append("Password contains common patterns that may be weak")
 
-        return {}
+        return {
             "valid": len(errors) == 0,
             "errors": errors,
             "warnings": warnings,
@@ -207,35 +206,36 @@ class SecurityConfig:
 
     @classmethod
     def _calculate_password_strength(cls, password: str) -> int:
-        "Calculate password strength score (0-100).",
+        """Calculate password strength score (0-100)."""
         score = 0
 
         # Length contribution
         score += min(len(password) * 4, 40)
 
         # Character variety contribution
-        if re.search(r"[a-z]", password:
+        if re.search(r"[a-z]", password):
             score += 10
-        if re.search(r"[A-Z]", password:
+        if re.search(r"[A-Z]", password):
             score += 10
-        if re.search(r"\d", password:
+        if re.search(r"\d", password):
             score += 10
         if re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
             score += 10
 
-        # Bonus for mixed case and numbers:
-        if re.search(r"[a-z].*[A-Z]|[A-Z].*[a-z]", password:
+        # Bonus for mixed case and numbers
+        if re.search(r"[a-z].*[A-Z]|[A-Z].*[a-z]", password):
             score += 10
-        if re.search(r"[a-zA-Z].*\d|\d.*[a-zA-Z]", password:
+        if re.search(r"[a-zA-Z].*\d|\d.*[a-zA-Z]", password):
             score += 10
 
         return min(score, 100)
 
     @classmethod
-    def validate_input_safety()
-        cls, input_string: str, input_type: str = "general" -> Dict[str, Any]:
-        "Validate input for various security threats.",
-        if not input_string or not isinstance(input_string, str:
+    def validate_input_safety(
+        cls, input_string: str, input_type: str = "general"
+    ) -> Dict[str, Any]:
+        """Validate input for various security threats."""
+        if not input_string or not isinstance(input_string, str):
             return {"valid": False, "errors": ["Input must be a non-empty string"]}
 
         errors = []
