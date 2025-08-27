@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 AI/ML API Endpoints for Smart CloudOps AI - Minimal Working Version
 AI-powered analysis, recommendations, and chat operations
-"
+"""
 
 import random
 from datetime import datetime
@@ -73,7 +73,7 @@ def get_recommendations():
 
         # Validate required fields
         if "anomaly_data" not in data:
-            return ()
+            return (
                 jsonify()
                     {}
                         "status": "error",
@@ -90,8 +90,7 @@ def get_recommendations():
         source = anomaly_data.get("source", "unknown")
 
         # Filter and score recommendations based on anomaly characteristics
-        filtered_recommendations = []
-        for rec in MOCK_RECOMMENDATIONS:
+        filtered_recommendations = [        for rec in MOCK_RECOMMENDATIONS:
             # Adjust confidence based on severity
             adjusted_confidence = rec["confidence"]
             if severity == "critical":
@@ -111,7 +110,7 @@ def get_recommendations():
             {}
                     **rec,
                     "confidence": round(adjusted_confidence, 3),
-                    "reasoning": f"Recommended for {severity} severity {source} anomaly",
+                    "reasoning": "Recommended for {severity} severity {source} anomaly",
                     "anomaly_match_score": round(random.uniform(0.7, 0.95), 3),
                 }
             )
@@ -120,18 +119,18 @@ def get_recommendations():
         filtered_recommendations.sort(key=lambda x: x["confidence"], reverse=True)
         top_recommendations = filtered_recommendations[:limit]
 
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "success",
-                    "data": {}
+                    "data": {
                         "recommendations": top_recommendations,
-                        "model_info": {}
+                        "model_info": {
                             "model_id": "remediation_recommender_v1",
                             "confidence_threshold": 0.6,
                             "processing_time_ms": round(random.uniform(50, 200), 1),
                         },
-                        "anomaly_analysis": {}
+                        "anomaly_analysis": {
                             "severity": severity,
                             "source": source,
                             "confidence": anomaly_data.get("confidence", 0.8),
@@ -143,11 +142,11 @@ def get_recommendations():
             200)
 
     except Exception as e:
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "error",
-                    "message": f"Failed to get recommendations: {str(e)}",
+                    "message": "Failed to get recommendations: {str(e)}",
                 }
             ),
             500)
@@ -163,7 +162,7 @@ def analyze_metrics():
             return jsonify({"status": "error", "message": "No data provided"}), 400
 
         if "metrics" not in data:
-            return ()
+            return (
                 jsonify()
                     {"status": "error", "message": "Missing required field: metrics"}
                 ),
@@ -187,8 +186,7 @@ def analyze_metrics():
         memory_usage = metrics.get("memory_usage", 0)
         error_rate = metrics.get("error_rate", 0)
 
-        anomaly_indicators = []
-
+        anomaly_indicators = [
         if cpu_usage > 80:
             anomaly_indicators.append(
             {}
@@ -236,15 +234,15 @@ def analyze_metrics():
                 analysis_result["severity"] = "medium"
 
             # Generate insights
-            analysis_result["insights"] = []
-                f"{indicator['metric'].replace('_', ' ').title()} is {indicator['value']}%, exceeding threshold of {indicator['threshold']}%"
+            analysis_result["insights"] = [
+                "{indicator['metric'].replace('_', ' ').title()} is {indicator['value']}%, exceeding threshold of {indicator['threshold']}%"
                 for indicator in anomaly_indicators
             ]
 
             # Generate predictions
             analysis_result["predictions"] = {}
                 "trend": "increasing" if len(anomaly_indicators) > 1 else "stable",
-                "estimated_resolution_time": f"{random.randint(5, 30)} minutes",
+                "estimated_resolution_time": "{random.randint(5, 30)} minutes",
                 "impact_level": analysis_result["severity"],
             }
         else:
@@ -256,13 +254,13 @@ def analyze_metrics():
                 "impact_level": "none",
             }
 
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "success",
-                    "data": {}
+                    "data": {
                         "analysis": analysis_result,
-                        "model_info": {}
+                        "model_info": {
                             "model_id": "anomaly_detector_v1",
                             "processing_time_ms": round(random.uniform(100, 500), 1),
                             "features_analyzed": len(metrics),
@@ -273,9 +271,9 @@ def analyze_metrics():
             200)
 
     except Exception as e:
-        return ()
+        return (
             jsonify()
-                {"status": "error", "message": f"Failed to analyze metrics: {str(e)}"}
+                {"status": "error", "message": "Failed to analyze metrics: {str(e)}"}
             ),
             500)
 
@@ -290,7 +288,7 @@ def chat_query():
             return jsonify({"status": "error", "message": "No data provided"}), 400
 
         if "query" not in data:
-            return ()
+            return (
                 jsonify()
                     {"status": "error", "message": "Missing required field: query"}
                 ),
@@ -360,13 +358,13 @@ def chat_query():
                 ],
             }
 
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "success",
-                    "data": {}
+                    "data": {
                         "response": response,
-                        "query_metadata": {}
+                        "query_metadata": {
                             "original_query": data["query"],
                             "processing_time_ms": round(random.uniform(50, 200), 1),
                             "language": "en",
@@ -378,11 +376,11 @@ def chat_query():
             200)
 
     except Exception as e:
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "error",
-                    "message": f"Failed to process chat query: {str(e)}",
+                    "message": "Failed to process chat query: {str(e)}",
                 }
             ),
             500)
@@ -392,11 +390,11 @@ def chat_query():
 def get_models():
     """Get information about available AI/ML models."""
     try:
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "success",
-                    "data": {}
+                    "data": {
                         "models": MOCK_MODELS,
                         "total_models": len(MOCK_MODELS),
                         "active_models": len()
@@ -408,9 +406,9 @@ def get_models():
             200)
 
     except Exception as e:
-        return ()
+        return (
             jsonify()
-                {"status": "error", "message": f"Failed to retrieve models: {str(e)}"}
+                {"status": "error", "message": "Failed to retrieve models: {str(e)}"}
             ),
             500)
 
@@ -427,19 +425,19 @@ def predict_with_model(model_id):
         # Find model
         model = next((m for m in MOCK_MODELS if m["id"] == model_id), None)
         if not model:
-            return ()
+            return (
                 jsonify()
                     {}
                         "status": "error",
-                        "message": f"Model with ID {model_id} not found",
+                        "message": "Model with ID {model_id} not found",
                     }
                 ),
                 404)
 
         if model["status"] != "active":
-            return ()
+            return (
                 jsonify()
-                    {"status": "error", "message": f"Model {model_id} is not active"}
+                    {"status": "error", "message": "Model {model_id} is not active"}
                 ),
                 400)
 
@@ -463,13 +461,13 @@ def predict_with_model(model_id):
         else:
             prediction = {"result": "unknown", "confidence": 0.5}
 
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "success",
-                    "data": {}
+                    "data": {
                         "prediction": prediction,
-                        "model_info": {}
+                        "model_info": {
                             "model_id": model_id,
                             "model_name": model["name"],
                             "version": model["version"],
@@ -482,8 +480,8 @@ def predict_with_model(model_id):
             200)
 
     except Exception as e:
-        return ()
+        return (
             jsonify()
-                {"status": "error", "message": f"Failed to make prediction: {str(e)}"}
+                {"status": "error", "message": "Failed to make prediction: {str(e)}"}
             ),
             500)

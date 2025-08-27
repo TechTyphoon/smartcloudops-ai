@@ -60,7 +60,7 @@ class AIService:
         ]
 
     def get_recommendations(self, anomaly_data: Dict, limit: int = 3) -> Dict:
-        "
+        """
         Get AI-powered remediation recommendations for an anomaly.
 
         Args:
@@ -72,7 +72,7 @@ class AIService:
 
         Raises:
             ValueError: If anomaly_data is invalid
-        "
+        """
         if not anomaly_data:
             raise ValueError("anomaly_data is required")
 
@@ -82,8 +82,7 @@ class AIService:
         confidence = anomaly_data.get("confidence", 0.8)
 
         # Filter and score recommendations based on anomaly characteristics
-        filtered_recommendations = []
-        for rec in self.mock_recommendations:
+        filtered_recommendations = [        for rec in self.mock_recommendations:
             # Adjust confidence based on severity
             adjusted_confidence = rec["confidence"]
             if severity == "critical":
@@ -103,7 +102,7 @@ class AIService:
                 {
                     **rec,
                     "confidence": round(adjusted_confidence, 3),
-                    "reasoning": f"Recommended for {severity} severity {source} anomaly",
+                    "reasoning": "Recommended for {severity} severity {source} anomaly",
                     "anomaly_match_score": round(random.uniform(0.7, 0.95), 3),
                 }
             )
@@ -128,7 +127,7 @@ class AIService:
         }
 
     def analyze_metrics(self, metrics: Dict) -> Dict:
-        "
+        """
         Analyze metrics data using AI/ML models.
 
         Args:
@@ -139,7 +138,7 @@ class AIService:
 
         Raises:
             ValueError: If metrics data is invalid
-        "
+        """
         if not metrics:
             raise ValueError("metrics data is required")
 
@@ -159,10 +158,9 @@ class AIService:
         error_rate = metrics.get("error_rate", 0)
 
         anomaly_indicators = []
-
         if cpu_usage > 80:
             anomaly_indicators.append(
-            {
+                {
                     "metric": "cpu_usage",
                     "value": cpu_usage,
                     "threshold": 80,
@@ -172,7 +170,7 @@ class AIService:
 
         if memory_usage > 85:
             anomaly_indicators.append(
-            {
+                {
                     "metric": "memory_usage",
                     "value": memory_usage,
                     "threshold": 85,
@@ -182,7 +180,7 @@ class AIService:
 
         if error_rate > 5:
             anomaly_indicators.append(
-            {
+                {
                     "metric": "error_rate",
                     "value": error_rate,
                     "threshold": 5,
@@ -192,7 +190,7 @@ class AIService:
 
         if anomaly_indicators:
             analysis_result["anomaly_detected"] = True
-            analysis_result["anomaly_score"] = min()
+            analysis_result["anomaly_score"] = min(
                 0.99, max(indicator["value"] / 100 for indicator in anomaly_indicators)
             )
             analysis_result["confidence"] = round(random.uniform(0.8, 0.95), 3)
@@ -207,15 +205,15 @@ class AIService:
                 analysis_result["severity"] = "medium"
 
             # Generate insights
-            analysis_result["insights"] = []
-                f"{indicator['metric'].replace('_', ' ').title()} is {indicator['value']}%, exceeding threshold of {indicator['threshold']}%"
+            analysis_result["insights"] = [
+                "{indicator['metric'].replace('_', ' ').title()} is {indicator['value']}%, exceeding threshold of {indicator['threshold']}%"
                 for indicator in anomaly_indicators
             ]
 
             # Generate predictions
             analysis_result["predictions"] = {
                 "trend": "increasing" if len(anomaly_indicators) > 1 else "stable",
-                "estimated_resolution_time": f"{random.randint(5, 30)} minutes",
+                "estimated_resolution_time": "{random.randint(5, 30)} minutes",
                 "impact_level": analysis_result["severity"],
             }
         else:
@@ -237,7 +235,7 @@ class AIService:
         }
 
     def process_chat_query(self, query: str, session_id: str = "default") -> Dict:
-        "
+        """
         Process natural language queries about the system.
 
         Args:
@@ -249,7 +247,7 @@ class AIService:
 
         Raises:
             ValueError: If query is empty
-        "
+        """
         if not query or not query.strip(:
             raise ValueError("Query cannot be empty")
 
@@ -323,12 +321,12 @@ class AIService:
         }
 
     def get_models(self) -> Dict:
-        "
+        """
         Get information about available AI/ML models.
 
         Returns:
             Dictionary containing model information
-        "
+        """
         return {
             "models": self.mock_models,
             "total_models": len(self.mock_models),
@@ -338,7 +336,7 @@ class AIService:
         }
 
     def predict_with_model(self, model_id: str, input_data: Dict) -> Dict:
-        "
+        """
         Make predictions using a specific model.
 
         Args:
@@ -350,7 +348,7 @@ class AIService:
 
         Raises:
             ValueError: If model not found or invalid input
-        "
+        """
         if not model_id:
             raise ValueError("model_id is required")
 
@@ -360,10 +358,10 @@ class AIService:
         # Find model
         model = next((m for m in self.mock_models if m["id"] == model_id), None)
         if not model:
-            raise ValueError(f"Model with ID {model_id} not found")
+            raise ValueError("Model with ID {model_id} not found")
 
         if model["status"] != "active":
-            raise ValueError(f"Model {model_id} is not active")
+            raise ValueError("Model {model_id} is not active")
 
         # Mock prediction based on model type
         if model["type"] == "anomaly_detection":

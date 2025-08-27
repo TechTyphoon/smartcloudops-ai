@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 MLOps API Endpoints for Smart CloudOps AI
 Phase 2A Week 4: MLOps API Integration
 Provides comprehensive MLOps experiment tracking, model registry, and data pipeline endpoints
@@ -26,7 +26,7 @@ try:
     security_validation = SecurityValidation()
     logger.info("MLOps services initialized successfully")
 except Exception as e:
-    logger.error(f"Failed to initialize MLOps services: {e}")
+    logger.error("Failed to initialize MLOps services: {e}")
     mlops_service = None
     security_validation = None
 
@@ -34,7 +34,7 @@ except Exception as e:
 def validate_service_availability():
     """Validate that MLOps service is available."""
     if not mlops_service:
-        return ()
+        return (
             jsonify()
                 {"status": "error", "error": "MLOps service unavailable", "data": None}
             ),
@@ -49,9 +49,8 @@ def validate_security(data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
 
     validation_result = security_validation.validate_input(data)
     if not validation_result["is_valid"]:
-        return {}
-            "status": "error",
-            "error": f"Security validation failed: {validation_result['issues']}",
+        return {            "status": "error",
+            "error": "Security validation failed: {validation_result['issues']}",
             "data": None,
         }
     return None
@@ -88,7 +87,7 @@ def get_experiments():
         )
 
     except Exception as e:
-        logger.error(f"Error getting experiments: {e}")
+        logger.error("Error getting experiments: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -102,7 +101,7 @@ def create_experiment():
     try:
         data = request.get_json()
         if not data:
-            return ()
+            return (
                 jsonify({"status": "error", "error": "No data provided", "data": None}),
                 400)
 
@@ -115,11 +114,11 @@ def create_experiment():
         required_fields = ["name", "description"]
         for field in required_fields:
             if field not in data:
-                return ()
+                return (
                     jsonify()
                         {}
                             "status": "error",
-                            "error": f"Missing required field: {field}",
+                            "error": "Missing required field: {field}",
                             "data": None,
                         }
                     ),
@@ -133,7 +132,7 @@ def create_experiment():
         return jsonify({"status": "success", "data": experiment, "error": None}), 201
 
     except Exception as e:
-        logger.error(f"Error creating experiment: {e}")
+        logger.error("Error creating experiment: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -161,7 +160,7 @@ def start_experiment_run(experiment_id):
         return jsonify({"status": "success", "data": run, "error": None}), 201
 
     except Exception as e:
-        logger.error(f"Error starting experiment run: {e}")
+        logger.error("Error starting experiment run: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -175,7 +174,7 @@ def log_metric(experiment_id, run_id):
     try:
         data = request.get_json()
         if not data:
-            return ()
+            return (
                 jsonify({"status": "error", "error": "No data provided", "data": None}),
                 400)
 
@@ -186,7 +185,7 @@ def log_metric(experiment_id, run_id):
 
         # Validate required fields
         if "key" not in data or "value" not in data:
-            return ()
+            return (
                 jsonify()
                     {}
                         "status": "error",
@@ -203,7 +202,7 @@ def log_metric(experiment_id, run_id):
         return jsonify({"status": "success", "data": result, "error": None})
 
     except Exception as e:
-        logger.error(f"Error logging metric: {e}")
+        logger.error("Error logging metric: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -219,7 +218,7 @@ def log_parameter(experiment_id, run_id):
     try:
         data = request.get_json()
         if not data:
-            return ()
+            return (
                 jsonify({"status": "error", "error": "No data provided", "data": None}),
                 400)
 
@@ -230,7 +229,7 @@ def log_parameter(experiment_id, run_id):
 
         # Validate required fields
         if "key" not in data or "value" not in data:
-            return ()
+            return (
                 jsonify()
                     {}
                         "status": "error",
@@ -247,7 +246,7 @@ def log_parameter(experiment_id, run_id):
         return jsonify({"status": "success", "data": result, "error": None})
 
     except Exception as e:
-        logger.error(f"Error logging parameter: {e}")
+        logger.error("Error logging parameter: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -273,7 +272,7 @@ def end_run(experiment_id, run_id):
         return jsonify({"status": "success", "data": result, "error": None})
 
     except Exception as e:
-        logger.error(f"Error ending run: {e}")
+        logger.error("Error ending run: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -308,7 +307,7 @@ def get_models():
         )
 
     except Exception as e:
-        logger.error(f"Error getting models: {e}")
+        logger.error("Error getting models: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -322,7 +321,7 @@ def register_model():
     try:
         data = request.get_json()
         if not data:
-            return ()
+            return (
                 jsonify({"status": "error", "error": "No data provided", "data": None}),
                 400)
 
@@ -335,11 +334,11 @@ def register_model():
         required_fields = ["name", "version", "model_path"]
         for field in required_fields:
             if field not in data:
-                return ()
+                return (
                     jsonify()
                         {}
                             "status": "error",
-                            "error": f"Missing required field: {field}",
+                            "error": "Missing required field: {field}",
                             "data": None,
                         }
                     ),
@@ -356,7 +355,7 @@ def register_model():
         return jsonify({"status": "success", "data": model, "error": None}), 201
 
     except Exception as e:
-        logger.error(f"Error registering model: {e}")
+        logger.error("Error registering model: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -370,7 +369,7 @@ def update_model_status(model_id):
     try:
         data = request.get_json()
         if not data or "status" not in data:
-            return ()
+            return (
                 jsonify()
                     {}
                         "status": "error",
@@ -392,7 +391,7 @@ def update_model_status(model_id):
         return jsonify({"status": "success", "data": result, "error": None})
 
     except Exception as e:
-        logger.error(f"Error updating model status: {e}")
+        logger.error("Error updating model status: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -427,7 +426,7 @@ def get_data_versions():
         )
 
     except Exception as e:
-        logger.error(f"Error getting data versions: {e}")
+        logger.error("Error getting data versions: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -442,7 +441,7 @@ def get_data_quality_report(version_id):
         report = mlops_service.get_data_quality_report(version_id)
 
         if not report:
-            return ()
+            return (
                 jsonify()
                     {}
                         "status": "error",
@@ -455,7 +454,7 @@ def get_data_quality_report(version_id):
         return jsonify({"status": "success", "data": report, "error": None})
 
     except Exception as e:
-        logger.error(f"Error getting data quality report: {e}")
+        logger.error("Error getting data quality report: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -469,7 +468,7 @@ def create_data_transformation():
     try:
         data = request.get_json()
         if not data:
-            return ()
+            return (
                 jsonify({"status": "error", "error": "No data provided", "data": None}),
                 400)
 
@@ -482,11 +481,11 @@ def create_data_transformation():
         required_fields = ["source_version_id", "transformations"]
         for field in required_fields:
             if field not in data:
-                return ()
+                return (
                     jsonify()
                         {}
                             "status": "error",
-                            "error": f"Missing required field: {field}",
+                            "error": "Missing required field: {field}",
                             "data": None,
                         }
                     ),
@@ -500,7 +499,7 @@ def create_data_transformation():
         return jsonify({"status": "success", "data": result, "error": None}), 201
 
     except Exception as e:
-        logger.error(f"Error creating data transformation: {e}")
+        logger.error("Error creating data transformation: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -522,7 +521,7 @@ def get_mlflow_experiments():
         return jsonify({"status": "success", "data": experiments, "error": None})
 
     except Exception as e:
-        logger.error(f"Error getting MLflow experiments: {e}")
+        logger.error("Error getting MLflow experiments: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -539,7 +538,7 @@ def get_mlflow_runs(experiment_id):
         return jsonify({"status": "success", "data": runs, "error": None})
 
     except Exception as e:
-        logger.error(f"Error getting MLflow runs: {e}")
+        logger.error("Error getting MLflow runs: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -561,7 +560,7 @@ def get_mlops_statistics():
         return jsonify({"status": "success", "data": stats, "error": None})
 
     except Exception as e:
-        logger.error(f"Error getting MLOps statistics: {e}")
+        logger.error("Error getting MLOps statistics: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -578,7 +577,7 @@ def get_available_frameworks():
         return jsonify({"status": "success", "data": frameworks, "error": None})
 
     except Exception as e:
-        logger.error(f"Error getting frameworks: {e}")
+        logger.error("Error getting frameworks: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -595,7 +594,7 @@ def get_available_algorithms():
         return jsonify({"status": "success", "data": algorithms, "error": None})
 
     except Exception as e:
-        logger.error(f"Error getting algorithms: {e}")
+        logger.error("Error getting algorithms: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
 
 
@@ -609,7 +608,7 @@ def health_check():
     """Health check endpoint for MLOps service."""
     try:
         if not mlops_service:
-            return ()
+            return (
                 jsonify()
                     {}
                         "status": "error",
@@ -625,9 +624,9 @@ def health_check():
         return jsonify()
             {}
                 "status": "success",
-                "data": {}
+                "data": {
                     "service": "healthy",
-                    "components": {}
+                    "components": {
                         "experiment_tracker": stats.get("experiments", {}).get()
                             "total", 0
                         )
@@ -646,5 +645,5 @@ def health_check():
         )
 
     except Exception as e:
-        logger.error(f"MLOps health check failed: {e}")
+        logger.error("MLOps health check failed: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500

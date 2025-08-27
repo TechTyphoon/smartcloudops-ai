@@ -31,7 +31,7 @@ def health_check():
 
             "status": "healthy",
             "timestamp": datetime.utcnow().isoformat(),
-            "components": {}
+            "components": {
         }
         
         # Check Redis cache
@@ -83,8 +83,8 @@ def health_check():
         return jsonify(health_status), 200
         
     except Exception as e:
-        logger.error(f"Performance health check failed: {e}")
-        return jsonify({}
+        logger.error("Performance health check failed: {e}")
+        return jsonify({
             "status": "unhealthy",
             "error": str(e),
             "timestamp": datetime.utcnow().isoformat()
@@ -110,7 +110,7 @@ def cache_stats():
         return jsonify(stats), 200
         
     except Exception as e:
-        logger.error(f"Cache stats retrieval failed: {e}")
+        logger.error("Cache stats retrieval failed: {e}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -133,14 +133,14 @@ def clear_cache():
             "success": success
         })
         
-        return jsonify({}
+        return jsonify({
             "success": success,
             "namespace": namespace,
             "timestamp": datetime.utcnow().isoformat()
         }), 200 if success else 500
         
     except Exception as e:
-        logger.error(f"Cache clear failed: {e}")
+        logger.error("Cache clear failed: {e}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -167,7 +167,7 @@ def detect_anomaly():
             "processing_time": result.processing_time
         })
         
-        return jsonify({}
+        return jsonify({
             "is_anomaly": result.is_anomaly,
             "confidence": result.confidence,
             "score": result.score,
@@ -178,7 +178,7 @@ def detect_anomaly():
         }), 200
         
     except Exception as e:
-        logger.error(f"Anomaly detection failed: {e}")
+        logger.error("Anomaly detection failed: {e}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -201,7 +201,7 @@ def anomaly_stats():
         return jsonify(stats), 200
         
     except Exception as e:
-        logger.error(f"Anomaly stats retrieval failed: {e}")
+        logger.error("Anomaly stats retrieval failed: {e}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -224,7 +224,7 @@ def log_stats():
         return jsonify(stats), 200
         
     except Exception as e:
-        logger.error(f"Log stats retrieval failed: {e}")
+        logger.error("Log stats retrieval failed: {e}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -247,7 +247,7 @@ def database_stats():
         return jsonify(stats), 200
         
     except Exception as e:
-        logger.error(f"Database stats retrieval failed: {e}")
+        logger.error("Database stats retrieval failed: {e}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -266,14 +266,14 @@ def optimize_database():
             "timestamp": datetime.utcnow().isoformat()
         })
         
-        return jsonify({}
+        return jsonify({
             "success": True,
             "message": "Database optimization completed",
             "timestamp": datetime.utcnow().isoformat()
         }), 200
         
     except Exception as e:
-        logger.error(f"Database optimization failed: {e}")
+        logger.error("Database optimization failed: {e}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -292,7 +292,7 @@ def performance_metrics():
         return metrics, 200, {"Content-Type": CONTENT_TYPE_LATEST}
         
     except Exception as e:
-        logger.error(f"Performance metrics generation failed: {e}")
+        logger.error("Performance metrics generation failed: {e}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -302,25 +302,25 @@ def get_config():
     try:
         config = {
 
-            "redis_cache": {}
+            "redis_cache": {
                 "host": "localhost",
                 "port": 6379,
                 "default_ttl": 3600,
                 "enable_compression": True
             },
-            "anomaly_detection": {}
+            "anomaly_detection": {
                 "batch_size": 100,
                 "batch_timeout": 0.5,
                 "max_workers": 4,
                 "cache_predictions": True
             },
-            "log_optimization": {}
+            "log_optimization": {
                 "enable_rotation": True,
                 "enable_compression": True,
                 "enable_async": True,
                 "max_file_size": 10 * 1024 * 1024
             },
-            "database_optimization": {}
+            "database_optimization": {
                 "enable_query_cache": True,
                 "enable_connection_pooling": True,
                 "enable_query_logging": True,
@@ -336,7 +336,7 @@ def get_config():
         return jsonify(config), 200
         
     except Exception as e:
-        logger.error(f"Performance config retrieval failed: {e}")
+        logger.error("Performance config retrieval failed: {e}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -371,14 +371,14 @@ def update_config():
             "updated_sections": list(data.keys()
         })
         
-        return jsonify({}
+        return jsonify({
             "success": True,
             "message": "Configuration updated",
             "timestamp": datetime.utcnow().isoformat()
         }), 200
         
     except Exception as e:
-        logger.error(f"Performance config update failed: {e}")
+        logger.error("Performance config update failed: {e}")
         return jsonify({"error": str(e)}), 500
 
 
@@ -389,7 +389,7 @@ def performance_summary():
         summary = {
 
             "timestamp": datetime.utcnow().isoformat(),
-            "components": {}
+            "components": {
         }
         
         # Redis cache summary
@@ -451,5 +451,5 @@ def performance_summary():
         return jsonify(summary), 200
         
     except Exception as e:
-        logger.error(f"Performance summary generation failed: {e}")
+        logger.error("Performance summary generation failed: {e}")
         return jsonify({"error": str(e)}), 500

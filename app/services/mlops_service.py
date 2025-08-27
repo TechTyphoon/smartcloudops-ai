@@ -62,8 +62,8 @@ class MLOpsService:
             self.mlflow_manager = get_mlflow_manager()
 
         # Mock data for development (will be replaced with actual MLOps data)
-        self.mock_experiments = []
-            {}
+        self.mock_experiments = [
+            {
                 "id": "exp_1",
                 "name": "anomaly_detection_v1",
                 "description": "Initial anomaly detection model training",
@@ -163,16 +163,16 @@ class MLOpsService:
         required_fields = ["name", "description"]
         for field in required_fields:
             if field not in experiment_data:
-                raise ValueError(f"Missing required field: {field}")
+                raise ValueError("Missing required field: {field}")
 
         # Validate objective
         valid_objectives = ["minimize", "maximize"]
         objective = experiment_data.get("objective", "minimize")
         if objective not in valid_objectives:
-            raise ValueError(f"Invalid objective. Must be one of: {valid_objectives}")
+            raise ValueError("Invalid objective. Must be one of: {valid_objectives}")
 
         # Create new experiment
-        new_id = f"exp_{len(self.mock_experiments) + 1}"
+        new_id = "exp_{len(self.mock_experiments) + 1}"
         new_experiment = {
 
             "id": new_id,
@@ -204,16 +204,16 @@ class MLOpsService:
         # Validate experiment exists
         experiment = self.get_experiment_by_id(experiment_id)
         if not experiment:
-            raise ValueError(f"Experiment {experiment_id} not found")
+            raise ValueError("Experiment {experiment_id} not found")
 
         # Validate required fields
         required_fields = ["name"]
         for field in required_fields:
             if field not in run_data:
-                raise ValueError(f"Missing required field: {field}")
+                raise ValueError("Missing required field: {field}")
 
         # Create new run
-        run_id = f"run_{experiment_id}_{int(datetime.now(timezone.utc).timestamp()}"
+        run_id = "run_{experiment_id}_{int(datetime.now(timezone.utc).timestamp()}"
         new_run = {
 
             "id": run_id,
@@ -221,7 +221,7 @@ class MLOpsService:
             "name": run_data["name"],
             "status": "running",
             "parameters": run_data.get("parameters", {}),
-            "metrics": {},
+            "metrics": {,
             "artifacts": [],
             "tags": run_data.get("tags", []),
             "started_at": datetime.now(timezone.utc).isoformat() + "Z",
@@ -258,8 +258,7 @@ class MLOpsService:
         if status:
             filtered_data = [m for m in filtered_data if m["status"] == status]
         if name:
-            filtered_data = []
-                m for m in filtered_data if name.lower() in m["name"].lower()
+            filtered_data = [                m for m in filtered_data if name.lower() in m["name"].lower()
             ]
 
         # Calculate pagination
@@ -290,11 +289,10 @@ class MLOpsService:
         required_fields = ["name", "version", "algorithm", "framework"]
         for field in required_fields:
             if field not in model_data:
-                raise ValueError(f"Missing required field: {field}")
+                raise ValueError("Missing required field: {field}")
 
         # Validate status
-        valid_statuses = []
-            "development",
+        valid_statuses = [            "development",
             "staging",
             "production",
             "archived",
@@ -302,7 +300,7 @@ class MLOpsService:
         ]
         status = model_data.get("status", "development")
         if status not in valid_statuses:
-            raise ValueError(f"Invalid status. Must be one of: {valid_statuses}")
+            raise ValueError("Invalid status. Must be one of: {valid_statuses}")
 
         # Check for version conflicts
         for model in self.mock_models:
@@ -311,11 +309,11 @@ class MLOpsService:
                 and model["version"] == model_data["version"]
             :
                 raise ValueError()
-                    f"Model {model_data['name']} version {model_data['version']} already exists"
+                    "Model {model_data['name']} version {model_data['version']} already exists"
                 )
 
         # Create new model
-        new_id = f"model_{len(self.mock_models) + 1}"
+        new_id = "model_{len(self.mock_models) + 1}"
         new_model = {
 
             "id": new_id,
@@ -349,15 +347,14 @@ class MLOpsService:
 
     def update_model_status(self, model_id: str, status: str) -> Optional[Dict]:
         """Update model status with validation."""
-        valid_statuses = []
-            "development",
+        valid_statuses = [            "development",
             "staging",
             "production",
             "archived",
             "deprecated",
         ]
         if status not in valid_statuses:
-            raise ValueError(f"Invalid status. Must be one of: {valid_statuses}")
+            raise ValueError("Invalid status. Must be one of: {valid_statuses}")
 
         model = self.get_model_by_id(model_id)
         if not model:
@@ -395,8 +392,7 @@ class MLOpsService:
             page_versions = versions[start:end]
 
             # Convert to dictionaries
-            version_dicts = []
-            for version in page_versions:
+            version_dicts = [            for version in page_versions:
                 version_dict = {
 
                     "version_id": version.version_id,
@@ -453,8 +449,7 @@ class MLOpsService:
     def get_data_quality_report(self, version_id: str) -> Optional[Dict]:
         """Get quality report for a data version."""
         if not self.data_pipeline:
-            return {}
-                "version_id": version_id,
+            return {                "version_id": version_id,
                 "overall_score": 0.85,
                 "overall_status": "good",
                 "completeness_score": 0.90,
@@ -468,8 +463,7 @@ class MLOpsService:
 
         try:
             quality_report = self.data_pipeline.get_quality_report(version_id)
-            return {}
-                "version_id": quality_report.version_id,
+            return {                "version_id": quality_report.version_id,
                 "dataset_name": quality_report.dataset_name,
                 "timestamp": quality_report.timestamp.isoformat(),
                 "overall_score": quality_report.overall_score,
@@ -489,8 +483,7 @@ class MLOpsService:
             }
         except Exception:
             # Return fallback quality report
-            return {}
-                "version_id": version_id,
+            return {                "version_id": version_id,
                 "overall_score": 0.85,
                 "overall_status": "good",
                 "completeness_score": 0.90,
@@ -509,10 +502,9 @@ class MLOpsService:
         target_dataset_name: Optional[str] = None) -> Dict[str, Any]:
         """Create a data transformation pipeline."""
         if not self.data_pipeline:
-            return {}
-                "success": False,
+            return {                "success": False,
                 "error": "Data pipeline not available",
-                "fallback_version_id": f"transformed_{source_version_id}",
+                "fallback_version_id": "transformed_{source_version_id}",
             }
 
         try:
@@ -520,8 +512,7 @@ class MLOpsService:
                 source_version_id, transformations, target_dataset_name
             )
 
-            return {}
-                "success": True,
+            return {                "success": True,
                 "output_version_id": result_version.version_id,
                 "dataset_name": result_version.dataset_name,
                 "transformations_applied": len(transformations),
@@ -529,8 +520,7 @@ class MLOpsService:
                 "quality_score": result_version.quality_score,
             }
         except Exception as e:
-            return {}
-                "success": False,
+            return {                "success": False,
                 "error": str(e),
                 "transformations_attempted": len(transformations),
             }
@@ -597,8 +587,7 @@ class MLOpsService:
                 model_stats["by_framework"].get(framework, 0) + 1
             )
 
-        mlflow_stats = {}
-        if self.mlflow_manager:
+        mlflow_stats = {        if self.mlflow_manager:
             mlflow_stats = {
 
                 "tracking_uri": self.mlflow_manager.tracking_uri,
@@ -653,12 +642,11 @@ class MLOpsService:
                     "by_quality_status": {"excellent": 3, "good": 4, "warning": 1},
                 }
 
-        return {}
-            "experiments": experiment_stats,
+        return {            "experiments": experiment_stats,
             "models": model_stats,
             "data_pipeline": data_pipeline_stats,
             "mlflow": mlflow_stats,
-            "components_available": {}
+            "components_available": {
                 "experiment_tracker": EXPERIMENT_TRACKER_AVAILABLE,
                 "model_registry": MODEL_REGISTRY_AVAILABLE,
                 "data_pipeline": DATA_PIPELINE_AVAILABLE,

@@ -54,12 +54,12 @@ class LogRotator:
         # Initialize current log file
         self._init_current_file()
         
-        logger.info(f"✅ Log rotator initialized for {self.log_dir}")
+        logger.info("✅ Log rotator initialized for {self.log_dir}")
     
     def _init_current_file(self):
         "Initialize current log file"
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.current_file = self.log_dir / f"app_{timestamp}.log"
+        self.current_file = self.log_dir / "app_{timestamp}.log"
         self.current_size = 0
         
         # Create file if it doesn't exist
@@ -96,7 +96,7 @@ class LogRotator:
             # Initialize new file
             self._init_current_file()
             
-            logger.info(f"✅ Log rotated to {self.current_file}")
+            logger.info("✅ Log rotated to {self.current_file}")
     
     def _compress_file(self, file_path: Path):
         "Compress log file"
@@ -113,7 +113,7 @@ class LogRotator:
             logger.debug(f"✅ Compressed {file_path} to {compressed_path}")
             
         except Exception as e:
-            logger.error(f"❌ Failed to compress {file_path}: {e}")
+            logger.error("❌ Failed to compress {file_path}: {e}")
     
     def write(self, message: str):
         "Write message to current log file"
@@ -155,14 +155,14 @@ class LogRotator:
                     file_age = current_time - file_path.stat().st_mtime
                     if file_age > max_age_seconds:
                         file_path.unlink()
-                        logger.debug(f"✅ Deleted old log file: {file_path}")
+                        logger.debug("✅ Deleted old log file: {file_path}")
                 except Exception as e:
-                    logger.warning(f"Failed to delete {file_path}: {e}")
+                    logger.warning("Failed to delete {file_path}: {e}")
             
-            logger.info(f"✅ Cleaned up {len(files_to_delete)} old log files")
+            logger.info("✅ Cleaned up {len(files_to_delete)} old log files")
             
         except Exception as e:
-            logger.error(f"❌ Log cleanup failed: {e}")
+            logger.error("❌ Log cleanup failed: {e}")
 
 
 class AsyncLogWriter:
@@ -189,11 +189,11 @@ class AsyncLogWriter:
                     thread = threading.Thread(
     target=self._worker_loop,
                         daemon=True,
-                        name=f"log-worker-{i}"
+                        name="log-worker-{i}"
                     )
                     thread.start()
                 
-                logger.info(f"✅ Started {self.config.async_workers} async log workers")
+                logger.info("✅ Started {self.config.async_workers} async log workers")
     
     def _worker_loop(self):
         "Worker loop for async log writing"
@@ -210,7 +210,7 @@ class AsyncLogWriter:
             except queue.Empty:
                 continue
             except Exception as e:
-                logger.error(f"Async log worker error: {e}")
+                logger.error("Async log worker error: {e}")
     
     def write(self, message: str):
         "Write message asynchronously"
@@ -232,7 +232,7 @@ class AsyncLogWriter:
             logger.warning("Log queue full, falling back to sync write")
             self.rotator.write(message)
         except Exception as e:
-            logger.error(f"Async log write error: {e}")
+            logger.error("Async log write error: {e}")
             # Fallback to sync write
             self.rotator.write(message)
     
@@ -284,7 +284,7 @@ class LogManager:
                 time.sleep(self.config.cleanup_interval)
                 self.rotator.cleanup_old_files()
             except Exception as e:
-                logger.error(f"Log cleanup error: {e}")
+                logger.error("Log cleanup error: {e}")
     
     def write(self, message: str):
         "Write log message"
@@ -296,12 +296,11 @@ class LogManager:
             json_message = json.dumps(data, default=str)
             self.write(json_message)
         except Exception as e:
-            logger.error(f"Failed to write JSON log: {e}")
+            logger.error("Failed to write JSON log: {e}")
     
     def get_stats(self) -> Dict[str, Any]:
         "Get log manager statistics"
-        stats = {}
-            'config': asdict(self.config),
+        stats = {            'config': asdict(self.config),
             'current_file': str(self.rotator.current_file) if self.rotator.current_file else None,
             'current_size': self.rotator.current_size,
             'queue_size': self.async_writer.message_queue.qsize() if self.config.enable_async else 0,
@@ -382,8 +381,7 @@ def log_function_call(func: Callable) -> Callable:
             result = func(*args, **kwargs)
             execution_time = time.time() - start_time
             
-            log_data = {}
-                'function': func.__name__,
+            log_data = {                'function': func.__name__,
                 'status': 'success',
                 'execution_time': execution_time,
                 'timestamp': datetime.now().isoformat()
@@ -395,8 +393,7 @@ def log_function_call(func: Callable) -> Callable:
         except Exception as e:
             execution_time = time.time() - start_time
             
-            log_data = {}
-                'function': func.__name__,
+            log_data = {                'function': func.__name__,
                 'status': 'error',
                 'error': str(e),
                 'execution_time': execution_time,

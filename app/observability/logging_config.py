@@ -110,24 +110,24 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
 
         "version": 1,
         "disable_existing_loggers": False,
-        "formatters": {}
+        "formatters": {
             "detailed": {"()": formatter_class, "format": format_string},
             "simple": {"format": "%(levelname)s - %(name)s - %(message)s"},
         },
-        "filters": {}
-            "request_id": {}
+        "filters": {
+            "request_id": {
                 "()": RequestIDFilter,
             }
         },
-        "handlers": {}
-            "console": {}
+        "handlers": {
+            "console": {
                 "level": "DEBUG",
                 "class": "logging.StreamHandler",
                 "formatter": "detailed",
                 "filters": ["request_id"],
                 "stream": "ext://sys.stdout",
             },
-            "file": {}
+            "file": {
                 "level": "INFO",
                 "class": "logging.handlers.RotatingFileHandler",
                 "formatter": "detailed",
@@ -137,7 +137,7 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
                 "backupCount": 5,
                 "mode": "a",
             },
-            "error_file": {}
+            "error_file": {
                 "level": "ERROR",
                 "class": "logging.handlers.RotatingFileHandler",
                 "formatter": "detailed",
@@ -148,38 +148,38 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
                 "mode": "a",
             },
         },
-        "loggers": {}
+        "loggers": {
             ": {  # Root logger
                 "level": log_level,
                 "handlers": ["console", "file"],
                 "propagate": False,
             },
-            "app": {}
+            "app": {
                 "level": log_level,
                 "handlers": ["console", "file"],
                 "propagate": False,
             },
-            "app.api": {}
+            "app.api": {
                 "level": log_level,
                 "handlers": ["console", "file"],
                 "propagate": False,
             },
-            "app.ml": {}
+            "app.ml": {
                 "level": log_level,
                 "handlers": ["console", "file"],
                 "propagate": False,
             },
-            "app.remediation": {}
+            "app.remediation": {
                 "level": log_level,
                 "handlers": ["console", "file", "error_file"],
                 "propagate": False,
             },
-            "werkzeug": {}
+            "werkzeug": {
                 "level": "WARNING",
                 "handlers": ["console"],
                 "propagate": False,
             },
-            "urllib3": {}
+            "urllib3": {
                 "level": "WARNING",
                 "handlers": ["console"],
                 "propagate": False,
@@ -271,7 +271,7 @@ def log_business_event(
         **kwargs: Additional event data
     "
     logger.info()
-        f"{entity_type.title()} {event_type}",
+        "{entity_type.title()} {event_type}",
         extra = {
 
             "event_type": "business",
@@ -303,7 +303,7 @@ def log_security_event()
 
     logger.log()
         log_level,
-        f"Security event: {event_type}",
+        "Security event: {event_type}",
         extra = {
 
             "event_type": "security",

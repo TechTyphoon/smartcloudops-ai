@@ -2,7 +2,7 @@
 from datetime import datetime, timezone
 from typing import List
 
-"
+"""
 Enterprise Authentication Endpoints
 Login, logout, token refresh, user management
 "
@@ -34,7 +34,7 @@ def login():
                     "message": "Enterprise Login Service",
                     "method": "POST",
                     "required_fields": ["username", "password"],
-                    "test_users": {}
+                    "test_users": {
                         "admin": "Enterprise administrator",
                         "operator": "System operator",
                         "viewer": "Read-only access",
@@ -47,7 +47,7 @@ def login():
 
         data = request.get_json()
         if not data:
-            return ()
+            return (
                 jsonify()
                     {}
                         "error": "Invalid request",
@@ -70,7 +70,7 @@ def login():
                     break
 
         if not username or not password:
-            return ()
+            return (
                 jsonify()
                     {}
                         "error": "Invalid credentials",
@@ -84,7 +84,7 @@ def login():
         user = authenticate_user(username, password)
         if not user:
             logger.warning("Failed login attempt for username: {username}")
-            return ()
+            return (
                 jsonify()
                     {}
                         "error": "Authentication failed",
@@ -102,14 +102,14 @@ def login():
             tenant_id=user.get("tenant_id")
         )
 
-        logger.info(f"Successful login for user: {username} (role: {user['role']})")
+        logger.info("Successful login for user: {username} (role: {user['role']})")
 
         return jsonify()
             {}
                 "message": "Login successful",
                 "status": "success",
-                "data": {}
-                    "user": {}
+                "data": {
+                    "user": {
                         "id": user["id"],
                         "username": user["username"],
                         "role": user["role"],
@@ -124,7 +124,7 @@ def login():
 
     except Exception as e:
         logger.error("Login error: {e}")
-        return ()
+        return (
             jsonify()
                 {}
                     "error": "Login failed",
@@ -145,7 +145,7 @@ def logout():
             token = auth_header.split(", ")[1]
             auth_manager.revoke_token(token)
 
-        logger.info(f"User logged out: {request.user['username']}")
+        logger.info("User logged out: {request.user['username']}")
 
         return jsonify()
             {}
@@ -157,7 +157,7 @@ def logout():
 
     except Exception as e:
         logger.error("Logout error: {e}")
-        return ()
+        return (
             jsonify()
                 {}
                     "error": "Logout failed",
@@ -176,7 +176,7 @@ def refresh_token():
         refresh_token = data.get("refresh_token") if data else None
 
         if not refresh_token:
-            return ()
+            return (
                 jsonify()
                     {}
                         "error": "Invalid request",
@@ -189,7 +189,7 @@ def refresh_token():
         # Verify refresh token
         payload = auth_manager.verify_token(refresh_token)
         if payload.get("type") != "refresh":
-            return ()
+            return (
                 jsonify()
                     {}
                         "error": "Invalid token",
@@ -202,7 +202,7 @@ def refresh_token():
         # Get user info
         user = get_user_by_id(payload["user_id"])
         if not user or not user["active"]:
-            return ()
+            return (
                 jsonify()
                     {}
                         "error": "User not found",
@@ -230,8 +230,8 @@ def refresh_token():
         )
 
     except Exception as e:
-        logger.error(f"Token refresh error: {e}")
-        return ()
+        logger.error("Token refresh error: {e}")
+        return (
             jsonify()
                 {"error": "Token refresh failed", "message": str(e), "status": "error"}
             ),
@@ -251,8 +251,8 @@ def get_profile():
             {}
                 "message": "Profile retrieved successfully",
                 "status": "success",
-                                    "data": {}
-                        "user": {}
+                                    "data": {
+                        "user": {
                             "id": user["id"],
                             "username": user["username"],
                             "role": user["role"],
@@ -267,8 +267,8 @@ def get_profile():
         )
 
     except Exception as e:
-        logger.error(f"Profile retrieval error: {e}")
-        return ()
+        logger.error("Profile retrieval error: {e}")
+        return (
             jsonify()
                 {}
                     "error": "Profile retrieval failed",
@@ -284,8 +284,7 @@ def get_profile():
 def list_users():
     """List all users (admin only)."""
     try:
-        users = []
-        for user in ENTERPRISE_USERS.values():
+        users = [        for user in ENTERPRISE_USERS.values():
             users.append(
             {}
                     "id": user["id"],
@@ -308,8 +307,8 @@ def list_users():
         )
 
     except Exception as e:
-        logger.error(f"User list error: {e}")
-        return ()
+        logger.error("User list error: {e}")
+        return (
             jsonify()
                 {}
                     "error": "User list failed",
@@ -343,7 +342,7 @@ def get_roles():
         {}
             "message": "Roles retrieved successfully",
             "status": "success",
-            "data": {}
+            "data": {
                 "roles": auth_manager.roles,
                 "current_user_role": request.user["role"],
                 "current_user_permissions": request.user["permissions"],

@@ -68,11 +68,9 @@ class ExperimentTracker:
         self.experiments_path = Path(experiments_path)
         self.experiments_path.mkdir(parents=True, exist_ok=True)
 
-        self.runs_path = self.experiments_path / "runs"
-        self.runs_path.mkdir(exist_ok=True)
+        self.runs_path = self.experiments_path / "runs"""        self.runs_path.mkdir(exist_ok=True)
 
-        self.db_path = self.experiments_path / "experiments.db"
-        self.current_run: Optional[ExperimentRun] = None
+        self.db_path = self.experiments_path / "experiments.db"""        self.current_run: Optional[ExperimentRun] = None
 
         self._init_database()
 
@@ -132,8 +130,7 @@ class ExperimentTracker:
         objective: str = "minimize",
         tags: List[str] = None) -> Experiment:
         """Create a new experiment"""
-        experiment_id = f"exp_{int(time.time())}_{str(uuid.uuid4())[:8]}"
-
+        experiment_id = "exp_{int(time.time())}_{str(uuid.uuid4())[:8]}"""
         experiment = Experiment(
             experiment_id=experiment_id,
             name=name,
@@ -157,9 +154,9 @@ class ExperimentTracker:
         seed: int = None) -> ExperimentRun:
         "Start a new experiment run"
         if run_name is None:
-            run_name = f"run_{int(time.time())}"
+            run_name = "run_{int(time.time())}"
 
-        run_id = f"run_{int(time.time())}_{str(uuid.uuid4())[:8]}"
+        run_id = "run_{int(time.time())}_{str(uuid.uuid4())[:8]}"
 
         run = ExperimentRun(
             run_id=run_id,
@@ -245,7 +242,7 @@ class ExperimentTracker:
         conn.close()
 
         if not row:
-            raise ValueError(f"Experiment {experiment_id} not found")
+            raise ValueError("Experiment {experiment_id} not found")
 
         return Experiment(
     experiment_id=row[0],
@@ -353,8 +350,7 @@ class ExperimentTracker:
         import platform
         import sys
 
-        return {}
-            "python_version": sys.version,
+        return {            "python_version": sys.version,
             "platform": platform.platform,
             "python_executable": sys.executable,
         }

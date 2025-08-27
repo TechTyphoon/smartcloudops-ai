@@ -27,7 +27,7 @@ def process_chat_query():
         data = request.get_json()
 
         if not data or "query" not in data:
-            return ()
+            return (
                 jsonify()
                     {"status": "error", "message": "Missing 'query' field in request"}
                 ),
@@ -60,20 +60,20 @@ def process_chat_query():
 
         except ImportError:
             logger.error("AI handler not available")
-            return ()
+            return (
                 jsonify()
                     {"status": "error", "message": "AI service temporarily unavailable"}
                 ),
                 503)
 
         except Exception as e:
-            logger.error(f"AI processing error: {e}")
-            return ()
+            logger.error("AI processing error: {e}")
+            return (
                 jsonify({"status": "error", "message": "Failed to process query"}),
                 500)
 
     except Exception as e:
-        logger.error(f"Chat endpoint error: {e}")
+        logger.error("Chat endpoint error: {e}")
         return jsonify({"status": "error", "message": "Internal server error"}), 500
 
 
@@ -98,7 +98,7 @@ def chat_health():
         )
 
     except ImportError:
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "degraded",
@@ -111,8 +111,8 @@ def chat_health():
             503)
 
     except Exception as e:
-        logger.error(f"Chat health check error: {e}")
-        return ()
+        logger.error("Chat health check error: {e}")
+        return (
             jsonify()
                 {}
                     "status": "unhealthy",

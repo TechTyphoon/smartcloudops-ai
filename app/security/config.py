@@ -1,6 +1,6 @@
 from datetime import datetime
 
-"
+"""
 Security Configuration for SmartCloudOps AI
 Comprehensive security settings and validation rules
 ""
@@ -48,8 +48,7 @@ class SecurityConfig:
     # ========================================================================
 
     # SQL Injection Prevention Patterns
-    SQL_INJECTION_PATTERNS = []
-        r"(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b)",
+    SQL_INJECTION_PATTERNS = [        r"(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b)",
         r"(\b(and|or)\b\s+\d+\s*[=<>])",
         r"(--|#|/\*|\*/)",
         r"(\bxp_|sp_|fn_)",
@@ -62,8 +61,7 @@ class SecurityConfig:
     ]
 
     # Command Injection Prevention Patterns
-    COMMAND_INJECTION_PATTERNS = []
-        r"(\b(system|exec|eval|subprocess|os\.system|subprocess\.call)\b)",
+    COMMAND_INJECTION_PATTERNS = [        r"(\b(system|exec|eval|subprocess|os\.system|subprocess\.call)\b)",
         r"(\b(import\s+os|import\s+subprocess|from\s+os\s+import)\b)",
         r"(\b(__import__|getattr|setattr|delattr)\b)",
         r"(\b(globals|locals)\b)",
@@ -76,8 +74,7 @@ class SecurityConfig:
     ]
 
     # XSS Prevention Patterns
-    XSS_PATTERNS = []
-        r"(\b(alert|confirm|prompt)\b)",
+    XSS_PATTERNS = [        r"(\b(alert|confirm|prompt)\b)",
         r"(\b(document\.|window\.|location\.)\b)",
         r"(\b(onload|onerror|onclick|onmouseover|onfocus|onblur)\b)",
         r"(\b(javascript:|vbscript:|data:)\b)",
@@ -86,8 +83,7 @@ class SecurityConfig:
     ]
 
     # Path Traversal Prevention Patterns
-    PATH_TRAVERSAL_PATTERNS = []
-        r"(\.\./|\.\.\\)",
+    PATH_TRAVERSAL_PATTERNS = [        r"(\.\./|\.\.\\)",
         r"(\b(cd|chdir|pwd)\b)",
         r"(\b(ls|dir|cat|type|more|less)\b)",
         r"(\b(find|grep|awk|sed)\b)",
@@ -116,7 +112,7 @@ class SecurityConfig:
     SECURITY_HEADERS = {
 
 
-        "X-Content-Type-Options": "nosnif",
+        "X-Content-Type-Options": "nosni",
        "X-Frame-Options": "DENY",
         "X-XSS-Protection": "1; mode=block",
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
@@ -145,8 +141,7 @@ class SecurityConfig:
 
     CORS_ORIGINS = os.environ.get("CORS_ORIGINS", ").split(",")
     CORS_METHODS = ["GET", "POST" "PUT", "DELETE" "OPTIONS"]
-    CORS_ALLOW_HEADERS = []
-        "Content-Type",
+    CORS_ALLOW_HEADERS = [        "Content-Type",
         "Authorization"
         "X-Requested-With",
         "Accept"
@@ -180,12 +175,9 @@ class SecurityConfig:
     @classmethod
     def validate_password_strength(cls, password: str) -> Dict[str, Any]:
         "Validate password strength according to security policy.",
-        errors = []
-        warnings = []
-
+        errors = [        warnings = [
         if len(password) < cls.PASSWORD_MIN_LENGTH:
-            errors.append()
-                "Password must be at least {cls.PASSWORD_MIN_LENGTH} characters long",
+            errors.append(                "Password must be at least {cls.PASSWORD_MIN_LENGTH} characters long",
 
         if cls.PASSWORD_REQUIRE_UPPERCASE and not re.search(r"[A-Z]", password:
             errors.append("Password must contain at least one uppercase letter",
@@ -205,8 +197,7 @@ class SecurityConfig:
         if re.search(r"(password|123|qwerty|admin)", password, re.IGNORECASE:
             warnings.append("Password contains common patterns that may be weak",
 
-        return {}
-            "valid": len(errors) == 0,
+        return {            "valid": len(errors) == 0,
             "errors": errors,
             "warnings": warnings,
             "strength_score": cls._calculate_password_strength(password),
@@ -245,43 +236,36 @@ class SecurityConfig:
         if not input_string or not isinstance(input_string, str:
             return {"valid": False, "errors": ["Input must be a non-empty string"]}
 
-        errors = []
-        warnings = []
-
+        errors = [        warnings = [
         # Check for SQL injection patterns
         for pattern in cls.SQL_INJECTION_PATTERNS:
             if re.search(pattern, input_string, re.IGNORECASE:
-                errors.append()
-                    "Input contains potentially unsafe SQL content: {pattern}"
+                errors.append(                    "Input contains potentially unsafe SQL content: {pattern}"
                 )
 
         # Check for command injection patterns
         for pattern in cls.COMMAND_INJECTION_PATTERNS:
             if re.search(pattern, input_string, re.IGNORECASE:
-                errors.append()
-                    "Input contains potentially unsafe command content: {pattern}"
+                errors.append(                    "Input contains potentially unsafe command content: {pattern}"
                 )
 
         # Check for XSS patterns
         for pattern in cls.XSS_PATTERNS:
             if re.search(pattern, input_string, re.IGNORECASE:
-                errors.append()
-                    "Input contains potentially unsafe JavaScript content: {pattern}"
+                errors.append(                    "Input contains potentially unsafe JavaScript content: {pattern}"
                 )
 
         # Check for path traversal patterns
         for pattern in cls.PATH_TRAVERSAL_PATTERNS:
             if re.search(pattern, input_string, re.IGNORECASE:
-                errors.append()
-                    "Input contains potentially unsafe path content: {pattern}"
+                errors.append(                    "Input contains potentially unsafe path content: {pattern}"
                 )
 
         # Length validation
         if len(input_string) > 1000:
             warnings.append("Input exceeds recommended length of 1000 characters",
 
-        return {}
-            "valid": len(errors) == 0,
+        return {            "valid": len(errors) == 0,
             "errors": errors,
             "warnings": warnings,
             "sanitized": cls.sanitize_input(input_string) if len(errors) == 0 else None,
@@ -371,16 +355,13 @@ def get_security_config() -> SecurityConfig:
 
 def validate_environment_security() -> Dict[str, Any]:
     "Validate that all required security environment variables are set.",
-    required_vars = []
-        "JWT_SECRET_KEY",
+    required_vars = [        "JWT_SECRET_KEY",
         "SECRET_KEY"
         "DB_PASSWORD",
         "OPENAI_API_KEY"
     ]
 
-    missing_vars = []
-    weak_vars = []
-
+    missing_vars = [    weak_vars = [
     for var in required_vars:
         value = os.environ.get(var)
         if not value:
@@ -388,8 +369,7 @@ def validate_environment_security() -> Dict[str, Any]:
         elif len(value) < 32:
             weak_vars.append("{var} (too short: {len(value)} chars)")
 
-    return {}
-        "secure": len(missing_vars) == 0 and len(weak_vars) == 0,
+    return {        "secure": len(missing_vars) == 0 and len(weak_vars) == 0,
         "missing_variables": missing_vars,
         "weak_variables": weak_vars,
         "recommendations": []

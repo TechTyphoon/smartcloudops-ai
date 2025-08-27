@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
 
-"
+"""
 Monitoring Module for Smart CloudOps AI
 Extracted from main.py for modularity
 "
@@ -43,7 +43,7 @@ def update_system_metrics():
         SYSTEM_METRICS["disk_percent"] = psutil.disk_usage("/").percent
         SYSTEM_METRICS["last_updated"] = datetime.now(timezone.utc).isoformat()
     except Exception as e:
-        logger.error(f"Error updating system metrics: {e}")
+        logger.error("Error updating system metrics: {e}")
 
 
 @monitoring_bp.route("/metrics", methods=["GET"])
@@ -52,7 +52,7 @@ def prometheus_metrics():
     try:
         return generate_latest(), 200, {"Content-Type": CONTENT_TYPE_LATEST}
     except Exception as e:
-        logger.error(f"Error generating metrics: {e}")
+        logger.error("Error generating metrics: {e}")
         return jsonify({"error": "Metrics generation failed"}), 500
 
 
@@ -69,12 +69,12 @@ def health_check():
             "status": "healthy",
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "version": "1.0.0",
-            "services": {}
+            "services": {
                 "app": "healthy",
                 "database": "unknown",  # Will be checked if DB connection available
                 "ml_service": "unknown"  # Will be checked if ML available
             },
-            "system": {}
+            "system": {
                 "cpu_percent": SYSTEM_METRICS["cpu_percent"],
                 "memory_percent": SYSTEM_METRICS["memory_percent"],
                 "disk_percent": SYSTEM_METRICS["disk_percent"],
@@ -102,14 +102,14 @@ def health_check():
             conn.close()
             health_status["services"]["database"] = "healthy"
         except Exception as db_error:
-            logger.warning(f"Database connection failed: {db_error}")
+            logger.warning("Database connection failed: {db_error}")
             health_status["services"]["database"] = "unhealthy"
 
         return jsonify(health_status)
 
     except Exception as e:
-        logger.error(f"Health check error: {e}")
-        return ()
+        logger.error("Health check error: {e}")
+        return (
             jsonify()
                 {}
                     "status": "unhealthy",
@@ -132,19 +132,19 @@ def system_status():
 
             "status": "success",
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "system": {}
+            "system": {
                 "cpu_percent": SYSTEM_METRICS["cpu_percent"],
                 "memory_percent": SYSTEM_METRICS["memory_percent"],
                 "disk_percent": SYSTEM_METRICS["disk_percent"],
                 "last_updated": SYSTEM_METRICS["last_updated"],
             },
-            "application": {}
+            "application": {
                 "name": "Smart CloudOps AI",
                 "version": "1.0.0",
                 "environment": os.getenv("FLASK_ENV", "development"),
                 "port": os.getenv("FLASK_PORT", "3003"),
             },
-            "endpoints": {}
+            "endpoints": {
                 "health": "/monitoring/health",
                 "metrics": "/monitoring/metrics",
                 "status": "/monitoring/status"
@@ -154,7 +154,7 @@ def system_status():
         return jsonify(status)
 
     except Exception as e:
-        logger.error(f"System status error: {e}")
+        logger.error("System status error: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
 
@@ -187,7 +187,7 @@ def get_logs():
         )
 
     except Exception as e:
-        logger.error(f"Log retrieval error: {e}")
+        logger.error("Log retrieval error: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
 
@@ -199,7 +199,7 @@ def alerts():
             {}
                 "status": "success",
                 "message": "Alerts endpoint",
-                "endpoints": {}
+                "endpoints": {
                     "get_alerts": "GET /monitoring/alerts",
                     "create_alert": "POST /monitoring/alerts"
                 },
@@ -215,21 +215,21 @@ def alerts():
             # In a real implementation, you'd save this to a database
             alert = {
 
-                "id": f"alert_{datetime.now().timestamp()}",
+                "id": "alert_{datetime.now().timestamp()}",
                 "severity": data.get("severity", "info"),
                 "message": data.get("message", "),
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "source": data.get("source", "manual"),
             }
 
-            logger.info(f"Alert created: {alert['id']} - {alert['message']}")
+            logger.info("Alert created: {alert['id']} - {alert['message']}")
 
-            return jsonify({}
+            return jsonify({
                 "status": "success",
                 "message": "Alert created successfully",
                 "alert": alert
             }), 201
 
         except Exception as e:
-            logger.error(f"Alert creation error: {e}")
+            logger.error("Alert creation error: {e}")
             return jsonify({"error": "Failed to create alert"}), 500

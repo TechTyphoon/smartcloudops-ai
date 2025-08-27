@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Authentication Module for Smart CloudOps AI
 Extracted from main.py for modularity
-"
+"""
 
 import logging
 import os
@@ -34,7 +34,7 @@ if not DEFAULT_ADMIN_PASSWORD:
 # In-memory user store (replace with database in production)
 USERS_DB = {
 
-    "admin": {}
+    "admin": {
         "password_hash": generate_password_hash(DEFAULT_ADMIN_PASSWORD),
         "role": "admin",
         "email": "admin@smartcloudops.ai"
@@ -93,7 +93,7 @@ def login():
                 "message": "Login endpoint",
                 "method": "POST",
                 "required_fields": ["username", "password"],
-                "example": {}
+                "example": {
                     "username": "admin",
                     "password": "use environment variable DEFAULT_ADMIN_PASSWORD"
                 },
@@ -124,7 +124,7 @@ def login():
                 "status": "success",
                 "message": "Login successful",
                 "token": token,
-                "user": {}
+                "user": {
                     "username": username,
                     "role": user["role"],
                     "email": user["email"],
@@ -152,7 +152,7 @@ def profile():
         return jsonify()
             {}
                 "status": "success",
-                "user": {}
+                "user": {
                     "username": user_id,
                     "role": user["role"],
                     "email": user["email"],
@@ -161,7 +161,7 @@ def profile():
         )
 
     except Exception as e:
-        logger.error(f"Profile error: {e}")
+        logger.error("Profile error: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
 
@@ -176,11 +176,10 @@ def logout():
 @auth_bp.route("/register", methods=["POST"])
 def register():
     """User registration endpoint (disabled in production)."""
-    return ()
+    return (
         jsonify()
             {}
                 "error": "Registration disabled in production",
-                "message": "Contact administrator for account creation"
-            }
+                "message": "Contact administrator for account creation"""            }
         ),
         403)

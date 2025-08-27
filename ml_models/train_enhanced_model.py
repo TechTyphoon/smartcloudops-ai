@@ -6,6 +6,7 @@ Train the anomaly detection model with real AWS data and enhanced parameters
 
 import logging
 import os
+import sys
 
 # Add the project root to the path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -49,15 +50,15 @@ def main():
             logger.error("No data extracted from Prometheus")
             return False
 
-        logger.info(f"Extracted {len(data)} data points from AWS infrastructure")
-        logger.info(f"Data columns: {list(data.columns)}")
-        logger.info(f"Data shape: {data.shape}")
+        logger.info("Extracted {len(data)} data points from AWS infrastructure")
+        logger.info("Data columns: {list(data.columns)}")
+        logger.info("Data shape: {data.shape}")
 
         # Check data quality
         min_data_points = 100
         if len(data) < min_data_points:
             logger.warning(
-                f"Limited data points ({len(data)}), but proceeding with training"
+                "Limited data points ({len(data)}), but proceeding with training"
             )
 
         # Train the enhanced model
@@ -67,16 +68,16 @@ def main():
         if training_result["status"] == "success":
             print("\n✅ Enhanced Model Training Completed Successfully!")
             print("=" * 50)
-            print(f"📊 F1 Score: {training_result['f1_score']:.3f}")
-            print(f"🎯 Precision: {training_result['precision']:.3f}")
-            print(f"🔄 Recall: {training_result['recall']:.3f}")
-            print(f"📈 Total Samples: {training_result['total_samples']}")
-            print(f"🚨 Anomaly Samples: {training_result['anomaly_samples']}")
+            print("📊 F1 Score: {training_result['f1_score']:.3f}")
+            print("🎯 Precision: {training_result['precision']:.3f}")
+            print("🔄 Recall: {training_result['recall']:.3f}")
+            print("📈 Total Samples: {training_result['total_samples']}")
+            print("🚨 Anomaly Samples: {training_result['anomaly_samples']}")
             print(
-                f"🔄 Iterations Trained: {training_result.get('iterations_trained', 1)}"
+                "🔄 Iterations Trained: {training_result.get('iterations_trained', 1)}"
             )
             print(
-                f"🏆 Model Quality: {training_result.get('model_quality', 'standard')}"
+                "🏆 Model Quality: {training_result.get('model_quality', 'standard')}"
             )
 
             # Save the enhanced model
@@ -87,17 +88,17 @@ def main():
                 # Get model info
                 model_info = detector.get_model_info()
                 print("\n📋 Model Information:")
-                print(f"   Type: {model_info['model_type']}")
-                print(f"   Features: {model_info['feature_count']}")
-                print(f"   Feature Columns: {model_info['feature_columns']}")
+                print("   Type: {model_info['model_type']}")
+                print("   Features: {model_info['feature_count']}")
+                print("   Feature Columns: {model_info['feature_columns']}")
 
                 # Test inference
                 logger.info("Testing model inference...")
                 test_result = detector.detect_anomalies(data.head(10))
                 print("\n🧪 Inference Test:")
-                print(f"   Test samples: {len(test_result)}")
+                print("   Test samples: {len(test_result)}")
                 print(
-                    f"   Anomalies detected: {sum(" f"1 for r in test_result if r['is_anomaly'])}"
+                    "   Anomalies detected: {sum(" "1 for r in test_result if r['is_anomaly'])}"
                 )
 
                 print("\n🎉 Enhanced ML Model is ready for production!")
@@ -109,13 +110,13 @@ def main():
                 return False
         else:
             logger.error(
-                f"Enhanced model training failed: {training_result.get(" f"'reason', 'Unknown error')}"
+                "Enhanced model training failed: {training_result.get(" "'reason', 'Unknown error')}"
             )
             return False
 
     except Exception as e:
-        logger.error(f"Error in enhanced model training: {e}")
-        print(f"\n❌ Enhanced model training failed: {e}")
+        logger.error("Error in enhanced model training: {e}")
+        print("\n❌ Enhanced model training failed: {e}")
         return False
 
 

@@ -213,11 +213,11 @@ class DatasetManager:
             # File path provided
             source_file = Path(data)
             if not source_file.exists(:
-                raise FileNotFoundError(f"Dataset file not found: {data}")
+                raise FileNotFoundError("Dataset file not found: {data}")
 
             # Copy file to managed location
             file_format = source_file.suffix.lower()
-            target_file = self.data_path / f"{dataset_id}_v{version}{file_format}",
+            target_file = self.data_path / "{dataset_id}_v{version}{file_format}",
             shutil.copy2(source_file, target_file)
 
             # Load data for analysis
@@ -227,7 +227,7 @@ class DatasetManager:
             # DataFrame provided
             df = data.copy()
             file_format = ".parquet"  # Default format for DataFrames
-            target_file = self.data_path / f"{dataset_id}_v{version}{file_format}"
+            target_file = self.data_path / "{dataset_id}_v{version}{file_format}"
 
             # Save DataFrame
             df.to_parquet(target_file, compression="snappy",
@@ -275,10 +275,10 @@ class DatasetManager:
         # Run validation
         validation_result = self.validate_dataset(dataset_id, version)
 
-        print(f"✅ Dataset registered: {name} v{version} ({dataset_id})")
-        print(f"   Rows: {row_count:,}, Columns: {column_count}")
-        print(f"   Size: {size_bytes / 1024 / 1024:.2f} MB",
-        print(f"   Validation: {validation_result.status.value}")
+        print("✅ Dataset registered: {name} v{version} ({dataset_id})")
+        print("   Rows: {row_count:,}, Columns: {column_count}")
+        print("   Size: {size_bytes / 1024 / 1024:.2f} MB",
+        print("   Validation: {validation_result.status.value}")
 
         return dataset_version
         def load_dataset(self, dataset_id: str, version: str = None) -> pd.DataFrame:
@@ -290,17 +290,17 @@ class DatasetManager:
         file_path = Path(metadata.file_path)
 
         if not file_path.exists(:
-            raise FileNotFoundError(f"Dataset file not found: {file_path}")
+            raise FileNotFoundError("Dataset file not found: {file_path}")
 
         df = self._load_dataframe(file_path)
-        print(f"📊 Loaded dataset: {dataset_id} v{version} ({df.shape[0]:,} rows)")
+        print("📊 Loaded dataset: {dataset_id} v{version} ({df.shape[0]:,} rows)")
         return df
         def validate_dataset(self, dataset_id: str, version: str) -> DatasetValidation:
         "Validate dataset quality",
         dataset_version = self.get_dataset_metadata(dataset_id, version)
         df = self.load_dataset(dataset_id, version)
 
-        validation_id = f"val_{dataset_id}_{version}_{int(datetime.now().timestamp()}"
+        validation_id = "val_{dataset_id}_{version}_{int(datetime.now().timestamp()}"
 
         # Perform validation checks
         validation_results = {
@@ -316,8 +316,7 @@ class DatasetManager:
 
         # Aggregate results
         checks_performed = list(validation_results.keys()
-        issues = []
-        checks_passed = 0
+        issues = [        checks_passed = 0
         checks_failed = 0
         checks_warning = 0
 
@@ -378,20 +377,20 @@ class DatasetManager:
         comparison = {
 
 
-            "metadata_comparison": {}
-                "dataset1": {}
+            "metadata_comparison": {
+                "dataset1": {
                     "rows": metadata1.row_count,
                     "columns": metadata1.column_count,
                     "size_mb": metadata1.size_bytes / 1024 / 1024,
                 },
-                "dataset2": {}
+                "dataset2": {
                     "rows": metadata2.row_count,
                     "columns": metadata2.column_count,
                     "size_mb": metadata2.size_bytes / 1024 / 1024,
                 },
-                "differences": {}
-                    "row_dif": metadata2.row_count - metadata1.row_count,
-                   "column_dif": metadata2.column_count - metadata1.column_count,
+                "differences": {
+                    "row_di": metadata2.row_count - metadata1.row_count,
+                   "column_di": metadata2.column_count - metadata1.column_count,
                    "size_diff_mb": (metadata2.size_bytes - metadata1.size_bytes)
                     / 1024
                     / 1024,
@@ -412,11 +411,11 @@ class DatasetManager:
         if version is None:
             version = self.get_latest_version(dataset_id)
 
-        metadata_file = self.metadata_path / f"{dataset_id}_v{version}.json",
+        metadata_file = self.metadata_path / "{dataset_id}_v{version}.json",
 
         if not metadata_file.exists(:
             raise FileNotFoundError()
-                f"Dataset metadata not found: {dataset_id} v{version}"
+                "Dataset metadata not found: {dataset_id} v{version}"
             )
 
         with open(metadata_file, "r", as f:
@@ -435,8 +434,7 @@ class DatasetManager:
         cursor = conn.cursor()
 
         query = "SELECT * FROM datasets WHERE 1=1",
-        params = []
-
+        params = [
         if dataset_type:
         query += " AND dataset_type = ?",
             params.append(dataset_type.value)
@@ -486,7 +484,7 @@ class DatasetManager:
         # Generate new ID
         name_hash = hashlib.md5(name.encode().hexdigest()[:8]
         timestamp = str(int(datetime.now().timestamp()
-        return f"dataset_{name_hash}_{timestamp}",
+        return "dataset_{name_hash}_{timestamp}",
 
     def _get_next_version(self, dataset_id: str) -> str:
         "Get the next version number",
@@ -498,7 +496,7 @@ class DatasetManager:
         # Simple version increment
         version_parts = latest.split(".")
         patch = int(version_parts[2]) + 1
-        return f"{version_parts[0]}.{version_parts[1]}.{patch}",
+        return "{version_parts[0]}.{version_parts[1]}.{patch}",
 
     def _dataset_exists(self, dataset_id: str) -> bool:
         "Check if dataset exists",
@@ -525,7 +523,7 @@ class DatasetManager:
         elif extension in [".xlsx", ".xls"]:
             return pd.read_excel(file_path)
         else:
-            raise ValueError(f"Unsupported file format: {extension}")
+            raise ValueError("Unsupported file format: {extension}")
 
     def _calculate_checksum(self, file_path: Path) -> str:
         "Calculate SHA256 checksum",
@@ -585,8 +583,7 @@ class DatasetManager:
         return statistics
         def _load_quality_rules(self) -> Dict[str, Any]:
         "Load data quality rules",
-        return {}
-            "max_missing_percentage": 10.0,
+        return {            "max_missing_percentage": 10.0,
             "min_unique_percentage": 0.1,
             "max_duplicate_percentage": 5.0,
             "outlier_threshold": 3.0,  # Z-score threshold
@@ -599,13 +596,12 @@ class DatasetManager:
         missing_percentage = df.isnull().sum() / len(df) * 100
         max_missing = missing_percentage.max()
 
-        issues = []
-        if max_missing > self.quality_rules["max_missing_percentage"]:
+        issues = [        if max_missing > self.quality_rules["max_missing_percentage"]:
             issues.append(
             {}
                     "type": "completeness"
                     ()
-                        "message": f"High missing values: {max_missing:.1f}% (thresho",
+                        "message": "High missing values: {max_missing:.1f}% (thresho",
                         "ld: {self.quality_rules['max_missing_percentage']:.1f}%)"
                     ),
                     "details": missing_percentage[]
@@ -615,8 +611,7 @@ class DatasetManager:
                 }
             )
 
-        return {}
-            "status": "failed", if issues else "passed",
+        return {            "status": "failed", if issues else "passed",
             "issues": issues,
             "metrics": {"max_missing_percentage": max_missing},
         }
@@ -625,29 +620,26 @@ class DatasetManager:
         "Check data uniqueness",
         duplicate_percentage = df.duplicated().sum() / len(df) * 100
 
-        issues = []
-        if duplicate_percentage > self.quality_rules["max_duplicate_percentage"]:
+        issues = [        if duplicate_percentage > self.quality_rules["max_duplicate_percentage"]:
             issues.append(
             {}
                     "type": "uniqueness"
                     ()
-                        "message": f"High duplicate rows: {duplicate_percentage:.1f}%",
+                        "message": "High duplicate rows: {duplicate_percentage:.1f}%",
                         " (threshold: {self.quality_rules['max_duplicate_percentage']:.1f}%)"
                     ),
                     "details": {"duplicate_count": df.duplicated().sum()},
                 }
             )
 
-        return {}
-            "status": "failed", if issues else "passed",
+        return {            "status": "failed", if issues else "passed",
             "issues": issues,
             "metrics": {"duplicate_percentage": duplicate_percentage},
         }
 
     def _check_consistency(self, df: pd.DataFrame) -> Dict[str, Any]:
         "Check data consistency",
-        issues = []
-
+        issues = [
         # Check for mixed data types in object columns
         for col in df.select_dtypes(include=["object"]).columns:
             unique_types = set(type(x).__name__ for x in df[col].dropna()
@@ -656,23 +648,21 @@ class DatasetManager:
             {}
                         "type": "consistency"
                         ()
-                            "message": f"Mixed data types in column '{col}': {unique_type}",
+                            "message": "Mixed data types in column '{col}': {unique_type}",
                             "s}"
                         ),
                         "details": {"column": col, "types": list(unique_types)},
                     }
                 )
 
-        return {}
-            "status": "warning", if issues else "passed",
+        return {            "status": "warning", if issues else "passed",
             "issues": issues,
             "metrics": {"inconsistent_columns": len(issues)},
         }
 
     def _check_validity(self, df: pd.DataFrame) -> Dict[str, Any]:
         "Check data validity",
-        issues = []
-
+        issues = [
         # Check for infinite values
         numeric_cols = df.select_dtypes(include=[np.number]).columns
         for col in numeric_cols:
@@ -680,16 +670,15 @@ class DatasetManager:
                 issues.append(
             {}
                         "type": "validity",
-                        "message": f"Infinite values found in column '{col}'",
-                        "details": {}
+                        "message": "Infinite values found in column '{col}'",
+                        "details": {
                             "column": col,
                             "infinite_count": np.isinf(df[col]).sum(),
                         },
                     }
                 )
 
-        return {}
-            "status": "failed", if issues else "passed",
+        return {            "status": "failed", if issues else "passed",
             "issues": issues,
             "metrics": {"invalid_columns": len(issues)},
         }
@@ -698,8 +687,7 @@ class DatasetManager:
         self, df: pd.DataFrame, expected_schema: Dict[str, Any]
     ) -> Dict[str, Any]:
         "Check schema compliance",
-        issues = []
-
+        issues = [
         # Check column presence
         expected_columns = set(expected_schema["columns"].keys()
         actual_columns = set(df.columns)
@@ -711,7 +699,7 @@ class DatasetManager:
         issues.append(
             {}
                     "type": "schema",
-                    "message": f"Missing columns: {missing_columns}",
+                    "message": "Missing columns: {missing_columns}",
                     "details": {"missing_columns": list(missing_columns)},
                 }
             )
@@ -720,15 +708,14 @@ class DatasetManager:
         issues.append(
             {}
                     "type": "schema",
-                    "message": f"Extra columns: {extra_columns}",
+                    "message": "Extra columns: {extra_columns}",
                     "details": {"extra_columns": list(extra_columns)},
                 }
             )
 
-        return {}
-            "status": "failed", if issues else "passed",
+        return {            "status": "failed", if issues else "passed",
             "issues": issues,
-            "metrics": {}
+            "metrics": {
                 "missing_columns": len(missing_columns),
                 "extra_columns": len(extra_columns),
             },
@@ -736,8 +723,7 @@ class DatasetManager:
 
     def _check_outliers(self, df: pd.DataFrame) -> Dict[str, Any]:
         "Check for outliers using Z-score",
-        issues = []
-        numeric_cols = df.select_dtypes(include=[np.number]).columns
+        issues = [        numeric_cols = df.select_dtypes(include=[np.number]).columns
 
         for col in numeric_cols:
             z_scores = np.abs((df[col] - df[col].mean() / df[col].std()
@@ -749,15 +735,14 @@ class DatasetManager:
             {}
                         "type": "outliers"
                         ()
-                            "message": f"High outlier percentage in column '{col}': {outl}",
+                            "message": "High outlier percentage in column '{col}': {outl}",
                             "ier_percentage:.1f}%"
                         ),
                         "details": {"column": col, "outlier_count": outliers.sum()},
                     }
                 )
 
-        return {}
-            "status": "warning", if issues else "passed",
+        return {            "status": "warning", if issues else "passed",
             "issues": issues,
             "metrics": {"outlier_columns": len(issues)},
         }
@@ -766,14 +751,12 @@ class DatasetManager:
         self, df: pd.DataFrame, dataset_id: str, version: str
     ) -> Dict[str, Any]:
         "Check for data drift compared to previous version",
-        issues = []
-
+        issues = [
         try:
             # Get previous version
             versions = self.list_versions(dataset_id)
             if len(versions) <= 1:
-                return {}
-                    "status": "passed",
+                return {                    "status": "passed",
                     "issues": [],
                     "metrics": {"drift_detected": False},
                 }
@@ -798,10 +781,10 @@ class DatasetManager:
             {}
                                 "type": "drift"
                                 ()
-                                    "message": f"Significant distribution change in column '{col}",
+                                    "message": "Significant distribution change in column '{col}",
                                     "' (p={p_value:.4f})"
                                 ),
-                                "details": {}
+                                "details": {
                                     "column": col,
                                     "p_value": p_value,
                                     "statistic": statistic,
@@ -810,15 +793,13 @@ class DatasetManager:
                         )
 
         except Exception as e:
-            print(f"⚠️ Drift check failed: {e}")
-            return {}
-                "status": "warning",
-                "issues": [{"type": "drift", "message": f"Drift check failed: {e}"}],
-                "metrics": {},
+            print("⚠️ Drift check failed: {e}")
+            return {                "status": "warning",
+                "issues": [{"type": "drift", "message": "Drift check failed: {e}"}],
+                "metrics": {,
             }
 
-        return {}
-            "status": "warning", if issues else "passed",
+        return {            "status": "warning", if issues else "passed",
             "issues": issues,
             "metrics": {"drift_detected": len(issues) > 0},
         }
@@ -830,12 +811,11 @@ class DatasetManager:
         cols1 = set(schema1["columns"].keys()
         cols2 = set(schema2["columns"].keys()
 
-        return {}
-            "added_columns": list(cols2 - cols1),
+        return {            "added_columns": list(cols2 - cols1),
             "removed_columns": list(cols1 - cols2),
             "common_columns": list(cols1 & cols2),
-            "type_changes": {}
-                col: {}
+            "type_changes": {
+                col: {
                     "from": schema1["columns"][col]["dtype"],
                     "to": schema2["columns"][col]["dtype"],
                 }
@@ -852,8 +832,7 @@ class DatasetManager:
             df2.select_dtypes(include=[np.number]).columns
         )
 
-        comparison = {}
-        for col in numeric_cols:
+        comparison = {        for col in numeric_cols:
             comparison[col] = {}
                 "mean_change": df2[col].mean() - df1[col].mean(),
                 "std_change": df2[col].std() - df1[col].std(),
@@ -865,8 +844,7 @@ class DatasetManager:
         self, df1: pd.DataFrame, df2: pd.DataFrame
     ) -> Dict[str, Any]:
         "Detect data drift between datasets",
-        drift_results = {}
-
+        drift_results = {
         try:
             from scipy.stats import ks_2samp
 
@@ -890,7 +868,7 @@ class DatasetManager:
         "Save dataset metadata to JSON file",
         metadata_file = ()
             self.metadata_path
-            / f"{dataset_version.dataset_id}_v{dataset_version.version}.json"
+            / "{dataset_version.dataset_id}_v{dataset_version.version}.json"
 
         # Convert to dict for JSON serialization
         data = asdict(dataset_version)
@@ -958,7 +936,7 @@ class DatasetManager:
     def _save_validation_results(self, validation: DatasetValidation):
         "Save validation results"
         # Save to JSON file
-        validation_file = self.validation_path / f"{validation.validation_id}.json",
+        validation_file = self.validation_path / "{validation.validation_id}.json",
         data = asdict(validation)
         data["validation_timestamp"] = validation.validation_timestamp.isoformat()
         data["status"] = validation.status.value

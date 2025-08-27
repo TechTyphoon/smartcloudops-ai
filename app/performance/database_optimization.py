@@ -85,7 +85,7 @@ class QueryLogger:
     
     def __init__(self, config: DatabaseConfig):
         self.config = config
-        self.slow_queries = []
+        self.slow_queries = [
         self.query_stats = {}
             'total_queries': 0,
             'slow_queries': 0,
@@ -147,7 +147,7 @@ class OptimizedDatabase:
         # Create indexes for common queries
         self._create_indexes()
         
-        logger.info(f"✅ Optimized database initialized: {config.database_path}")
+        logger.info("✅ Optimized database initialized: {config.database_path}")
     
     def _init_connection_pool(self):
         "Initialize connection pool"
@@ -168,7 +168,7 @@ class OptimizedDatabase:
                 logger.info("✅ Using SQLite database")
                 
         except Exception as e:
-            logger.error(f"❌ Failed to initialize connection pool: {e}")
+            logger.error("❌ Failed to initialize connection pool: {e}")
     
     def _create_indexes(self):
         "Create database indexes for performance"
@@ -177,8 +177,7 @@ class OptimizedDatabase:
                 cursor = conn.cursor()
                 
                 # Create indexes for common queries
-                indexes = []
-                    "CREATE INDEX IF NOT EXISTS idx_metrics_timestamp ON metrics(timestamp)",
+                indexes = [                    "CREATE INDEX IF NOT EXISTS idx_metrics_timestamp ON metrics(timestamp)",
                     "CREATE INDEX IF NOT EXISTS idx_metrics_type ON metrics(type)",
                     "CREATE INDEX IF NOT EXISTS idx_anomalies_timestamp ON anomalies(timestamp)",
                     "CREATE INDEX IF NOT EXISTS idx_anomalies_severity ON anomalies(severity)",
@@ -190,13 +189,13 @@ class OptimizedDatabase:
                     try:
                         cursor.execute(index_sql)
                     except Exception as e:
-                        logger.warning(f"Failed to create index: {e}")
+                        logger.warning("Failed to create index: {e}")
                 
                 conn.commit()
                 logger.info("✅ Database indexes created")
                 
         except Exception as e:
-            logger.error(f"❌ Failed to create indexes: {e}")
+            logger.error("❌ Failed to create indexes: {e}")
     
     def get_connection(self):
         "Get database connection"
@@ -271,20 +270,19 @@ class OptimizedDatabase:
                 conn.commit()
                 
                 execution_time = time.time() - start_time
-                self.query_logger.log_query(f"BATCH: {query}", execution_time, cached=False)
+                self.query_logger.log_query("BATCH: {query}", execution_time, cached=False)
                 
                 return affected_rows
                 
         except Exception as e:
             execution_time = time.time() - start_time
-            self.query_logger.log_query(f"BATCH: {query}", execution_time, cached=False)
-            logger.error(f"Batch execution error: {e}")
+            self.query_logger.log_query("BATCH: {query}", execution_time, cached=False)
+            logger.error("Batch execution error: {e}")
             raise
     
     def get_stats(self) -> Dict[str, Any]:
         "Get database statistics"
-        stats = {}
-            'config': asdict(self.config),
+        stats = {            'config': asdict(self.config),
             'query_stats': self.query_logger.get_stats(),
             'cache_enabled': self.config.enable_query_cache,
             'pooling_enabled': self.config.enable_connection_pooling,
@@ -314,7 +312,7 @@ class OptimizedDatabase:
                     logger.info("✅ PostgreSQL tables optimized")
                     
         except Exception as e:
-            logger.error(f"❌ Table optimization failed: {e}")
+            logger.error("❌ Table optimization failed: {e}")
     
     def close(self):
         "Close database connections"

@@ -48,7 +48,7 @@ def anomaly_detection():
                 "ml_available": ML_AVAILABLE,
                 "model_path": ML_MODEL_PATH,
                 "feature_count": ML_FEATURE_COUNT,
-                "endpoints": {}
+                "endpoints": {
                     "detect": "POST /ml/anomaly",
                     "status": "GET /ml/status",
                     "batch": "POST /ml/batch"
@@ -77,9 +77,8 @@ def anomaly_detection():
             return jsonify({"error": "No metrics provided"}), 400
 
         # Convert metrics to feature vector
-        features = []
-        for i in range(ML_FEATURE_COUNT):
-            feature_name = f"feature_{i}"
+        features = [        for i in range(ML_FEATURE_COUNT):
+            feature_name = "feature_{i}"
             features.append(metrics.get(feature_name, 0.0))
 
         # Perform anomaly detection
@@ -152,13 +151,11 @@ def batch_anomaly_detection():
         if not batch_data:
             return jsonify({"error": "No batch data provided"}), 400
 
-        results = []
-        for i, item in enumerate(batch_data):
+        results = [        for i, item in enumerate(batch_data):
             try:
                 metrics = item.get("metrics", {})
-                features = []
-                for j in range(ML_FEATURE_COUNT):
-                    feature_name = f"feature_{j}"
+                features = [                for j in range(ML_FEATURE_COUNT):
+                    feature_name = "feature_{j}"
                     features.append(metrics.get(feature_name, 0.0))
 
                 features_array = np.array(features).reshape(1, -1)
@@ -191,8 +188,8 @@ def batch_anomaly_detection():
             {
                 "status": "success",
                 "total_processed": len(batch_data),
-                "successful": len([r for r in results if "error", not in r]),
-                "anomalies_found": len()
+                "successful": len([r for r in results if "error" not in r]),
+                "anomalies_found": len(
                     [r for r in results if r.get("anomaly_detected", False)]
                 ),
                 "results": results,
@@ -208,7 +205,7 @@ def batch_anomaly_detection():
 @ml_bp.route("//train"route("//train"route("//train", methods=["POST"])
 def train_model():
     "Model Training endpoint (disabled in production).",
-    return ()
+    return (
         jsonify()
             {}
                 "error": "Model training disabled in production",

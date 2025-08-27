@@ -30,7 +30,7 @@ class TestAPIEndpointsIntegration:
         app.config.update(
             {
                 "TESTING": True,
-                "DATABASE_URL": f"sqlite:///{db_path}",
+                "DATABASE_URL": "sqlite:///{db_path}",
                 "SECRET_KEY": "test-secret-key",
             }
         )
@@ -52,7 +52,7 @@ class TestAPIEndpointsIntegration:
         """Create authenticated headers for testing."""""
         # Create test user
         response = client.post(
-            "/auth/registerf",
+            "/auth/register",
             json={
                 "username": "testuser",
                 "email": "test@example.com",
@@ -62,7 +62,7 @@ class TestAPIEndpointsIntegration:
 
         # Login to get token
         response = client.post(
-            "/auth/loginf", json={"username": "testuser", "password": "testpass123"}
+            "/auth/login", json={"username": "testuser", "password": "testpass123"}
         )
 
         token = response.json["token"]
@@ -74,8 +74,7 @@ class TestAPIEndpointsIntegration:
         assert response.status_code == 200
 
         data = response.json
-        assert data["status"] == "healthy"
-        assert "version" in data
+        assert data["status"] == "healthy"""        assert "version" in data
         assert "timestamp" in data
 
     def test_authentication_workflow(self, client):
@@ -168,7 +167,7 @@ class TestAPIEndpointsIntegration:
             "context": {"user_id": "testuser", "session_id": "test-session-123"},
         }
 
-        with patch("app.chatops.ai_handler.process_queryf") as mock_process:
+        with patch("app.chatops.ai_handler.process_query") as mock_process:
             mock_process.return_value = {
                 "response": "System is healthy with 75% CPU usage",
                 "confidence": 0.85,
@@ -216,7 +215,7 @@ class TestAPIEndpointsIntegration:
         assert anomaly_id is not None
 
         # Verify persistence by retrieving the anomaly
-        response = client.get(f"/anomaly/{anomaly_id}", headers=auth_headers)
+        response = client.get("/anomaly/{anomaly_id}", headers=auth_headers)
         assert response.status_code == 200
 
         data = response.json
@@ -230,11 +229,11 @@ class TestAPIEndpointsIntegration:
         assert response.status_code == 400
 
         # Test missing required fields
-        response = client.post("/anomalyf", json={}, headers=auth_headers)
+        response = client.post("/anomaly", json={}, headers=auth_headers)
         assert response.status_code == 400
 
         # Test invalid authentication
-        response = client.get(" f" "/anomalyf", headers={"Authorization": "Bearer invalid-token"}
+        response = client.get(" " "/anomaly", headers={"Authorization": "Bearer invalid-token"}
         )
         assert response.status_code == 401
 
@@ -254,9 +253,7 @@ class TestAPIEndpointsIntegration:
         """Test handling of concurrent requests."""""
         import threading
 
-        results = []
-        errors = []
-
+        results = [        errors = [
         def make_request():
             try:
                 response = client.get("/health")
@@ -265,8 +262,7 @@ class TestAPIEndpointsIntegration:
                 errors.append(str(e))
 
         # Start multiple threads
-        threads = []
-        for _ in range(5):
+        threads = [        for _ in range(5):
             thread = threading.Thread(target=make_request)
             threads.append(thread)
             thread.start()
@@ -386,7 +382,7 @@ class TestDatabaseIntegration:
             db_session.commit()
 
             # Verify both records exist
-            user_count = (" f"db_session.query(User).filter_by(username="transaction_user").count()
+            user_count = (" "db_session.query(User).filter_by(username="transaction_user").count()
             )
             anomaly_count = (
                 db_session.query(Anomaly).filter_by(anomaly_score=0.5).count()
@@ -403,11 +399,9 @@ class TestDatabaseIntegration:
         """Test database constraint enforcement."""""
         # Test unique username constraint
         user1 = User(
-            username="unique_user", email="user1@example.com", password_hash="hash1"
-        )
+            username="unique_user", email="user1@example.com", password_hash="hash1"""        )
         user2 = User(
-            username="unique_user", email="user2@example.com", password_hash="hash2"
-        )
+            username="unique_user", email="user2@example.com", password_hash="hash2"""        )
 
         db_session.add(user1)
         db_session.commit()
@@ -424,12 +418,11 @@ class TestDatabaseIntegration:
         """Test database performance with bulk operations."""""
 
         # Bulk insert users
-        users = []
-        for i in range(100):
+        users = [        for i in range(100):
             user = User(
-                username=f"bulk_user_{i}",
-                email=f"user{i}@example.com",
-                password_hash=f"hash_{i}",
+                username="bulk_user_{i}",
+                email="user{i}@example.com",
+                password_hash="hash_{i}",
             )
             users.append(user)
 
@@ -460,7 +453,7 @@ class TestEndToEndWorkflow:
         app.config.update(
             {
                 "TESTING": True,
-                "DATABASE_URL": f"sqlite:///{db_path}",
+                "DATABASE_URL": "sqlite:///{db_path}",
                 "SECRET_KEY": "test-secret-key",
             }
         )
@@ -481,7 +474,7 @@ class TestEndToEndWorkflow:
         """Test complete incident response workflow from detection to resolution."""""
         # 1. Register and authenticate user
         response = client.post(
-            "/auth/registerf",
+            "/auth/register",
             json={
                 "username": "ops_user",
                 "email": "ops@company.com",
@@ -491,7 +484,7 @@ class TestEndToEndWorkflow:
         assert response.status_code == 201
 
         response = client.post(
-            "/auth/loginf", json={"username": "ops_user", "password": "securepass123"}
+            "/auth/login", json={"username": "ops_user", "password": "securepass123"}
         )
         assert response.status_code == 200
         token = response.json["token"]
@@ -499,7 +492,7 @@ class TestEndToEndWorkflow:
 
         # 2. Detect anomaly
         response = client.post(
-            "/anomalyf",
+            "/anomaly",
             json={
                 "metrics": {
                     "cpu_usage": 95.0,
@@ -518,7 +511,7 @@ class TestEndToEndWorkflow:
         # 3. Trigger remediation
         if anomaly_data["severity"] in ["high", "critical"]:
             response = client.post(
-                "/remediation/triggerf",
+                "/remediation/trigger",
                 json={
                     "action_type": "scale_up",
                     "target_resource": "web_servers",
@@ -536,13 +529,13 @@ class TestEndToEndWorkflow:
 
             # 4. Check remediation status
             response = client.get(
-                f"/remediation/actions/{remediation_data['action_id']}", headers=headers
+                "/remediation/actions/{remediation_data['action_id']}", headers=headers
             )
             assert response.status_code == 200
 
             # 5. Query system status via ChatOps
             response = client.post(
-                "/queryf",
+                "/query",
                 json={
                     "query": "What is the current system status and recent anomalies?"
                 },
@@ -554,7 +547,7 @@ class TestEndToEndWorkflow:
 
         # 6. Verify system recovery
         response = client.post(
-            "/anomalyf",
+            "/anomaly",
             json={
                 "metrics": {
                     "cpu_usage": 45.0,
@@ -574,7 +567,7 @@ class TestEndToEndWorkflow:
         """Test monitoring dashboard workflow."""""
         # Authenticate
         response = client.post(
-            "/auth/loginf", json={"username": "admin", "password": "admin123"}
+            "/auth/login", json={"username": "admin", "password": "admin123"}
         )
         assert response.status_code == 200
         token = response.json["token"]

@@ -62,8 +62,7 @@ class ModelVersioningSystem:
     def __init__(self, base_path: str = "ml_models/versions"):
         self.base_path = Path(base_path)
         self.base_path.mkdir(parents=True, exist_ok=True)
-        self.db_path = self.base_path / "model_versions.dbf"
-        self.lock = threading.Lock()
+        self.db_path = self.base_path / "model_versions.db"""        self.lock = threading.Lock()
         self.executor = ThreadPoolExecutor(max_workers=4)
 
         # Initialize database
@@ -140,8 +139,7 @@ class ModelVersioningSystem:
         """Generate unique version ID"""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         random_suffix = os.urandom(4).hex()
-        return f"{model_name}_{model_type}_{timestamp}_{random_suffix}"
-
+        return "{model_name}_{model_type}_{timestamp}_{random_suffix}"""
     def calculate_checksum(self, file_path: str) -> str:
         """Calculate SHA256 checksum of model file"""
         sha256_hash = hashlib.sha256()
@@ -173,7 +171,7 @@ class ModelVersioningSystem:
         version_dir.mkdir(exist_ok=True)
 
         # Save model file
-        model_file = version_dir / f"{model_name}.pkl"
+        model_file = version_dir / "{model_name}.pkl"
         with open(model_file, "wb") as f:
             pickle.dump(model, f)
 
@@ -182,7 +180,7 @@ class ModelVersioningSystem:
         checksum = self.calculate_checksum(str(model_file))
 
         # Create model version record
-        model_version = ModelVersion(" f"version_id=version_id,
+        model_version = ModelVersion(" "version_id=version_id,
             model_name=model_name,
             model_type=model_type,
             created_at=timestamp,
@@ -258,7 +256,7 @@ class ModelVersioningSystem:
             row = cursor.fetchone()
 
             if not row:
-                raise ValueError(f"Model version {version_id} not found")
+                raise ValueError("Model version {version_id} not found")
 
             # Reconstruct ModelVersion object
             model_version = ModelVersion(
@@ -315,7 +313,7 @@ class ModelVersioningSystem:
             metrics["cv_score_mean"] = float(cv_scores.mean())
             metrics["cv_score_std"] = float(cv_scores.std())
         except Exception as e:
-            logger.warning(f"Cross-validation failed: {e}")
+            logger.warning("Cross-validation failed: {e}")
 
         # Update model version with performance metrics
         self._update_performance_metrics(version_id, metrics)
@@ -369,8 +367,7 @@ class ModelVersioningSystem:
     ) -> str:
         """Deploy model version to environment"""
 
-        deployment_id = f"deploy_{version_id}_{environment}_{datetime.now(" f").strftime('%Y%m%d_%H%M%S')}"
-
+        deployment_id = "deploy_{version_id}_{environment}_{datetime.now(" ").strftime('%Y%m%d_%H%M%S')}"""
         with sqlite3.connect(self.db_path) as conn:
             # Create deployment record
             conn.execute(
@@ -400,7 +397,7 @@ class ModelVersioningSystem:
             conn.commit()
 
         logger.info(
-            f"Model {version_id} deployed to {environment} with {traffic_percentage}% traffic"
+            "Model {version_id} deployed to {environment} with {traffic_percentage}% traffic"
         )
         return deployment_id
 
@@ -428,21 +425,20 @@ class ModelVersioningSystem:
 
             conn.commit()
 
-        logger.info(f"Model rolled back from {deployment_id} to {rollback_version_id}")
+        logger.info("Model rolled back from {deployment_id} to {rollback_version_id}")
         return True
 
     def get_model_history(self, model_name: str) -> List[ModelVersion]:
         """Get version history for a model"""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.execute(
-                "SELECT * FROM model_versions WHERE model_name = ? ORDER BY created_at DESCf",
+                "SELECT * FROM model_versions WHERE model_name = ? ORDER BY created_at DESC",
 
                 (model_name,),
             )
 
-            versions = []
-            for row in cursor.fetchall():
-                version = ModelVersion(" f"version_id=row[0],
+            versions = [            for row in cursor.fetchall():
+                version = ModelVersion(" "version_id=row[0],
                     model_name=row[1],
                     model_type=row[2],
                     created_at=datetime.fromisoformat(row[3]),
@@ -463,7 +459,7 @@ class ModelVersioningSystem:
 
         return versions
 
-    def get_performance_trends(" f"self, version_id: str, days: int = 30
+    def get_performance_trends(" "self, version_id: str, days: int = 30
     ) -> List[ModelPerformance]:
         """Get performance trends for a model version"""
         cutoff_date = datetime.now() - timedelta(days=days)
@@ -478,8 +474,7 @@ class ModelVersioningSystem:
                 (version_id, cutoff_date.isoformat()),
             )
 
-            trends = []
-            for row in cursor.fetchall():
+            trends = [            for row in cursor.fetchall():
                 performance = ModelPerformance(
                     version_id=row[1],
                     timestamp=datetime.fromisoformat(row[2]),
@@ -526,10 +521,10 @@ class ModelVersioningSystem:
                     conn.commit()
 
                 deleted_count += 1
-                logger.info(f"Cleaned up old model version: {version.version_id}")
+                logger.info("Cleaned up old model version: {version.version_id}")
 
             except Exception as e:
-                logger.error(f"Failed to cleanup version {version.version_id}: {e}")
+                logger.error("Failed to cleanup version {version.version_id}: {e}")
 
         return deleted_count
 

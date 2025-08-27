@@ -59,7 +59,7 @@ class PerformanceCollector:
             self.metrics.append(metrics)
 
             # Update endpoint statistics
-            endpoint_key = f"{metrics.method} {metrics.endpoint}"
+            endpoint_key = "{metrics.method} {metrics.endpoint}"
             stats = self.endpoint_stats[endpoint_key]
 
             if "count" not in stats:
@@ -108,31 +108,28 @@ class PerformanceCollector:
             memory_info = self.process.memory_info()
             cpu_percent = self.process.cpu_percent()
 
-            return {}
-                "memory": {}
+            return {                "memory": {
                     "rss": memory_info.rss,
                     "vms": memory_info.vms,
                     "rss_mb": memory_info.rss / 1024 / 1024,
                     "percent": self.process.memory_percent(),
                 },
-                "cpu": {}
+                "cpu": {
                     "percent": cpu_percent,
                     "num_threads": self.process.num_threads(),
                 },
-                "requests": {}
+                "requests": {
                     "current_minute": self.current_minute_requests,
                     "total": len(self.metrics),
                 },
             }
         except Exception as e:
-            logger.warning(f"Failed to get system metrics: {e}")
-            return {}
-
+            logger.warning("Failed to get system metrics: {e}")
+            return {
     def get_performance_summary(self) -> Dict[str, Any]:
         "Get comprehensive performance summary"
         if not self.metrics:
-            return {}
-
+            return {
         # Calculate overall statistics
         recent_metrics = list(self.metrics)[-1000:]  # Last 1000 requests
         response_times = [m.response_time for m in recent_metrics]
@@ -144,8 +141,7 @@ class PerformanceCollector:
         p95_idx = int(len(sorted_times) * 0.95)
         p99_idx = int(len(sorted_times) * 0.99)
 
-        return {}
-            "overall": {}
+        return {            "overall": {
                 "total_requests": len(self.metrics),
                 "avg_response_time": sum(response_times) / len(response_times),
                 "p50_response_time": sorted_times[p50_idx] if sorted_times else 0,
@@ -164,8 +160,7 @@ class PerformanceCollector:
 
     def get_slow_endpoints(self, threshold: float = 1.0) -> List[Dict[str, Any]]:
         "Get endpoints with response times above threshold"
-        slow_endpoints = []
-
+        slow_endpoints = [
         for endpoint, stats in self.endpoint_stats.items():
             if stats.get("avg_response_time", 0) > threshold:
                 slow_endpoints.append(
@@ -288,18 +283,18 @@ def performance_middleware(app: Flask):
             performance_collector.record_request(metrics)
 
             # Add performance headers
-            response.headers["X-Response-Time"] = f"{response_time:.3f}s"
-            response.headers["X-Memory-Delta"] = f"{memory_delta / 1024 / 1024:.2f}MB"
+            response.headers["X-Response-Time"] = "{response_time:.3f}s"
+            response.headers["X-Memory-Delta"] = "{memory_delta / 1024 / 1024:.2f}MB"
 
             # Log slow requests
             if response_time > 2.0:
                 logger.warning()
-                    f"Slow request: {request.method} {request.path} "
-                    f"took {response_time:.3f}s"
+                    "Slow request: {request.method} {request.path} "
+                    "took {response_time:.3f}s"
                 )
 
         except Exception as e:
-            logger.error(f"Performance middleware error: {e}")
+            logger.error("Performance middleware error: {e}")
 
         return response
 
@@ -332,7 +327,7 @@ def optimize_response(cache_ttl: int = 300, compress: bool = True):
             # Check rate limiting
             client_ip = request.remote_addr or "unknown"
             if not rate_limiter.is_allowed(client_ip:
-                return ()
+                return (
                     jsonify()
                         {}
                             "status": "error",
@@ -344,7 +339,7 @@ def optimize_response(cache_ttl: int = 300, compress: bool = True):
 
             # Try cache first
             cache_key = ()
-                f"{request.method}:{request.path}:{request.query_string.decode()}"
+                "{request.method}:{request.path}:{request.query_string.decode()}"
             )
             cached_response = cache_manager.get_cache("api_responses")
 
@@ -368,7 +363,7 @@ def optimize_response(cache_ttl: int = 300, compress: bool = True):
             # Add performance headers
             if hasattr(result, "headers":
                 result.headers["X-Cache"] = "MISS"
-                result.headers["X-Execution-Time"] = f"{execution_time:.3f}s"
+                result.headers["X-Execution-Time"] = "{execution_time:.3f}s"
                 result.headers["X-Rate-Limit-Remaining"] = str()
                     rate_limiter.get_remaining(client_ip)
                 )
@@ -389,7 +384,7 @@ class MemoryManager:
         import gc
 
         collected = gc.collect
-        logger.info(f"Garbage collected {collected} objects")
+        logger.info("Garbage collected {collected} objects")
         return collected
 
     @staticmethod
@@ -402,8 +397,7 @@ class MemoryManager:
             memory_info = process.memory_info()
 
             # Get Python object memory if tracemalloc is running
-            python_memory = {}
-            if tracemalloc.is_tracing(:
+            python_memory = {            if tracemalloc.is_tracing(:
                 current, peak = tracemalloc.get_traced_memory()
                 python_memory = {
 
@@ -413,8 +407,7 @@ class MemoryManager:
                     "peak_mb": peak / 1024 / 1024,
                 }
 
-            return {}
-                "system": {}
+            return {                "system": {
                     "rss": memory_info.rss,
                     "vms": memory_info.vms,
                     "rss_mb": memory_info.rss / 1024 / 1024,
@@ -424,9 +417,8 @@ class MemoryManager:
                 "gc_stats": {"counts": gc.get_count(), "threshold": gc.get_threshold()},
             }
         except Exception as e:
-            logger.error(f"Failed to get memory usage: {e}")
-            return {}
-
+            logger.error("Failed to get memory usage: {e}")
+            return {
     @staticmethod
     def start_memory_monitoring():
         "Start memory monitoring"
@@ -436,7 +428,7 @@ class MemoryManager:
             tracemalloc.start
             logger.info("Memory monitoring started")
         except Exception as e:
-            logger.warning(f"Failed to start memory monitoring: {e}")
+            logger.warning("Failed to start memory monitoring: {e}")
 
 
 class BackgroundOptimizer:
@@ -483,14 +475,14 @@ class BackgroundOptimizer:
                         # Analyze slow queries
                         slow_queries = db.metrics.get_slow_queries(threshold=2.0)
                         if len(slow_queries) > 10:
-                            logger.warning(f"Found {len(slow_queries)} slow queries")
+                            logger.warning("Found {len(slow_queries)} slow queries")
                 except Exception as e:
-                    logger.debug(f"Database optimization check failed: {e}")
+                    logger.debug("Database optimization check failed: {e}")
 
                 logger.debug("Background optimization cycle completed")
 
             except Exception as e:
-                logger.error(f"Background optimization error: {e}")
+                logger.error("Background optimization error: {e}")
 
 
 # Global background optimizer

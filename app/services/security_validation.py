@@ -13,7 +13,7 @@ class SecurityValidation:
 
     def __init__(self):
         """Initialize security validation service."""
-        self.suspicious_patterns = []
+        self.suspicious_patterns = [
             "script",
             "javascript:",
             "onload=",
@@ -37,8 +37,7 @@ class SecurityValidation:
         Returns:
             Validation result with is_valid flag and issues list
         "
-        issues = []
-
+        issues = [
         try:
             # Check for suspicious patterns in string values
             self._check_suspicious_patterns(data, issues)
@@ -52,7 +51,7 @@ class SecurityValidation:
                 issues.append("Input nesting too deep")
 
         except Exception as e:
-            issues.append(f"Validation error: {str(e)}")
+            issues.append("Validation error: {str(e)}")
 
         return {"is_valid": len(issues) == 0, "issues": issues}
 
@@ -60,17 +59,17 @@ class SecurityValidation:
         """Recursively check for suspicious patterns in data."""
         if isinstance(data, dict:
             for key, value in data.items():
-                current_path = f"{path}.{key}" if path else key
+                current_path = "{path}.{key}" if path else key
                 self._check_suspicious_patterns(value, issues, current_path)
         elif isinstance(data, list:
             for i, item in enumerate(data):
-                current_path = f"{path}[{i}]"
+                current_path = "{path}[{i}]"
                 self._check_suspicious_patterns(item, issues, current_path)
         elif isinstance(data, str:
             data_lower = data.lower()
             for pattern in self.suspicious_patterns:
                 if pattern in data_lower:
-                    issues.append(f"Suspicious pattern '{pattern}' found in {path}")
+                    issues.append("Suspicious pattern '{pattern}' found in {path}")
 
     def _get_nesting_depth(self, data: Any, current_depth: int = 0) -> int:
         """Get the maximum nesting depth of the data structure."""

@@ -123,7 +123,7 @@ class AnomalyDetector:
             return df[self.feature_columns]
 
         except Exception as e:
-            logger.error(f"Error preparing features: {e}")
+            logger.error("Error preparing features: {e}")
             # Return dummy dataframe with default values
             default_data = {
                 "cpu_usage_percent": [50],
@@ -146,7 +146,7 @@ class AnomalyDetector:
             Training results and metrics
         """
         try:
-            logger.info(f"Training anomaly detector with {len(training_data)} samples")
+            logger.info("Training anomaly detector with {len(training_data)} samples")
 
             # Prepare features
             features_df = self.prepare_features(training_data)
@@ -185,11 +185,11 @@ class AnomalyDetector:
                 "feature_columns": self.feature_columns,
             }
 
-            logger.info(f"Model training completed: {results}")
+            logger.info("Model training completed: {results}")
             return results
 
         except Exception as e:
-            logger.error(f"Model training failed: {e}")
+            logger.error("Model training failed: {e}")
             return {"status": "error", "error": str(e), "samples_trained": 0}
 
     def detect_anomaly(self, metrics: Dict[str, Any]) -> Dict[str, Any]:
@@ -246,7 +246,7 @@ class AnomalyDetector:
             }
 
         except Exception as e:
-            logger.error(f"Anomaly prediction failed: {e}")
+            logger.error("Anomaly prediction failed: {e}")
             return {
                 "is_anomaly": False,
                 "anomaly_score": 0.0,
@@ -266,14 +266,13 @@ class AnomalyDetector:
             List of anomaly predictions
         """
         try:
-            results = []
-            for metrics in metrics_list:
+            results = [            for metrics in metrics_list:
                 result = self.detect_anomaly(metrics)
                 results.append(result)
             return results
 
         except Exception as e:
-            logger.error(f"Batch detection failed: {e}")
+            logger.error("Batch detection failed: {e}")
             return [{"status": "error", "error": str(e)} for _ in metrics_list]
 
     def _generate_synthetic_data(self, n_samples: int) -> pd.DataFrame:
@@ -304,13 +303,12 @@ class AnomalyDetector:
             "network_bytes_sent_rate": np.random.uniform(
                 10000000, 50000000, anomaly_samples
             ),
-            "network_bytes_recv_rate": np.random.uniform(" f"20000000, 100000000, anomaly_samples
+            "network_bytes_recv_rate": np.random.uniform(" "20000000, 100000000, anomaly_samples
             ),
         }
 
         # Combine normal and anomaly data
-        combined_data = {}
-        for col in normal_data.keys():
+        combined_data = {        for col in normal_data.keys():
             combined_data[col] = np.concatenate([normal_data[col], anomaly_data[col]])
 
         # Ensure no negative values and reasonable bounds
@@ -329,9 +327,9 @@ class AnomalyDetector:
                 pickle.dump(self.model, f)
             with open(self.scaler_path, "wb") as f:
                 pickle.dump(self.scaler, f)
-            logger.info(f"Model saved to {self.model_path}")
+            logger.info("Model saved to {self.model_path}")
         except Exception as e:
-            logger.error(f"Failed to save model: {e}")
+            logger.error("Failed to save model: {e}")
 
     def _load_model(self) -> bool:
         """Load trained model and scaler from disk."""""
@@ -342,11 +340,11 @@ class AnomalyDetector:
                 with open(self.scaler_path, "rb") as f:
                     self.scaler = pickle.load(f)
                 self.is_trained = True
-                logger.info(f"Model loaded from {self.model_path}")
+                logger.info("Model loaded from {self.model_path}")
                 return True
             return False
         except Exception as e:
-            logger.error(f"Failed to load model: {e}")
+            logger.error("Failed to load model: {e}")
             return False
 
     def load_model(self) -> bool:
@@ -383,8 +381,7 @@ class AnomalyDetector:
     def validate_metrics(self, metrics):
         """Validate input metrics format and values"""
         try:
-            issues = []
-
+            issues = [
             # Check if metrics is a dict
             if not isinstance(metrics, dict):
                 return False, ["Metrics must be a dictionary"]
@@ -393,16 +390,16 @@ class AnomalyDetector:
             required_fields = ["cpu_usage_avg", "memory_usage_pct"]
             for field in required_fields:
                 if field not in metrics:
-                    issues.append(f"Missing required field: {field}")
+                    issues.append("Missing required field: {field}")
                 elif not isinstance(metrics[field], (int, float)):
-                    issues.append(f"Field {field} must be numeric")
+                    issues.append("Field {field} must be numeric")
                 elif metrics[field] < 0 or metrics[field] > 100:
-                    issues.append(f"Field {field} must be between 0 and 100")
+                    issues.append("Field {field} must be between 0 and 100")
 
             return len(issues) == 0, issues
 
         except Exception as e:
-            return False, [f"Validation error: {str(e)}"]
+            return False, ["Validation error: {str(e)}"]
 
     def get_feature_importance(self):
         """Get feature importance from trained model"""
@@ -458,12 +455,10 @@ class AnomalyDetector:
             Dict containing correlation analysis results and anomaly detection
         """
         try:
-            logger.info("Performing multi-metric correlation analysisf")
+            logger.info("Performing multi-metric correlation analysis")
 
             # Convert metrics to DataFrame for correlation analysis
-            correlation_data = {}
-            timestamps = []
-
+            correlation_data = {            timestamps = [
             for metric_type, metric_series in metrics_dict.items():
                 if not metric_series:
                     continue
@@ -487,9 +482,7 @@ class AnomalyDetector:
             correlation_matrix = df.corr().to_dict()
 
             # Detect correlation anomalies
-            anomalies = []
-            strong_correlations = []
-
+            anomalies = [            strong_correlations = [
             for i, col1 in enumerate(df.columns):
                 for j, col2 in enumerate(df.columns):
                     if i < j:  # Avoid duplicate pairs
@@ -535,7 +528,7 @@ class AnomalyDetector:
                                             if abs(recent_val - historical_val) > 0.8
                                             else "medium"
                                         ),
-                                        "timestamp": (" f"timestamps[-1]
+                                        "timestamp": (" "timestamps[-1]
                                             if timestamps
                                             else datetime.now().isoformat()
                                         ),
@@ -559,7 +552,7 @@ class AnomalyDetector:
             return result
 
         except Exception as e:
-            logger.error(f"Multi-metric anomaly detection failed: {e}")
+            logger.error("Multi-metric anomaly detection failed: {e}")
             return {"status": "error", "error": str(e), "anomalies": []}
 
     def predict_failure_probability(
@@ -577,7 +570,7 @@ class AnomalyDetector:
             Dict containing failure probability and contributing factors
         """
         try:
-            logger.info(f"Predicting failure probability for {time_horizon}s horizon")
+            logger.info("Predicting failure probability for {time_horizon}s horizon")
 
             if not self.is_trained:
                 # Use rule-based prediction when ML model isn't trained
@@ -604,8 +597,7 @@ class AnomalyDetector:
             normalized_score = max(0, min(1, (0.5 - anomaly_score) / 1.0))
 
             # Risk factors analysis
-            risk_factors = []
-            cpu_usage = metrics.get("cpu_usage_percent", 0)
+            risk_factors = [            cpu_usage = metrics.get("cpu_usage_percent", 0)
             memory_usage = metrics.get("memory_usage_percent", 0)
             disk_usage = metrics.get("disk_usage_percent", 0)
 
@@ -667,7 +659,7 @@ class AnomalyDetector:
             confidence = 0.8 if self.is_trained else 0.5
 
             # Time horizon adjustment
-            time_factor = min(" f"1.0, time_horizon / 3600
+            time_factor = min(" "1.0, time_horizon / 3600
             )  # Scale based on 1-hour baseline
             adjusted_probability = failure_probability * time_factor
 
@@ -692,7 +684,7 @@ class AnomalyDetector:
             return result
 
         except Exception as e:
-            logger.error(f"Failure prediction failed: {e}")
+            logger.error("Failure prediction failed: {e}")
             return {
                 "status": "error",
                 "error": str(e),
@@ -719,8 +711,7 @@ class AnomalyDetector:
                     "factors": [],
                 }
 
-            factors = []
-            severity = anomaly_result.get("severity", "unknown")
+            factors = [            severity = anomaly_result.get("severity", "unknown")
             anomaly_score = anomaly_result.get("anomaly_score", 0)
 
             # Analyze individual metrics for explanation
@@ -732,16 +723,16 @@ class AnomalyDetector:
                 factors.append({
                         "metric": "cpu_usage_percent",
                         "value": cpu_usage,
-                        "explanation": f"Critical CPU usage at {cpu_usage}% (>95% threshold)",
+                        "explanation": "Critical CPU usage at {cpu_usage}% (>95% threshold)",
                         "impact": "critical",
-                        "normal_range": "0-80%f",
+                        "normal_range": "0-80%",
                     }
                 )
             elif cpu_usage > 85:
                 factors.append({
                         "metric": "cpu_usage_percent",
                         "value": cpu_usage,
-                        "explanation": f"High CPU usage at {cpu_usage}% (>85% threshold)",
+                        "explanation": "High CPU usage at {cpu_usage}% (>85% threshold)",
                         "impact": "high",
                         "normal_range": "0-80%",
                     }
@@ -753,16 +744,16 @@ class AnomalyDetector:
                 factors.append({
                         "metric": "memory_usage_percent",
                         "value": memory_usage,
-                        "explanation": f"Critical memory usage at {memory_usage}% (>90% threshold)",
+                        "explanation": "Critical memory usage at {memory_usage}% (>90% threshold)",
                         "impact": "critical",
-                        "normal_range": "0-80%f",
+                        "normal_range": "0-80%",
                     }
                 )
             elif memory_usage > 80:
                 factors.append({
                         "metric": "memory_usage_percent",
                         "value": memory_usage,
-                        "explanation": f"High memory usage at {memory_usage}% (>80% threshold)",
+                        "explanation": "High memory usage at {memory_usage}% (>80% threshold)",
                         "impact": "high",
                         "normal_range": "0-80%",
                     }
@@ -774,16 +765,16 @@ class AnomalyDetector:
                 factors.append({
                         "metric": "disk_usage_percent",
                         "value": disk_usage,
-                        "explanation": f"Critical disk usage at {disk_usage}% (>95% threshold)",
+                        "explanation": "Critical disk usage at {disk_usage}% (>95% threshold)",
                         "impact": "critical",
-                        "normal_range": "0-85%f",
+                        "normal_range": "0-85%",
                     }
                 )
             elif disk_usage > 85:
                 factors.append({
                         "metric": "disk_usage_percent",
                         "value": disk_usage,
-                        "explanation": f"High disk usage at {disk_usage}% (>85% threshold)",
+                        "explanation": "High disk usage at {disk_usage}% (>85% threshold)",
                         "impact": "high",
                         "normal_range": "0-85%",
                     }
@@ -795,16 +786,16 @@ class AnomalyDetector:
                 factors.append({
                         "metric": "load_avg_1min",
                         "value": load_avg,
-                        "explanation": f"Very high system load at {load_avg} (>4.0 threshold)",
+                        "explanation": "Very high system load at {load_avg} (>4.0 threshold)",
                         "impact": "high",
-                        "normal_range": "0-2.0f",
+                        "normal_range": "0-2.0",
                     }
                 )
             elif load_avg > 2:
                 factors.append({
                         "metric": "load_avg_1min",
                         "value": load_avg,
-                        "explanation": f"Elevated system load at {load_avg} (>2.0 threshold)",
+                        "explanation": "Elevated system load at {load_avg} (>2.0 threshold)",
                         "impact": "medium",
                         "normal_range": "0-2.0",
                     }
@@ -825,7 +816,7 @@ class AnomalyDetector:
                 )
             else:
                 overall_explanation = (
-                    "System anomaly detected with unusual metric patternsf"
+                    "System anomaly detected with unusual metric patterns"
                 )
 
             # Recommendations
@@ -846,7 +837,7 @@ class AnomalyDetector:
             return result
 
         except Exception as e:
-            logger.error(f"Anomaly explanation failed: {e}")
+            logger.error("Anomaly explanation failed: {e}")
             return {
                 "status": "error",
                 "error": str(e),
@@ -894,20 +885,14 @@ class AnomalyDetector:
     def _get_failure_recommendation(self, probability: float) -> str:
         """Get recommendation based on failure probability"""
         if probability > 0.8:
-            return "IMMEDIATE ACTION REQUIRED: System failure highly likely"
-        elif probability > 0.6:
-            return "HIGH PRIORITY: Take preventive action to avoid potential failure"
-        elif probability > 0.4:
-            return "MEDIUM PRIORITY: Monitor closely and consider optimization"
-        elif probability > 0.2:
-            return "LOW PRIORITY: System stable but watch for trends"
-        else:
-            return "NORMAL: System operating within expected parameters"
-
+            return "IMMEDIATE ACTION REQUIRED: System failure highly likely"""        elif probability > 0.6:
+            return "HIGH PRIORITY: Take preventive action to avoid potential failure"""        elif probability > 0.4:
+            return "MEDIUM PRIORITY: Monitor closely and consider optimization"""        elif probability > 0.2:
+            return "LOW PRIORITY: System stable but watch for trends"""        else:
+            return "NORMAL: System operating within expected parameters"""
     def _generate_anomaly_recommendations(self, factors: List[Dict]) -> List[str]:
         """Generate actionable recommendations based on anomaly factors"""
-        recommendations = []
-
+        recommendations = [
         for factor in factors:
             metric = factor["metric"]
             impact = factor["impact"]
@@ -981,8 +966,7 @@ class TimeSeriesAnalyzer:
                 }
 
             df = pd.DataFrame(metrics_history)
-            trends = {}
-
+            trends = {
             numeric_columns = df.select_dtypes(include=[np.number]).columns
 
             for col in numeric_columns:
@@ -1020,7 +1004,7 @@ class TimeSeriesAnalyzer:
             }
 
         except Exception as e:
-            logger.error(f"Trend analysis failed: {e}")
+            logger.error("Trend analysis failed: {e}")
             return {"status": "error", "error": str(e)}
 
 
@@ -1049,7 +1033,7 @@ class DataProcessor:
         timestamps = pd.date_range(start_time, end_time, freq="1min")
         n_points = len(timestamps)
 
-        return pd.DataFrame(" f"{
+        return pd.DataFrame(" "{
                 "timestamp": timestamps,
                 "cpu_usage_avg": np.random.uniform(10, 90, n_points),
                 "memory_usage_pct": np.random.uniform(20, 80, n_points),
@@ -1083,8 +1067,7 @@ class DataProcessor:
             data = [data]
         df = pd.DataFrame(data)
 
-        issues = []
-
+        issues = [
         # Check if we have enough data points
         if len(df) < 10:
             issues.append("Insufficient data points (minimum 10 required)")
@@ -1111,7 +1094,7 @@ class AnomalyModelTrainer:
     def __init__(self, model_type="isolation_forest"):
         self.model_type = model_type
         self.model = None
-        self.feature_columns = []
+        self.feature_columns = [
         self.scaler = None
 
     def prepare_features(self, data):
@@ -1234,10 +1217,8 @@ class AnomalyInferenceEngine:
     def _explain_anomaly(self, metrics, anomaly_score, severity_score, threshold):
         """Generate explanation for anomaly detection"""
         if anomaly_score <= threshold:
-            return f"Anomaly detected with severity {severity_score:.2f}. Metrics: {metrics}"
-        else:
-            return "No anomalies detected in the provided metrics."
-
+            return "Anomaly detected with severity {severity_score:.2f}. Metrics: {metrics}"""        else:
+            return "No anomalies detected in the provided metrics."""
     def predict(self, data):
         """Make predictions."""""
         return {"anomaly": False, "score": 0.1}
@@ -1260,7 +1241,7 @@ __all__ = [
 
 if __name__ == "__main__":
     # Test the implementation
-    print("Testing ML Models Implementation...f")
+    print("Testing ML Models Implementation...")
 
     detector = AnomalyDetector()
 

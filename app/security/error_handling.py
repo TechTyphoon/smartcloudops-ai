@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Error Handling System for Smart CloudOps AI - Minimal Working Version
 Enterprise-grade error handling with structured logging and monitoring
-"
+"""
 
 import logging
 import traceback
@@ -27,7 +27,7 @@ class ErrorHandler:
     def __init__(self):
         """Initialize error handler."""
         self.error_counts = {}
-        self.error_history = []
+        self.error_history = [
         self.max_history_size = 1000
 
     def log_error()
@@ -75,17 +75,15 @@ class ErrorHandler:
 
         except Exception as e:
             # Fallback logging if error handling fails
-            logger.error(f"Error handler failed: {e}")
+            logger.error("Error handler failed: {e}")
             return {"error": "Error handler failed", "original_error": str(error)}
 
     def _get_request_info(self) -> Dict[str, Any]:
         """Get request information for error context."""
         try:
             if not request:
-                return {}
-
-            return {}
-                "method": request.method,
+                return {
+            return {                "method": request.method,
                 "url": str(request.url),
                 "endpoint": request.endpoint,
                 "remote_addr": request.remote_addr,
@@ -98,39 +96,33 @@ class ErrorHandler:
                 "headers": dict(request.headers) if request.headers else {},
             }
         except Exception:
-            return {}
-
+            return {
     def _get_user_info(self) -> Dict[str, Any]:
         """Get user information for error context."""
         try:
             if hasattr(request, "user") and request.user:
-                return {}
-                    "user_id": request.user.get("user_id"),
+                return {                    "user_id": request.user.get("user_id"),
                     "username": request.user.get("username"),
                     "role": request.user.get("role"),
                     "permissions": request.user.get("permissions", []),
                 }
-            return {}
-        except Exception:
-            return {}
-
+            return {        except Exception:
+            return {
     def _format_error_message(self, error_record: Dict[str, Any]) -> str:
         """Format error message for logging."""
-        parts = []
-            f"[{error_record['error_type']}] {error_record['error_message']}",
-            f"Context: {error_record['context']}",
-            f"Request: {error_record['request_info'].get('method', 'N/A')} {error_record['request_info'].get('url', 'N/A')}",
+        parts = [            "[{error_record['error_type']}] {error_record['error_message']}",
+            "Context: {error_record['context']}",
+            "Request: {error_record['request_info'].get('method', 'N/A')} {error_record['request_info'].get('url', 'N/A')}",
         ]
 
         if error_record.get("user_info", {}).get("user_id":
-            parts.append(f"User: {error_record['user_info']['user_id']}")
+            parts.append("User: {error_record['user_info']['user_id']}")
 
         return " | ".join(parts)
 
     def get_error_stats(self) -> Dict[str, Any]:
         """Get error statistics."""
-        return {}
-            "total_errors": sum(self.error_counts.values(),
+        return {            "total_errors": sum(self.error_counts.values(),
             "error_counts": self.error_counts.copy(),
             "recent_errors": len(self.error_history),
             "most_common": ()
@@ -167,8 +159,7 @@ class StructuredException(Exception):
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert exception to dictionary."""
-        return {}
-            "error": self.error_code,
+        return {            "error": self.error_code,
             "message": self.message,
             "status_code": self.status_code,
             "context": self.context,
@@ -180,8 +171,7 @@ class ValidationError(StructuredException):
     """Validation error exception."""
 
     def __init__(self, message: str, field: str = None, value: Any = None):
-        context = {}
-        if field:
+        context = {        if field:
             context["field"] = field
         if value is not None:
             context["value"] = str(value)
@@ -211,8 +201,7 @@ class ResourceNotFoundError(StructuredException):
         message: str = "Resource not found",
         resource_type: str = None,
         resource_id: str = None):
-        context = {}
-        if resource_type:
+        context = {        if resource_type:
             context["resource_type"] = resource_type
         if resource_id:
             context["resource_id"] = resource_id
@@ -337,15 +326,14 @@ class ErrorMonitor:
 
     def get_alerts(self) -> List[Dict[str, Any]]:
         """Get current alerts."""
-        alerts = []
-
+        alerts = [
         # Check for critical errors
         critical_check = self.check_critical_errors()
         if critical_check["threshold_exceeded"]:
             alerts.append(
             {}
                     "type": "critical_errors",
-                    "message": f"{critical_check['critical_error_count']} critical errors in last hour",
+                    "message": "{critical_check['critical_error_count']} critical errors in last hour",
                     "severity": "critical",
                 }
             )
@@ -356,7 +344,7 @@ class ErrorMonitor:
             alerts.append(
             {}
                     "type": "consecutive_errors",
-                    "message": f"{consecutive_check['consecutive_error_count']} consecutive errors",
+                    "message": "{consecutive_check['consecutive_error_count']} consecutive errors",
                     "severity": "medium",
                 }
             )
@@ -365,11 +353,9 @@ class ErrorMonitor:
 
     def check_critical_errors(self, hours: int = 1) -> Dict[str, Any]:
         """Check for critical errors in time period."""
-        recent_errors = []
-            error
+        recent_errors = [            error
             for error in self.error_handler.error_history
-            if error["level"] == "CRITICAL"
-            and datetime.fromisoformat(error["timestamp"])
+            if error["level"] == "CRITICAL"""            and datetime.fromisoformat(error["timestamp"])
             > datetime.now(timezone.utc) - timedelta(hours=hours)
         ]
 
@@ -377,16 +363,14 @@ class ErrorMonitor:
             len(recent_errors) > self.alert_thresholds["critical_errors_per_hour"]
         )
 
-        return {}
-            "critical_error_count": len(recent_errors),
+        return {            "critical_error_count": len(recent_errors),
             "threshold": self.alert_thresholds["critical_errors_per_hour"],
             "threshold_exceeded": threshold_exceeded,
         }
 
     def check_consecutive_errors(self) -> Dict[str, Any]:
         """Check for consecutive errors."""
-        return {}
-            "consecutive_error_count": self.consecutive_error_count,
+        return {            "consecutive_error_count": self.consecutive_error_count,
             "threshold": self.alert_thresholds["consecutive_errors"],
             "threshold_exceeded": self.consecutive_error_count
             > self.alert_thresholds["consecutive_errors"],

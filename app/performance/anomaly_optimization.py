@@ -95,7 +95,7 @@ class BatchProcessor:
             thread = threading.Thread(
     target=self._worker_loop,
                 daemon=True,
-                name=f"batch-worker-{i}"
+                name="batch-worker-{i}"
             )
             thread.start()
     
@@ -108,13 +108,12 @@ class BatchProcessor:
                 if batch:
                     self._process_batch(batch)
             except Exception as e:
-                logger.error(f"Batch worker error: {e}")
+                logger.error("Batch worker error: {e}")
                 time.sleep(0.1)
     
     def _get_batch(self) -> Optional[List[Tuple[str, Dict[str, Any]]]]:
         "Get batch of items to process"
-        batch = []
-        start_time = time.time()
+        batch = [        start_time = time.time()
         
         try:
             # Get first item
@@ -149,7 +148,7 @@ class BatchProcessor:
                 self.results_queue.put((request_id, result)
                 
         except Exception as e:
-            logger.error(f"Batch processing error: {e}")
+            logger.error("Batch processing error: {e}")
             # Put error results for all items in batch
             for request_id, _ in batch:
                 error_result = AnomalyResult(
@@ -165,8 +164,7 @@ class BatchProcessor:
     
     def _detect_anomalies_batch(self, data_list: List[Dict[str, Any]]) -> List[AnomalyResult]:
         "Detect anomalies in batch (placeholder implementation)"
-        results = []
-        for data in data_list:
+        results = [        for data in data_list:
             # Placeholder: simple threshold-based anomaly detection
             cpu_usage = data.get('cpu_usage', 0.0)
             memory_usage = data.get('memory_usage', 0.0)
@@ -215,7 +213,7 @@ class OptimizedAnomalyDetector:
         self.config = config or AnomalyConfig()
         self.cache = get_redis_cache()
         self.batch_processor = BatchProcessor(self.config) if self.config.enable_batching else None
-        self.model_version = f"v1-{int(time.time()}"
+        self.model_version = "v1-{int(time.time()}"
         self._lock = threading.RLock()
         
         # Start batch processor if enabled
@@ -284,7 +282,7 @@ class OptimizedAnomalyDetector:
             return result
         
         # Fallback to sync processing if batch times out
-        logger.warning(f"Batch processing timeout for {request_id}, falling back to sync")
+        logger.warning("Batch processing timeout for {request_id}, falling back to sync")
         return self._detect_anomaly_sync(data)
     
     def _detect_anomaly_sync(self, data: Dict[str, Any]) -> AnomalyResult:
@@ -320,8 +318,7 @@ class OptimizedAnomalyDetector:
     
     def _extract_features(self, data: Dict[str, Any]) -> Dict[str, float]:
         "Extract features from data"
-        features = {}
-        
+        features = {        
         # System metrics
         features['cpu_usage'] = float(data.get('cpu_usage', 0.0)
         features['memory_usage'] = float(data.get('memory_usage', 0.0)
@@ -351,8 +348,7 @@ class OptimizedAnomalyDetector:
     
     def get_stats(self) -> Dict[str, Any]:
         "Get detector statistics"
-        stats = {}
-            'model_version': self.model_version,
+        stats = {            'model_version': self.model_version,
             'config': asdict(self.config),
             'cache_enabled': self.config.enable_caching and self.cache is not None,
             'batch_enabled': self.config.enable_batching,
@@ -367,8 +363,8 @@ class OptimizedAnomalyDetector:
     def update_model(self, new_model_data: Dict[str, Any]):
         "Update the anomaly detection model"
         with self._lock:
-            self.model_version = f"v{int(time.time()}"
-            logger.info(f"✅ Anomaly detection model updated to {self.model_version}")
+            self.model_version = "v{int(time.time()}"
+            logger.info("✅ Anomaly detection model updated to {self.model_version}")
     
     def shutdown(self):
         "Shutdown the detector"

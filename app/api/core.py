@@ -20,14 +20,14 @@ def root():
         "version": "2.0.0",
         "status": "operational",
         "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
-        "features": {}
+        "features": {
             "mlops": hasattr(current_app, "mlops_service")
             and current_app.mlops_service is not None,
             "performance_monitoring": _check_performance_available(),
             "caching": _check_performance_available(),
             "database_optimization": _check_performance_available(),
         },
-        "endpoints": {}
+        "endpoints": {
             "status": "/api/status",
             "health": "/health",
             "mlops": ()
@@ -39,7 +39,7 @@ def root():
                 "/api/performance/metrics" if _check_performance_available() else None
             ),
         },
-        "documentation": {}
+        "documentation": {
             "api": "/api/docs",
             "health": "/health",
             "metrics": ()
@@ -60,7 +60,7 @@ def health(:
         "service": "SmartCloudOps AI",
         "version": "2.0.0",
         "environment": os.getenv("FLASK_ENV", "development"),
-        "checks": {}
+        "checks": {
             "mlops_service": hasattr(current_app, "mlops_service")
             and current_app.mlops_service is not None,
             "performance_monitoring": _check_performance_available(),
@@ -79,7 +79,7 @@ def status():
         "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
         "version": "2.0.0",
         "environment": os.getenv("FLASK_ENV", "development"),
-        "features": {}
+        "features": {
             "mlops_service": hasattr(current_app, "mlops_service")
             and current_app.mlops_service is not None,
             "experiment_tracking": _check_mlops_feature("experiment_tracker"),
@@ -90,7 +90,7 @@ def status():
             "caching": _check_performance_available(),
             "database_optimization": _check_performance_available(),
         },
-        "api_endpoints": {}
+        "api_endpoints": {
             "experiments": True,
             "models": True,
             "data_pipeline": True,
@@ -120,7 +120,7 @@ def status():
                 .get("rss_mb", 0),
             }
         except Exception as e:
-            current_app.logger.debug(f"Performance metrics not available: {e}")
+            current_app.logger.debug("Performance metrics not available: {e}")
 
     return jsonify(status_data)
 
@@ -133,31 +133,31 @@ def api_docs():
         "title": "SmartCloudOps AI API Documentation",
         "version": "2.0.0",
         "description": "Comprehensive API for SmartCloudOps AI platform",
-        "endpoints": {}
-            "core": {}
+        "endpoints": {
+            "core": {
                 "GET /": "Root endpoint with system information",
                 "GET /health": "Health check endpoint",
                 "GET /api/status": "Detailed status with performance metrics",
                 "GET /api/docs": "API documentation (this endpoint)",
             },
-            "mlops": {}
+            "mlops": {
                 "GET /api/mlops/experiments": "List ML experiments",
                 "GET /api/mlops/models": "List registered models",
                 "POST /api/mlops/train": "Start model training",
                 "POST /api/mlops/predict": "Make predictions",
             },
-            "anomalies": {}
+            "anomalies": {
                 "GET /api/anomalies": "List detected anomalies",
                 "POST /api/anomalies": "Create new anomaly",
                 "GET /api/anomalies/<id>": "Get specific anomaly",
             },
-            "remediation": {}
+            "remediation": {
                 "GET /api/remediation": "List remediation actions",
                 "POST /api/remediation": "Create remediation action",
                 "GET /api/remediation/<id>": "Get specific remediation",
             },
         },
-        "authentication": {}
+        "authentication": {
             "type": "JWT Bearer Token",
             "endpoints": []
                 "POST /auth/login",
@@ -186,7 +186,7 @@ def _check_mlops_feature:
         return False
 
     mlops_service = current_app.mlops_service
-    return ()
+    return (
         hasattr(mlops_service, feature_name)
         and getattr(mlops_service, feature_name) is not None
     )

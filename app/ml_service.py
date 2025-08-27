@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 ML Processing Service for Smart CloudOps AI
 Dedicated microservice for ML operations
-"
+"""
 
 import logging
 import os
@@ -36,13 +36,13 @@ def predict():
             "model_version": "1.0.0"
         }
         
-        return jsonify({}
+        return jsonify({
             "status": "success",
             "prediction": prediction,
             "input_data": data
         })
     except Exception as e:
-        logger.error(f"Prediction error: {e}")
+        logger.error("Prediction error: {e}")
         return jsonify({"error": "Prediction failed"}), 500
 
 
@@ -59,15 +59,15 @@ def train():
         training_status = {
 
             "status": "training_started",
-            "model_id": f"model_{os.getpid()}",
+            "model_id": "model_{os.getpid()}",
             "timestamp": "2024-01-01T00:00:00Z"
         }
         
-        logger.info(f"Training started: {training_status['model_id']}")
+        logger.info("Training started: {training_status['model_id']}")
         
         return jsonify(training_status)
     except Exception as e:
-        logger.error(f"Training error: {e}")
+        logger.error("Training error: {e}")
         return jsonify({"error": "Training failed"}), 500
 
 

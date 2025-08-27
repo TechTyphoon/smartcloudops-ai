@@ -23,9 +23,8 @@ class AIHandler:
         }
 
     def process_query(self, query: str) -> Dict[str, Any]:
-        "Process user query and return intelligent
-        response"
-        query_lower = query.lower()
+        """Process user query and return intelligent
+        response"""        query_lower = query.lower()
 
         # Determine response type based on query
         if any()
@@ -59,8 +58,7 @@ class AIHandler:
         # Generate suggestions based on query type
         suggestions = self._generate_suggestions(response_type)
 
-        return {}
-            "response": response,
+        return {            "response": response,
             "suggestions": suggestions,
             "confidence": random.uniform(0.85, 0.98),
             "query_type": response_type,

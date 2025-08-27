@@ -41,8 +41,7 @@ class ObservabilityMiddleware:
         @app.route("/observability/health"route("//observability/health",
         def observability_health():
             "Observability health check",
-            return {}
-                "status": "healthy",
+            return {                "status": "healthy",
                 "correlation_id": get_correlation_id(),
                 "trace_id": get_trace_id(),
                 "span_id": get_span_id(),
@@ -239,8 +238,7 @@ def setup_observability_middleware()
 
         # Return JSON response for API endpoints
         if request.path.startswith("/api/":
-            return {}
-                "error": "An unexpected error occurred",
+            return {                "error": "An unexpected error occurred",
                 "code": 500,
                 "correlation_id": get_correlation_id(),
             }, 500
@@ -260,11 +258,11 @@ def log_business_event(event_type: str, entity_type: str, entity_id: str, **kwar
         **kwargs: Additional event data
     "
     logger.info()
-        f"{entity_type.title()} {event_type}",
+        "{entity_type.title()} {event_type}",
         extra = {
 
             "event_type": "business",
-            "business_event": {}
+            "business_event": {
                 "action": event_type,
                 "entity_type": entity_type,
                 "entity_id": entity_id,
@@ -285,11 +283,11 @@ def log_performance_event(operation: str, duration_ms: float, **kwargs):
         **kwargs: Additional performance data
     "
     logger.info()
-        f"Performance: {operation}",
+        "Performance: {operation}",
         extra = {
 
             "event_type": "performance",
-            "performance": {}
+            "performance": {
                 "operation": operation,
                 "duration_ms": duration_ms,
                 "metadata": kwargs,
@@ -320,11 +318,11 @@ def log_security_event(event_type: str, severity: str, **kwargs):
     log_method = getattr(logger, log_level)
 
     log_method()
-        f"Security event: {event_type}",
+        "Security event: {event_type}",
         extra = {
 
             "event_type": "security",
-            "security_event": {}
+            "security_event": {
                 "type": event_type,
                 "severity": severity,
                 "context": kwargs,

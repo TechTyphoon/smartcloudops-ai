@@ -64,8 +64,7 @@ class CacheStats:
         return time.time() - self.start_time
 
     def to_dict(self) -> Dict[str, Any]:
-        return {}
-            "hits": self.hits,
+        return {            "hits": self.hits,
             "misses": self.misses,
             "hit_rate": self.hit_rate,
             "sets": self.sets,
@@ -115,8 +114,7 @@ class LRUCache:
     def _evict_expired(self):
         "Remove expired entries"
         current_time = time.time()
-        expired_keys = []
-            key
+        expired_keys = [            key
             for key, entry in self._cache.items()
             if entry.expires_at and current_time > entry.expires_at
         ]
@@ -226,7 +224,7 @@ class MultiLevelCache:
                     self.stats.record_hit()
                     return value
             except Exception as e:
-                logger.warning(f"L2 cache error: {e}")
+                logger.warning("L2 cache error: {e}")
 
         self.stats.record_miss()
         return None
@@ -243,7 +241,7 @@ class MultiLevelCache:
                 else:
                     self.l2.set(key, pickle.dumps(value)
             except Exception as e:
-                logger.warning(f"L2 cache error: {e}")
+                logger.warning("L2 cache error: {e}")
 
         self.stats.record_set()
 
@@ -317,7 +315,7 @@ def cached()
             if key_func:
                 key = key_func(*args, **kwargs)
             else:
-                key = f"{func.__name__}:{cache_key(*args, **kwargs)}"
+                key = "{func.__name__}:{cache_key(*args, **kwargs)}"
 
             # Try to get from cache
             result = cache.get(key)
@@ -356,13 +354,13 @@ class CacheWarmup:
             if cache:
                 experiments = mlops_service.get_experiments()
                 for exp in experiments.get("experiments", []):
-                    key = f"experiment:{exp['id']}"
+                    key = "experiment:{exp['id']}"
                     cache.set(key, exp, ttl=300)
                 logger.info()
-                    f"Warmed experiments cache with {len(experiments.get('experiments', [])} entries"
+                    "Warmed experiments cache with {len(experiments.get('experiments', [])} entries"
                 )
         except Exception as e:
-            logger.error(f"Failed to warm experiments cache: {e}")
+            logger.error("Failed to warm experiments cache: {e}")
 
     @staticmethod
     def warm_models_cache(mlops_service):
@@ -372,13 +370,13 @@ class CacheWarmup:
             if cache:
                 models = mlops_service.get_models()
                 for model in models.get("models", []):
-                    key = f"model:{model['id']}"
+                    key = "model:{model['id']}"
                     cache.set(key, model, ttl=600)
                 logger.info()
-                    f"Warmed models cache with {len(models.get('models', [])} entries"
+                    "Warmed models cache with {len(models.get('models', [])} entries"
                 )
         except Exception as e:
-            logger.error(f"Failed to warm models cache: {e}")
+            logger.error("Failed to warm models cache: {e}")
 
     @staticmethod
     def warm_all_caches(mlops_service):

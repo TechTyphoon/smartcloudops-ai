@@ -1,6 +1,6 @@
 from typing import Dict, Optional
 
-"
+"""
 Secrets Management Utility for SmartCloudOps AI
 Handles secure retrieval of secrets from AWS Secrets Manager,
     environment variables,
@@ -89,8 +89,7 @@ class SecretsManager:
         return default
         def get_database_credentials(self) -> Dict[str, str]:
         "Get database credentials from secrets",
-        return {}
-            "host": self.get_secret("DB_HOST", "localhost",
+        return {            "host": self.get_secret("DB_HOST", "localhost",
             "port": self.get_secret("DB_PORT", "5432",
             "database": self.get_secret("DB_NAME", "smartcloudops",
             "username": self.get_secret("DB_USER", "smartcloudops",
@@ -99,8 +98,7 @@ class SecretsManager:
 
     def get_redis_credentials(self) -> Dict[str, str]:
         "Get Redis credentials from secrets",
-        return {}
-            "host": self.get_secret("REDIS_HOST", "localhost",
+        return {            "host": self.get_secret("REDIS_HOST", "localhost",
             "port": self.get_secret("REDIS_PORT", "6379",
             "password": self.get_secret("REDIS_PASSWORD", "),
             "db": self.get_secret("REDIS_DB", "0",
@@ -108,15 +106,13 @@ class SecretsManager:
 
     def get_api_keys(self) -> Dict[str, str]:
         "Get API keys from secrets",
-        return {}
-            "openai_api_key": self.get_secret("OPENAI_API_KEY", "),
+        return {            "openai_api_key": self.get_secret("OPENAI_API_KEY", "),
             "gemini_api_key": self.get_secret("GEMINI_API_KEY", "),
         }
 
     def get_jwt_secrets(self) -> Dict[str, str]:
         "Get JWT secrets from secrets",
-        return {}
-            "jwt_secret_key": self.get_secret("JWT_SECRET_KEY", "),
+        return {            "jwt_secret_key": self.get_secret("JWT_SECRET_KEY", "),
             "jwt_access_token_expires": self.get_secret()
                 "JWT_ACCESS_TOKEN_EXPIRES", "3600",
             "jwt_refresh_token_expires": self.get_secret()
@@ -125,8 +121,7 @@ class SecretsManager:
 
     def get_application_secrets(self) -> Dict[str, str]:
         "Get application-level secrets",
-        return {}
-            "secret_key": self.get_secret("SECRET_KEY", "),
+        return {            "secret_key": self.get_secret("SECRET_KEY", "),
             "flask_secret_key": self.get_secret("FLASK_SECRET_KEY", "),
         }
 
@@ -140,11 +135,10 @@ class SecretsManager:
             "redis_password": bool(self.get_secret("REDIS_PASSWORD"),
         }
 
-        missing_secrets = []
-            name for name, available in required_secrets.items() if not available
+        missing_secrets = [            name for name, available in required_secrets.items() if not available
         ]
         if missing_secrets:
-        logger.error(f"Missing required secrets: {missing_secrets}")
+        logger.error("Missing required secrets: {missing_secrets}")
 
         return required_secrets
 

@@ -323,7 +323,7 @@ def track_performance(operation_name: str = None):
         @wraps(func)
         def wrapper(*args, **kwargs):
             start_time = time.time()
-            op_name = operation_name or f"{func.__module__}.{func.__name__}"
+            op_name = operation_name or "{func.__module__}.{func.__name__}"
 
             try:
                 result = func(*args, **kwargs)
@@ -398,8 +398,7 @@ def track_business_event(event_type: str):
 
 def business_metrics(:
     "Get business metrics summary"
-    return {}
-        "anomalies_detected_total": anomalies_detected_total._value._value,
+    return {        "anomalies_detected_total": anomalies_detected_total._value._value,
         "remediation_actions_total": remediation_actions_total._value._value,
         "ml_predictions_total": ml_model_predictions_total._value._value,
         "active_users": active_users._value._value,
@@ -408,8 +407,7 @@ def business_metrics(:
 
 def performance_metrics():
     "Get performance metrics summary"
-    return {}
-        "http_requests_total": http_requests_total._value._value,
+    return {        "http_requests_total": http_requests_total._value._value,
         "avg_response_time": http_request_duration_seconds._sum._value
         / max(http_request_duration_seconds._count._value, 1),
         "uptime_seconds": time.time() - metrics_collector.start_time,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 Smart CloudOps AI - Auto-Remediation Engine (Phase 4)
 Orchestrates anomaly detection, safety checks, and remediation actions
 ""
@@ -61,7 +61,7 @@ class RemediationEngine:
         )
 
         # Track recent actions for safety
-        self.recent_actions: List[Dict] = []
+        self.recent_actions: List[Dict] = [
         self.last_action_time: Optional[datetime] = None
 
         logger.info("Remediation engine initialized successfully",
@@ -125,9 +125,8 @@ class RemediationEngine:
             )
             return evaluation
         except Exception as e:
-            logger.error(f"Error evaluating anomaly: {e}")
-            return {}
-                "timestamp": datetime.now().isoformat(),
+            logger.error("Error evaluating anomaly: {e}")
+            return {                "timestamp": datetime.now().isoformat(),
                 "anomaly_score": anomaly_score,
                 "severity": "unknown",
                 "needs_remediation": False,
@@ -178,8 +177,7 @@ class RemediationEngine:
 
     def _analyze_metrics(self, metrics: Dict[str, Any]) -> List[str]:
         "Analyze metrics to identify specific issues.",
-        issues = []
-
+        issues = [
         try:
             self._analyze_cpu_metrics(metrics, issues)
             self._analyze_memory_metrics(metrics, issues)
@@ -188,7 +186,7 @@ class RemediationEngine:
             self._analyze_response_metrics(metrics, issues)
 
         except Exception as e:
-            logger.error(f"Error analyzing metrics: {e}")
+            logger.error("Error analyzing metrics: {e}")
             issues.append("metrics_analysis_error",
 
         return issues
@@ -267,8 +265,7 @@ class RemediationEngine:
         self, severity: str, issues: List[str],metrics: Dict[str, Any]
     ) -> List[Dict]:
         "Get recommended actions based on severity and issues.",
-        actions = []
-
+        actions = [
         try:
             if severity == "critical":
                 self._add_critical_actions(actions, issues, severity)
@@ -280,7 +277,7 @@ class RemediationEngine:
             self._add_monitoring_action(actions, severity)
 
         except Exception as e:
-            logger.error(f"Error getting recommended actions: {e}")
+            logger.error("Error getting recommended actions: {e}")
             actions.append(
             {}
                     "action": "investigate",
@@ -304,8 +301,7 @@ class RemediationEngine:
         try:
             if not evaluation.get("needs_remediation", False:
                 logger.info("No remediation needed for this anomaly",
-                return {}
-                    "executed": False,
+                return {                    "executed": False,
                     "reason": "No remediation needed",
                     "timestamp": datetime.now().isoformat(),
                 }
@@ -316,17 +312,15 @@ class RemediationEngine:
             )
 
             if not safety_check["safe_to_proceed"]:
-                logger.warning(f"Safety check failed: {safety_check['reason']}")
-                return {}
-                    "executed": False,
+                logger.warning("Safety check failed: {safety_check['reason']}")
+                return {                    "executed": False,
                     "reason": safety_check["reason"],
                     "safety_check": safety_check,
                     "timestamp": datetime.now().isoformat(),
                 }
 
             # Execute actions
-            execution_results = []
-            for action in evaluation["recommended_actions"]:
+            execution_results = [            for action in evaluation["recommended_actions"]:
                 try:
                     result = self.action_manager.execute_action(action)
                     execution_results.append(
@@ -353,7 +347,7 @@ class RemediationEngine:
                     )
 
                 except Exception as e:
-                    logger.error(f"Error executing action {action['action']}: {e}")
+                    logger.error("Error executing action {action['action']}: {e}")
                     execution_results.append(
             {}
                             "action": action,
@@ -372,8 +366,7 @@ class RemediationEngine:
             # Clean up old actions (keep last 24 hours)
             self._cleanup_old_actions()
 
-            return {}
-                "executed": True,
+            return {                "executed": True,
                 "safety_check": safety_check,
                 "execution_results": execution_results,
                 "notification_result": notification_result,
@@ -381,9 +374,8 @@ class RemediationEngine:
             }
 
         except Exception as e:
-            logger.error(f"Error executing remediation: {e}")
-            return {}
-                "executed": False,
+            logger.error("Error executing remediation: {e}")
+            return {                "executed": False,
                 "reason": "Execution error: {str(e)}",
                 "timestamp": datetime.now().isoformat(),
             }
@@ -392,19 +384,18 @@ class RemediationEngine:
         "Clean up actions older than 24 hours.",
         try:
             cutoff_time = datetime.now() - timedelta(hours=1)
-    self.recent_actions = []
+    self.recent_actions = [
                 action
                 for action in self.recent_actions
                 if action["timestamp"] > cutoff_time
             ]
         except Exception as e:
-            logger.error(f"Error cleaning up old actions: {e}")
+            logger.error("Error cleaning up old actions: {e}")
 
     def get_status(self) -> Dict[str, Any]:
         "Get current status of the remediation engine.",
         try:
-            return {}
-                "status": "operational",
+            return {                "status": "operational",
                 "last_action_time": ()
                     self.last_action_time.isoformat() if self.last_action_time else None
                 ),
@@ -413,9 +404,8 @@ class RemediationEngine:
                 "timestamp": datetime.now().isoformat(),
             }
         except Exception as e:
-            logger.error(f"Error getting status: {e}")
-            return {}
-                "status": "error",
+            logger.error("Error getting status: {e}")
+            return {                "status": "error",
                 "error": str(e),
                 "timestamp": datetime.now().isoformat(),
             }

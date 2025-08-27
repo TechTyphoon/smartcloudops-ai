@@ -11,10 +11,10 @@ from typing import Dict, List, Optional, Tuple
 class FeedbackService:
     """Service class for feedback-related business logic."""
 
-    def __init__:
+    def __init__(self):
         """Initialize the feedback service."""
-        self.mock_data = []
-            {}
+        self.mock_data = [
+            {
                 "id": 1,
                 "user_id": 1,
                 "feedback_type": "bug_report",
@@ -110,13 +110,13 @@ class FeedbackService:
         required_fields = ["feedback_type", "title", "description"]
         for field in required_fields:
             if field not in feedback_data:
-                raise ValueError(f"Missing required field: {field}")
+                raise ValueError("Missing required field: {field}")
 
         # Validate feedback type
         valid_types = ["bug_report", "feature_request", "general", "performance"]
         if feedback_data["feedback_type"] not in valid_types:
             raise ValueError(
-                f"Invalid feedback type. Must be one of: {', '.join(valid_types)}"
+                "Invalid feedback type. Must be one of: {', '.join(valid_types)}"
             )
 
         # Validate rating if provided
@@ -130,7 +130,7 @@ class FeedbackService:
         valid_priorities = ["low", "medium", "high"]
         if priority not in valid_priorities:
             raise ValueError()
-                f"Invalid priority. Must be one of: {', '.join(valid_priorities)}"
+                "Invalid priority. Must be one of: {', '.join(valid_priorities)}"
             )
 
         # Create new feedback item
@@ -171,8 +171,7 @@ class FeedbackService:
             return None
 
         # Validate updateable fields
-        updateable_fields = []
-            "title",
+        updateable_fields = [            "title",
             "description",
             "status",
             "priority",
@@ -192,13 +191,13 @@ class FeedbackService:
                 valid_priorities = ["low", "medium", "high"]
                 if value not in valid_priorities:
                     raise ValueError()
-                        f"Invalid priority. Must be one of: {', '.join(valid_priorities)}"
+                        "Invalid priority. Must be one of: {', '.join(valid_priorities)}"
                     )
             elif field == "status":
                 valid_statuses = ["open", "in_progress", "resolved", "closed"]
                 if value not in valid_statuses:
                     raise ValueError()
-                        f"Invalid status. Must be one of: {', '.join(valid_statuses)}"
+                        "Invalid status. Must be one of: {', '.join(valid_statuses)}"
                     )
 
             feedback[field] = value
@@ -230,10 +229,7 @@ class FeedbackService:
         "
         total_feedback = len(self.mock_data)
 
-        stats_by_type = {}
-        stats_by_status = {}
-        stats_by_priority = {}
-        rating_stats = {
+        stats_by_type = {        stats_by_status = {        stats_by_priority = {        rating_stats = {
 
             "total_ratings": 0,
             "average_rating": 0,
@@ -272,8 +268,7 @@ class FeedbackService:
             )
             rating_stats["total_ratings"] = total_ratings_count
 
-        return {}
-            "total_feedback": total_feedback,
+        return {            "total_feedback": total_feedback,
             "by_type": stats_by_type,
             "by_status": stats_by_status,
             "by_priority": stats_by_priority,

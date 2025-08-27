@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Remediation Actions API Endpoints for Smart CloudOps AI - Minimal Working Version
 Phase 7: Production Launch & Feedback - Backend Completion
-"
+"""
 
 from datetime import datetime, timezone
 
@@ -61,20 +61,16 @@ def get_remediation_actions():
         filtered_remediations = MOCK_REMEDIATIONS.copy()
 
         if status:
-            filtered_remediations = []
-                r for r in filtered_remediations if r["status"] == status
+            filtered_remediations = [                r for r in filtered_remediations if r["status"] == status
             ]
         if action_type:
-            filtered_remediations = []
-                r for r in filtered_remediations if r["action_type"] == action_type
+            filtered_remediations = [                r for r in filtered_remediations if r["action_type"] == action_type
             ]
         if priority:
-            filtered_remediations = []
-                r for r in filtered_remediations if r["priority"] == priority
+            filtered_remediations = [                r for r in filtered_remediations if r["priority"] == priority
             ]
         if anomaly_id:
-            filtered_remediations = []
-                r for r in filtered_remediations if r["anomaly_id"] == anomaly_id
+            filtered_remediations = [                r for r in filtered_remediations if r["anomaly_id"] == anomaly_id
             ]
 
         # Calculate pagination
@@ -83,13 +79,13 @@ def get_remediation_actions():
         end = start + per_page
         remediations_page = filtered_remediations[start:end]
 
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "success",
-                    "data": {}
+                    "data": {
                         "remediation_actions": remediations_page,
-                        "pagination": {}
+                        "pagination": {
                             "page": page,
                             "per_page": per_page,
                             "total": total,
@@ -101,11 +97,11 @@ def get_remediation_actions():
             200)
 
     except Exception as e:
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "error",
-                    "message": f"Failed to retrieve remediation actions: {str(e)}",
+                    "message": "Failed to retrieve remediation actions: {str(e)}",
                 }
             ),
             500)
@@ -119,25 +115,25 @@ def get_remediation_action(action_id):
         action = next((r for r in MOCK_REMEDIATIONS if r["id"] == action_id), None)
 
         if not action:
-            return ()
+            return (
                 jsonify()
                     {}
                         "status": "error",
-                        "message": f"Remediation action with ID {action_id} not found",
+                        "message": "Remediation action with ID {action_id} not found",
                     }
                 ),
                 404)
 
-        return ()
+        return (
             jsonify({"status": "success", "data": {"remediation_action": action}}),
             200)
 
     except Exception as e:
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "error",
-                    "message": f"Failed to retrieve remediation action: {str(e)}",
+                    "message": "Failed to retrieve remediation action: {str(e)}",
                 }
             ),
             500)
@@ -156,11 +152,11 @@ def create_remediation_action():
         required_fields = ["anomaly_id", "action_type", "action_name", "description"]
         for field in required_fields:
             if field not in data:
-                return ()
+                return (
                     jsonify()
                         {}
                             "status": "error",
-                            "message": f"Missing required field: {field}",
+                            "message": "Missing required field: {field}",
                         }
                     ),
                     400)
@@ -184,7 +180,7 @@ def create_remediation_action():
 
         MOCK_REMEDIATIONS.append(new_action)
 
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "success",
@@ -195,11 +191,11 @@ def create_remediation_action():
             201)
 
     except Exception as e:
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "error",
-                    "message": f"Failed to create remediation action: {str(e)}",
+                    "message": "Failed to create remediation action: {str(e)}",
                 }
             ),
             500)
@@ -218,18 +214,17 @@ def update_remediation_action(action_id):
         action = next((r for r in MOCK_REMEDIATIONS if r["id"] == action_id), None)
 
         if not action:
-            return ()
+            return (
                 jsonify()
                     {}
                         "status": "error",
-                        "message": f"Remediation action with ID {action_id} not found",
+                        "message": "Remediation action with ID {action_id} not found",
                     }
                 ),
                 404)
 
         # Update action fields
-        updateable_fields = []
-            "action_name",
+        updateable_fields = [            "action_name",
             "description",
             "status",
             "priority",
@@ -243,7 +238,7 @@ def update_remediation_action(action_id):
 
         action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
 
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "success",
@@ -254,11 +249,11 @@ def update_remediation_action(action_id):
             200)
 
     except Exception as e:
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "error",
-                    "message": f"Failed to update remediation action: {str(e)}",
+                    "message": "Failed to update remediation action: {str(e)}",
                 }
             ),
             500)
@@ -272,21 +267,21 @@ def execute_remediation_action(action_id):
         action = next((r for r in MOCK_REMEDIATIONS if r["id"] == action_id), None)
 
         if not action:
-            return ()
+            return (
                 jsonify()
                     {}
                         "status": "error",
-                        "message": f"Remediation action with ID {action_id} not found",
+                        "message": "Remediation action with ID {action_id} not found",
                     }
                 ),
                 404)
 
         if action["status"] != "pending":
-            return ()
+            return (
                 jsonify()
                     {}
                         "status": "error",
-                        "message": f"Cannot execute action with status: {action['status']}",
+                        "message": "Cannot execute action with status: {action['status']}",
                     }
                 ),
                 400)
@@ -301,7 +296,7 @@ def execute_remediation_action(action_id):
             action["execution_result"] = {}
                 "success": True,
                 "execution_time": round(random.uniform(10.0, 60.0), 2),
-                "message": f"Successfully executed {action['action_type']}",
+                "message": "Successfully executed {action['action_type']}",
             }
             action["error_message"] = None
         else:
@@ -309,28 +304,28 @@ def execute_remediation_action(action_id):
             action["execution_result"] = {}
                 "success": False,
                 "execution_time": round(random.uniform(5.0, 30.0), 2),
-                "message": f"Failed to execute {action['action_type']}",
+                "message": "Failed to execute {action['action_type']}",
             }
             action["error_message"] = "Mock execution failure for testing"
 
         action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
 
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "success",
-                    "message": f"Remediation action execution {'completed' if execution_success else 'failed'}",
+                    "message": "Remediation action execution {'completed' if execution_success else 'failed'}",
                     "data": {"remediation_action": action},
                 }
             ),
             200)
 
     except Exception as e:
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "error",
-                    "message": f"Failed to execute remediation action: {str(e)}",
+                    "message": "Failed to execute remediation action: {str(e)}",
                 }
             ),
             500)
@@ -344,21 +339,21 @@ def approve_remediation_action(action_id):
         action = next((r for r in MOCK_REMEDIATIONS if r["id"] == action_id), None)
 
         if not action:
-            return ()
+            return (
                 jsonify()
                     {}
                         "status": "error",
-                        "message": f"Remediation action with ID {action_id} not found",
+                        "message": "Remediation action with ID {action_id} not found",
                     }
                 ),
                 404)
 
         if action["status"] != "pending":
-            return ()
+            return (
                 jsonify()
                     {}
                         "status": "error",
-                        "message": f"Cannot approve action with status: {action['status']}",
+                        "message": "Cannot approve action with status: {action['status']}",
                     }
                 ),
                 400)
@@ -367,7 +362,7 @@ def approve_remediation_action(action_id):
         action["status"] = "approved"
         action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
 
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "success",
@@ -378,11 +373,11 @@ def approve_remediation_action(action_id):
             200)
 
     except Exception as e:
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "error",
-                    "message": f"Failed to approve remediation action: {str(e)}",
+                    "message": "Failed to approve remediation action: {str(e)}",
                 }
             ),
             500)
@@ -395,10 +390,7 @@ def get_remediation_stats():
         # Calculate statistics from mock data
         total_actions = len(MOCK_REMEDIATIONS)
 
-        stats_by_status = {}
-        stats_by_type = {}
-        stats_by_priority = {}
-
+        stats_by_status = {        stats_by_type = {        stats_by_priority = {
         for action in MOCK_REMEDIATIONS:
             # Count by status
             status = action["status"]
@@ -420,11 +412,11 @@ def get_remediation_stats():
             (completed_actions / total_executed * 100) if total_executed > 0 else 0
         )
 
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "success",
-                    "data": {}
+                    "data": {
                         "total_actions": total_actions,
                         "success_rate": round(success_rate, 2),
                         "by_status": stats_by_status,
@@ -436,11 +428,11 @@ def get_remediation_stats():
             200)
 
     except Exception as e:
-        return ()
+        return (
             jsonify()
                 {}
                     "status": "error",
-                    "message": f"Failed to retrieve remediation statistics: {str(e)}",
+                    "message": "Failed to retrieve remediation statistics: {str(e)}",
                 }
             ),
             500)

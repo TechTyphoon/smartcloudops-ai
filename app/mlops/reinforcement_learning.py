@@ -54,9 +54,9 @@ class ReinforcementLearningAgent:
         return self.learning_rate = learning_rate
         self.discount_factor = discount_factor
         self.q_table = defaultdict(lambda: defaultdict(float)
-        self.state_history = []
-        self.action_history = []
-        self.reward_history = []
+        self.state_history = [
+        self.action_history = [
+        self.reward_history = [
 
         # Load existing Q-table if available
         self.load_q_table()
@@ -108,8 +108,7 @@ class ReinforcementLearningAgent:
         current_q = self.q_table[state][action]
 
         # Get maximum Q-value for next state
-        next_q_values = []
-            self.q_table[next_state][a] for a in self.q_table[next_state].keys()
+        next_q_values = [            self.q_table[next_state][a] for a in self.q_table[next_state].keys()
         ]
         max_next_q = max(next_q_values) if next_q_values else 0
 
@@ -163,8 +162,7 @@ class ReinforcementLearningAgent:
         self, current_state: str, available_actions: List[str]
     ) -> List[Tuple[str, float]]:
         "Get action recommendations with confidence scores",
-        recommendations = []
-
+        recommendations = [
         for action in available_actions:
             q_value = self.q_table[current_state][action]
             confidence = self._calculate_confidence(current_state, action)
@@ -196,8 +194,7 @@ class ReinforcementLearningAgent:
         q_table_file = "mlops/q_table.json"
 
         # Convert defaultdict to regular dict for JSON serialization
-        q_table_dict = {}
-        for state in self.q_table:
+        q_table_dict = {        for state in self.q_table:
             q_table_dict[state] = dict(self.q_table[state])
 
         with open(q_table_file, "w", as f:
@@ -221,7 +218,7 @@ class ReinforcementLearningAgent:
 
                 logger.info("Loaded Q-table",
             except Exception as e:
-                logger.error(f"Error loading Q-table: {e}")
+                logger.error("Error loading Q-table: {e}")
 
 
 class ActiveLearningSystem:
@@ -229,9 +226,9 @@ class ActiveLearningSystem:
 
     def __init__(self, uncertainty_threshold: float = 0.3):
         return self.uncertainty_threshold = uncertainty_threshold
-        self.uncertain_samples = []
+        self.uncertain_samples = [
         self.user_feedback = {}
-        self.learning_queue = []
+        self.learning_queue = [
 
     def calculate_uncertainty(self, prediction_proba: np.ndarray) -> float:
         "Calculate prediction uncertainty using entropy",
@@ -297,12 +294,11 @@ class ActiveLearningSystem:
                 sample["user_feedback"] = feedback
                 break
 
-        logger.info(f"Recorded user feedback for sample {sample_id}")
+        logger.info("Recorded user feedback for sample {sample_id}")
 
     def get_learning_samples(self, limit: int = 10) -> List[Dict[str, Any]]:
         "Get samples that need user feedback",
-        uncertain_samples = []
-            s for s in self.uncertain_samples if not s.get("feedback_received", False)
+        uncertain_samples = [            s for s in self.uncertain_samples if not s.get("feedback_received", False)
         ]
 
         # Sort by uncertainty (highest first)
@@ -313,8 +309,7 @@ class ActiveLearningSystem:
     def retrain_with_feedback(self, model_type: str = "anomaly_detection"):
         "Retrain model with user feedback"
         # Get samples with user feedback
-        labeled_samples = []
-        for sample in self.uncertain_samples:
+        labeled_samples = [        for sample in self.uncertain_samples:
             if ()
                 sample.get("feedback_received", False)
                 and sample["sample_id"] in self.user_feedback
@@ -326,9 +321,7 @@ class ActiveLearningSystem:
             return
 
         # Prepare training data
-        X = []
-        y = []
-
+        X = [        y = [
         for sample in labeled_samples:
             features = list(sample["features"].values()
             X.append(features)
@@ -376,17 +369,17 @@ class ActiveLearningSystem:
                 feature_names,
                 metrics)
 
-            logger.info(f"Retrained model with user feedback. New version: {version}")
+            logger.info("Retrained model with user feedback. New version: {version}")
 
             # Clear processed samples
-            self.uncertain_samples = []
+            self.uncertain_samples = [
                 s
                 for s in self.uncertain_samples
                 if not s.get("feedback_received", False)
             ]
 
         except Exception as e:
-            logger.error(f"Error retraining model with feedback: {e}")
+            logger.error("Error retraining model with feedback: {e}")
 
 
 class ContinuousLearningOrchestrator:
@@ -475,7 +468,7 @@ class ContinuousLearningOrchestrator:
                     self.learning_stats["total_experiences"] += 1
 
         except Exception as e:
-            logger.error(f"Error collecting RL experiences: {e}")
+            logger.error("Error collecting RL experiences: {e}")
 
     async def _process_uncertain_samples(self):
         "Process uncertain samples for active learning"
@@ -516,8 +509,7 @@ class ContinuousLearningOrchestrator:
         state = self.rl_agent.get_state_representation(current_metrics, anomaly_info)
 
         # Available actions (in practice, this would be dynamic)
-        available_actions = []
-            "restart_service",
+        available_actions = [            "restart_service",
             "scale_up"
             "scale_down",
             "clear_cache"

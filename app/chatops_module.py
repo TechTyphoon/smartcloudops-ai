@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
 
-"
+"""
 ChatOps Module for Smart CloudOps AI
 Extracted from main.py for modularity
 "
@@ -25,7 +25,7 @@ try:
 
     CHATOPS_AVAILABLE = True
 except ImportError as e:
-    logging.warning(f"ChatOps components not available: {e}")
+    logging.warning("ChatOps components not available: {e}")
     CHATOPS_AVAILABLE = False
 
 # Initialize ChatOps components
@@ -48,7 +48,7 @@ def chatops_query():
                 "status": "success",
                 "message": "ChatOps Query Service",
                 "chatops_available": CHATOPS_AVAILABLE,
-                "endpoints": {}
+                "endpoints": {
                     "query": "POST /chatops/query",
                     "logs": "GET /chatops/logs",
                     "context": "GET /chatops/context"
@@ -58,7 +58,7 @@ def chatops_query():
 
     try:
         if not CHATOPS_AVAILABLE or not ai_handler:
-            return ()
+            return (
                 jsonify()
                     {}
                         "error": "ChatOps service not available",
@@ -97,7 +97,7 @@ def chatops_query():
 
         except Exception as e:
             logger.error("AI processing error: {e}")
-            return ()
+            return (
                 jsonify()
                     {}
                         "error": "AI processing failed",
@@ -116,7 +116,7 @@ def get_chatops_logs():
     "Get ChatOps logs endpoint.",
     try:
         if not CHATOPS_AVAILABLE:
-            return ()
+            return (
                 jsonify()
                     {}
                         "error": "ChatOps service not available",
@@ -141,7 +141,7 @@ def get_chatops_logs():
 
         except Exception as e:
             logger.error("Log retrieval error: {e}")
-            return ()
+            return (
                 jsonify()
                     {}
                         "error": "Log retrieval failed",
@@ -160,7 +160,7 @@ def get_system_context():
     "Get system context endpoint.",
     try:
         if not CHATOPS_AVAILABLE:
-            return ()
+            return (
                 jsonify()
                     {}
                         "error": "ChatOps service not available",
@@ -184,7 +184,7 @@ def get_system_context():
 
         except Exception as e:
             logger.error("Context retrieval error: {e}")
-            return ()
+            return (
                 jsonify()
                     {}
                         "error": "Context retrieval failed",
@@ -206,7 +206,7 @@ def manage_conversation():
             {}
                 "status": "success",
                 "message": "Conversation Management",
-                "endpoints": {}
+                "endpoints": {
                     "get_conversation": "GET /chatops/conversation",
                     "add_message": "POST /chatops/conversation"
                 },
@@ -215,7 +215,7 @@ def manage_conversation():
 
     try:
         if not CHATOPS_AVAILABLE:
-            return ()
+            return (
                 jsonify()
                     {}
                         "error": "ChatOps service not available",
@@ -246,7 +246,7 @@ def manage_conversation():
 
         except Exception as e:
             logger.error("Conversation management error: {e}")
-            return ()
+            return (
                 jsonify()
                     {}
                         "error": "Conversation management failed",
@@ -270,7 +270,7 @@ def chatops_status():
             "chatops_available": CHATOPS_AVAILABLE,
             "ai_handler_loaded": ai_handler is not None,
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "endpoints": {}
+            "endpoints": {
                 "query": "/chatops/query",
                 "logs": "/chatops/logs",
                 "context": "/chatops/context",

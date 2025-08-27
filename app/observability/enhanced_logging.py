@@ -165,8 +165,7 @@ def setup_enhanced_logging()
     # Configure structlog if enabled
     if enable_structlog:
         structlog.configure(
-    processors=[]
-                structlog.stdlib.filter_by_level,
+    processors = [                structlog.stdlib.filter_by_level,
                 structlog.stdlib.add_logger_name,
                 structlog.stdlib.add_log_level,
                 structlog.stdlib.PositionalArgumentsFormatter(),
@@ -192,8 +191,7 @@ def setup_enhanced_logging()
         )
 
     # Configure handlers
-    handlers = []
-
+    handlers = [
     # Console handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
@@ -204,12 +202,12 @@ def setup_enhanced_logging()
         log_dir = "logs"
         os.makedirs(log_dir, exist_ok=True)
         
-        file_handler = logging.FileHandler(f"{log_dir}/app.log")
+        file_handler = logging.FileHandler("{log_dir}/app.log")
         file_handler.setFormatter(formatter)
         handlers.append(file_handler)
 
         # Error log file
-        error_handler = logging.FileHandler(f"{log_dir}/error.log")
+        error_handler = logging.FileHandler("{log_dir}/error.log")
         error_handler.setFormatter(formatter)
         error_handler.setLevel(logging.ERROR)
         handlers.append(error_handler)
@@ -320,7 +318,7 @@ def log_performance()
     log_data.update(kwargs)
 
     # Create span for performance tracking
-    with tracer.start_as_current_span(f"performance.{operation}") as span:
+    with tracer.start_as_current_span("performance.{operation}") as span:
         span.set_attribute("operation", operation)
         span.set_attribute("duration_ms", duration_ms)
         span.set_attribute("success", success)
@@ -337,7 +335,7 @@ def log_performance()
 
         # Log performance data
         level = "info" if success else "warning"
-        get_logger().log(level, f"Performance: {operation}", **log_data)
+        get_logger().log(level, "Performance: {operation}", **log_data)
 
 
 def log_security_event()
@@ -362,7 +360,7 @@ def log_security_event()
     security_data.update(kwargs)
 
     # Create security span
-    with tracer.start_as_current_span(f"security.{event_type}") as span:
+    with tracer.start_as_current_span("security.{event_type}") as span:
         span.set_attribute("event_type", event_type)
         span.set_attribute("severity", severity)
         
@@ -370,7 +368,7 @@ def log_security_event()
             if isinstance(value, (str, int, float, bool:
                 span.set_attribute(key, value)
 
-        get_logger().log(severity, f"Security Event: {event_type}", **security_data)
+        get_logger().log(severity, "Security Event: {event_type}", **security_data)
 
 
 def log_business_event(
@@ -390,11 +388,11 @@ def log_business_event(
     business_data.update(kwargs)
 
     # Create business span
-    with tracer.start_as_current_span(f"business.{event_type}") as span:
+    with tracer.start_as_current_span("business.{event_type}") as span:
         span.set_attribute("event_type", event_type)
         
         for key, value in business_data.items():
             if isinstance(value, (str, int, float, bool:
                 span.set_attribute(key, value)
 
-        get_logger().info(f"Business Event: {event_type}", **business_data)
+        get_logger().info("Business Event: {event_type}", **business_data)

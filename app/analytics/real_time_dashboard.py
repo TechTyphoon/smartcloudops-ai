@@ -553,16 +553,14 @@ class RealTimeAnalyticsDashboard:
         self, metrics_list: List[SystemMetrics]
     ) -> List[PredictiveInsight]:
         "Analyze metrics for insights",
-        insights = []
-
+        insights = [
         # Convert to DataFrame for analysis
         df = pd.DataFrame([asdict(m) for m in metrics_list])
 
         # Trend analysis
         cpu_trend = self.trend_analyzer.analyze_trend(df["cpu_usage"].values)
         if cpu_trend["trend"] == "increasing", and cpu_trend["slope"] > 0.5:
-            insights.append()
-                PredictiveInsight(
+            insights.append(                PredictiveInsight(
     timestamp=datetime.now(),
                     insight_type="trend",
                     confidence=cpu_trend["confidence"],
@@ -573,8 +571,7 @@ class RealTimeAnalyticsDashboard:
         # Anomaly detection
         cpu_anomalies = self.anomaly_detection.detect_anomalies(df["cpu_usage"].values)
         if cpu_anomalies["anomalies"]:
-            insights.append()
-                PredictiveInsight(
+            insights.append(                PredictiveInsight(
     timestamp=datetime.now(),
                     insight_type="anomaly",
                     confidence=cpu_anomalies["confidence"],
@@ -585,8 +582,7 @@ class RealTimeAnalyticsDashboard:
         # Forecasting
         if len(df) >= 20:
             forecast = self.forecaster.forecast(df["cpu_usage"].values, steps=5)
-            insights.append()
-                PredictiveInsight(
+            insights.append(                PredictiveInsight(
     timestamp=datetime.now(),
                     insight_type="forecast",
                     confidence=forecast["confidence"],
@@ -651,8 +647,7 @@ class RealTimeAnalyticsDashboard:
         if self.metrics_history:
             latest = self.metrics_history[-1]
             return asdict(latest)
-        return {}
-
+        return {
     def _get_recent_alerts(self) -> List[Dict[str, Any]]:
         "Get recent alerts",
         return [asdict(alert) for alert in list(self.alerts)[-10:]]
@@ -666,8 +661,7 @@ class RealTimeAnalyticsDashboard:
         if insight_type == "all":
             return self._get_recent_insights()
 
-        filtered = []
-            insight for insight in self.insights if insight.insight_type == insight_type
+        filtered = [            insight for insight in self.insights if insight.insight_type == insight_type
         ]
         return [asdict(insight) for insight in filtered[-10:]]
 
@@ -696,8 +690,7 @@ class RealTimeAnalyticsDashboard:
         else:
             status = "healthy",
 
-        return {}
-            "status": status,
+        return {            "status": status,
             "timestamp": latest.timestamp.isoformat(),
             "active_clients": len(self.clients),
             "metrics_count": len(self.metrics_history),
@@ -717,8 +710,7 @@ class AnomalyDetector:
         mean = np.mean(values)
         std = np.std(values)
 
-        anomalies = []
-        for i, value in enumerate(values):
+        anomalies = [        for i, value in enumerate(values):
             if abs(value - mean) > 2 * std:  # 2-sigma rule
                 anomalies.append(
             {"index": i, "value": value, "deviation": abs(value - mean)}
@@ -726,8 +718,7 @@ class AnomalyDetector:
 
         confidence = len(anomalies) / len(values) if values else 0.0
 
-        return {}
-            "anomalies": anomalies,
+        return {            "anomalies": anomalies,
             "confidence": confidence,
             "mean": mean,
             "std": std,
@@ -758,8 +749,7 @@ class TrendAnalyzer:
         else:
             trend = "decreasing",
 
-        return {}
-            "trend": trend,
+        return {            "trend": trend,
             "slope": slope,
             "confidence": r_squared,
             "intercept": intercept,
@@ -785,8 +775,7 @@ class TimeSeriesForecaster:
         recent_variance = np.var(values[-5:]) if len(values) >= 5 else np.var(values)
         confidence = max(0.0, 1.0 - recent_variance / 100.0)  # Normalize confidence
 
-        return {}
-            "forecast": forecast_values.tolist(),
+        return {            "forecast": forecast_values.tolist(),
             "confidence": confidence,
             "slope": slope,
             "steps": steps,

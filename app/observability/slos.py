@@ -272,7 +272,7 @@ class SLOManager:
         "Calculate SLO compliance for a given value"
         slo = self.get_slo(slo_name)
         if not slo:
-            return {"error": f"SLO {slo_name} not found"}
+            return {"error": "SLO {slo_name} not found"}
 
         # Calculate compliance percentage
         if slo.slo_type == SLOType.AVAILABILITY or slo.slo_type == SLOType.ERROR_RATE:
@@ -297,8 +297,7 @@ class SLOManager:
         # Calculate error budget
         error_budget = max(0, slo.target - compliance)
 
-        return {}
-            "slo_name": slo_name,
+        return {            "slo_name": slo_name,
             "current_value": current_value,
             "target": slo.target,
             "compliance_percentage": compliance,
@@ -312,8 +311,7 @@ class SLOManager:
 
     def get_all_slo_status(self) -> Dict[str, any]:
         "Get status for all SLOs"
-        status = {}
-        for slo_name in self.slos:
+        status = {        for slo_name in self.slos:
             # This would typically get actual metrics from Prometheus
             # For now, we'll use placeholder values
             placeholder_value = 99.5  # Placeholder
@@ -322,23 +320,22 @@ class SLOManager:
 
     def generate_prometheus_alerts(self) -> List[Dict[str, any]]:
         "Generate Prometheus alert rules for SLOs"
-        alerts = []
-        
+        alerts = [        
         for slo in self.slos.values():
             # Warning alert
             warning_alert = {
 
-                "name": f"{slo.name}_warning",
+                "name": "{slo.name}_warning",
                 "expr": self._generate_alert_expression(slo, "warning"),
-                "for": f"{slo.measurement_period}s",
-                "labels": {}
+                "for": "{slo.measurement_period}s",
+                "labels": {
                     "severity": "warning",
                     "slo": slo.name,
                     "type": slo.slo_type.value,
                 },
-                "annotations": {}
-                    "summary": f"{slo.description} - Warning",
-                    "description": f"{slo.description} is below warning threshold ({slo.alert_threshold}%)",
+                "annotations": {
+                    "summary": "{slo.description} - Warning",
+                    "description": "{slo.description} is below warning threshold ({slo.alert_threshold}%)",
                 },
             }
             alerts.append(warning_alert)
@@ -346,17 +343,17 @@ class SLOManager:
             # Critical alert
             critical_alert = {
 
-                "name": f"{slo.name}_critical",
+                "name": "{slo.name}_critical",
                 "expr": self._generate_alert_expression(slo, "critical"),
-                "for": f"{slo.measurement_period}s",
-                "labels": {}
+                "for": "{slo.measurement_period}s",
+                "labels": {
                     "severity": "critical",
                     "slo": slo.name,
                     "type": slo.slo_type.value,
                 },
-                "annotations": {}
-                    "summary": f"{slo.description} - Critical",
-                    "description": f"{slo.description} is below critical threshold ({slo.critical_threshold}%)",
+                "annotations": {
+                    "summary": "{slo.description} - Critical",
+                    "description": "{slo.description} is below critical threshold ({slo.critical_threshold}%)",
                 },
             }
             alerts.append(critical_alert)
@@ -368,7 +365,7 @@ class SLOManager:
         threshold = slo.alert_threshold if alert_type == "warning" else slo.critical_threshold
         
         if slo.slo_type == SLOType.AVAILABILITY:
-            return f""
+            return ""
             ()
                 sum(rate(http_requests_total{{status_code!~"5.."}}[{slo.measurement_period}s]) 
                 / 
@@ -376,7 +373,7 @@ class SLOManager:
             ) * 100 < {threshold}
             "
         elif slo.slo_type == SLOType.ERROR_RATE:
-            return f"
+            return "
             ()
                 sum(rate(http_requests_total{{status_code=~}"5.."}}[{slo.measurement_period}s]) 
                 / 
@@ -384,7 +381,7 @@ class SLOManager:
             ) * 100 > {100 - threshold}
             "
         elif slo.slo_type == SLOType.LATENCY:
-            return f"
+            return "
             histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[{slo.measurement_period}s]) by (le) > 0.5
             ""
         else:

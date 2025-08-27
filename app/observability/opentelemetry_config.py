@@ -101,8 +101,7 @@ class OpenTelemetryConfig:
         trace.set_tracer_provider(self.tracer_provider)
 
         # Add span processors
-        processors = []
-
+        processors = [
         # Console exporter for debugging
         if console_export:
             console_processor = BatchSpanProcessor(ConsoleSpanExporter()
@@ -136,8 +135,7 @@ class OpenTelemetryConfig:
         console_export: bool) -> None:
         "Setup metrics collection"
         # Create meter provider
-        readers = []
-
+        readers = [
         # Console exporter for debugging
         if console_export:
             console_reader = PeriodicExportingMetricReader()
@@ -302,7 +300,7 @@ def trace_function(name: str = None):
     def decorator(func):
         def wrapper(*args, **kwargs):
             tracer = get_tracer()
-            span_name = name or f"{func.__module__}.{func.__name__}"
+            span_name = name or "{func.__module__}.{func.__name__}"
             
             with tracer.start_as_current_span(span_name) as span:
                 # Add function attributes

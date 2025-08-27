@@ -25,7 +25,6 @@ def timed_cache(seconds: int = 300):
 
     def decorator(func):
         cache = {}
-
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             # Create cache key from arguments
@@ -183,8 +182,7 @@ class AdvancedContextManager:
         """Get a human-readable summary of current context."""""""
         context = self.get_system_context()
 
-        summary_parts = []
-
+        summary_parts = [
         # System health
         health = context.get("system_health", {})
         if health.get("status") == "healthy":
@@ -195,14 +193,14 @@ class AdvancedContextManager:
         # Recent anomalies
         anomalies = context.get("recent_anomalies", [])
         if anomalies:
-            summary_parts.append(f"🚨 {len(anomalies)} recent anomalies detected")
+            summary_parts.append("🚨 {len(anomalies)} recent anomalies detected")
         else:
             summary_parts.append("✅ No recent anomalies")
 
         # Active alerts
         alerts = context.get("active_alerts", [])
         if alerts:
-            summary_parts.append(f"⚠️ {len(alerts)} active alerts")
+            summary_parts.append("⚠️ {len(alerts)} active alerts")
         else:
             summary_parts.append("✅ No active alerts")
 
@@ -260,11 +258,8 @@ class IntelligentQueryProcessor:
         if any(
             word in query_lower for word in ["urgent", "critical", "emergency", "down"]
         ):
-            return "high"
-        elif any(word in query_lower for word in ["important", "issue", "problem"]):
-            return "medium"
-        return "normal"
-
+            return "high"""        elif any(word in query_lower for word in ["important", "issue", "problem"]):
+            return "medium"""        return "normal"""
     def _get_suggested_actions(self, intent: str) -> List[str]:
         """Get suggested actions based on intent."""""
         action_map = {
@@ -302,7 +297,7 @@ class ConversationManager:
     def add_exchange(
         self, user_query: str, ai_response: str, context: Dict[str, Any] = None
     ):
-        """Add a conversation exchange to history."""""""
+        """Add a conversation exchange to history."""
         exchange = {
             "timestamp": datetime.now().isoformat(),
             "user_query": user_query,
@@ -316,18 +311,15 @@ class ConversationManager:
     def get_conversation_summary(self) -> str:
         """Get a summary of the conversation history."""""
         if not self.conversation_history:
-            return "No conversation history available."
-
+            return "No conversation history available."""
         recent_exchanges = list(self.conversation_history)[-5:]  # Last 5 exchanges
 
-        summary_parts = []
-        for exchange in recent_exchanges:
+        summary_parts = [        for exchange in recent_exchanges:
             query = (
-                exchange["user_query"][:50] + "..."
-                if len(exchange["user_query"]) > 50
+                exchange["user_query"][:50] + "..."""                if len(exchange["user_query"]) > 50
                 else exchange["user_query"]
             )
-            summary_parts.append(f"Q: {query}")
+            summary_parts.append("Q: {query}")
 
         return "\n".join(summary_parts)
 
@@ -337,8 +329,7 @@ class ConversationManager:
         system_context = self.context_manager.get_system_context()
 
         # Filter context based on query intent
-        relevant_context = {}
-        for context_key in analysis["required_context"]:
+        relevant_context = {        for context_key in analysis["required_context"]:
             if context_key in system_context:
                 relevant_context[context_key] = system_context[context_key]
 
@@ -396,13 +387,12 @@ class LogRetriever:
         try:
             # For now, return sample logs
             # In production, this would read actual log files
-            sample_logs = []
-            for i in range(5):
+            sample_logs = [            for i in range(5):
                 sample_logs.append(
                     {
                         "timestamp": (datetime.now() - timedelta(hours=i)).isoformat(),
                         "level": "INFO" if i % 2 == 0 else "WARNING",
-                        "message": f"Sample log entry {i + 1}",
+                        "message": "Sample log entry {i + 1}",
                         "source": "chatops",
                         "user_id": "test_user",
                     }
@@ -424,13 +414,11 @@ def validate_query_params(hours: int = None, level: str = None) -> Tuple[bool, s
     """Validate query parameters with enhanced validation."""""""
     if hours is not None:
         if not isinstance(hours, int) or hours < 1 or hours > 168:
-            return False, "Hours must be an integer between 1 and 168"
-
+            return False, "Hours must be an integer between 1 and 168"""
     if level is not None:
         valid_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
         if level.upper() not in valid_levels:
-            return False, f"Level must be one of: {', '.join(valid_levels)}"
-
+            return False, "Level must be one of: {', '.join(valid_levels)}"""
     return True, ""
 
 

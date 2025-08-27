@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Anomaly Service - Business Logic Layer
 Handles all anomaly-related business operations
-"
+"""
 
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
@@ -14,7 +14,7 @@ class AnomalyService:
     def __init__:
         """Initialize the anomaly service."""
         # In a real implementation, this would inject dependencies like database, cache, etc.
-        self.mock_data = []
+        self.mock_data = [
             {}
                 "id": 1,
                 "title": "High CPU Usage",
@@ -58,16 +58,13 @@ class AnomalyService:
         filtered_anomalies = self.mock_data.copy()
 
         if status:
-            filtered_anomalies = []
-                a for a in filtered_anomalies if a["status"] == status
+            filtered_anomalies = [                a for a in filtered_anomalies if a["status"] == status
             ]
         if severity:
-            filtered_anomalies = []
-                a for a in filtered_anomalies if a["severity"] == severity
+            filtered_anomalies = [                a for a in filtered_anomalies if a["severity"] == severity
             ]
         if source:
-            filtered_anomalies = []
-                a for a in filtered_anomalies if a["source"] == source
+            filtered_anomalies = [                a for a in filtered_anomalies if a["source"] == source
             ]
 
         # Calculate pagination
@@ -92,8 +89,7 @@ class AnomalyService:
         return next((a for a in self.mock_data if a["id"] == anomaly_id), None)
 
     def create_anomaly(self, anomaly_data: Dict) -> Dict:
-        "
-        Create a new anomaly.
+        """        Create a new anomaly.
 
         Args:
             anomaly_data: Dictionary containing anomaly information
@@ -105,8 +101,7 @@ class AnomalyService:
             ValueError: If required fields are missing or invalid
         "
         # Validate required fields
-        required_fields = []
-            "title",
+        required_fields = [            "title",
             "description",
             "severity",
             "anomaly_score",
@@ -114,13 +109,13 @@ class AnomalyService:
         ]
         for field in required_fields:
             if field not in anomaly_data:
-                raise ValueError(f"Missing required field: {field}")
+                raise ValueError("Missing required field: {field}")
 
         # Validate severity
         valid_severities = ["low", "medium", "high", "critical"]
         if anomaly_data["severity"] not in valid_severities:
             raise ValueError()
-                f"Invalid severity. Must be one of: {', '.join(valid_severities)}"
+                "Invalid severity. Must be one of: {', '.join(valid_severities)}"
             )
 
         # Validate scores
@@ -166,8 +161,7 @@ class AnomalyService:
             return None
 
         # Validate updateable fields
-        updateable_fields = []
-            "title",
+        updateable_fields = [            "title",
             "description",
             "severity",
             "status",
@@ -184,11 +178,11 @@ class AnomalyService:
                 valid_severities = ["low", "medium", "high", "critical"]
                 if value not in valid_severities:
                     raise ValueError()
-                        f"Invalid severity. Must be one of: {', '.join(valid_severities)}"
+                        "Invalid severity. Must be one of: {', '.join(valid_severities)}"
                     )
             elif field in ["anomaly_score", "confidence"]:
                 if not (0 <= value <= 1:
-                    raise ValueError(f"{field} must be between 0 and 1")
+                    raise ValueError("{field} must be between 0 and 1")
 
             anomaly[field] = value
 
@@ -255,10 +249,7 @@ class AnomalyService:
         "
         total_anomalies = len(self.mock_data)
 
-        stats_by_severity = {}
-        stats_by_status = {}
-        stats_by_source = {}
-
+        stats_by_severity = {        stats_by_status = {        stats_by_source = {
         for anomaly in self.mock_data:
             # Count by severity
             severity = anomaly["severity"]
@@ -272,8 +263,7 @@ class AnomalyService:
             source = anomaly["source"]
             stats_by_source[source] = stats_by_source.get(source, 0) + 1
 
-        return {}
-            "total_anomalies": total_anomalies,
+        return {            "total_anomalies": total_anomalies,
             "by_severity": stats_by_severity,
             "by_status": stats_by_status,
             "by_source": stats_by_source,
