@@ -7,11 +7,11 @@ Enterprise-grade error handling with structured logging and monitoring
 import logging
 import traceback
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
 from functools import wraps
+from typing import Any, Dict, List, Optional
 
 try:
-    from flask import request, jsonify, current_app
+    from flask import current_app, jsonify, request
 except ImportError:
     # Handle case where Flask is not available
     request = None
@@ -83,7 +83,7 @@ class ErrorHandler:
         try:
             if not request:
                 return {}
-            
+
             return {
                 "method": request.method,
                 "url": str(request.url),
@@ -275,7 +275,7 @@ def handle_errors(
                 return func(*args, **kwargs)
             except StructuredException as e:
                 error_handler.log_error(e, e.context, log_level, include_traceback)
-                
+
                 response_data = e.to_dict()
                 if not return_error_details:
                     response_data.pop("context", None)
@@ -284,7 +284,7 @@ def handle_errors(
 
             except Exception as e:
                 error_handler.log_error(e, {}, "ERROR", include_traceback)
-                
+
                 response_data = {
                     "error": "INTERNAL_SERVER_ERROR",
                     "message": "An unexpected error occurred",
@@ -374,7 +374,9 @@ class ErrorMonitor:
             > datetime.now(timezone.utc) - timedelta(hours=hours)
         ]
 
-        threshold_exceeded = len(recent_errors) > self.alert_thresholds["critical_errors_per_hour"]
+        threshold_exceeded = (
+            len(recent_errors) > self.alert_thresholds["critical_errors_per_hour"]
+        )
 
         return {
             "critical_error_count": len(recent_errors),
@@ -387,7 +389,8 @@ class ErrorMonitor:
         return {
             "consecutive_error_count": self.consecutive_error_count,
             "threshold": self.alert_thresholds["consecutive_errors"],
-            "threshold_exceeded": self.consecutive_error_count > self.alert_thresholds["consecutive_errors"],
+            "threshold_exceeded": self.consecutive_error_count
+            > self.alert_thresholds["consecutive_errors"],
         }
 
 

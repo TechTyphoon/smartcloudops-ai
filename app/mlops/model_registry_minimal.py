@@ -17,6 +17,7 @@ from typing import Any, Dict, List, Optional
 
 class ModelStatus(Enum):
     """Model lifecycle status"""
+
     DEVELOPMENT = "development"
     STAGING = "staging"
     PRODUCTION = "production"
@@ -27,6 +28,7 @@ class ModelStatus(Enum):
 @dataclass
 class ModelMetadata:
     """Model metadata and configuration"""
+
     model_id: str
     name: str
     version: str
@@ -49,28 +51,29 @@ class ModelMetadata:
 
 class ModelRegistry:
     """Centralized model registry for versioning and lifecycle management"""
-    
+
     def __init__(self, registry_path: str = "ml_models/registry"):
         """Initialize model registry."""
         self.registry_path = Path(registry_path)
         self.registry_path.mkdir(parents=True, exist_ok=True)
-        
+
         self.models_path = self.registry_path / "models"
         self.models_path.mkdir(exist_ok=True)
-        
+
         self.metadata_path = self.registry_path / "metadata"
         self.metadata_path.mkdir(exist_ok=True)
-        
+
         self.db_path = self.registry_path / "registry.db"
-        
+
         self._init_database()
-    
+
     def _init_database(self):
         """Initialize SQLite database for model registry"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
-        cursor.execute('''
+
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS models (
                 model_id TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
@@ -92,11 +95,12 @@ class ModelRegistry:
                 checksum TEXT,
                 UNIQUE(name, version)
             )
-        ''')
-        
+        """
+        )
+
         conn.commit()
         conn.close()
-    
+
     def register_model(
         self,
         model,
@@ -116,16 +120,16 @@ class ModelRegistry:
     ) -> ModelMetadata:
         """Register a new model in the registry"""
         model_id = f"{name}_{version}_{int(time.time())}"
-        
+
         # Save model file
         model_file_path = self.models_path / f"{model_id}.pkl"
-        with open(model_file_path, 'wb') as f:
+        with open(model_file_path, "wb") as f:
             pickle.dump(model, f)
-        
+
         # Calculate model file checksum
         checksum = self._calculate_checksum(model_file_path)
         size_bytes = model_file_path.stat().st_size
-        
+
         metadata = ModelMetadata(
             model_id=model_id,
             name=name,
@@ -144,133 +148,136 @@ class ModelRegistry:
             status=ModelStatus.DEVELOPMENT,
             tags=tags or [],
             size_bytes=size_bytes,
-            checksum=checksum
+            checksum=checksum,
         )
-        
+
         self._save_metadata(metadata)
         return metadata
-    
+
     def get_model(self, name: str, version: str = "latest") -> Any:
         """Load a model from the registry"""
         metadata = self.get_model_metadata(name, version)
-        
+
         model_file_path = self.models_path / f"{metadata.model_id}.pkl"
-        with open(model_file_path, 'rb') as f:
+        with open(model_file_path, "rb") as f:
             return pickle.load(f)
-    
+
     def get_model_metadata(self, name: str, version: str = "latest") -> ModelMetadata:
         """Get model metadata"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         if version == "latest":
             cursor.execute(
                 "SELECT * FROM models WHERE name = ? ORDER BY created_at DESC LIMIT 1",
-                (name,)
+                (name,),
             )
         else:
             cursor.execute(
-                "SELECT * FROM models WHERE name = ? AND version = ?",
-                (name, version)
+                "SELECT * FROM models WHERE name = ? AND version = ?", (name, version)
             )
-        
+
         row = cursor.fetchone()
         conn.close()
-        
+
         if not row:
             raise ValueError(f"Model {name}:{version} not found")
-        
+
         return self._row_to_metadata(row)
-    
+
     def list_models(self, status: ModelStatus = None) -> List[ModelMetadata]:
         """List all models in the registry"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         if status:
             cursor.execute("SELECT * FROM models WHERE status = ?", (status.value,))
         else:
             cursor.execute("SELECT * FROM models")
-        
+
         rows = cursor.fetchall()
         conn.close()
-        
+
         return [self._row_to_metadata(row) for row in rows]
-    
-    def update_model_status(self, name: str, version: str, status: ModelStatus) -> ModelMetadata:
+
+    def update_model_status(
+        self, name: str, version: str, status: ModelStatus
+    ) -> ModelMetadata:
         """Update model status"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
+
         cursor.execute(
             "UPDATE models SET status = ? WHERE name = ? AND version = ?",
-            (status.value, name, version)
+            (status.value, name, version),
         )
-        
+
         conn.commit()
         conn.close()
-        
+
         return self.get_model_metadata(name, version)
-    
+
     def delete_model(self, name: str, version: str) -> bool:
         """Delete a model from the registry"""
         try:
             metadata = self.get_model_metadata(name, version)
-            
+
             # Delete model file
             model_file_path = self.models_path / f"{metadata.model_id}.pkl"
             if model_file_path.exists():
                 model_file_path.unlink()
-            
+
             # Delete metadata
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
             cursor.execute(
-                "DELETE FROM models WHERE name = ? AND version = ?",
-                (name, version)
+                "DELETE FROM models WHERE name = ? AND version = ?", (name, version)
             )
             conn.commit()
             conn.close()
-            
+
             return True
         except Exception:
             return False
-    
+
     def _save_metadata(self, metadata: ModelMetadata):
         """Save model metadata to database"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
-        
-        cursor.execute('''
+
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO models 
             (model_id, name, version, description, model_type, algorithm, framework,
              input_features, output_schema, training_data_hash, hyperparameters,
              metrics, created_at, created_by, status, tags, size_bytes, checksum)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (
-            metadata.model_id,
-            metadata.name,
-            metadata.version,
-            metadata.description,
-            metadata.model_type,
-            metadata.algorithm,
-            metadata.framework,
-            json.dumps(metadata.input_features),
-            json.dumps(metadata.output_schema),
-            metadata.training_data_hash,
-            json.dumps(metadata.hyperparameters),
-            json.dumps(metadata.metrics),
-            metadata.created_at.isoformat(),
-            metadata.created_by,
-            metadata.status.value,
-            json.dumps(metadata.tags),
-            metadata.size_bytes,
-            metadata.checksum
-        ))
-        
+        """,
+            (
+                metadata.model_id,
+                metadata.name,
+                metadata.version,
+                metadata.description,
+                metadata.model_type,
+                metadata.algorithm,
+                metadata.framework,
+                json.dumps(metadata.input_features),
+                json.dumps(metadata.output_schema),
+                metadata.training_data_hash,
+                json.dumps(metadata.hyperparameters),
+                json.dumps(metadata.metrics),
+                metadata.created_at.isoformat(),
+                metadata.created_by,
+                metadata.status.value,
+                json.dumps(metadata.tags),
+                metadata.size_bytes,
+                metadata.checksum,
+            ),
+        )
+
         conn.commit()
         conn.close()
-    
+
     def _row_to_metadata(self, row) -> ModelMetadata:
         """Convert database row to ModelMetadata"""
         return ModelMetadata(
@@ -291,9 +298,9 @@ class ModelRegistry:
             status=ModelStatus(row[14]),
             tags=json.loads(row[15]) if row[15] else [],
             size_bytes=row[16],
-            checksum=row[17]
+            checksum=row[17],
         )
-    
+
     def _calculate_checksum(self, file_path: Path) -> str:
         """Calculate SHA256 checksum of a file"""
         sha256_hash = hashlib.sha256()

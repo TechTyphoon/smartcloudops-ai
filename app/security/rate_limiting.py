@@ -15,7 +15,7 @@ except ImportError:
     redis = None
 
 try:
-    from flask import request, jsonify, current_app
+    from flask import current_app, jsonify, request
 except ImportError:
     request = None
     jsonify = lambda x: x
@@ -42,7 +42,7 @@ class RateLimiter:
         """Get client IP address with proxy support."""
         if not request:
             return "unknown"
-            
+
         # Check for forwarded headers (for proxy/load balancer setups)
         forwarded_for = request.headers.get("X-Forwarded-For")
         if forwarded_for:
@@ -266,17 +266,22 @@ def rate_limit(
 
                 # Add rate limit headers to successful responses
                 if current_app:
+
                     @current_app.after_request
                     def add_rate_limit_headers(response):
                         if response.status_code < 400:
                             # Get current usage info
-                            info = rate_limiter.get_rate_limit_info(identifier, endpoint)
+                            info = rate_limiter.get_rate_limit_info(
+                                identifier, endpoint
+                            )
                             if "limits" in info and "current_usage" in info:
                                 remaining = min(
                                     limit - info["current_usage"].get(window, 0)
                                     for window, limit in info["limits"].items()
                                 )
-                                response.headers["X-RateLimit-Remaining"] = str(max(0, remaining))
+                                response.headers["X-RateLimit-Remaining"] = str(
+                                    max(0, remaining)
+                                )
 
                         return response
 

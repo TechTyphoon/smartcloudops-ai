@@ -11,8 +11,8 @@ from contextvars import ContextVar
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
-from pythonjsonlogger import jsonlogger
 from flask import g, request
+from pythonjsonlogger import jsonlogger
 
 # Context variable for correlation ID
 correlation_id: ContextVar[Optional[str]] = ContextVar("correlation_id", default=None)
@@ -96,7 +96,7 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
         log_format: Format type ('json' or 'text')
     """
-    
+
     if log_format == "json":
         formatter_class = CorrelationJSONFormatter
         format_string = "%(message)s"
@@ -124,7 +124,7 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
                 "class": "logging.StreamHandler",
                 "formatter": "detailed",
                 "filters": ["request_id"],
-                "stream": "ext://sys.stdout"
+                "stream": "ext://sys.stdout",
             },
             "file": {
                 "level": "INFO",
@@ -134,7 +134,7 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
                 "filename": "/var/log/smartcloudops/app.log",
                 "maxBytes": 10485760,  # 10MB
                 "backupCount": 5,
-                "mode": "a"
+                "mode": "a",
             },
             "error_file": {
                 "level": "ERROR",
@@ -144,7 +144,7 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
                 "filename": "/var/log/smartcloudops/error.log",
                 "maxBytes": 10485760,  # 10MB
                 "backupCount": 5,
-                "mode": "a"
+                "mode": "a",
             },
         },
         "loggers": {
@@ -204,6 +204,7 @@ def get_logger(name: str = None) -> logging.Logger:
     """
     if name is None:
         import inspect
+
         frame = inspect.currentframe().f_back
         name = frame.f_globals.get("__name__", "app")
 

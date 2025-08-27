@@ -53,12 +53,14 @@ def timed_cache(seconds: int = 300):
                     cache.pop(k, None)
 
             return result
+
         wrapper.cache_clear = lambda: cache.clear()
         wrapper.cache_info = lambda: {
             "size": len(cache),
             "hits": getattr(wrapper, "_hits", 0),
         }
         return wrapper
+
     return decorator
 
 
@@ -136,7 +138,7 @@ class AdvancedContextManager:
             return {
                 "cpu_usage": "unknown",
                 "memory_usage": "unknown",
-                "disk_usage": "unknown"
+                "disk_usage": "unknown",
             }
         except Exception as e:
             logger.error("Error getting resource usage: {e}")
@@ -158,7 +160,7 @@ class AdvancedContextManager:
             return {
                 "status": "operational",
                 "recent_actions": 0,
-                "safety_status": "normal"
+                "safety_status": "normal",
             }
         except Exception as e:
             logger.error("Error getting remediation status: {e}")
@@ -171,7 +173,7 @@ class AdvancedContextManager:
             return {
                 "status": "operational",
                 "model_loaded": True,
-                "last_training": "unknown"
+                "last_training": "unknown",
             }
         except Exception as e:
             logger.error("Error getting ML model status: {e}")
@@ -224,7 +226,7 @@ class IntelligentQueryProcessor:
                 r"system\s+status",
                 r"health\s+check",
                 r"how\s+is\s+the\s+system",
-                r"is\s+everything\s+ok"
+                r"is\s+everything\s+ok",
             ],
             "anomaly_check": [r"anomaly", r"issue", r"problem", r"error", r"alert"],
             "resource_usage": [r"cpu", r"memory", r"disk", r"usage", r"utilization"],
@@ -384,7 +386,7 @@ class LogRetriever:
             "level": "INFO",
             "message": "Sample log entry for testing",
             "source": "chatops",
-            "user_id": "test_user"
+            "user_id": "test_user",
         }
 
     def get_recent_logs(
@@ -402,7 +404,7 @@ class LogRetriever:
                         "level": "INFO" if i % 2 == 0 else "WARNING",
                         "message": f"Sample log entry {i + 1}",
                         "source": "chatops",
-                        "user_id": "test_user"
+                        "user_id": "test_user",
                     }
                 )
 

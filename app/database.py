@@ -96,6 +96,8 @@ def init_db():
     except Exception as e:
         print(f"❌ Database initialization failed: {e}")
         return False
+
+
 def get_db():
     """Get database session."""
     db = SessionLocal()
@@ -225,6 +227,7 @@ def reset_db():
     except Exception as e:
         print(f"❌ Database reset failed: {e}")
         return False
+
 
 def backup_db():
     """Create database backup."""

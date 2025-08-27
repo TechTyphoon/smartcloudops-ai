@@ -110,7 +110,7 @@ class AuthManager:
                     resource_id=resource_id,
                     details=details,
                     ip_address=request.remote_addr,
-                    user_agent=request.headers.get("User-Agent", "")
+                    user_agent=request.headers.get("User-Agent", ""),
                 )
                 session.add(audit_log)
         except Exception as e:
@@ -155,6 +155,8 @@ def require_auth(f):
             return jsonify({"error": "Authentication failed"}), 401
 
     return decorated_function
+
+
 def require_role(required_role):
     """Decorator to require specific role."""
 
@@ -185,6 +187,7 @@ def require_role(required_role):
 
         return decorated_function
         return decorated_function
+
     return decorator
 
 

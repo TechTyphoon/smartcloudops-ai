@@ -7,13 +7,7 @@ Centralized metrics collection for application monitoring
 import logging
 import threading
 
-from prometheus_client import (
-    CollectorRegistry,
-    Counter,
-    Gauge,
-    Histogram,
-    Summary,
-)
+from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram, Summary
 
 logger = logging.getLogger(__name__)
 

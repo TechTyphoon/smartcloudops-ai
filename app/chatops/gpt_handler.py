@@ -168,6 +168,7 @@ class GPTHandler:
             context_prompt += f"- Resource Usage: {sanitized_usage}\n"
 
         return context_prompt
+
     def process_query(
         self, query: str, context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
@@ -222,7 +223,7 @@ class GPTHandler:
             # Additional sanitization of GPT response to prevent XSS
             gpt_response = bleach.clean(
                 gpt_response,
-                tags=[], # No HTML tags allowed
+                tags=[],  # No HTML tags allowed
                 attributes={},
                 protocols=[],
                 strip=True,

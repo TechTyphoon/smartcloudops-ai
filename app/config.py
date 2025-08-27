@@ -32,7 +32,7 @@ def load_dotenv():
                             "JWT_SECRET_KEY",
                             "DATABASE_PASSWORD",
                             "REDIS_PASSWORD",
-                            "OPENAI_API_KEY"
+                            "OPENAI_API_KEY",
                         ]:
                             if len(value) < 16:
                                 logger.warning(
@@ -475,7 +475,7 @@ class Config:
             "openai_api_key",
             "gemini_api_key",
             "aws_access_key_id",
-            "aws_secret_access_key"
+            "aws_secret_access_key",
         ]
 
         for key, value in self.__class__.__dict__.items():
@@ -604,14 +604,8 @@ def validate_environment_variables() -> List[str]:
     errors = []
 
     required_vars = {
-        "production": [
-            "SECRET_KEY",
-            "JWT_SECRET_KEY",
-            "DATABASE_URL"
-        ],
-        "development": [
-            "SECRET_KEY"
-        ],
+        "production": ["SECRET_KEY", "JWT_SECRET_KEY", "DATABASE_URL"],
+        "development": ["SECRET_KEY"],
     }
 
     environment = os.getenv("FLASK_ENV", "development").lower()
@@ -627,5 +621,6 @@ def validate_environment_variables() -> List[str]:
 env_errors = validate_environment_variables()
 if env_errors:
     logger.warning(
-        "Environment validation warnings:\n" + "\n".join(f"- {error}" for error in env_errors)
+        "Environment validation warnings:\n"
+        + "\n".join(f"- {error}" for error in env_errors)
     )

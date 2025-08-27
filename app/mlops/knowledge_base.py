@@ -7,13 +7,14 @@ Intelligent learning system for anomaly analysis and remediation recommendations
 import json
 import logging
 from collections import defaultdict
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Tuple
+
+import numpy as np
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.ensemble import RandomForestRegressor
-import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class KnowledgeNode:
     """Node in the knowledge graph."""
-    
+
     node_id: str
     node_type: str  # 'anomaly', 'root_cause', 'remediation', 'metric_pattern'
     properties: Dict[str, Any]
@@ -32,7 +33,7 @@ class KnowledgeNode:
 @dataclass
 class KnowledgeEdge:
     """Edge in the knowledge graph."""
-    
+
     source_id: str
     target_id: str
     relationship_type: str  # 'causes', 'resolves', 'correlates_with', 'similar_to'
@@ -135,7 +136,7 @@ class KnowledgeGraph:
         # Simple similarity based on text properties
         text1 = f"{node1.properties.get('description', '')} {node1.properties.get('source', '')}"
         text2 = f"{node2.properties.get('description', '')} {node2.properties.get('source', '')}"
-        
+
         if not text1 or not text2:
             return 0.0
 
@@ -173,14 +174,20 @@ class KnowledgeGraph:
 
             # Load nodes
             for node_id, node_data in knowledge_data.get("nodes", {}).items():
-                node_data["created_at"] = datetime.fromisoformat(node_data["created_at"])
-                node_data["updated_at"] = datetime.fromisoformat(node_data["updated_at"])
+                node_data["created_at"] = datetime.fromisoformat(
+                    node_data["created_at"]
+                )
+                node_data["updated_at"] = datetime.fromisoformat(
+                    node_data["updated_at"]
+                )
                 self.nodes[node_id] = KnowledgeNode(**node_data)
 
             # Load edges
             for source_id, edges_data in knowledge_data.get("edges", {}).items():
                 for edge_data in edges_data:
-                    edge_data["created_at"] = datetime.fromisoformat(edge_data["created_at"])
+                    edge_data["created_at"] = datetime.fromisoformat(
+                        edge_data["created_at"]
+                    )
                     edge = KnowledgeEdge(**edge_data)
                     self.edges[source_id].append(edge)
 
@@ -210,11 +217,19 @@ class RecommendationEngine:
             # Mock implementation - in real system would load from database
             mock_data = [
                 {
-                    "anomaly": {"severity": "high", "source": "cpu_alert", "description": "High CPU usage"},
+                    "anomaly": {
+                        "severity": "high",
+                        "source": "cpu_alert",
+                        "description": "High CPU usage",
+                    },
                     "remediation": {"action_type": "scale_up", "success": True},
                 },
                 {
-                    "anomaly": {"severity": "medium", "source": "memory_alert", "description": "Memory usage spike"},
+                    "anomaly": {
+                        "severity": "medium",
+                        "source": "memory_alert",
+                        "description": "Memory usage spike",
+                    },
                     "remediation": {"action_type": "restart_service", "success": True},
                 },
             ]
@@ -222,11 +237,15 @@ class RecommendationEngine:
             for item in mock_data:
                 # Add anomaly node
                 anomaly_props = item["anomaly"]
-                anomaly_node_id = self.knowledge_graph.add_node("anomaly", anomaly_props)
+                anomaly_node_id = self.knowledge_graph.add_node(
+                    "anomaly", anomaly_props
+                )
 
                 # Add remediation node
                 remediation_props = item["remediation"]
-                remediation_node_id = self.knowledge_graph.add_node("remediation", remediation_props)
+                remediation_node_id = self.knowledge_graph.add_node(
+                    "remediation", remediation_props
+                )
 
                 # Create relationship
                 weight = 1.0 if remediation_props["success"] else 0.5
@@ -285,7 +304,9 @@ class RecommendationEngine:
 
         try:
             # Find similar anomalies
-            similar_anomalies = self.knowledge_graph.find_similar_nodes(temp_node_id, 0.5)
+            similar_anomalies = self.knowledge_graph.find_similar_nodes(
+                temp_node_id, 0.5
+            )
 
             for similar_anomaly, similarity in similar_anomalies[:limit]:
                 # Get successful remediations for this anomaly
@@ -297,9 +318,12 @@ class RecommendationEngine:
                     if remediation.properties.get("success", False):
                         recommendation = {
                             "action_type": remediation.properties["action_type"],
-                            "confidence": similarity * remediation.properties.get("success", 1.0),
+                            "confidence": similarity
+                            * remediation.properties.get("success", 1.0),
                             "similarity_score": similarity,
-                            "execution_time": remediation.properties.get("execution_time", 0),
+                            "execution_time": remediation.properties.get(
+                                "execution_time", 0
+                            ),
                             "source_anomaly": similar_anomaly.properties,
                             "reasoning": f"Similar anomaly resolved with {remediation.properties['action_type']}",
                         }
@@ -334,7 +358,9 @@ class RecommendationEngine:
                 features = self._extract_anomaly_features(node)
 
                 # Get successful remediations
-                remediations = self.knowledge_graph.get_related_nodes(node_id, "resolves")
+                remediations = self.knowledge_graph.get_related_nodes(
+                    node_id, "resolves"
+                )
                 successful_remediations = [
                     r for r in remediations if r.properties.get("success", False)
                 ]
@@ -465,7 +491,9 @@ class KnowledgeBaseManager:
             "success": success,
             "timestamp": datetime.now().isoformat(),
         }
-        remediation_node_id = self.knowledge_graph.add_node("remediation", remediation_props)
+        remediation_node_id = self.knowledge_graph.add_node(
+            "remediation", remediation_props
+        )
 
         # Create relationship
         weight = 1.0 if success else 0.3
@@ -495,7 +523,9 @@ class KnowledgeBaseManager:
 
         return {
             "total_nodes": len(self.knowledge_graph.nodes),
-            "total_edges": sum(len(edges) for edges in self.knowledge_graph.edges.values()),
+            "total_edges": sum(
+                len(edges) for edges in self.knowledge_graph.edges.values()
+            ),
             "node_types": dict(node_types),
             "edge_types": dict(edge_types),
             "model_trained": self.recommendation_engine.is_trained,

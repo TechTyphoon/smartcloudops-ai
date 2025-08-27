@@ -5,16 +5,17 @@ Intelligent automation for anomaly remediation
 """
 
 import logging
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
-from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
 
 class AutomationLevel(Enum):
     """Automation levels for remediation actions."""
+
     MANUAL = "manual"
     SEMI_AUTO = "semi_auto"
     FULL_AUTO = "full_auto"
@@ -24,6 +25,7 @@ class AutomationLevel(Enum):
 @dataclass
 class PolicyRule:
     """Policy rule for automation decisions."""
+
     rule_id: str
     name: str
     conditions: Dict[str, Any]
@@ -31,7 +33,7 @@ class PolicyRule:
     priority: int = 5
     enabled: bool = True
     created_at: datetime = None
-    
+
     def __post_init__(self):
         if self.created_at is None:
             self.created_at = datetime.now()
@@ -40,7 +42,7 @@ class PolicyRule:
         self, anomaly_info: Dict[str, Any], system_state: Dict[str, Any]
     ) -> bool:
         """Evaluate if this policy rule applies to the given anomaly and system state."""
-        
+
         # Check severity condition - ensure anomaly severity matches required levels
         if "severity" in self.conditions:
             required_severity = self.conditions["severity"]
@@ -51,7 +53,11 @@ class PolicyRule:
         if "time_window" in self.conditions:
             current_hour = datetime.now().hour
             time_window = self.conditions["time_window"]
-            if not (time_window.get("start", 0) <= current_hour <= time_window.get("end", 23)):
+            if not (
+                time_window.get("start", 0)
+                <= current_hour
+                <= time_window.get("end", 23)
+            ):
                 return False
 
         # Check system load condition - prevent automation during high load
@@ -217,13 +223,21 @@ class AutonomousOperationsEngine:
 
             # Execute based on automation level
             if automation_level == AutomationLevel.MANUAL:
-                result = await self._handle_manual_intervention(anomaly_info, recommendations)
+                result = await self._handle_manual_intervention(
+                    anomaly_info, recommendations
+                )
             elif automation_level == AutomationLevel.SEMI_AUTO:
-                result = await self._handle_semi_automation(anomaly_info, recommendations, policy)
+                result = await self._handle_semi_automation(
+                    anomaly_info, recommendations, policy
+                )
             elif automation_level == AutomationLevel.FULL_AUTO:
-                result = await self._handle_full_automation(anomaly_info, recommendations)
+                result = await self._handle_full_automation(
+                    anomaly_info, recommendations
+                )
             elif automation_level == AutomationLevel.ADAPTIVE:
-                result = await self._handle_adaptive_automation(anomaly_info, recommendations, system_state)
+                result = await self._handle_adaptive_automation(
+                    anomaly_info, recommendations, system_state
+                )
             else:
                 result = {"error": "Unknown automation level"}
 
