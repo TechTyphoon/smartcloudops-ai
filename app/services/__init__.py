@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Service Layer for Smart CloudOps AI
 Business logic layer that sits between API endpoints and data models
 """
@@ -10,7 +10,7 @@ from .ml_service import MLService
 from .mlops_service import MLOpsService
 from .remediation_service import RemediationService
 
-__all__ = []
+__all__ = [
     "AnomalyService",
     "RemediationService",
     "FeedbackService",

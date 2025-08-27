@@ -65,7 +65,7 @@ class GPTHandler:
     """- Node Exporter for system metrics\n\n"""
     """Always respond in a professional, helpful manner focused on operational excellence."""
         )
-:
+
     def sanitize_input(self, query: str) -> str:
         """Enhanced sanitize and validate user input with comprehensive security checks."""
         if not query or not isinstance(query, str):
@@ -147,7 +147,7 @@ class GPTHandler:
         return sanitized
 
     def add_context(self, context: Dict[str, Any]) -> str:
-    """Add system context to the conversation with input sanitization.""":
+        """Add system context to the conversation with input sanitization."""
         context_prompt = "\n\n**Current System Context**:\n"
 
         # Sanitize context data to prevent injection attacks
