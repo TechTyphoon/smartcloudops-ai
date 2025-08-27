@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 ML Processing Service for Smart CloudOps AI
 Dedicated microservice for ML operations
-"
+"""
 
 import logging
 import os
@@ -29,13 +29,13 @@ def predict():
         
         # ML processing logic here
         # This is a placeholder - in production you'd load your model and make predictions
-        prediction = {}
+        prediction = {
             "result": "processed",
             "confidence": 0.95,
             "model_version": "1.0.0"
         }
         
-        return jsonify({}
+        return jsonify({
             "status": "success",
             "prediction": prediction,
             "input_data": data
@@ -55,7 +55,7 @@ def train():
         
         # Training logic here
         # This is a placeholder - in production you'd implement actual training
-        training_status = {}
+        training_status = {
             "status": "training_started",
             "model_id": f"model_{os.getpid()}",
             "timestamp": "2024-01-01T00:00:00Z"

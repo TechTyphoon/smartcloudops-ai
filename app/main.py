@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 SmartCloudOps AI - Main Application Entry Point
 Phase 2C Week 1: Performance & Scaling - Refactored with Factory Pattern
-"
+"""
 
 import logging
 from flask import Flask, jsonify, request
@@ -11,31 +11,32 @@ import sys
 from pathlib import Path
 
 # Add current directory to Python path
-current_dir = Path.parent
-sys.path.insert(0, str(current_dir)
+current_dir = Path(__file__).parent
+sys.path.insert(0, str(current_dir))
 
 # Configure logging
-logging.basicConfig()
+logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[logging.FileHandler("logs/app.log"), logging.StreamHandler()])
 logger = logging.getLogger(__name__)
 
+# Create app at module level for testing
+from app import create_app
+app = create_app()
 
 def main():
-    "Main application entry point using factory pattern"
-    from app import create_app
-
-    app = create_app
+    """Main application entry point using factory pattern"""
+    global app
 
     # Configuration
     host = os.getenv("HOST", "0.0.0.0")
-    port = int(os.getenv("PORT", 5000)
+    port = int(os.getenv("PORT", 5000))
     debug = os.getenv("FLASK_ENV") == "development"
 
     logger.info(f"🚀 Starting SmartCloudOps AI server on {host}:{port}")
     logger.info(f"🔧 Debug mode: {debug}")
-    logger.info()
+    logger.info(
         f"⚡ Performance features: {'enabled' if _check_performance_available() else 'disabled'}"
     )
 
@@ -48,9 +49,9 @@ def main():
         logger.error(f"❌ Server error: {e}")
     finally:
         # Cleanup
-        if _check_performance_available(:
+        if _check_performance_available():
             try:
-                from app.performance.api_optimization import ()
+                from app.performance.api_optimization import (
                     shutdown_performance_monitoring)
 
                 shutdown_performance_monitoring()
@@ -72,4 +73,4 @@ def _check_performance_available():
 
 
 if __name__ == "__main__":
-    main
+    main()
