@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 AI/ML API Endpoints for Smart CloudOps AI - Minimal Working Version
 AI-powered analysis, recommendations, and chat operations
-"
+"""
 
 import random
 from datetime import datetime
@@ -61,7 +61,7 @@ MOCK_RECOMMENDATIONS = []
 
 @ai_bp.route("/recommendations", methods=["POST"])
 def get_recommendations():
-    "Get AI-powered remediation recommendations for an anomaly."
+    """Get AI-powered remediation recommendations for an anomaly."""
     try:
         data = request.get_json()
 
@@ -152,7 +152,7 @@ def get_recommendations():
 
 @ai_bp.route("/analyze", methods=["POST"])
 def analyze_metrics():
-    "Analyze metrics data using AI/ML models."
+    """Analyze metrics data using AI/ML models."""
     try:
         data = request.get_json()
 
@@ -278,7 +278,7 @@ def analyze_metrics():
 
 @ai_bp.route("/chat", methods=["POST"])
 def chat_query():
-    "Process natural language queries about the system."
+    """Process natural language queries about the system."""
     try:
         data = request.get_json()
 
@@ -381,7 +381,7 @@ def chat_query():
 
 @ai_bp.route("/models", methods=["GET"])
 def get_models():
-    "Get information about available AI/ML models."
+    """Get information about available AI/ML models."""
     try:
         return ()
             jsonify()
@@ -408,7 +408,7 @@ def get_models():
 
 @ai_bp.route("/models/<model_id>/predict", methods=["POST"])
 def predict_with_model(model_id):
-    "Make predictions using a specific model."
+    """Make predictions using a specific model."""
     try:
         data = request.get_json()
 

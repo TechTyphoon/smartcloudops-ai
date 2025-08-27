@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
 
-"
+"""
 ChatOps Module for Smart CloudOps AI
 Extracted from main.py for modularity
-"
+"""
 
 import logging
 

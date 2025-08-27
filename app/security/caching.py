@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from typing import Any, Callable, Dict, List, Optional
 
-"
+"""
 Caching System for Smart CloudOps AI
 Enterprise-grade caching with Redis backend, multiple strategies, and cache invalidation
-""
+""""
 
 import hashlib
 import logging
@@ -395,7 +395,7 @@ class LRUCacheStrategy(CacheStrategy):
         ttl: Optional[int] = None,
         namespace: str = "default"
     ) -> bool:
-        "Set value and manage LRU order."
+        """Set value and manage LRU order."""
         # Check if we need to evict
         if len(self.access_order) >= self.max_size:
             # Remove least recently used

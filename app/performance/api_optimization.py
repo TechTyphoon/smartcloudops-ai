@@ -1,7 +1,7 @@
-"
+"""
 API Performance Optimization and Monitoring
 Phase 2C Week 1: Performance & Scaling - API Layer
-"
+"""
 
 import gc
 import logging
@@ -24,7 +24,7 @@ logger = logging.getLogger
 
 @dataclass
 class APIMetrics:
-    "API performance metrics"
+    """API performance metrics"""
 
     endpoint: str
     method: str
@@ -39,7 +39,7 @@ class APIMetrics:
 
 
 class PerformanceCollector:
-    "Collect and analyze API performance metrics"
+    """Collect and analyze API performance metrics"""
 
     def __init__(self, max_metrics: int = 10000):
         self.metrics: deque[APIMetrics] = deque(maxlen=max_metrics)
@@ -54,7 +54,7 @@ class PerformanceCollector:
         self.process = psutil.Process()
 
     def record_request(self, metrics: APIMetrics):
-        "Record API request metrics"
+        """Record API request metrics"""
         with self._lock:
             self.metrics.append(metrics)
 
@@ -103,7 +103,7 @@ class PerformanceCollector:
                 self.current_minute_requests += 1
 
     def get_system_metrics(self) -> Dict[str, Any]:
-        "Get current system resource metrics"
+        """Get current system resource metrics"""
         try:
             memory_info = self.process.memory_info()
             cpu_percent = self.process.cpu_percent()
@@ -129,7 +129,7 @@ class PerformanceCollector:
             return {}
 
     def get_performance_summary(self) -> Dict[str, Any]:
-        "Get comprehensive performance summary"
+        """Get comprehensive performance summary"""
         if not self.metrics:
             return {}
 
@@ -163,7 +163,7 @@ class PerformanceCollector:
         }
 
     def get_slow_endpoints(self, threshold: float = 1.0) -> List[Dict[str, Any]]:
-        "Get endpoints with response times above threshold"
+        """Get endpoints with response times above threshold"""
         slow_endpoints = []
 
         for endpoint, stats in self.endpoint_stats.items():
@@ -188,23 +188,23 @@ performance_collector = PerformanceCollector()
 
 
 class ResponseCompression:
-    "HTTP response compression utility"
+    """HTTP response compression utility"""
 
     @staticmethod
     def should_compress(response_data: str, min_size: int = 1000) -> bool:
-        "Check if response should be compressed"
+        """Check if response should be compressed"""
         return len(response_data) > min_size
 
     @staticmethod
     def compress_response(data: str) -> bytes:
-        "Compress response data"
+        """Compress response data"""
         import gzip
 
         return gzip.compress
 
 
 class RateLimiter:
-    "Simple in-memory rate limiter"
+    """Simple in-memory rate limiter"""
 
     def __init__(self, max_requests: int = 100, window_seconds: int = 60):
         self.max_requests = max_requests
@@ -213,7 +213,7 @@ class RateLimiter:
         self._lock = threading.Lock()
 
     def is_allowed(self, identifier: str) -> bool:
-        "Check if request is allowed for identifier"
+        """Check if request is allowed for identifier"""
         current_time = time.time()
 
         with self._lock:
@@ -233,7 +233,7 @@ class RateLimiter:
             return False
 
     def get_remaining(self, identifier: str) -> int:
-        "Get remaining requests for identifier"
+        """Get remaining requests for identifier"""
         current_time = time.time()
 
         with self._lock:
@@ -253,7 +253,7 @@ rate_limiter = RateLimiter()
 
 
 def performance_middleware(app: Flask):
-    "Flask middleware for performance monitoring"
+    """Flask middleware for performance monitoring"""
 
     @app.before_request
     def before_request():
@@ -305,7 +305,7 @@ def performance_middleware(app: Flask):
 
     @app.route("/api/performance/metrics")
     def performance_metrics():
-        "Endpoint to get performance metrics"
+        """Endpoint to get performance metrics"""
         try:
             summary = performance_collector.get_performance_summary()
             return jsonify({"status": "success", "data": summary, "error": None})
@@ -314,7 +314,7 @@ def performance_middleware(app: Flask):
 
     @app.route("/api/performance/slow-endpoints")
     def slow_endpoints():
-        "Endpoint to get slow endpoints"
+        """Endpoint to get slow endpoints"""
         try:
             threshold = float(request.args.get("threshold", 1.0)
             slow = performance_collector.get_slow_endpoints(threshold)
@@ -324,7 +324,7 @@ def performance_middleware(app: Flask):
 
 
 def optimize_response(cache_ttl: int = 300, compress: bool = True):
-    "Decorator for response optimization"
+    """Decorator for response optimization"""
 
     def decorator(func: Callable) -> Callable:
         @wraps(func)
@@ -381,11 +381,11 @@ def optimize_response(cache_ttl: int = 300, compress: bool = True):
 
 
 class MemoryManager:
-    "Memory management utilities"
+    """Memory management utilities"""
 
     @staticmethod
     def cleanup_memory():
-        "Force garbage collection and memory cleanup"
+        """Force garbage collection and memory cleanup"""
         import gc
 
         collected = gc.collect
@@ -394,7 +394,7 @@ class MemoryManager:
 
     @staticmethod
     def get_memory_usage() -> Dict[str, Any]:
-        "Get detailed memory usage information"
+        """Get detailed memory usage information"""
         try:
             import tracemalloc
 
@@ -428,7 +428,7 @@ class MemoryManager:
 
     @staticmethod
     def start_memory_monitoring():
-        "Start memory monitoring"
+        """Start memory monitoring"""
         try:
             import tracemalloc
 
@@ -439,14 +439,14 @@ class MemoryManager:
 
 
 class BackgroundOptimizer:
-    "Background optimization tasks"
+    """Background optimization tasks"""
 
     def __init__(self):
         self.running = False
         self.thread: Optional[threading.Thread] = None
 
     def start(self):
-        "Start background optimization"
+        """Start background optimization"""
         if not self.running:
             self.running = True
             self.thread = threading.Thread(target=self._optimization_loop, daemon=True)
@@ -454,14 +454,14 @@ class BackgroundOptimizer:
             logger.info("Background optimizer started")
 
     def stop(self):
-        "Stop background optimization"
+        """Stop background optimization"""
         self.running = False
         if self.thread:
             self.thread.join()
         logger.info("Background optimizer stopped")
 
     def _optimization_loop(self):
-        "Main optimization loop"
+        """Main optimization loop"""
         while self.running:
             try:
                 # Run optimization tasks every 5 minutes
@@ -497,7 +497,7 @@ background_optimizer = BackgroundOptimizer()
 
 
 def init_performance_monitoring(app: Flask):
-    "Initialize performance monitoring for Flask app"
+    """Initialize performance monitoring for Flask app"""
 
     # Add middleware
     performance_middleware(app)
@@ -512,6 +512,6 @@ def init_performance_monitoring(app: Flask):
 
 
 def shutdown_performance_monitoring():
-    "Shutdown performance monitoring"
+    """Shutdown performance monitoring"""
     background_optimizer.stop()
     logger.info("Performance monitoring shutdown")

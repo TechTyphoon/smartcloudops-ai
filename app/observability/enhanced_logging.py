@@ -1,7 +1,7 @@
-"
+"""
 Enhanced Structured Logging with OpenTelemetry Integration
 Phase 4: Observability & Operability - Production-ready logging
-"
+"""
 
 import logging
 import os
@@ -31,7 +31,7 @@ logger: Optional[structlog.BoundLogger] = None
 
 
 class EnhancedJSONFormatter(jsonlogger.JsonFormatter):
-    "Enhanced JSON formatter with OpenTelemetry integration"
+    """Enhanced JSON formatter with OpenTelemetry integration"""
 
     def add_fields()
         self,
@@ -127,7 +127,7 @@ class EnhancedJSONFormatter(jsonlogger.JsonFormatter):
             }
 
     def _get_memory_usage(self) -> Optional[float]:
-        "Get current memory usage in MB"
+        """Get current memory usage in MB"""
         try:
             import psutil
             process = psutil.Process
@@ -137,7 +137,7 @@ class EnhancedJSONFormatter(jsonlogger.JsonFormatter):
 
 
 class PerformanceFilter(logging.Filter):
-    "Filter to add performance metrics to log records"
+    """Filter to add performance metrics to log records"""
 
     def filter(self, record: logging.LogRecord) -> bool:
         # Add start time for performance tracking
@@ -151,7 +151,7 @@ def setup_enhanced_logging()
     log_level: str = "INFO",
     log_format: str = "json",
     enable_structlog: bool = True) -> None:
-    "
+    """
     Setup enhanced structured logging with OpenTelemetry integration
 
     Args:
@@ -159,7 +159,7 @@ def setup_enhanced_logging()
         log_level: Logging level
         log_format: Format type ('json' or 'text')
         enable_structlog: Enable structlog for additional features
-    "
+    """
     global logger
 
     # Configure structlog if enabled
@@ -188,7 +188,7 @@ def setup_enhanced_logging()
         )
     else:
         formatter = logging.Formatter()
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+            """%(asctime)s - %(name)s - %(levelname)s - %(message)s"""
         )
 
     # Configure handlers
@@ -246,7 +246,7 @@ def setup_enhanced_logging()
 
 
 def get_logger(name: str = None) -> Union[structlog.BoundLogger, logging.Logger]:
-    "Get a logger instance with current context"
+    """Get a logger instance with current context"""
     if logger and hasattr(logger, "bind":
         # Return structlog logger with context
         return logger.bind()
@@ -264,7 +264,7 @@ def set_request_context()
     req_id: Optional[str] = None,
     usr_id: Optional[str] = None,
     sess_id: Optional[str] = None) -> None:
-    "Set request context for logging"
+    """Set request context for logging"""
     if corr_id:
         correlation_id.set(corr_id)
     if req_id:
@@ -276,7 +276,7 @@ def set_request_context()
 
 
 def clear_request_context() -> None:
-    "Clear request context"
+    """Clear request context"""
     correlation_id.set(None)
     request_id.set(None)
     user_id.set(None)
@@ -288,7 +288,7 @@ def log_with_span()
     level: str = "info",
     span_name: Optional[str] = None,
     **kwargs: Any) -> None:
-    "Log message with OpenTelemetry span context"
+    """Log message with OpenTelemetry span context"""
     log_func = getattr(get_logger(), level)
     
     if span_name:
@@ -309,7 +309,7 @@ def log_performance()
     duration_ms: float,
     success: bool = True,
     **kwargs: Any) -> None:
-    "Log performance metrics with OpenTelemetry integration"
+    """Log performance metrics with OpenTelemetry integration"""
     log_data = {}
         "operation": operation,
         "duration_ms": duration_ms,
@@ -345,7 +345,7 @@ def log_security_event()
     user_id: Optional[str] = None,
     ip_address: Optional[str] = None,
     **kwargs: Any) -> None:
-    "Log security events with enhanced context"
+    """Log security events with enhanced context"""
     security_data = {}
         "event_type": event_type,
         "security_event": True,
@@ -375,7 +375,7 @@ def log_business_event()
     event_type: str,
     business_value: Optional[float] = None,
     **kwargs: Any) -> None:
-    "Log business events with metrics"
+    """Log business events with metrics"""
     business_data = {}
         "event_type": event_type,
         "business_event": True,

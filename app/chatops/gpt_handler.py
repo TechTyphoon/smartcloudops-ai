@@ -1,7 +1,7 @@
-"
+"""
 Smart CloudOps AI - GPT Handler Module
 OpenAI integration for ChatOps functionality with enhanced security
-"
+"""
 
 import html
 import logging
@@ -18,11 +18,11 @@ logger = logging.getLogger
 
 
 class GPTHandler:
-    "GPT handler for ChatOps queries with input sanitization and
-    context management."
+    """GPT handler for ChatOps queries with input sanitization and
+    context management."""
 
     def __init__(self, api_key: str = None):
-        "Initialize GPT handler."
+        """Initialize GPT handler."""
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.client = None
         self.conversation_history = []
@@ -30,7 +30,7 @@ class GPTHandler:
 
         if not self.api_key:
             logger.warning()
-                "OpenAI API key not provided. GPT functionality will be disabled."
+                """OpenAI API key not provided. GPT functionality will be disabled."""
             )
             raise ValueError("OpenAI API key is required")
 
@@ -42,32 +42,32 @@ class GPTHandler:
             raise ValueError("Failed to initialize OpenAI client: {str(e)}")
 
     def _get_system_prompt(self) -> str:
-        "Get the system prompt for DevOps assistant role."
+        """Get the system prompt for DevOps assistant role."""
         return ()
-            "You are a Senior DevOps Engineer and Cloud Operations "
-            "expert. Your role is to assist with:\n\n"
-            "1. **Infrastructure Analysis**: Analyze AWS resources, monitoring data, "
-            "and system metrics\n"
-            "2. **Troubleshooting**: Help diagnose issues using logs, metrics, and system status\n"
-            "3. **Best Practices**: Provide guidance on DevOps, security, and cloud operations\n"
-            "4. **Automation**: Suggest improvements and automation opportunities\n"
-            "5. **Monitoring**: Interpret Prometheus metrics and Grafana dashboards\n\n"
-            "**Response Guidelines**:\n"
-            "- Be concise and actionable\n"
-            "- Use technical terminology appropriately\n"
-            "- Provide specific recommendations when possible\n"
-            "- Include relevant metrics or data points\n"
-            "- Suggest next steps for investigation\n\n"
-            "**Current System Context**:\n"
-            "- AWS infrastructure with EC2 instances\n"
-            "- Prometheus + Grafana monitoring stack\n"
-            "- Flask application with metrics endpoints\n"
-            "- Node Exporter for system metrics\n\n"
-            "Always respond in a professional, helpful manner focused on operational excellence."
+            """You are a Senior DevOps Engineer and Cloud Operations """
+            """expert. Your role is to assist with:\n\n"""
+            """1. **Infrastructure Analysis**: Analyze AWS resources, monitoring data, """
+            """and system metrics\n"""
+            """2. **Troubleshooting**: Help diagnose issues using logs, metrics, and system status\n"""
+            """3. **Best Practices**: Provide guidance on DevOps, security, and cloud operations\n"""
+            """4. **Automation**: Suggest improvements and automation opportunities\n"""
+            """5. **Monitoring**: Interpret Prometheus metrics and Grafana dashboards\n\n"""
+            """**Response Guidelines**:\n"""
+            """- Be concise and actionable\n"""
+            """- Use technical terminology appropriately\n"""
+            """- Provide specific recommendations when possible\n"""
+            """- Include relevant metrics or data points\n"""
+            """- Suggest next steps for investigation\n\n"""
+            """**Current System Context**:\n"""
+            """- AWS infrastructure with EC2 instances\n"""
+            """- Prometheus + Grafana monitoring stack\n"""
+            """- Flask application with metrics endpoints\n"""
+            """- Node Exporter for system metrics\n\n"""
+            """Always respond in a professional, helpful manner focused on operational excellence."""
         )
 
     def sanitize_input(self, query: str) -> str:
-        "Enhanced sanitize and validate user input with comprehensive security checks."
+        """Enhanced sanitize and validate user input with comprehensive security checks."""
         if not query or not isinstance(query, str:
             raise ValueError("Query must be a non-empty string")
 
@@ -147,7 +147,7 @@ class GPTHandler:
         return sanitized
 
     def add_context(self, context: Dict[str, Any]) -> str:
-        "Add system context to the conversation with input sanitization."
+        """Add system context to the conversation with input sanitization."""
         context_prompt = "\n\n**Current System Context**:\n"
 
         # Sanitize context data to prevent injection attacks
@@ -172,7 +172,7 @@ class GPTHandler:
     def process_query()
         self, query: str, context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-        "Process ChatOps query with GPT integration and enhanced security."
+        """Process ChatOps query with GPT integration and enhanced security."""
         try:
             # Check if GPT client is available
             if not self.client:
@@ -180,8 +180,8 @@ class GPTHandler:
                     "status": "error",
                     "error": "GPT functionality not available",
                     "message": ()
-                        "OpenAI API key not configured. Please set OPENAI_API_KEY "
-                        "environment variable."
+                        """OpenAI API key not configured. Please set OPENAI_API_KEY """
+                        """environment variable."""
                     ),
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
@@ -268,11 +268,11 @@ class GPTHandler:
             }
 
     def get_conversation_history(self) -> List[Dict[str, str]]:
-        "Get conversation history."
+        """Get conversation history."""
         return self.conversation_history.copy()
 
     def clear_history(self) -> bool:
-        "Clear conversation history."
+        """Clear conversation history."""
         self.conversation_history.clear()
         logger.info("Conversation history cleared")
         return True

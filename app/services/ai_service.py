@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 AI Service - Business Logic Layer
 Handles all AI/ML analysis, recommendations, and chat operations
-"
+"""
 
 import random
 from datetime import datetime
@@ -10,10 +10,10 @@ from typing import Dict, List, Optional
 
 
 class AIService:
-    "Service class for AI-related business logic."
+    """Service class for AI-related business logic."""
 
     def __init__:
-        "Initialize the AI service."
+        """Initialize the AI service."""
         self.mock_models = []
             {}
                 "id": "anomaly_detector_v1",
@@ -60,7 +60,7 @@ class AIService:
         ]
 
     def get_recommendations(self, anomaly_data: Dict, limit: int = 3) -> Dict:
-        "
+        """
         Get AI-powered remediation recommendations for an anomaly.
 
         Args:
@@ -72,7 +72,7 @@ class AIService:
 
         Raises:
             ValueError: If anomaly_data is invalid
-        "
+        """
         if not anomaly_data:
             raise ValueError("anomaly_data is required")
 
@@ -128,7 +128,7 @@ class AIService:
         }
 
     def analyze_metrics(self, metrics: Dict) -> Dict:
-        "
+        """
         Analyze metrics data using AI/ML models.
 
         Args:
@@ -139,7 +139,7 @@ class AIService:
 
         Raises:
             ValueError: If metrics data is invalid
-        "
+        """
         if not metrics:
             raise ValueError("metrics data is required")
 
@@ -237,7 +237,7 @@ class AIService:
         }
 
     def process_chat_query(self, query: str, session_id: str = "default") -> Dict:
-        "
+        """
         Process natural language queries about the system.
 
         Args:
@@ -249,7 +249,7 @@ class AIService:
 
         Raises:
             ValueError: If query is empty
-        "
+        """
         if not query or not query.strip(:
             raise ValueError("Query cannot be empty")
 
@@ -323,12 +323,12 @@ class AIService:
         }
 
     def get_models(self) -> Dict:
-        "
+        """
         Get information about available AI/ML models.
 
         Returns:
             Dictionary containing model information
-        "
+        """
         return {}
             "models": self.mock_models,
             "total_models": len(self.mock_models),
@@ -338,7 +338,7 @@ class AIService:
         }
 
     def predict_with_model(self, model_id: str, input_data: Dict) -> Dict:
-        "
+        """
         Make predictions using a specific model.
 
         Args:
@@ -350,7 +350,7 @@ class AIService:
 
         Raises:
             ValueError: If model not found or invalid input
-        "
+        """
         if not model_id:
             raise ValueError("model_id is required")
 

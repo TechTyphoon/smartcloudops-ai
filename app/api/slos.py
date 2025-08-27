@@ -1,7 +1,7 @@
-"
+"""
 SLO API Endpoints
 Phase 4: Observability & Operability - SLO monitoring and reporting
-"
+"""
 
 import time
 from datetime import datetime, timedelta
@@ -22,7 +22,7 @@ logger = get_logger(__name__)
 
 @slos_bp.route("/status", methods=["GET"])
 def get_slo_status_endpoint():
-    "Get status for all SLOs"
+    """Get status for all SLOs"""
     try:
         # Get SLO status
         slo_status = get_all_slo_status()
@@ -60,7 +60,7 @@ def get_slo_status_endpoint():
 
 @slos_bp.route("/<slo_name>", methods=["GET"])
 def get_specific_slo_status(slo_name: str):
-    "Get status for a specific SLO"
+    """Get status for a specific SLO"""
     try:
         # Get current value from request or use placeholder
         current_value = request.args.get("current_value", type=float)
@@ -101,7 +101,7 @@ def get_specific_slo_status(slo_name: str):
 
 @slos_bp.route("/error-budget", methods=["GET"])
 def get_error_budget():
-    "Get error budget for all SLOs"
+    """Get error budget for all SLOs"""
     try:
         slo_manager = get_slo_manager()
         error_budgets = {}
@@ -142,7 +142,7 @@ def get_error_budget():
 
 @slos_bp.route("/history", methods=["GET"])
 def get_slo_history():
-    "Get historical SLO data"
+    """Get historical SLO data"""
     try:
         days = request.args.get("days", 7, type=int)
         slo_name = request.args.get("slo_name")
@@ -187,7 +187,7 @@ def get_slo_history():
 
 @slos_bp.route("/trends", methods=["GET"])
 def get_slo_trends():
-    "Get SLO trends and analysis"
+    """Get SLO trends and analysis"""
     try:
         days = request.args.get("days", 30, type=int)
         
@@ -245,7 +245,7 @@ def get_slo_trends():
 
 @slos_bp.route("/alerts", methods=["GET"])
 def get_slo_alerts():
-    "Get Prometheus alert rules for SLOs"
+    """Get Prometheus alert rules for SLOs"""
     try:
         alerts = generate_slo_alerts()
         
@@ -269,7 +269,7 @@ def get_slo_alerts():
 
 @slos_bp.route("/metrics", methods=["GET"])
 def get_slo_metrics():
-    "Get SLO metrics in Prometheus format"
+    """Get SLO metrics in Prometheus format"""
     try:
         # Get SLO status
         slo_status = get_all_slo_status()
@@ -311,7 +311,7 @@ def get_slo_metrics():
 
 @slos_bp.route("/health", methods=["GET"])
 def slo_health_check():
-    "Health check for SLO monitoring"
+    """Health check for SLO monitoring"""
     try:
         slo_manager = get_slo_manager()
         

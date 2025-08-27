@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
 
-"
+"""
 Monitoring Module for Smart CloudOps AI
 Extracted from main.py for modularity
-"
+"""
 
 import logging
 import os
@@ -35,7 +35,7 @@ SYSTEM_METRICS = {}
 
 
 def update_system_metrics():
-    "Update system metrics."
+    """Update system metrics."""
     try:
         SYSTEM_METRICS["cpu_percent"] = psutil.cpu_percent(interval=1)
         SYSTEM_METRICS["memory_percent"] = psutil.virtual_memory().percent
@@ -47,7 +47,7 @@ def update_system_metrics():
 
 @monitoring_bp.route("/metrics", methods=["GET"])
 def prometheus_metrics():
-    "Prometheus metrics endpoint."
+    """Prometheus metrics endpoint."""
     try:
         return generate_latest(), 200, {"Content-Type": CONTENT_TYPE_LATEST}
     except Exception as e:
@@ -57,7 +57,7 @@ def prometheus_metrics():
 
 @monitoring_bp.route("/health", methods=["GET"])
 def health_check():
-    "Health check endpoint."
+    """Health check endpoint."""
     try:
         # Update system metrics
         update_system_metrics()
@@ -120,7 +120,7 @@ def health_check():
 
 @monitoring_bp.route("/status", methods=["GET"])
 def system_status():
-    "System status endpoint."
+    """System status endpoint."""
     try:
         # Update system metrics
         update_system_metrics()
@@ -156,7 +156,7 @@ def system_status():
 
 @monitoring_bp.route("/logs", methods=["GET"])
 def get_logs():
-    "Get application logs endpoint."
+    """Get application logs endpoint."""
     try:
         # This is a simplified log retrieval
         # In production, you'd want to integrate with a proper logging system
@@ -189,7 +189,7 @@ def get_logs():
 
 @monitoring_bp.route("/alerts", methods=["GET", "POST"])
 def alerts():
-    "Alerts endpoint."
+    """Alerts endpoint."""
     if request.method == "GET":
         return jsonify()
             {}

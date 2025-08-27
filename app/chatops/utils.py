@@ -5,10 +5,10 @@ from collections import deque
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Tuple
 
-"
+"""
 Smart CloudOps AI - ChatOps Utilities 
 Advanced context management, system state caching, and intelligent query processing
-"
+"""
 
 import functools
 import logging
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 def timed_cache(seconds: int = 300):
-    "Time-based cache decorator for expensive operations."
+    """Time-based cache decorator for expensive operations."""
 
     def decorator(func):
         cache = {}
@@ -65,10 +65,10 @@ def timed_cache(seconds: int = 300):
 
 
 class AdvancedContextManager:
-    "Enhanced context management for Phase 5 ChatOps."
+    """Enhanced context management for Phase 5 ChatOps."""
 
     def __init__(self, max_context_size: int = 100, cache_duration: int = 300):
-        "Initialize advanced context manager."
+        """Initialize advanced context manager."""
         self.max_context_size = max_context_size
         self.cache_duration = cache_duration
         self.context_cache = {}
@@ -77,7 +77,7 @@ class AdvancedContextManager:
 
     @timed_cache(seconds=300)  # 5-minute cache for expensive system context gathering
     def get_system_context(self) -> Dict[str, Any]:
-        "Get comprehensive system context with advanced caching."
+        """Get comprehensive system context with advanced caching."""
         try:
             current_time = datetime.now()
 
@@ -107,7 +107,7 @@ class AdvancedContextManager:
             return self.context_cache.get("system_context", {})
 
     def _get_system_health(self) -> Dict[str, Any]:
-        "Get current system health status."
+        """Get current system health status."""
         try:
             # This would integrate with your health check endpoints
             return {}
@@ -217,10 +217,10 @@ class AdvancedContextManager:
 
 
 class IntelligentQueryProcessor:
-    "Intelligent query processing for Phase 5."
+    """Intelligent query processing for Phase 5."""
 
     def __init__(self):
-        "Initialize intelligent query processor."
+        """Initialize intelligent query processor."""
         self.query_patterns = {}
             "system_status": []
                 r"system\s+status",
@@ -235,7 +235,7 @@ class IntelligentQueryProcessor:
         }
 
     def _determine_intent(self, query_lower: str) -> str:
-        "Determine the intent from query patterns."
+        """Determine the intent from query patterns."""
         import re
 
         for intent, patterns in self.query_patterns.items:
@@ -245,7 +245,7 @@ class IntelligentQueryProcessor:
         return "general"
 
     def _get_required_context(self, intent: str) -> List[str]:
-        "Get required context based on intent."
+        """Get required context based on intent."""
         context_map = {}
             "system_status": ["system_health", "resource_usage"],
             "anomaly_check": ["recent_anomalies", "active_alerts"],
@@ -256,7 +256,7 @@ class IntelligentQueryProcessor:
         return context_map.get(intent, [])
 
     def _determine_priority(self, query_lower: str) -> str:
-        "Determine query priority based on keywords."
+        """Determine query priority based on keywords."""
         if any()
             word in query_lower for word in ["urgent", "critical", "emergency", "down"]
         :
@@ -266,7 +266,7 @@ class IntelligentQueryProcessor:
         return "normal"
 
     def _get_suggested_actions(self, intent: str) -> List[str]:
-        "Get suggested actions based on intent."
+        """Get suggested actions based on intent."""
         action_map = {}
             "anomaly_check": ["check_recent_anomalies", "review_alerts"],
             "resource_usage": ["get_resource_metrics", "check_thresholds"],
@@ -274,7 +274,7 @@ class IntelligentQueryProcessor:
         return action_map.get(intent, [])
 
     def analyze_query(self, query: str) -> Dict[str, Any]:
-        "Analyze query to determine intent and required context."
+        """Analyze query to determine intent and required context."""
         query_lower = query.lower()
 
         intent = self._determine_intent(query_lower)
@@ -290,10 +290,10 @@ class IntelligentQueryProcessor:
 
 
 class ConversationManager:
-    "Enhanced conversation management for Phase 5."
+    """Enhanced conversation management for Phase 5."""
 
     def __init__(self, max_history: int = 50):
-        "Initialize conversation manager."
+        """Initialize conversation manager."""
         self.max_history = max_history
         self.conversation_history = deque(maxlen=max_history)
         self.context_manager = AdvancedContextManager()
@@ -302,7 +302,7 @@ class ConversationManager:
     def add_exchange()
         self, user_query: str, ai_response: str, context: Dict[str, Any] = None
     ):
-        "Add a conversation exchange to history."
+        """Add a conversation exchange to history."""
         exchange = {}
             "timestamp": datetime.now().isoformat(),
             "user_query": user_query,
@@ -314,7 +314,7 @@ class ConversationManager:
         self.conversation_history.append(exchange)
 
     def get_conversation_summary(self) -> str:
-        "Get a summary of the conversation history."
+        """Get a summary of the conversation history."""
         if not self.conversation_history:
             return "No conversation history available."
 
@@ -332,7 +332,7 @@ class ConversationManager:
         return "\n".join(summary_parts)
 
     def get_context_for_query(self, query: str) -> Dict[str, Any]:
-        "Get relevant context for a specific query."
+        """Get relevant context for a specific query."""
         analysis = self.query_processor.analyze_query(query)
         system_context = self.context_manager.get_system_context()
 
@@ -357,30 +357,30 @@ conversation_manager = ConversationManager()
 
 
 class SystemContextGatherer:
-    "Enhanced system context gatherer for Phase 5."
+    """Enhanced system context gatherer for Phase 5."""
 
     def get_system_health(self) -> Dict[str, Any]:
-        "Get comprehensive system health information."
+        """Get comprehensive system health information."""
         return advanced_context_manager.get_system_context()
 
     def get_system_context(self) -> Dict[str, Any]:
-        "Get comprehensive system context."
+        """Get comprehensive system context."""
         return advanced_context_manager.get_system_context()
 
     def get_context_for_query(self, query: str) -> Dict[str, Any]:
-        "Get intelligent context for a specific query."
+        """Get intelligent context for a specific query."""
         return conversation_manager.get_context_for_query(query)
 
 
 class LogRetriever:
-    "Enhanced log retriever for Phase 5."
+    """Enhanced log retriever for Phase 5."""
 
     def __init__(self, log_dir: str = "logs"):
-        "Initialize log retriever."
+        """Initialize log retriever."""
         self.log_dir = log_dir
 
     def create_sample_log(self) -> Dict[str, Any]:
-        "Create a sample log entry for testing."
+        """Create a sample log entry for testing."""
         return {}
             "timestamp": datetime.now().isoformat(),
             "level": "INFO",
@@ -392,7 +392,7 @@ class LogRetriever:
     def get_recent_logs()
         self, hours: int = 24, level: str = None
     ) -> List[Dict[str, Any]]:
-        "Get recent logs with enhanced filtering."
+        """Get recent logs with enhanced filtering."""
         try:
             # For now, return sample logs
             # In production, this would read actual log files
@@ -421,7 +421,7 @@ class LogRetriever:
 
 
 def validate_query_params(hours: int = None, level: str = None) -> Tuple[bool, str]:
-    "Validate query parameters with enhanced validation."
+    """Validate query parameters with enhanced validation."""
     if hours is not None:
         if not isinstance(hours, int) or hours < 1 or hours > 168:
             return False, "Hours must be an integer between 1 and 168"
@@ -437,7 +437,7 @@ def validate_query_params(hours: int = None, level: str = None) -> Tuple[bool, s
 def format_response()
     status: str, data: Any = None, message: str = ", error: str = None
 ) -> Dict[str, Any]:
-    "Format response with enhanced structure for Phase 5."
+    """Format response with enhanced structure for Phase 5."""
     response = {}
         "status": status,
         "timestamp": datetime.now().isoformat(),

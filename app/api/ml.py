@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Machine Learning API Endpoints for Smart CloudOps AI - Minimal Working Version
 ML model management, training, and operations
-"
+"""
 
 import os
 import random
@@ -65,7 +65,7 @@ MOCK_DATASETS = []
 
 @ml_bp.route("/models", methods=["GET"])
 def get_ml_models():
-    "Get all ML models with their status and performance metrics."
+    """Get all ML models with their status and performance metrics."""
     try:
         # Mock ML models data
         models = []
@@ -147,7 +147,7 @@ def get_ml_models():
 
 @ml_bp.route("/models/<model_id>", methods=["GET"])
 def get_ml_model(model_id):
-    "Get detailed information about a specific ML model."
+    """Get detailed information about a specific ML model."""
     try:
         # Mock model details based on ID
         if model_id == "anomaly_detector_v1":
@@ -242,7 +242,7 @@ def get_ml_model(model_id):
 
 @ml_bp.route("/train", methods=["POST"])
 def train_model():
-    "Start training a new ML model."
+    """Start training a new ML model."""
     try:
         data = request.get_json()
 
@@ -324,7 +324,7 @@ def train_model():
 
 @ml_bp.route("/training/jobs", methods=["GET"])
 def get_training_jobs():
-    "Get all training jobs with their status."
+    """Get all training jobs with their status."""
     try:
         # Simulate some jobs completing over time
         for job in MOCK_TRAINING_JOBS:
@@ -376,7 +376,7 @@ def get_training_jobs():
 
 @ml_bp.route("/training/jobs/<int:job_id>", methods=["GET"])
 def get_training_job(job_id):
-    "Get detailed information about a specific training job."
+    """Get detailed information about a specific training job."""
     try:
         # Find training job by ID
         job = next((j for j in MOCK_TRAINING_JOBS if j["id"] == job_id), None)
@@ -406,7 +406,7 @@ def get_training_job(job_id):
 
 @ml_bp.route("/datasets", methods=["GET"])
 def get_datasets():
-    "Get all available datasets for ML training."
+    """Get all available datasets for ML training."""
     try:
         return ()
             jsonify()
@@ -431,7 +431,7 @@ def get_datasets():
 
 @ml_bp.route("/datasets/<int:dataset_id>", methods=["GET"])
 def get_dataset(dataset_id):
-    "Get detailed information about a specific dataset."
+    """Get detailed information about a specific dataset."""
     try:
         # Find dataset by ID
         dataset = next((d for d in MOCK_DATASETS if d["id"] == dataset_id), None)
@@ -470,7 +470,7 @@ def get_dataset(dataset_id):
 
 @ml_bp.route("/predict", methods=["POST"])
 def make_prediction():
-    "Make a prediction using the active ML models."
+    """Make a prediction using the active ML models."""
     try:
         data = request.get_json()
 
@@ -497,7 +497,7 @@ def make_prediction():
                 "is_anomaly": is_anomaly,
                 "confidence": round(random.uniform(0.8, 0.95), 3),
                 "severity": ()
-                    "high"
+                    """high"""
                     if anomaly_score > 0.8
                     else "medium" if anomaly_score > 0.5 else "low"
                 ),
@@ -547,7 +547,7 @@ def make_prediction():
 
 @ml_bp.route("/models/<model_id>/deploy", methods=["POST"])
 def deploy_model(model_id):
-    "Deploy a trained model to production."
+    """Deploy a trained model to production."""
     try:
         # Check if model exists (in real implementation, would check database)
         if model_id not in []

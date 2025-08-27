@@ -1,7 +1,7 @@
-"
+"""
 SmartCloudOps AI - ChatOps API Endpoint
 AI-powered chat interface for operational assistance
-"
+"""
 
 import logging
 from datetime import datetime
@@ -16,9 +16,9 @@ chat_bp = Blueprint("chat", __name__, url_prefix="/api/chat")
 
 @chat_bp.route("/query", methods=["POST"])
 def process_chat_query():
-    "
+    """
     Process user chat queries and return AI responses
-    "
+    """
     try:
         # Validate request
         if not request.is_json:
@@ -79,9 +79,9 @@ def process_chat_query():
 
 @chat_bp.route("/health", methods=["GET"])
 def chat_health():
-    "
+    """
     Health check for chat service
-    "
+    """
     try:
         # Check if AI handler is available
         from app.ai_handler import AIHandler

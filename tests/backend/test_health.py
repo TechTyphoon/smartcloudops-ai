@@ -1,5 +1,7 @@
 """Test health endpoint."""
 
+from flask.testing import FlaskClient
+
 
 def test_health_endpoint(client: FlaskClient):
     """Test /health endpoint returns 200 and expected structure."""

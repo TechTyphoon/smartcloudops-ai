@@ -2,10 +2,10 @@
 from datetime import datetime, timezone
 from typing import List
 
-"
+"""
 Enterprise Authentication Endpoints
 Login, logout, token refresh, user management
-"
+"""
 
 import logging
 
@@ -24,7 +24,7 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    "Enterprise login endpoint with JWT tokens"
+    """Enterprise login endpoint with JWT tokens"""
     try:
         # For GET requests, return login form info
         if request.method == "GET":
@@ -138,7 +138,7 @@ def login():
 @auth_bp.route("/logout", methods=["POST"])
 @require_auth
 def logout():
-    "Enterprise logout with token revocation"
+    """Enterprise logout with token revocation"""
     try:
         auth_header = request.headers.get("Authorization", ")
         if auth_header.startswith("Bearer":
@@ -170,7 +170,7 @@ def logout():
 
 @auth_bp.route("/refresh", methods=["POST"])
 def refresh_token():
-    "Refresh JWT access token"
+    """Refresh JWT access token"""
     try:
         data = request.get_json()
         refresh_token = data.get("refresh_token") if data else None
@@ -241,7 +241,7 @@ def refresh_token():
 @auth_bp.route("/profile", methods=["GET"])
 @require_auth
 def get_profile():
-    "Get current user profile"
+    """Get current user profile"""
     try:
         user = get_user_by_id(request.user["id"])
         if not user:
@@ -282,7 +282,7 @@ def get_profile():
 @auth_bp.route("/users", methods=["GET"])
 @require_admin
 def list_users():
-    "List all users (admin only)."
+    """List all users (admin only)."""
     try:
         users = []
         for user in ENTERPRISE_USERS.values():
@@ -323,7 +323,7 @@ def list_users():
 @auth_bp.route("/validate", methods=["GET"])
 @require_auth
 def validate_token():
-    "Validate current token and return user info."
+    """Validate current token and return user info."""
     return jsonify()
         {}
             "message": "Token is valid",
@@ -338,7 +338,7 @@ def validate_token():
 @auth_bp.route("/roles", methods=["GET"])
 @require_auth
 def get_roles():
-    "Get available roles and permissions."
+    """Get available roles and permissions."""
     return jsonify()
         {}
             "message": "Roles retrieved successfully",

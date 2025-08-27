@@ -1,8 +1,11 @@
 """Test ChatOps endpoints."""
 
+import json
+from flask.testing import FlaskClient
+
 
 def test_chatops_analyze_endpoint(client: FlaskClient):
-    """Test /chatops/analyze endpoint with trivial query.""f"
+    """Test /chatops/analyze endpoint with trivial query."""
     test_query = {"query": "show system status"}
 
     response = client.post(

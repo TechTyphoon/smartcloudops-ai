@@ -111,7 +111,7 @@ class NotificationManager:
     def _create_remediation_message()
         self, evaluation: Dict, execution_results: List[Dict]
     ) -> Dict:
-        "Create Slack message for remediation action (matches test expectations)."
+        """Create Slack message for remediation action (matches test expectations)."""
         # Support both nested anomaly and top-level fields
         anomaly = evaluation.get("anomaly", {})
         severity = ()
@@ -179,8 +179,8 @@ class NotificationManager:
         def send_remediation_notification()
         self, evaluation: Dict, execution_results: List[Dict]
     ) -> Dict:
-        "Send notification about remediation action with standardized
-        return structure."
+        """Send notification about remediation action with standardized
+        return structure."""
         try:
             if not self.slack_webhook_url:
                 logger.error()
@@ -198,7 +198,7 @@ class NotificationManager:
                 return {"status": "success", "slack_response": result}
             else:
                 logger.error()
-                    "Failed to send remediation notification: {result.get('errorf')}"
+                    """Failed to send remediation notification: {result.get('errorf')}"""
                 )
                 return {}
                     "status": "failed",
@@ -250,7 +250,7 @@ class NotificationManager:
                 return {"status": "success", "slack_response": result}
             else:
                 logger.error()
-                    "Failed to send simple notification: {result.get('error')}"
+                    """Failed to send simple notification: {result.get('error')}"""
                 )
                 return {}
                     "status": "failed",
@@ -372,34 +372,34 @@ class NotificationManager:
 
         html = ()
             "<!DOCTYPE html>",
-            "<html>"
+            """<html>"""
             "<head>",
-            "<meta charset='utf-8'>"
+            """<meta charset='utf-8'>"""
             "<title>SmartCloudOps AI Alert</title>",
-            "</head>"
+            """</head>"""
             "<body style='font-family: Arial, sans-serif; margin: 0; padding: 20px; ",
-            "background-color: #f4f4f4;'>"
+            """background-color: #f4f4f4;'>"""
             "<div style='max-width: 600px; margin: 0 auto; background-color: white; ",
-            "border-radius: 8px; overflow: hidden; "
+            """border-radius: 8px; overflow: hidden; """
             "box-shadow: 0 2px 10px rgba(0,0,0,0.1);'>",
-            "<div style=f'background-color: {color}; color: white; padding: 20px; "
+            """<div style=f'background-color: {color}; color: white; padding: 20px; """
             "text-align: center;'>",
-            "<h1 style='margin: 0; font-size: 24px;'>SmartCloudOps AI Alert</h1>"
+            """<h1 style='margin: 0; font-size: 24px;'>SmartCloudOps AI Alert</h1>"""
             "<p style='margin: 10px 0 0 0; font-size: 16px; ",
-            "opacity: 0.9;f'>{level.upper()}</p>"
+            """opacity: 0.9;f'>{level.upper()}</p>"""
             "</div>",
-            "<div style='padding: 30px;'>"
+            """<div style='padding: 30px;'>"""
             "<p style='font-size: 16px; line-height: 1.6; color: #333; ",
-            "margin: 0 0 20px 0;f'>{message}</p>"
+            """margin: 0 0 20px 0;f'>{message}</p>"""
             "<hr style='border: none; border-top: 1px solid #eee; margin: 30px 0;'>",
-            "<p style='font-size: 12px; color: #999; margin: 0; text-align: center;'>"
+            """<p style='font-size: 12px; color: #999; margin: 0; text-align: center;'>"""
             "This is an automated message from SmartCloudOps AI. ",
-            "Please do not reply to this email."
+            """Please do not reply to this email."""
             "</p>",
-            "</div>"
+            """</div>"""
             "</div>",
-            "</body>"
-            "</html>"
+            """</body>"""
+            """</html>"""
         )
         return html
         def _create_email_text(self, message: str, level: str) -> str:
