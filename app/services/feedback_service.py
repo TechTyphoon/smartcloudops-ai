@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Feedback Service - Business Logic Layer
 Handles all user feedback-related business operations
-"
+"""
 
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
@@ -27,7 +27,7 @@ class FeedbackService:
                 "created_at": "2024-01-15T08:30:00Z",
                 "updated_at": "2024-01-15T08:30:00Z",
             },
-            {}
+            {
                 "id": 2,
                 "user_id": 2,
                 "feedback_type": "feature_request",
@@ -42,7 +42,7 @@ class FeedbackService:
             },
         ]
 
-    def get_feedback()
+    def get_feedback(
         self,
         page: int = 1,
         per_page: int = 20,
@@ -50,27 +50,27 @@ class FeedbackService:
         status: Optional[str] = None,
         priority: Optional[str] = None,
         user_id: Optional[int] = None) -> Tuple[List[Dict], Dict]:
-        "
+        """
         Get feedback with pagination and filtering.
 
         Returns:
             Tuple of (feedback_list, pagination_info)
-        "
+        """
         # Apply filters
         filtered_feedback = self.mock_data.copy()
 
         if feedback_type:
-            filtered_feedback = []
+            filtered_feedback = [
                 f for f in filtered_feedback if f["feedback_type"] == feedback_type
             ]
         if status:
             filtered_feedback = [f for f in filtered_feedback if f["status"] == status]
         if priority:
-            filtered_feedback = []
+            filtered_feedback = [
                 f for f in filtered_feedback if f["priority"] == priority
             ]
         if user_id:
-            filtered_feedback = []
+            filtered_feedback = [
                 f for f in filtered_feedback if f["user_id"] == user_id
             ]
 
@@ -80,7 +80,7 @@ class FeedbackService:
         end = start + per_page
         feedback_page = filtered_feedback[start:end]
 
-        pagination_info = {}
+        pagination_info = {
             "page": page,
             "per_page": per_page,
             "total": total,
@@ -90,11 +90,11 @@ class FeedbackService:
         return feedback_page, pagination_info
 
     def get_feedback_by_id(self, feedback_id: int) -> Optional[Dict]:
-        "Get a specific feedback item by ID."
+        """Get a specific feedback item by ID."""
         return next((f for f in self.mock_data if f["id"] == feedback_id), None)
 
     def create_feedback(self, feedback_data: Dict) -> Dict:
-        "
+        """
         Create a new feedback item.
 
         Args:
@@ -105,7 +105,7 @@ class FeedbackService:
 
         Raises:
             ValueError: If required fields are missing or invalid
-        "
+        """
         # Validate required fields
         required_fields = ["feedback_type", "title", "description"]
         for field in required_fields:
@@ -115,14 +115,14 @@ class FeedbackService:
         # Validate feedback type
         valid_types = ["bug_report", "feature_request", "general", "performance"]
         if feedback_data["feedback_type"] not in valid_types:
-            raise ValueError()
+            raise ValueError(
                 f"Invalid feedback type. Must be one of: {', '.join(valid_types)}"
             )
 
         # Validate rating if provided
         rating = feedback_data.get("rating")
         if rating is not None:
-            if not isinstance(rating, int) or not (1 <= rating <= 5:
+            if not isinstance(rating, int) or not (1 <= rating <= 5):
                 raise ValueError("Rating must be an integer between 1 and 5")
 
         # Validate priority

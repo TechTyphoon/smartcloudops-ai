@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 MLOpsService - Business logic for MLOps operations
 Phase 2A: MLOps integration with service layer pattern
-"
+"""
 
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
@@ -74,7 +74,7 @@ class MLOpsService:
                 "objective": "minimize",
                 "tags": ["anomaly-detection", "production"],
             },
-            {}
+            {
                 "id": "exp_2",
                 "name": "anomaly_detection_v2",
                 "description": "Improved anomaly detection with feature engineering",
@@ -87,8 +87,8 @@ class MLOpsService:
             },
         ]
 
-        self.mock_models = []
-            {}
+        self.mock_models = [
+            {
                 "id": "model_1",
                 "name": "anomaly_detector",
                 "version": "1.0.0",
@@ -101,7 +101,7 @@ class MLOpsService:
                 "created_by": "mlops_pipeline",
                 "size_mb": 2.5,
             },
-            {}
+            {
                 "id": "model_2",
                 "name": "anomaly_detector",
                 "version": "1.1.0",
@@ -118,7 +118,7 @@ class MLOpsService:
 
     # ===== EXPERIMENT MANAGEMENT =====
 
-    def get_experiments()
+    def get_experiments(
         self,
         page: int = 1,
         per_page: int = 20,
@@ -131,7 +131,7 @@ class MLOpsService:
         if status:
             filtered_data = [e for e in filtered_data if e["status"] == status]
         if tags:
-            filtered_data = []
+            filtered_data = [
                 e for e in filtered_data if any(tag in e["tags"] for tag in tags)
             ]
 
@@ -141,7 +141,7 @@ class MLOpsService:
         end = start + per_page
         page_data = filtered_data[start:end]
 
-        pagination = {}
+        pagination = {
             "page": page,
             "per_page": per_page,
             "total": total,
@@ -266,7 +266,7 @@ class MLOpsService:
         end = start + per_page
         page_data = filtered_data[start:end]
 
-        pagination = {}
+        pagination = {
             "page": page,
             "per_page": per_page,
             "total": total,

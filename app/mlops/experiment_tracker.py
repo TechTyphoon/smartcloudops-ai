@@ -1,7 +1,7 @@
-"
+"""
 Experiment Tracker - ML experiment tracking and reproducibility
 Minimal working version for Phase 2 MLOps integration
-"
+"""
 
 import json
 import sqlite3
@@ -128,13 +128,13 @@ class ExperimentTracker:
     def create_experiment()
         self,
         name: str,
-        description: str = ",
+        description: str = "",
         objective: str = "minimize",
         tags: List[str] = None) -> Experiment:
-        "Create a new experiment"
-        experiment_id = f"exp_{int(time.time()}_{str(uuid.uuid4()[:8]}"
+        """Create a new experiment"""
+        experiment_id = f"exp_{int(time.time())}_{str(uuid.uuid4())[:8]}"
 
-        experiment = Experiment()
+        experiment = Experiment(
             experiment_id=experiment_id,
             name=name,
             description=description,
@@ -148,7 +148,7 @@ class ExperimentTracker:
         self._save_experiment(experiment)
         return experiment
 
-    def start_run()
+    def start_run(
         self,
         experiment_id: str,
         run_name: str = None,
@@ -157,11 +157,11 @@ class ExperimentTracker:
         seed: int = None) -> ExperimentRun:
         "Start a new experiment run"
         if run_name is None:
-            run_name = f"run_{int(time.time()}"
+            run_name = f"run_{int(time.time())}"
 
-        run_id = f"run_{int(time.time()}_{str(uuid.uuid4()[:8]}"
+        run_id = f"run_{int(time.time())}_{str(uuid.uuid4())[:8]}"
 
-        run = ExperimentRun()
+        run = ExperimentRun(
             run_id=run_id,
             experiment_id=experiment_id,
             name=run_name,
@@ -174,7 +174,7 @@ class ExperimentTracker:
             artifacts=[],
             logs=[],
             tags=tags or [],
-            notes=",
+            notes="",
             git_commit=self._get_git_commit(),
             environment=self._get_environment_info(),
             seed=seed)
@@ -185,7 +185,7 @@ class ExperimentTracker:
 
     def log_parameter(self, key: str, value: Any, run_id: str = None):
         "Log a parameter for the current or specified run"
-        target_run_id = run_id or ()
+        target_run_id = run_id or (
             self.current_run.run_id if self.current_run else None
         )
 
@@ -199,7 +199,7 @@ class ExperimentTracker:
 
     def log_metric(self, key: str, value: float, step: int = None, run_id: str = None):
         "Log a metric for the current or specified run"
-        target_run_id = run_id or ()
+        target_run_id = run_id or (
             self.current_run.run_id if self.current_run else None
         )
 
@@ -211,11 +211,11 @@ class ExperimentTracker:
 
         self._save_metric(target_run_id, key, value, step)
 
-    def end_run()
+    def end_run(
         self, status: ExperimentStatus = ExperimentStatus.COMPLETED, run_id: str = None
     ):
         "End the current or specified run"
-        target_run_id = run_id or ()
+        target_run_id = run_id or (
             self.current_run.run_id if self.current_run else None
         )
 
@@ -225,7 +225,7 @@ class ExperimentTracker:
         if self.current_run and self.current_run.run_id == target_run_id:
             self.current_run.status = status
             self.current_run.end_time = datetime.now(timezone.utc)
-            self.current_run.duration_seconds = ()
+            self.current_run.duration_seconds = (
                 self.current_run.end_time - self.current_run.start_time
             ).total_seconds()
 
