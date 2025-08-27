@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Feedback API Endpoints for Smart CloudOps AI - Minimal Working Version
 User feedback collection and management system
-"
+"""
 
 from datetime import datetime, timezone
 
@@ -40,11 +40,9 @@ MOCK_FEEDBACK = []
         "updated_at": "2024-01-15T10:00:00Z",
     },
 ]
-
-
 @feedback_bp.route("/", methods=["GET"])
 def get_feedback():
-    "Get all feedback with pagination and filtering."
+    """Get all feedback with pagination and filtering."""
     try:
         # Get query parameters
         page = request.args.get("page", 1, type=int)
@@ -57,19 +55,19 @@ def get_feedback():
         # Filter feedback based on query parameters
         filtered_feedback = MOCK_FEEDBACK.copy()
 
-        if feedback_type:
+    if feedback_type:
             filtered_feedback = []
-                f for f in filtered_feedback if f["feedback_type"] == feedback_type
+    f for f in filtered_feedback if f["feedback_type"] == feedback_type
             ]
-        if status:
+    if status:
             filtered_feedback = [f for f in filtered_feedback if f["status"] == status]
-        if priority:
+    if priority:
             filtered_feedback = []
-                f for f in filtered_feedback if f["priority"] == priority
+    f for f in filtered_feedback if f["priority"] == priority
             ]
-        if user_id:
+    if user_id:
             filtered_feedback = []
-                f for f in filtered_feedback if f["user_id"] == user_id
+    f for f in filtered_feedback if f["user_id"] == user_id
             ]
 
         # Calculate pagination
@@ -78,45 +76,40 @@ def get_feedback():
         end = start + per_page
         feedback_page = filtered_feedback[start:end]
 
-        return ()
-            jsonify()
-                {}
-                    "status": "success",
-                    "data": {}
-                        "feedback": feedback_page,
-                        "pagination": {}
-                            "page": page,
-                            "per_page": per_page,
-                            "total": total,
-                            "pages": (total + per_page - 1) // per_page,
-                        },
-                    },
-                }
+    return ()
+            jsonify({}
+    "status": "success",
+    "data": {}
+    "feedback": feedback_page,
+    "pagination": {}
+    "page": page,
+    "per_page": per_page,
+    "total": total,
+    "pages": (total + per_page - 1) // per_page,
+    },
+    },
+    }
             ),
             200)
 
     except Exception as e:
-        return ()
-            jsonify()
-                {"status": "error", "message": f"Failed to retrieve feedback: {str(e)}"}
+    return ()
+            jsonify({"status": "error", "message": f"Failed to retrieve feedback: {str(e)}"}
             ),
             500)
-
-
-@feedback_bp.route("/<int:feedback_id>", methods=["GET"])
-def get_feedback_item(feedback_id):
-    "Get a specific feedback item by ID."
+    @feedback_bp.route("/<int:feedback_id>", methods=["GET"])
+    def get_feedback_item(feedback_id):
+    """Get a specific feedback item by ID."""
     try:
         # Find feedback by ID
         feedback_item = next((f for f in MOCK_FEEDBACK if f["id"] == feedback_id), None)
 
         if not feedback_item:
-            return ()
-                jsonify()
-                    {}
-                        "status": "error",
-                        "message": f"Feedback with ID {feedback_id} not found",
-                    }
+        return ()
+                jsonify({}
+        "status": "error",
+        "message": f"Feedback with ID {feedback_id} not found",
+        }
                 ),
                 404)
 
@@ -124,42 +117,37 @@ def get_feedback_item(feedback_id):
 
     except Exception as e:
         return ()
-            jsonify()
-                {"status": "error", "message": f"Failed to retrieve feedback: {str(e)}"}
+            jsonify({"status": "error", "message": f"Failed to retrieve feedback: {str(e)}"}
             ),
             500)
-
-
-@feedback_bp.route("/", methods=["POST"])
-def create_feedback():
-    "Create a new feedback item."
-    try:
+        @feedback_bp.route("/", methods=["POST"])
+        def create_feedback():
+            """Create a new feedback item."""
+            try:
         data = request.get_json()
 
-        if not data:
+            if not data:
             return jsonify({"status": "error", "message": "No data provided"}), 400
 
         # Validate required fields
         required_fields = ["feedback_type", "title", "description"]
         for field in required_fields:
             if field not in data:
-                return ()
-                    jsonify()
-                        {}
-                            "status": "error",
-                            "message": f"Missing required field: {field}",
-                        }
+            return ()
+                    jsonify({}
+            "status": "error",
+            "message": f"Missing required field: {field}",
+            }
                     ),
                     400)
 
         # Validate feedback type
         valid_types = ["bug_report", "feature_request", "general", "performance"]
-        if data["feedback_type"] not in valid_types:
+            if data["feedback_type"] not in valid_types:
             return ()
-                jsonify()
-                    {}
-                        "status": "error",
-                        "message": f"Invalid feedback type. Must be one of: {', '.join(valid_types)}",
+                jsonify({}
+            "status": "error",
+            "message": f"Invalid feedback type. Must be one of: {', '.join(valid_types)}",
                     }
                 ),
                 400)
@@ -180,24 +168,22 @@ def create_feedback():
         }
 
         # Validate rating if provided
-        if new_feedback["rating"] is not None:
+            if new_feedback["rating"] is not None:
             if not isinstance(new_feedback["rating"], int) or not ()
                 1 <= new_feedback["rating"] <= 5
             :
-                return ()
-                    jsonify()
-                        {}
-                            "status": "error",
-                            "message": "Rating must be an integer between 1 and 5",
-                        }
+            return ()
+                    jsonify({}
+            "status": "error",
+            "message": "Rating must be an integer between 1 and 5",
+            }
                     ),
                     400)
 
         MOCK_FEEDBACK.append(new_feedback)
 
-        return ()
-            jsonify()
-                {}
+            return ()
+            jsonify({}
                     "status": "success",
                     "message": "Feedback created successfully",
                     "data": {"feedback": new_feedback},
@@ -205,66 +191,60 @@ def create_feedback():
             ),
             201)
 
-    except Exception as e:
-        return ()
-            jsonify()
-                {"status": "error", "message": f"Failed to create feedback: {str(e)}"}
+            except Exception as e:
+            return ()
+            jsonify({"status": "error", "message": f"Failed to create feedback: {str(e)}"}
             ),
             500)
+            @feedback_bp.route("/<int:feedback_id>", methods=["PUT"])
+            def update_feedback(feedback_id):
+                """Update an existing feedback item."""
+                try:
+                data = request.get_json()
 
+                if not data:
+                return jsonify({"status": "error", "message": "No data provided"}), 400
 
-@feedback_bp.route("/<int:feedback_id>", methods=["PUT"])
-def update_feedback(feedback_id):
-    "Update an existing feedback item."
-    try:
-        data = request.get_json()
+                # Find feedback by ID
+                feedback_item = next((f for f in MOCK_FEEDBACK if f["id"] == feedback_id), None)
 
-        if not data:
-            return jsonify({"status": "error", "message": "No data provided"}), 400
-
-        # Find feedback by ID
-        feedback_item = next((f for f in MOCK_FEEDBACK if f["id"] == feedback_id), None)
-
-        if not feedback_item:
-            return ()
-                jsonify()
-                    {}
+                if not feedback_item:
+                return ()
+                jsonify({}
                         "status": "error",
                         "message": f"Feedback with ID {feedback_id} not found",
                     }
                 ),
                 404)
 
-        # Update feedback fields
-        updateable_fields = []
+                # Update feedback fields
+                updateable_fields = []
             "title",
             "description",
             "status",
             "priority",
             "tags",
             "rating",
-        ]
-        for field in updateable_fields:
-            if field in data:
+                ]
+                for field in updateable_fields:
+                if field in data:
                 # Validate rating if being updated
                 if field == "rating" and data[field] is not None:
-                    if not isinstance(data[field], int) or not (1 <= data[field] <= 5:
-                        return ()
-                            jsonify()
-                                {}
-                                    "status": "error",
-                                    "message": "Rating must be an integer between 1 and 5",
-                                }
-                            ),
-                            400)
+                if not isinstance(data[field], int) or not (1 <= data[field] <= 5:
+                return ()
+                jsonify({}
+                "status": "error",
+                "message": "Rating must be an integer between 1 and 5",
+                }
+                ),
+                400)
 
                 feedback_item[field] = data[field]
 
-        feedback_item["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
+                feedback_item["updated_at"] = datetime.now(timezone.utc).isoformat() + """Z"""
 
-        return ()
-            jsonify()
-                {}
+                return ()
+            jsonify({}
                     "status": "success",
                     "message": "Feedback updated successfully",
                     "data": {"feedback": feedback_item},
@@ -272,105 +252,93 @@ def update_feedback(feedback_id):
             ),
             200)
 
-    except Exception as e:
-        return ()
-            jsonify()
-                {"status": "error", "message": f"Failed to update feedback: {str(e)}"}
+                except Exception as e:
+                return ()
+            jsonify({"status": "error", "message": f"Failed to update feedback: {str(e)}"}
             ),
             500)
+                @feedback_bp.route("/<int:feedback_id>", methods=["DELETE"])
+                def delete_feedback(feedback_id):
+                    """Delete a feedback item."""
+                    try:
+                    # Find feedback by ID
+                    feedback_index = next()
+                    (i for i, f in enumerate(MOCK_FEEDBACK) if f["id"] == feedback_id), None
 
-
-@feedback_bp.route("/<int:feedback_id>", methods=["DELETE"])
-def delete_feedback(feedback_id):
-    "Delete a feedback item."
-    try:
-        # Find feedback by ID
-        feedback_index = next()
-            (i for i, f in enumerate(MOCK_FEEDBACK) if f["id"] == feedback_id), None
-        )
-
-        if feedback_index is None:
-            return ()
-                jsonify()
-                    {}
+                    if feedback_index is None:
+                    return ()
+                jsonify({}
                         "status": "error",
                         "message": f"Feedback with ID {feedback_id} not found",
                     }
                 ),
                 404)
 
-        # Remove feedback from list
-        deleted_feedback = MOCK_FEEDBACK.pop(feedback_index)
+                    # Remove feedback from list
+                    deleted_feedback = MOCK_FEEDBACK.pop(feedback_index)
 
-        return ()
-            jsonify()
-                {}
+                    return ()
+                    jsonify({}
                     "status": "success",
                     "message": "Feedback deleted successfully",
                     "data": {"deleted_feedback": deleted_feedback},
                 }
-            ),
-            200)
+                    ),
+                    200)
 
-    except Exception as e:
-        return ()
-            jsonify()
-                {"status": "error", "message": f"Failed to delete feedback: {str(e)}"}
-            ),
-            500)
+                    except Exception as e:
+                    return ()
+                    jsonify({"status": "error", "message": f"Failed to delete feedback: {str(e)}"}
+                    ),
+                    500)
+                    @feedback_bp.route("/stats", methods=["GET"])
+                    def get_feedback_stats():
+                        """Get feedback statistics."""
+                        try:
+                        # Calculate statistics from mock data
+                        total_feedback = len(MOCK_FEEDBACK)
 
+                        stats_by_type = {}
+                        stats_by_status = {}
+                        stats_by_priority = {}
+                        rating_stats = {}
+                        "total_ratings": 0,
+                        "average_rating": 0,
+                        "rating_distribution": {},
+                        }
 
-@feedback_bp.route("/stats", methods=["GET"])
-def get_feedback_stats():
-    "Get feedback statistics."
-    try:
-        # Calculate statistics from mock data
-        total_feedback = len(MOCK_FEEDBACK)
+                        total_rating_sum = 0
+                        total_ratings_count = 0
 
-        stats_by_type = {}
-        stats_by_status = {}
-        stats_by_priority = {}
-        rating_stats = {}
-            "total_ratings": 0,
-            "average_rating": 0,
-            "rating_distribution": {},
-        }
+                        for feedback_item in MOCK_FEEDBACK:
+                        # Count by type
+                        feedback_type = feedback_item["feedback_type"]
+                        stats_by_type[feedback_type] = stats_by_type.get(feedback_type, 0) + 1
 
-        total_rating_sum = 0
-        total_ratings_count = 0
+                        # Count by status
+                        status = feedback_item["status"]
+                        stats_by_status[status] = stats_by_status.get(status, 0) + 1
 
-        for feedback_item in MOCK_FEEDBACK:
-            # Count by type
-            feedback_type = feedback_item["feedback_type"]
-            stats_by_type[feedback_type] = stats_by_type.get(feedback_type, 0) + 1
+                        # Count by priority
+                        priority = feedback_item["priority"]
+                        stats_by_priority[priority] = stats_by_priority.get(priority, 0) + 1
 
-            # Count by status
-            status = feedback_item["status"]
-            stats_by_status[status] = stats_by_status.get(status, 0) + 1
-
-            # Count by priority
-            priority = feedback_item["priority"]
-            stats_by_priority[priority] = stats_by_priority.get(priority, 0) + 1
-
-            # Rating statistics
-            if feedback_item["rating"] is not None:
-                rating = feedback_item["rating"]
-                total_rating_sum += rating
-                total_ratings_count += 1
-                rating_stats["rating_distribution"][str(rating)] = ()
+                        # Rating statistics
+                        if feedback_item["rating"] is not None:
+                        rating = feedback_item["rating"]
+                        total_rating_sum += rating
+                        total_ratings_count += 1
+                        rating_stats["rating_distribution"][str(rating)] = ()
                     rating_stats["rating_distribution"].get(str(rating), 0) + 1
-                )
 
-        # Calculate average rating
-        if total_ratings_count > 0:
-            rating_stats["average_rating"] = round()
-                total_rating_sum / total_ratings_count, 2
-            )
-            rating_stats["total_ratings"] = total_ratings_count
+                        # Calculate average rating
+                        if total_ratings_count > 0:
+                        rating_stats["average_rating"] = round()
+                        total_rating_sum / total_ratings_count, 2
+                        rating_stats["total_ratings"] = total_ratings_count
 
-        return ()
-            jsonify()
-                {}
+                        return ()
+                        jsonify({}
                     "status": "success",
                     "data": {}
                         "total_feedback": total_feedback,
@@ -379,58 +347,54 @@ def get_feedback_stats():
                         "by_priority": stats_by_priority,
                         "ratings": rating_stats,
                     },
-                }
-            ),
-            200)
+                        }
+                        ),
+                        200)
 
-    except Exception as e:
-        return ()
-            jsonify()
-                {}
+                        except Exception as e:
+                        return ()
+                        jsonify({}
                     "status": "error",
                     "message": f"Failed to retrieve feedback statistics: {str(e)}",
-                }
-            ),
-            500)
+                        }
+                        ),
+                        500)
+                        @feedback_bp.route("/types", methods=["GET"])
+                        def get_feedback_types():
+                            """Get available feedback types."""
+                            try:
+                            feedback_types = []
+                            {}
+                            "value": "bug_report",
+                            "label": "Bug Report",
+                            "description": "Report bugs, errors, or unexpected behavior",
+                            },
+                            {}
+                            "value": "feature_request",
+                            "label": "Feature Request",
+                            "description": "Suggest new features or improvements",
+                            },
+                            {}
+                            "value": "general",
+                            "label": "General Feedback",
+                            "description": "General comments, suggestions, or feedback",
+                            },
+                            {}
+                            "value": "performance",
+                            "label": "Performance Issue",
+                            "description": "Report performance-related issues or concerns",
+                            },
+                            ]
 
+                            return ()
+                            jsonify({"status": "success", "data": {"feedback_types": feedback_types}}),
+                            200)
 
-@feedback_bp.route("/types", methods=["GET"])
-def get_feedback_types():
-    "Get available feedback types."
-    try:
-        feedback_types = []
-            {}
-                "value": "bug_report",
-                "label": "Bug Report",
-                "description": "Report bugs, errors, or unexpected behavior",
-            },
-            {}
-                "value": "feature_request",
-                "label": "Feature Request",
-                "description": "Suggest new features or improvements",
-            },
-            {}
-                "value": "general",
-                "label": "General Feedback",
-                "description": "General comments, suggestions, or feedback",
-            },
-            {}
-                "value": "performance",
-                "label": "Performance Issue",
-                "description": "Report performance-related issues or concerns",
-            },
-        ]
-
-        return ()
-            jsonify({"status": "success", "data": {"feedback_types": feedback_types}}),
-            200)
-
-    except Exception as e:
-        return ()
-            jsonify()
-                {}
-                    "status": "error",
-                    "message": f"Failed to retrieve feedback types: {str(e)}",
-                }
-            ),
-            500)
+                            except Exception as e:
+                            return ()
+                            jsonify({}
+                            "status": "error",
+                            "message": f"Failed to retrieve feedback types: {str(e)}",
+                            }
+                            ),
+                            500)

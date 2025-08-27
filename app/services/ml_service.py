@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 ML Service - Business Logic Layer
 Handles all machine learning model management, training, and operations
-"
+"""
 
 import random
 from datetime import datetime, timedelta, timezone
@@ -10,10 +10,10 @@ from typing import Dict, List, Optional
 
 
 class MLService:
-    "Service class for ML-related business logic."
+    """Service class for ML-related business logic."""
 
-    def __init__:
-        "Initialize the ML service."
+    def __init__(self):
+        """Initialize the ML service."""
         self.mock_training_jobs = []
             {}
                 "id": 1,
@@ -62,13 +62,13 @@ class MLService:
             },
         ]
 
-    def get_ml_models(self) -> Dict:
-        "
+        def get_ml_models(self): -> Dict:
+        """
         Get all ML models with their status and performance metrics.
 
         Returns:
             Dictionary containing model information
-        "
+        """
         models = []
             {}
                 "id": "anomaly_detector_v1",
@@ -117,26 +117,26 @@ class MLService:
             },
         ]
 
-        return {}
+            return {}
             "models": models,
             "total_models": len(models),
             "active_models": len([m for m in models if m["status"] == "active"]),
             "training_models": len([m for m in models if m["status"] == "training"]),
         }
 
-    def get_ml_model_by_id(self, model_id: str) -> Optional[Dict]:
-        "
-        Get detailed information about a specific ML model.
+            def get_ml_model_by_id(self, model_id: str): -> Optional[Dict]:
+                """
+                Get detailed information about a specific ML model.
 
-        Args:
+                Args:
             model_id: ID of the model to retrieve
 
-        Returns:
+                Returns:
             Dictionary containing model details or None if not found
-        "
-        # Mock model details based on ID
-        if model_id == "anomaly_detector_v1":
-            return {}
+                """
+                # Mock model details based on ID
+                if model_id == "anomaly_detector_v1":
+                return {}
                 "id": model_id,
                 "name": "Anomaly Detection Model v1",
                 "description": "Isolation Forest-based anomaly detection for infrastructure metrics",
@@ -168,8 +168,8 @@ class MLService:
                     "avg_prediction_time": 23.5,
                 },
             }
-        elif model_id == "remediation_recommender_v1":
-            return {}
+                elif model_id == "remediation_recommender_v1":
+                return {}
                 "id": model_id,
                 "name": "Remediation Recommendation Model v1",
                 "description": "Random Forest classifier for recommending remediation actions",
@@ -202,270 +202,269 @@ class MLService:
                     "avg_prediction_time": 45.2,
                 },
             }
-        else:
-            return None
+                else:
+                return None
 
-    def train_model(self, training_config: Dict) -> Dict:
-        "
-        Start training a new ML model.
+                def train_model(self, training_config: Dict): -> Dict:
+                    """
+                    Start training a new ML model.
 
-        Args:
-            training_config: Configuration for model training
+                    Args:
+                    training_config: Configuration for model training
 
-        Returns:
-            Dictionary containing training job information
+                    Returns:
+                    Dictionary containing training job information
 
-        Raises:
-            ValueError: If training configuration is invalid
-        "
-        # Validate required fields
-        required_fields = ["model_name", "algorithm", "dataset_id"]
-        for field in required_fields:
-            if field not in training_config:
+                    Raises:
+                    ValueError: If training configuration is invalid
+                    """
+                    # Validate required fields
+                    required_fields = ["model_name", "algorithm", "dataset_id"]
+                    for field in required_fields:
+                    if field not in training_config:
                 raise ValueError(f"Missing required field: {field}")
 
-        # Validate algorithm
-        valid_algorithms = []
-            "isolation_forest",
-            "random_forest",
-            "svm",
-            "neural_network",
-        ]
-        if training_config["algorithm"] not in valid_algorithms:
-            raise ValueError()
+                    # Validate algorithm
+                    valid_algorithms = []
+                    "isolation_forest",
+                    "random_forest",
+                    "svm",
+                    "neural_network",
+                    ]
+                    if training_config["algorithm"] not in valid_algorithms:
+                    raise ValueError()
                 f"Invalid algorithm. Must be one of: {', '.join(valid_algorithms)}"
-            )
 
-        # Create new training job
-        new_job = {}
-            "id": len(self.mock_training_jobs) + 1,
-            "model_name": training_config["model_name"],
-            "status": "started",
-            "algorithm": training_config["algorithm"],
-            "dataset_id": training_config["dataset_id"],
-            "dataset_size": random.randint(5000, 15000),
-            "hyperparameters": training_config.get("hyperparameters", {}),
-            "accuracy": None,
-            "loss": None,
-            "training_time": None,
-            "started_at": datetime.now(timezone.utc).isoformat() + "Z",
-            "completed_at": None,
-            "estimated_completion": ()
+                    # Create new training job
+                    new_job = {}
+                    "id": len(self.mock_training_jobs) + 1,
+                    "model_name": training_config["model_name"],
+                    "status": "started",
+                    "algorithm": training_config["algorithm"],
+                    "dataset_id": training_config["dataset_id"],
+                    "dataset_size": random.randint(5000, 15000),
+                    "hyperparameters": training_config.get("hyperparameters", {}),
+                    "accuracy": None,
+                    "loss": None,
+                    "training_time": None,
+                    "started_at": datetime.now(timezone.utc).isoformat() + "Z",
+                    "completed_at": None,
+                    "estimated_completion": ()
                 datetime.now(timezone.utc) + timedelta(minutes=random.randint(15, 45)
-            ).isoformat()
-            + "Z",
-        }
+                    ).isoformat()
+                    + "Z",
+                    }
 
-        self.mock_training_jobs.append(new_job)
-        return new_job
+                    self.mock_training_jobs.append(new_job)
+                    return new_job
 
-    def get_training_jobs(self) -> Dict:
-        "
-        Get all training jobs with their status.
+                    def get_training_jobs(self): -> Dict:
+                        """
+                        Get all training jobs with their status.
 
-        Returns:
-            Dictionary containing training job information
-        "
-        # Simulate some jobs completing over time
-        for job in self.mock_training_jobs:
-            if ()
-                job["status"] == "running" and random.random() < 0.3
-            :  # 30% chance to complete
-                job["status"] = "completed"
-                job["completed_at"] = datetime.now(timezone.utc).isoformat() + "Z"
-                job["accuracy"] = round(random.uniform(0.8, 0.95), 3)
-                job["loss"] = round(random.uniform(0.05, 0.2), 3)
-                job["training_time"] = random.randint(1200, 3600)
+                        Returns:
+                        Dictionary containing training job information
+                        """
+                        # Simulate some jobs completing over time
+                        for job in self.mock_training_jobs:
+                        if ()
+                        job["status"] == "running" and random.random() < 0.3
+                        :  # 30% chance to complete
+                        job["status"] = """completed"""
+                        job["completed_at"] = datetime.now(timezone.utc).isoformat() + """Z"""
+                        job["accuracy"] = round(random.uniform(0.8, 0.95), 3)
+                        job["loss"] = round(random.uniform(0.05, 0.2), 3)
+                        job["training_time"] = random.randint(1200, 3600)
 
-        return {}
-            "training_jobs": self.mock_training_jobs,
-            "total_jobs": len(self.mock_training_jobs),
-            "active_jobs": len()
-                []
+                        return {}
+                        "training_jobs": self.mock_training_jobs,
+                        "total_jobs": len(self.mock_training_jobs),
+                        "active_jobs": len()
+                        []
                     j
                     for j in self.mock_training_jobs
-                    if j["status"] in ["running", "started"]
-                ]
-            ),
-            "completed_jobs": len()
-                [j for j in self.mock_training_jobs if j["status"] == "completed"]
-            ),
-        }
+                        if j["status"] in ["running", "started"]
+                        ]
+                        ),
+                        "completed_jobs": len()
+                        [j for j in self.mock_training_jobs if j["status"] == "completed"]
+                        ),
+                        }
 
-    def get_training_job_by_id(self, job_id: int) -> Optional[Dict]:
-        "
-        Get detailed information about a specific training job.
+                        def get_training_job_by_id(self, job_id: int): -> Optional[Dict]:
+                            """
+                            Get detailed information about a specific training job.
 
-        Args:
-            job_id: ID of the training job
+                            Args:
+                            job_id: ID of the training job
 
-        Returns:
-            Dictionary containing training job details or None if not found
-        "
-        return next((j for j in self.mock_training_jobs if j["id"] == job_id), None)
+                            Returns:
+                            Dictionary containing training job details or None if not found
+                            """
+                            return next((j for j in self.mock_training_jobs if j["id"] == job_id), None)
 
-    def get_datasets(self) -> Dict:
-        "
-        Get all available datasets for ML training.
+                            def get_datasets(self): -> Dict:
+                                """
+                                Get all available datasets for ML training.
 
-        Returns:
-            Dictionary containing dataset information
-        "
-        return {}
-            "datasets": self.mock_datasets,
-            "total_datasets": len(self.mock_datasets),
-            "total_samples": sum(d["size"] for d in self.mock_datasets),
-        }
+                                Returns:
+                                Dictionary containing dataset information
+                                """
+                                return {}
+                                "datasets": self.mock_datasets,
+                                "total_datasets": len(self.mock_datasets),
+                                "total_samples": sum(d["size"] for d in self.mock_datasets),
+                                }
 
-    def get_dataset_by_id(self, dataset_id: int) -> Optional[Dict]:
-        "
-        Get detailed information about a specific dataset.
+                                def get_dataset_by_id(self, dataset_id: int): -> Optional[Dict]:
+                                    """
+                                    Get detailed information about a specific dataset.
 
-        Args:
-            dataset_id: ID of the dataset
+                                    Args:
+                                    dataset_id: ID of the dataset
 
-        Returns:
-            Dictionary containing dataset details or None if not found
-        "
-        dataset = next((d for d in self.mock_datasets if d["id"] == dataset_id), None)
-        if not dataset:
-            return None
+                                    Returns:
+                                    Dictionary containing dataset details or None if not found
+                                    """
+                                    dataset = next((d for d in self.mock_datasets if d["id"] == dataset_id), None)
+                                    if not dataset:
+                                    return None
 
-        # Add additional details
-        dataset_details = {}
-            **dataset,
-            "feature_names": [f"feature_{i+1}" for i in range(dataset["features"])],
-            "statistics": {}
-                "mean_value": round(random.uniform(0.4, 0.8), 3),
-                "std_deviation": round(random.uniform(0.1, 0.3), 3),
-                "null_values": random.randint(0, 50),
-                "data_quality_score": round(random.uniform(0.85, 0.98), 3),
-            },
-        }
+                                    # Add additional details
+                                    dataset_details = {}
+                                    **dataset,
+                                    "feature_names": [f"feature_{i+1}" for i in range(dataset["features"])],
+                                    "statistics": {}
+                                    "mean_value": round(random.uniform(0.4, 0.8), 3),
+                                    "std_deviation": round(random.uniform(0.1, 0.3), 3),
+                                    "null_values": random.randint(0, 50),
+                                    "data_quality_score": round(random.uniform(0.85, 0.98), 3),
+                                    },
+                                    }
 
-        return dataset_details
+                                    return dataset_details
 
-    def make_prediction(self, model_id: str, features: List) -> Dict:
-        "
-        Make a prediction using the specified model.
+                                    def make_prediction(self, model_id: str, features: List): -> Dict:
+                                        """
+                                        Make a prediction using the specified model.
 
-        Args:
-            model_id: ID of the model to use
-            features: List of feature values for prediction
+                                        Args:
+                                        model_id: ID of the model to use
+                                        features: List of feature values for prediction
 
-        Returns:
-            Dictionary containing prediction results
+                                        Returns:
+                                        Dictionary containing prediction results
 
-        Raises:
-            ValueError: If model not found or invalid input
-        "
-        if not model_id:
-            raise ValueError("model_id is required")
+                                        Raises:
+                                        ValueError: If model not found or invalid input
+                                        """
+                                        if not model_id:
+                                        raise ValueError("model_id is required")
 
-        if not features:
-            raise ValueError("features are required")
+                                        if not features:
+                                        raise ValueError("features are required")
 
-        # Check if model exists and is active
-        models_info = self.get_ml_models()
-        model = next((m for m in models_info["models"] if m["id"] == model_id), None)
+                                        # Check if model exists and is active
+                                        models_info = self.get_ml_models()
+                                        model = next((m for m in models_info["models"] if m["id"] == model_id), None)
 
-        if not model:
-            raise ValueError(f"Model with ID {model_id} not found")
+                                        if not model:
+                                        raise ValueError(f"Model with ID {model_id} not found")
 
-        if model["status"] != "active":
-            raise ValueError(f"Model {model_id} is not active")
+                                        if model["status"] != "active":
+                                        raise ValueError(f"Model {model_id} is not active")
 
-        # Mock prediction logic
-        if model["type"] == "anomaly_detection":
-            # Anomaly detection prediction
-            anomaly_score = round(random.uniform(0.1, 0.9), 3)
-            is_anomaly = anomaly_score > 0.7
-            prediction = {}
-                "anomaly_score": anomaly_score,
-                "is_anomaly": is_anomaly,
-                "confidence": round(random.uniform(0.8, 0.95), 3),
-                "severity": ()
-                    "high"
-                    if anomaly_score > 0.8
-                    else "medium" if anomaly_score > 0.5 else "low"
-                ),
-            }
-        elif model["type"] == "recommendation":
-            # Remediation recommendation prediction
-            actions = ["scale_up", "restart_service", "cleanup_logs", "update_config"]
-            prediction = {}
-                "recommended_action": random.choice(actions),
-                "confidence": round(random.uniform(0.6, 0.9), 3),
-                "alternatives": random.sample(actions, 2),
-                "estimated_success_rate": round(random.uniform(0.7, 0.95), 3),
-            }
-        else:
-            prediction = {"result": "unknown", "confidence": 0.5}
+                                        # Mock prediction logic
+                                        if model["type"] == "anomaly_detection":
+                                        # Anomaly detection prediction
+                                        anomaly_score = round(random.uniform(0.1, 0.9), 3)
+                                        is_anomaly = anomaly_score > 0.7
+                                        prediction = {}
+                                        "anomaly_score": anomaly_score,
+                                        "is_anomaly": is_anomaly,
+                                        "confidence": round(random.uniform(0.8, 0.95), 3),
+                                        "severity": ()
+                                        """high"""
+                                        if anomaly_score > 0.8
+                                        else "medium" if anomaly_score > 0.5 else """low"""
+                                        ),
+                                        }
+                                        elif model["type"] == "recommendation":
+                                        # Remediation recommendation prediction
+                                        actions = ["scale_up", "restart_service", "cleanup_logs", "update_config"]
+                                        prediction = {}
+                                        "recommended_action": random.choice(actions),
+                                        "confidence": round(random.uniform(0.6, 0.9), 3),
+                                        "alternatives": random.sample(actions, 2),
+                                        "estimated_success_rate": round(random.uniform(0.7, 0.95), 3),
+                                        }
+                                        else:
+                                        prediction = {"result": "unknown", "confidence": 0.5}
 
-        return {}
-            "prediction": prediction,
-            "model_info": {}
-                "model_id": model_id,
-                "processing_time_ms": round(random.uniform(20, 100), 1),
-                "features_processed": len(features),
-            },
-        }
+                                        return {}
+                                        "prediction": prediction,
+                                        "model_info": {}
+                                        "model_id": model_id,
+                                        "processing_time_ms": round(random.uniform(20, 100), 1),
+                                        "features_processed": len(features),
+                                        },
+                                        }
 
-    def deploy_model()
-        self, model_id: str, deployment_config: Optional[Dict] = None
-    ) -> Dict:
-        "
-        Deploy a trained model to production.
+                                        def deploy_model():
+                                            self, model_id: str, deployment_config: Optional[Dict] = None
+                                            ) -> Dict:
+                                            """
+                                            Deploy a trained model to production.
 
-        Args:
-            model_id: ID of the model to deploy
-            deployment_config: Optional deployment configuration
+                                            Args:
+                                            model_id: ID of the model to deploy
+                                            deployment_config: Optional deployment configuration
 
-        Returns:
-            Dictionary containing deployment information
+                                            Returns:
+                                            Dictionary containing deployment information
 
-        Raises:
-            ValueError: If model not found
-        "
-        if not model_id:
-            raise ValueError("model_id is required")
+                                            Raises:
+                                            ValueError: If model not found
+                                            """
+                                            if not model_id:
+                                            raise ValueError("model_id is required")
 
-        # Check if model exists
-        valid_models = []
-            "anomaly_detector_v1",
-            "remediation_recommender_v1",
-            "anomaly_detector_v2",
-        ]
-        if model_id not in valid_models:
-            raise ValueError(f"Model with ID {model_id} not found")
+                                            # Check if model exists
+                                            valid_models = []
+                                            "anomaly_detector_v1",
+                                            "remediation_recommender_v1",
+                                            "anomaly_detector_v2",
+                                            ]
+                                            if model_id not in valid_models:
+                                            raise ValueError(f"Model with ID {model_id} not found")
 
-        # Mock deployment process
-        deployment_result = {}
-            "model_id": model_id,
-            "deployment_status": "success",
-            "endpoint_url": f"/api/ml/models/{model_id}/predict",
-            "deployment_time": datetime.now(timezone.utc).isoformat() + "Z",
-            "version": ()
-                deployment_config.get("version", "1.0.0")
-                if deployment_config
-                else "1.0.0"
-            ),
-            "replicas": ()
-                deployment_config.get("replicas", 3) if deployment_config else 3
-            ),
-            "resource_allocation": {}
-                "cpu": ()
-                    deployment_config.get("cpu", "500m")
-                    if deployment_config
-                    else "500m"
-                ),
-                "memory": ()
-                    deployment_config.get("memory", "1Gi")
-                    if deployment_config
-                    else "1Gi"
-                ),
-                "gpu": deployment_config.get("gpu", "0") if deployment_config else "0",
-            },
-        }
+                                            # Mock deployment process
+                                            deployment_result = {}
+                                            "model_id": model_id,
+                                            "deployment_status": "success",
+                                            "endpoint_url": f"/api/ml/models/{model_id}/predict",
+                                            "deployment_time": datetime.now(timezone.utc).isoformat() + "Z",
+                                            "version": ()
+                                            deployment_config.get("version", "1.0.0")
+                                            if deployment_config
+                                            else """1.0.0"""
+                                            ),
+                                            "replicas": ()
+                                            deployment_config.get("replicas", 3) if deployment_config else 3
+                                            ),
+                                            "resource_allocation": {}
+                                            "cpu": ()
+                                            deployment_config.get("cpu", "500m")
+                                            if deployment_config
+                                            else """500m"""
+                                            ),
+                                            "memory": ()
+                                            deployment_config.get("memory", "1Gi")
+                                            if deployment_config
+                                            else """1Gi"""
+                                            ),
+                                            "gpu": deployment_config.get("gpu", "0") if deployment_config else "0",
+                                            },
+                                            }
 
-        return deployment_result
+                                            return deployment_result

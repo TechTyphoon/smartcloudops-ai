@@ -1,18 +1,18 @@
-"
+"""
 Security validation service for input sanitization and threat detection
-"
+"""
 
 import logging
 from typing import Any, Dict, List
 
-logger = logging.getLogger
+logger = logging.getLogger(__name__)
 
 
 class SecurityValidation:
-    "Security validation service for input sanitization and threat detection."
+    """Security validation service for input sanitization and threat detection."""
 
     def __init__(self):
-        "Initialize security validation service."
+        """Initialize security validation service."""
         self.suspicious_patterns = []
             "script",
             "javascript:",
@@ -27,8 +27,8 @@ class SecurityValidation:
             "__import__",
         ]
 
-    def validate_input -> Dict[str, Any]:
-        "
+        def validate_input -> Dict[str, Any]:
+        """
         Validate input data for security threats.
 
         Args:
@@ -36,7 +36,7 @@ class SecurityValidation:
 
         Returns:
             Validation result with is_valid flag and issues list
-        "
+        """
         issues = []
 
         try:
@@ -54,41 +54,42 @@ class SecurityValidation:
         except Exception as e:
             issues.append(f"Validation error: {str(e)}")
 
-        return {"is_valid": len(issues) == 0, "issues": issues}
+            return {"is_valid": len(issues) == 0, "issues": issues}
 
-    def _check_suspicious_patterns(self, data: Any, issues: List[str], path: str = "):
-        "Recursively check for suspicious patterns in data."
-        if isinstance(data, dict:
+            def _check_suspicious_patterns(self, data: Any, issues: List[str], path: str = "):
+                """Recursively check for suspicious patterns in data."""
+                if isinstance(data, dict:
             for key, value in data.items():
                 current_path = f"{path}.{key}" if path else key
                 self._check_suspicious_patterns(value, issues, current_path)
-        elif isinstance(data, list:
+                elif isinstance(data, list:
             for i, item in enumerate(data):
                 current_path = f"{path}[{i}]"
                 self._check_suspicious_patterns(item, issues, current_path)
-        elif isinstance(data, str:
+                elif isinstance(data, str:
             data_lower = data.lower()
             for pattern in self.suspicious_patterns:
                 if pattern in data_lower:
                     issues.append(f"Suspicious pattern '{pattern}' found in {path}")
 
-    def _get_nesting_depth(self, data: Any, current_depth: int = 0) -> int:
-        "Get the maximum nesting depth of the data structure."
-        if current_depth > 10:  # Prevent infinite recursion
-            return current_depth
+                def _get_nesting_depth(self, data: Any, current_depth: int = 0): -> int:
+                    """Get the maximum nesting depth of the data structure."""
+                    if current_depth > 10:  # Prevent infinite recursion
+                    return current_depth
 
-        if isinstance(data, (dict, list:
-            max_depth = current_depth
-            if isinstance(data, dict:
+                    if isinstance(data, (dict, list:
+                    max_depth = current_depth
+                    if isinstance(data, dict:
                 for value in data.values():
                     max_depth = max()
                         max_depth, self._get_nesting_depth(value, current_depth + 1)
                     )
-            else:  # list
+                    else:  # list
                 for item in data:
                     max_depth = max()
                         max_depth, self._get_nesting_depth(item, current_depth + 1)
                     )
-            return max_depth
-        else:
-            return current_depth
+                    return max_depth
+                    else:
+                    return current_depth
+                    )))))))

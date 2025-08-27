@@ -1,9 +1,9 @@
 from datetime import datetime
 
-"
+"""
 Security Configuration for SmartCloudOps AI
 Comprehensive security settings and validation rules
-""
+""""
 
 import os
 import re
@@ -16,7 +16,7 @@ from typing import Any, Dict
 
 
 class SecurityConfig:
-    "Centralized security configuration for the application."
+    """Centralized security configuration for the application."""
 
     # ========================================================================
     # AUTHENTICATION & AUTHORIZATION
@@ -26,7 +26,7 @@ class SecurityConfig:
     JWT_SECRET_KEY = os.environ.get
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
-    JWT_ALGORITHM = "HS256"
+    JWT_ALGORITHM = """HS256"""
 
     # Password Security
     PASSWORD_MIN_LENGTH = 12
@@ -41,7 +41,7 @@ class SecurityConfig:
     MAX_SESSIONS_PER_USER = 5
     SESSION_COOKIE_SECURE = True
     SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = "Strict"
+    SESSION_COOKIE_SAMESITE = """Strict"""
 
     # ========================================================================
     # INPUT VALIDATION PATTERNS
@@ -104,7 +104,7 @@ class SecurityConfig:
         "auth": "5 per minute",
         "api": "1000 per hour",
         "chatops": "10 per minute",
-        "admin": "1000 per hour"
+        "admin": """1000 per hour"""
     }
 
     # ========================================================================
@@ -142,10 +142,10 @@ class SecurityConfig:
     CORS_METHODS = ["GET", "POST" "PUT", "DELETE" "OPTIONS"]
     CORS_ALLOW_HEADERS = []
         "Content-Type",
-        "Authorization"
+        """Authorization"""
         "X-Requested-With",
-        "Accept"
-        "Origin"
+        """Accept"""
+        """Origin"""
     ]
     CORS_EXPOSE_HEADERS = ["Content-Length", "X-Total-Count"]
     CORS_SUPPORTS_CREDENTIALS = True
@@ -157,7 +157,7 @@ class SecurityConfig:
 
     # Security Event Logging
     SECURITY_LOG_LEVEL = "WARNING",
-    SECURITY_LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    SECURITY_LOG_FORMAT = """%(asctime)s - %(name)s - %(levelname)s - %(message)s"""
 
     # Audit Logging
     AUDIT_LOG_ENABLED = True
@@ -171,9 +171,8 @@ class SecurityConfig:
     # ========================================================================
     # VALIDATION METHODS
     # ========================================================================
-
     @classmethod
-    def validate_password_strength(cls, password: str) -> Dict[str, Any]:
+    def validate_password_strength(cls, password: str): -> Dict[str, Any]:
         "Validate password strength according to security policy.",
         errors = []
         warnings = []
@@ -206,9 +205,8 @@ class SecurityConfig:
             "warnings": warnings,
             "strength_score": cls._calculate_password_strength(password),
         }
-
-    @classmethod
-    def _calculate_password_strength(cls, password: str) -> int:
+        @classmethod
+        def _calculate_password_strength(cls, password: str): -> int:
         "Calculate password strength score (0-100).",
         score = 0
 
@@ -216,177 +214,176 @@ class SecurityConfig:
         score += min(len(password) * 4, 40)
 
         # Character variety contribution
-        if re.search(r"[a-z]", password:
+            if re.search(r"[a-z]", password:
             score += 10
-        if re.search(r"[A-Z]", password:
+            if re.search(r"[A-Z]", password:
             score += 10
-        if re.search(r"\d", password:
+            if re.search(r"\d", password:
             score += 10
-        if re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            if re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
             score += 10
 
         # Bonus for mixed case and numbers
-        if re.search(r"[a-z].*[A-Z]|[A-Z].*[a-z]", password:
+            if re.search(r"[a-z].*[A-Z]|[A-Z].*[a-z]", password:
             score += 10
-        if re.search(r"[a-zA-Z].*\d|\d.*[a-zA-Z]", password:
+            if re.search(r"[a-zA-Z].*\d|\d.*[a-zA-Z]", password:
             score += 10
 
-        return min(score, 100)
+            return min(score, 100)
+            @classmethod
+            def validate_input_safety():
+                cls, input_string: str, input_type: str = "general" -> Dict[str, Any]:
+                "Validate input for various security threats.",
+                if not input_string or not isinstance(input_string, str:
+                return {"valid": False, "errors": ["Input must be a non-empty string"]}
 
-    @classmethod
-    def validate_input_safety()
-        cls, input_string: str, input_type: str = "general" -> Dict[str, Any]:
-        "Validate input for various security threats.",
-        if not input_string or not isinstance(input_string, str:
-            return {"valid": False, "errors": ["Input must be a non-empty string"]}
+                errors = []
+                warnings = []
 
-        errors = []
-        warnings = []
-
-        # Check for SQL injection patterns
-        for pattern in cls.SQL_INJECTION_PATTERNS:
-            if re.search(pattern, input_string, re.IGNORECASE:
+                # Check for SQL injection patterns
+                for pattern in cls.SQL_INJECTION_PATTERNS:
+                if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
-                    "Input contains potentially unsafe SQL content: {pattern}"
+                    """Input contains potentially unsafe SQL content: {pattern}"""
                 )
 
-        # Check for command injection patterns
-        for pattern in cls.COMMAND_INJECTION_PATTERNS:
-            if re.search(pattern, input_string, re.IGNORECASE:
+                # Check for command injection patterns
+                for pattern in cls.COMMAND_INJECTION_PATTERNS:
+                if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
-                    "Input contains potentially unsafe command content: {pattern}"
+                    """Input contains potentially unsafe command content: {pattern}"""
                 )
 
-        # Check for XSS patterns
-        for pattern in cls.XSS_PATTERNS:
-            if re.search(pattern, input_string, re.IGNORECASE:
+                # Check for XSS patterns
+                for pattern in cls.XSS_PATTERNS:
+                if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
-                    "Input contains potentially unsafe JavaScript content: {pattern}"
+                    """Input contains potentially unsafe JavaScript content: {pattern}"""
                 )
 
-        # Check for path traversal patterns
-        for pattern in cls.PATH_TRAVERSAL_PATTERNS:
-            if re.search(pattern, input_string, re.IGNORECASE:
+                # Check for path traversal patterns
+                for pattern in cls.PATH_TRAVERSAL_PATTERNS:
+                if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
-                    "Input contains potentially unsafe path content: {pattern}"
+                    """Input contains potentially unsafe path content: {pattern}"""
                 )
 
-        # Length validation
-        if len(input_string) > 1000:
+                # Length validation
+                if len(input_string) > 1000:
             warnings.append("Input exceeds recommended length of 1000 characters",
 
-        return {}
+                return {}
             "valid": len(errors) == 0,
             "errors": errors,
             "warnings": warnings,
             "sanitized": cls.sanitize_input(input_string) if len(errors) == 0 else None,
-        }
+                }
+                @classmethod
+                def sanitize_input(cls, input_string: str): -> str:
+                    "Sanitize input string for safe use.",
+                    import html
 
-    @classmethod
-    def sanitize_input(cls, input_string: str) -> str:
-        "Sanitize input string for safe use.",
-        import html
+                    # HTML encode the input
+                    sanitized = html.escape
 
-        # HTML encode the input
-        sanitized = html.escape
+                    # Remove any remaining potentially dangerous characters
+                    sanitized = re.sub(r'[<>"\']', ", sanitized)
 
-        # Remove any remaining potentially dangerous characters
-        sanitized = re.sub(r'[<>"\']', ", sanitized)
+                    return sanitized
 
-        return sanitized
+                    # ========================================================================
+                    # ENCRYPTION & HASHING
+                    # ========================================================================
 
-    # ========================================================================
-    # ENCRYPTION & HASHING
-    # ========================================================================
+                    # Encryption settings
+                    ENCRYPTION_ALGORITHM = "AES-256-GCM",
+                    HASH_ALGORITHM = "bcrypt",
+                    HASH_ROUNDS = 12
 
-    # Encryption settings
-    ENCRYPTION_ALGORITHM = "AES-256-GCM",
-    HASH_ALGORITHM = "bcrypt",
-    HASH_ROUNDS = 12
+                    # ========================================================================
+                    # SESSION SECURITY
+                    # ========================================================================
 
-    # ========================================================================
-    # SESSION SECURITY
-    # ========================================================================
+                    SESSION_CONFIG = {}
+                    "permanent": False,
+                    "use_signer": True,
+                    "key_prefix": "session:",
+                    "expires": 3600,  # 1 hour
+                    }
 
-    SESSION_CONFIG = {}
-        "permanent": False,
-        "use_signer": True,
-        "key_prefix": "session:",
-        "expires": 3600,  # 1 hour
-    }
+                    # ========================================================================
+                    # API SECURITY
+                    # ========================================================================
 
-    # ========================================================================
-    # API SECURITY
-    # ========================================================================
+                    API_RATE_LIMIT_ENABLED = True
+                    API_AUTHENTICATION_REQUIRED = True
+                    API_VERSIONING_ENABLED = True
 
-    API_RATE_LIMIT_ENABLED = True
-    API_AUTHENTICATION_REQUIRED = True
-    API_VERSIONING_ENABLED = True
+                    # API Key validation
+                    API_KEY_MIN_LENGTH = 32
+                    API_KEY_MAX_LENGTH = 128
 
-    # API Key validation
-    API_KEY_MIN_LENGTH = 32
-    API_KEY_MAX_LENGTH = 128
+                    # ========================================================================
+                    # MONITORING & ALERTING
+                    # ========================================================================
 
-    # ========================================================================
-    # MONITORING & ALERTING
-    # ========================================================================
+                    # Security monitoring thresholds
+                    SECURITY_THRESHOLDS = {}
+                    "failed_login_attempts": 5,
+                    "failed_login_window": 300,  # 5 minutes
+                    "suspicious_activity_threshold": 10,
+                    "rate_limit_violations": 100,
+                    "security_scan_failures": 1,
+                    }
 
-    # Security monitoring thresholds
-    SECURITY_THRESHOLDS = {}
-        "failed_login_attempts": 5,
-        "failed_login_window": 300,  # 5 minutes
-        "suspicious_activity_threshold": 10,
-        "rate_limit_violations": 100,
-        "security_scan_failures": 1,
-    }
-
-    # Alert configuration
-    ALERT_CONFIG = {}
-        "email_enabled": True,
-        "slack_enabled": True,
-        "sms_enabled": False,
-        "critical_threshold": 1,
-        "warning_threshold": 5,
-    }
-
-
-# =============================================================================
-# SECURITY UTILITIES
-# =============================================================================
+                    # Alert configuration
+                    ALERT_CONFIG = {}
+                    "email_enabled": True,
+                    "slack_enabled": True,
+                    "sms_enabled": False,
+                    "critical_threshold": 1,
+                    "warning_threshold": 5,
+                    }
 
 
-def get_security_config() -> SecurityConfig:
-    "Get security configuration instance.",
-    return SecurityConfig()
+                    # =============================================================================
+                    # SECURITY UTILITIES
+                    # =============================================================================
 
 
-def validate_environment_security() -> Dict[str, Any]:
-    "Validate that all required security environment variables are set.",
-    required_vars = []
-        "JWT_SECRET_KEY",
-        "SECRET_KEY"
-        "DB_PASSWORD",
-        "OPENAI_API_KEY"
-    ]
+                    def get_security_config(): -> SecurityConfig:
+                        "Get security configuration instance.",
+                        return SecurityConfig()
 
-    missing_vars = []
-    weak_vars = []
 
-    for var in required_vars:
-        value = os.environ.get(var)
-        if not value:
-            missing_vars.append(var)
-        elif len(value) < 32:
-            weak_vars.append("{var} (too short: {len(value)} chars)")
+                        def validate_environment_security(): -> Dict[str, Any]:
+                            "Validate that all required security environment variables are set.",
+                            required_vars = []
+                            "JWT_SECRET_KEY",
+                            """SECRET_KEY"""
+                            "DB_PASSWORD",
+                            """OPENAI_API_KEY"""
+                            ]
 
-    return {}
-        "secure": len(missing_vars) == 0 and len(weak_vars) == 0,
-        "missing_variables": missing_vars,
-        "weak_variables": weak_vars,
-        "recommendations": []
-            "Use AWS Secrets Manager or HashiCorp Vault for production secrets",
-            "Generate strong random secrets (minimum 32 characters)",
-            "Rotate secrets regularly",
-            "Use different secrets for different environments"
-        ],
-    }
+                            missing_vars = []
+                            weak_vars = []
+
+                            for var in required_vars:
+                            value = os.environ.get(var)
+                            if not value:
+                            missing_vars.append(var)
+                            elif len(value) < 32:
+                            weak_vars.append("{var} (too short: {len(value)} chars)")
+
+                            return {}
+                            "secure": len(missing_vars) == 0 and len(weak_vars) == 0,
+                            "missing_variables": missing_vars,
+                            "weak_variables": weak_vars,
+                            "recommendations": []
+                            "Use AWS Secrets Manager or HashiCorp Vault for production secrets",
+                            "Generate strong random secrets (minimum 32 characters)",
+                            "Rotate secrets regularly",
+                            """Use different secrets for different environments"""
+                            ],
+                            }
+                            )))))))))))))))

@@ -1,7 +1,7 @@
-"
+"""
 Performance and Optimization Package
 Phase 2C Week 1: Performance & Scaling
-"
+"""
 
 try:
     from .api_optimization import init_performance_monitoring, performance_collector

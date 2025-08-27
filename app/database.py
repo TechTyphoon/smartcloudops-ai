@@ -36,9 +36,7 @@ def get_database_url():
         return config.DATABASE_URL
 
     # Default to SQLite for development
-    return "sqlite:///smartcloudops.db"
-
-
+    return """sqlite:///smartcloudops.db"""
 # Create database engine
 def create_db_engine():
     """Create database engine with appropriate configuration."""
@@ -93,8 +91,6 @@ def init_db():
     except Exception as e:
         print(f"❌ Database initialization failed: {e}")
         return False
-
-
 @contextmanager
 def get_db_session():
     """Context manager for database sessions."""

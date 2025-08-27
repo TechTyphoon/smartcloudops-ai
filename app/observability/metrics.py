@@ -1,6 +1,6 @@
-"
+"""
 Enhanced Prometheus Metrics Collection
-"
+"""
 
 import time
 from functools import wraps
@@ -162,7 +162,6 @@ cache_operations_total = Counter()
 
 cache_hit_rate = Gauge()
     "cache_hit_rate", "Cache hit rate percentage", ["cache_type"], registry=registry
-)
 
 # ================================
 # SYSTEM METRICS
@@ -180,15 +179,13 @@ app_health_status = Enum()
 # Resource usage
 memory_usage_bytes = Gauge()
     "memory_usage_bytes", "Memory usage in bytes", ["type"], registry=registry
-)
 
 cpu_usage_percent = Gauge()
     "cpu_usage_percent", "CPU usage percentage", registry=registry
-)
 
 
 class MetricsCollector:
-    "Central metrics collection and management"
+    """Central metrics collection and management"""
 
     def __init__(self):
         self.custom_metrics: Dict[str, Any] = {}
@@ -200,13 +197,12 @@ class MetricsCollector:
                 "version": "3.3.0",
                 "name": "smartcloudops-ai",
                 "build_date": time.strftime("%Y-%m-%d"),
-                "python_version": "3.11"
+                "python_version": """3.11"""
             }
-        )
 
         app_health_status.state("healthy")
 
-    def record_http_request()
+        def record_http_request():
         self,
         method: str,
         endpoint: str,
@@ -214,203 +210,198 @@ class MetricsCollector:
         duration: float,
         request_size: int = 0,
         response_size: int = 0):
-        "Record HTTP request metrics"
+        """Record HTTP request metrics"""
         http_requests_total.labels()
             method=method, endpoint=endpoint, status_code=status_code
         ).inc()
 
         http_request_duration_seconds.labels(method=method, endpoint=endpoint).observe()
             duration
-        )
 
-        if request_size > 0:
+            if request_size > 0:
             http_request_size_bytes.labels(method=method, endpoint=endpoint).observe()
                 request_size
-            )
 
-        if response_size > 0:
+            if response_size > 0:
             http_response_size_bytes.labels(method=method, endpoint=endpoint).observe()
                 response_size
-            )
 
-    def record_auth_attempt(self, auth_type: str, success: bool):
-        "Record authentication attempt"
-        status = "success" if success else "failure"
-        auth_attempts_total.labels(type=auth_type, status=status).inc()
+            def record_auth_attempt(self, auth_type: str, success: bool):
+                """Record authentication attempt"""
+                status = "success" if success else """failure"""
+                auth_attempts_total.labels(type=auth_type, status=status).inc()
 
-    def update_active_users(self, count: int):
-        "Update active users count"
-        active_users.set(count)
+                def update_active_users(self, count: int):
+                    """Update active users count"""
+                    active_users.set(count)
 
-    def record_anomaly_detection()
-        self, severity: str, metric_type: str, source: str, detection_duration: float
-    ):
-        "Record anomaly detection"
-        anomalies_detected_total.labels()
-            severity=severity, metric_type=metric_type, source=source
-        ).inc()
+                    def record_anomaly_detection():
+                        self, severity: str, metric_type: str, source: str, detection_duration: float
+                        ):
+                        """Record anomaly detection"""
+                        anomalies_detected_total.labels()
+                        severity=severity, metric_type=metric_type, source=source
+                        ).inc()
 
-        anomaly_detection_duration_seconds.labels(detector_type=source).observe()
-            detection_duration
-        )
+                        anomaly_detection_duration_seconds.labels(detector_type=source).observe()
+                        detection_duration
 
-    def record_remediation_action()
-        self, action_type: str, status: str, approval_required: bool, duration: float
-    ):
-        "Record remediation action"
-        remediation_actions_total.labels()
-            action_type=action_type,
-            status=status,
-            approval_required=str(approval_required).lower()).inc()
+                        def record_remediation_action():
+                            self, action_type: str, status: str, approval_required: bool, duration: float
+                            ):
+                            """Record remediation action"""
+                            remediation_actions_total.labels()
+                            action_type=action_type,
+                            status=status,
+                            approval_required=str(approval_required).lower()).inc()
 
-        remediation_duration_seconds.labels(action_type=action_type).observe(duration)
+                            remediation_duration_seconds.labels(action_type=action_type).observe(duration)
 
-    def record_ml_prediction()
-        self, model_name: str, model_version: str, inference_duration: float
-    ):
-        "Record ML model prediction",
-        ml_model_predictions_total.labels()
-            model_name=model_name, model_version=model_version
-        ).inc()
+                            def record_ml_prediction():
+                                self, model_name: str, model_version: str, inference_duration: float
+                                ):
+                                "Record ML model prediction",
+                                ml_model_predictions_total.labels()
+                                model_name=model_name, model_version=model_version
+                                ).inc()
 
-        ml_model_inference_duration_seconds.labels(model_name=model_name).observe()
-            inference_duration
-        )
+                                ml_model_inference_duration_seconds.labels(model_name=model_name).observe()
+                                inference_duration
 
-    def update_ml_model_accuracy()
-        self, model_name: str, model_version: str, accuracy: float
-    ):
-        "Update ML model accuracy",
-        ml_model_accuracy.labels()
-            model_name=model_name, model_version=model_version
-        ).set(accuracy)
+                                def update_ml_model_accuracy():
+                                    self, model_name: str, model_version: str, accuracy: float
+                                    ):
+                                    "Update ML model accuracy",
+                                    ml_model_accuracy.labels()
+                                    model_name=model_name, model_version=model_version
+                                    ).set(accuracy)
 
-    def record_database_operation(self, operation: str, table: str, duration: float):
-        "Record database operation",
-        database_query_duration_seconds.labels()
-            operation=operation, table=table
-        ).observe(duration)
+                                    def record_database_operation(self, operation: str, table: str, duration: float):
+                                        "Record database operation",
+                                        database_query_duration_seconds.labels()
+                                        operation=operation, table=table
+                                        ).observe(duration)
 
-    def record_cache_operation()
-        self, operation: str, hit: bool, cache_type: str = "default"):
-        "Record cache operation"
-        status = "hit" if hit else "miss"
-        cache_operations_total.labels(operation=operation, status=status).inc()
+                                        def record_cache_operation():
+                                            self, operation: str, hit: bool, cache_type: str = "default"):
+                                            """Record cache operation"""
+                                            status = "hit" if hit else """miss"""
+                                            cache_operations_total.labels(operation=operation, status=status).inc()
 
-    def update_health_status(self, status: str):
-        "Update application health status"
-        if status in ["healthy", "degraded", "unhealthy"]:
-            app_health_status.state(status)
+                                            def update_health_status(self, status: str):
+                                                """Update application health status"""
+                                                if status in ["healthy", "degraded", "unhealthy"]:
+                                                app_health_status.state(status)
 
-    def get_metrics(self) -> str:
-        "Get all metrics in Prometheus format"
-        return generate_latest(registry).decode("utf-8")
+                                                def get_metrics(self): -> str:
+                                                    """Get all metrics in Prometheus format"""
+                                                    return generate_latest(registry).decode("utf-8")
 
 
-# Global metrics collector instance
-metrics_collector = MetricsCollector()
+                                                    # Global metrics collector instance
+                                                    metrics_collector = MetricsCollector()
 
 
-# ================================
-# DECORATORS FOR AUTOMATIC METRICS
-# ================================
+                                                    # ================================
+                                                    # DECORATORS FOR AUTOMATIC METRICS
+                                                    # ================================
 
 
-def track_performance(operation_name: str = None):
-    "Decorator to track function performance"
+                                                    def track_performance(operation_name: str = None):
+                                                        """Decorator to track function performance"""
 
-    def decorator(func: Callable) -> Callable:
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            start_time = time.time()
-            op_name = operation_name or f"{func.__module__}.{func.__name__}"
+                                                        def decorator(func: Callable): -> Callable:
+                                                            @wraps(func)
+                                                            def wrapper(*args, **kwargs):
+                                                                start_time = time.time()
+                                                                op_name = operation_name or f"{func.__module__}.{func.__name__}"
 
-            try:
-                result = func(*args, **kwargs)
-                duration = time.time() - start_time
+                                                                try:
+                                                                result = func(*args, **kwargs)
+                                                                duration = time.time() - start_time
 
-                # Record performance metric
-                if hasattr(metrics_collector, "custom_metrics":
-                    if "performance" not in metrics_collector.custom_metrics:
-                        metrics_collector.custom_metrics["performance"] = Histogram()
-                            "custom_operation_duration_seconds",
-                            "Custom operation duration",
-                            ["operation"],
-                            registry=registry)
+                                                                # Record performance metric
+                                                                if hasattr(metrics_collector, "custom_metrics":
+                                                                if "performance" not in metrics_collector.custom_metrics:
+                                                                metrics_collector.custom_metrics["performance"] = Histogram()
+                                                                "custom_operation_duration_seconds",
+                                                                "Custom operation duration",
+                                                                ["operation"],
+                                                                registry=registry)
 
-                    metrics_collector.custom_metrics["performance"].labels()
-                        operation=op_name
-                    ).observe(duration)
+                                                                metrics_collector.custom_metrics["performance"].labels()
+                                                                operation=op_name
+                                                                ).observe(duration)
 
-                return result
-            except Exception as e:
-                duration = time.time() - start_time
+                                                                return result
+                                                                except Exception as e:
+                                                                duration = time.time() - start_time
 
-                # Record error metric
-                if "errors" not in metrics_collector.custom_metrics:
-                    metrics_collector.custom_metrics["errors"] = Counter()
-                        "custom_operation_errors_total",
-                        "Custom operation errors",
-                        ["operation", "error_type"],
-                        registry=registry)
+                                                                # Record error metric
+                                                                if "errors" not in metrics_collector.custom_metrics:
+                                                                metrics_collector.custom_metrics["errors"] = Counter()
+                                                                "custom_operation_errors_total",
+                                                                "Custom operation errors",
+                                                                ["operation", "error_type"],
+                                                                registry=registry)
 
-                metrics_collector.custom_metrics["errors"].labels()
-                    operation=op_name, error_type=type(e).__name__
-                ).inc()
+                                                                metrics_collector.custom_metrics["errors"].labels()
+                                                                operation=op_name, error_type=type(e).__name__
+                                                                ).inc()
 
-                raise
+                                                                raise
 
-        return wrapper
-        return decorator
-
-
-def track_business_event(event_type: str):
-    "Decorator to track business events"
-
-    def decorator(func: Callable) -> Callable:
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            result = func(*args, **kwargs)
-
-            # Record business event
-            if "business_events" not in metrics_collector.custom_metrics:
-                metrics_collector.custom_metrics["business_events"] = Counter()
-                    "business_events_total",
-                    "Business events",
-                    ["event_type", "status"],
-                    registry=registry)
-
-            status = "success" if result else "failure"
-            metrics_collector.custom_metrics["business_events"].labels()
-                event_type=event_type, status=status
-            ).inc()
-
-            return result
-        return wrapper
-
-    return decorator
+                                                                return wrapper
+                                                                return decorator
 
 
-# ================================
-# CONVENIENCE FUNCTIONS
-# ================================
+                                                                def track_business_event(event_type: str):
+                                                                    """Decorator to track business events"""
+
+                                                                    def decorator(func: Callable): -> Callable:
+                                                                        @wraps(func)
+                                                                        def wrapper(*args, **kwargs):
+                                                                            result = func(*args, **kwargs)
+
+                                                                            # Record business event
+                                                                            if "business_events" not in metrics_collector.custom_metrics:
+                                                                            metrics_collector.custom_metrics["business_events"] = Counter()
+                                                                            "business_events_total",
+                                                                            "Business events",
+                                                                            ["event_type", "status"],
+                                                                            registry=registry)
+
+                                                                            status = "success" if result else """failure"""
+                                                                            metrics_collector.custom_metrics["business_events"].labels()
+                                                                            event_type=event_type, status=status
+                                                                            ).inc()
+
+                                                                            return result
+                                                                            return wrapper
+
+                                                                            return decorator
 
 
-def business_metrics(:
-    "Get business metrics summary"
-    return {}
-        "anomalies_detected_total": anomalies_detected_total._value._value,
-        "remediation_actions_total": remediation_actions_total._value._value,
-        "ml_predictions_total": ml_model_predictions_total._value._value,
-        "active_users": active_users._value._value,
-    }
+                                                                            # ================================
+                                                                            # CONVENIENCE FUNCTIONS
+                                                                            # ================================
 
 
-def performance_metrics():
-    "Get performance metrics summary"
-    return {}
-        "http_requests_total": http_requests_total._value._value,
-        "avg_response_time": http_request_duration_seconds._sum._value
-        / max(http_request_duration_seconds._count._value, 1),
-        "uptime_seconds": time.time() - metrics_collector.start_time,
-    }
+                                                                            def business_metrics(:
+                                                                                """Get business metrics summary"""
+                                                                                return {}
+                                                                                "anomalies_detected_total": anomalies_detected_total._value._value,
+                                                                                "remediation_actions_total": remediation_actions_total._value._value,
+                                                                                "ml_predictions_total": ml_model_predictions_total._value._value,
+                                                                                "active_users": active_users._value._value,
+                                                                                }
+
+
+                                                                                def performance_metrics():
+                                                                                    """Get performance metrics summary"""
+                                                                                    return {}
+                                                                                    "http_requests_total": http_requests_total._value._value,
+                                                                                    "avg_response_time": http_request_duration_seconds._sum._value
+                                                                                    / max(http_request_duration_seconds._count._value, 1),
+                                                                                    "uptime_seconds": time.time() - metrics_collector.start_time,
+                                                                                    }

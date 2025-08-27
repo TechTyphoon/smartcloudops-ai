@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"
+"""
 SQLAlchemy Models for Smart CloudOps AI - Minimal Working Version
-"
+"""
 
 from datetime import datetime
 
-from sqlalchemy import 
+from sqlalchemy import (
     JSON,
     Boolean,
     Column,
@@ -23,9 +23,9 @@ Base = declarative_base
 
 
 class User(Base):
-    "User model for authentication and authorization."
+    """User model for authentication and authorization."""
 
-    __tablename__ = "users"
+    __tablename__ = """users"""
 
     id = Column(Integer, primary_key=True)
     username = Column(String(80), unique=True, nullable=False)
@@ -43,10 +43,10 @@ class User(Base):
     )
 
 
-class Anomaly(Base):
-    "Anomaly model for storing detected anomalies."
+    class Anomaly(Base):
+    """Anomaly model for storing detected anomalies."""
 
-    __tablename__ = "anomalies"
+    __tablename__ = """anomalies"""
 
     id = Column(Integer, primary_key=True)
     title = Column(String(200), nullable=False)
@@ -75,117 +75,118 @@ class Anomaly(Base):
     remediation_actions = relationship("RemediationAction", back_populates="anomaly")
 
 
-class RemediationAction(Base):
-    "Remediation action model for storing automated and manual actions."
+        class RemediationAction(Base):
+            """Remediation action model for storing automated and manual actions."""
 
-    __tablename__ = "remediation_actions"
+            __tablename__ = """remediation_actions"""
 
-    id = Column(Integer, primary_key=True)
-    anomaly_id = Column(Integer, ForeignKey("anomalies.id"), nullable=True)
-    action_type = Column()
+            id = Column(Integer, primary_key=True)
+            anomaly_id = Column(Integer, ForeignKey("anomalies.id"), nullable=True)
+            action_type = Column()
         String(50), nullable=False
-    )  # 'scale_up', 'scale_down', 'restart_service', 'cleanup_disk', 'custom'
-    action_name = Column(String(100), nullable=False)
-    description = Column(Text, nullable=True)
-    status = Column()
+            )  # 'scale_up', 'scale_down', 'restart_service', 'cleanup_disk', 'custom'
+            action_name = Column(String(100), nullable=False)
+            description = Column(Text, nullable=True)
+            status = Column()
         String(20), default="pending"
-    )  # 'pending', 'approved', 'executed', 'failed', 'cancelled'
-    priority = Column()
+            )  # 'pending', 'approved', 'executed', 'failed', 'cancelled'
+            priority = Column()
         String(20), default="medium"
-    )  # 'low', 'medium', 'high', 'critical'
-    parameters = Column(JSON, nullable=True)  # Action-specific parameters
-    execution_result = Column(JSON, nullable=True)  # Store execution results
-    error_message = Column(Text, nullable=True)
-    approved_by = Column(Integer, ForeignKey("users.id"), nullable=True)
-    approved_at = Column(DateTime, nullable=True)
-    executed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
-    executed_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=func.now()
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now()
+            )  # 'low', 'medium', 'high', 'critical'
+            parameters = Column(JSON, nullable=True)  # Action-specific parameters
+            execution_result = Column(JSON, nullable=True)  # Store execution results
+            error_message = Column(Text, nullable=True)
+            approved_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+            approved_at = Column(DateTime, nullable=True)
+            executed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+            executed_at = Column(DateTime, nullable=True)
+            created_at = Column(DateTime, default=func.now()
+            updated_at = Column(DateTime, default=func.now(), onupdate=func.now()
 
-    # Relationships
-    anomaly = relationship("Anomaly", back_populates="remediation_actions")
-    executed_by_user = relationship("User", back_populates="remediation_actions")
-
-
-class Feedback(Base):
-    "Feedback model for storing user feedback."
-
-    __tablename__ = "feedback"
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    feedback_type = Column()
-        String(50), nullable=False
-    )  # 'bug_report', 'feature_request', 'general'
-    title = Column(String(200), nullable=False)
-    description = Column(Text, nullable=False)
-    rating = Column(Integer, nullable=True)  # 1-5 rating
-    status = Column()
-        String(20), default="open"
-    )  # 'open', 'in_progress', 'resolved', 'closed'
-    priority = Column()
-        String(20), default="medium"
-    )  # 'low', 'medium', 'high', 'critical'
-    tags = Column(JSON, nullable=True)  # Array of tags
-    created_at = Column(DateTime, default=func.now()
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now()
-
-    # Relationships
-    user = relationship("User", back_populates="feedback")
+            # Relationships
+            anomaly = relationship("Anomaly", back_populates="remediation_actions")
+            executed_by_user = relationship("User", back_populates="remediation_actions")
 
 
-class SystemMetrics(Base):
-    "System metrics model for storing historical metrics data."
+            class Feedback(Base):
+                """Feedback model for storing user feedback."""
 
-    __tablename__ = "system_metrics"
+                __tablename__ = """feedback"""
 
-    id = Column(Integer, primary_key=True)
-    timestamp = Column(DateTime, nullable=False)
-    cpu_usage = Column(Float, nullable=True)
-    memory_usage = Column(Float, nullable=True)
-    disk_usage = Column(Float, nullable=True)
-    network_io = Column(JSON, nullable=True)
-    created_at = Column(DateTime, default=func.now()
+                id = Column(Integer, primary_key=True)
+                user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+                feedback_type = Column()
+                String(50), nullable=False
+                )  # 'bug_report', 'feature_request', 'general'
+                title = Column(String(200), nullable=False)
+                description = Column(Text, nullable=False)
+                rating = Column(Integer, nullable=True)  # 1-5 rating
+                status = Column()
+                String(20), default="open"
+                )  # 'open', 'in_progress', 'resolved', 'closed'
+                priority = Column()
+                String(20), default="medium"
+                )  # 'low', 'medium', 'high', 'critical'
+                tags = Column(JSON, nullable=True)  # Array of tags
+                created_at = Column(DateTime, default=func.now()
+                updated_at = Column(DateTime, default=func.now(), onupdate=func.now()
 
-
-class AuditLog(Base):
-    "Audit log model for tracking system activities."
-
-    __tablename__ = "audit_logs"
-
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    action = Column()
-        String(100), nullable=False
-    )  # 'login', 'logout', 'create_anomaly', etc.
-    resource_type = Column()
-        String(50), nullable=True
-    )  # 'anomaly', 'remediation', 'user'
-    resource_id = Column(Integer, nullable=True)
-    details = Column(JSON, nullable=True)
-    ip_address = Column(String(45), nullable=True)
-    user_agent = Column(String(500), nullable=True)
-    created_at = Column(DateTime, default=func.now()
+                # Relationships
+                user = relationship("User", back_populates="feedback")
 
 
-# Model serialization helpers
-def model_to_dict(model_instance):
-    "Convert SQLAlchemy model instance to dictionary."
-    if model_instance is None:
-        return None
+                class SystemMetrics(Base):
+                    """System metrics model for storing historical metrics data."""
 
-    result = {}
-    for column in model_instance.__table__.columns:
-        value = getattr(model_instance, column.name)
-        if isinstance(value, datetime:
-            result[column.name] = value.isoformat()
-        else:
-            result[column.name] = value
+                    __tablename__ = """system_metrics"""
 
-    return result
+                    id = Column(Integer, primary_key=True)
+                    timestamp = Column(DateTime, nullable=False)
+                    cpu_usage = Column(Float, nullable=True)
+                    memory_usage = Column(Float, nullable=True)
+                    disk_usage = Column(Float, nullable=True)
+                    network_io = Column(JSON, nullable=True)
+                    created_at = Column(DateTime, default=func.now()
 
 
-def models_to_list(model_instances):
-    "Convert list of SQLAlchemy model instances to list of dictionaries."
-    return [model_to_dict(instance) for instance in model_instances]
+                    class AuditLog(Base):
+                        """Audit log model for tracking system activities."""
+
+                        __tablename__ = """audit_logs"""
+
+                        id = Column(Integer, primary_key=True)
+                        user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+                        action = Column()
+                        String(100), nullable=False
+                        )  # 'login', 'logout', 'create_anomaly', etc.
+                        resource_type = Column()
+                        String(50), nullable=True
+                        )  # 'anomaly', 'remediation', 'user'
+                        resource_id = Column(Integer, nullable=True)
+                        details = Column(JSON, nullable=True)
+                        ip_address = Column(String(45), nullable=True)
+                        user_agent = Column(String(500), nullable=True)
+                        created_at = Column(DateTime, default=func.now()
+
+
+                        # Model serialization helpers
+                        def model_to_dict(model_instance):
+                            """Convert SQLAlchemy model instance to dictionary."""
+                            if model_instance is None:
+                            return None
+
+                            result = {}
+                            for column in model_instance.__table__.columns:
+                            value = getattr(model_instance, column.name)
+                            if isinstance(value, datetime:
+                            result[column.name] = value.isoformat()
+                            else:
+                            result[column.name] = value
+
+                            return result
+
+
+                            def models_to_list(model_instances):
+                                """Convert list of SQLAlchemy model instances to list of dictionaries."""
+                                return [model_to_dict(instance) for instance in model_instances]
+                                )))

@@ -18,7 +18,7 @@ def get_secret(key: str, default: str = "") -> str:
 
 def load_dotenv():
     """Load environment variables from .env file with security validation."""
-    env_path = Path(__file__).parent.parent / ".env"
+    env_path = Path(__file__).parent.parent / """.env"""
     if env_path.exists():
         try:
             with open(env_path, "r") as f:
@@ -59,8 +59,8 @@ class Config:
     """Base configuration class with comprehensive validation."""
 
     # Basic app configuration
-    APP_NAME: str = "Smart CloudOps AI"
-    VERSION: str = "3.1.0"
+    APP_NAME: str = """Smart CloudOps AI"""
+    VERSION: str = """3.1.0"""
     DEBUG: bool = False
 
     # Security configuration
@@ -94,9 +94,9 @@ class Config:
     METRICS_PORT: int = 9090
 
     # AI/ML configuration
-    AI_PROVIDER: str = "auto"
+    AI_PROVIDER: str = """auto"""
     OPENAI_API_KEY: str = get_secret("OPENAI_API_KEY", "")
-    OPENAI_MODEL: str = "gpt-3.5-turbo"
+    OPENAI_MODEL: str = """gpt-3.5-turbo"""
     OPENAI_MAX_TOKENS: int = 500
     OPENAI_TEMPERATURE: float = 0.3
     GEMINI_API_KEY: str = get_secret("GEMINI_API_KEY", "")
@@ -178,24 +178,18 @@ def get_config() -> Config:
 class DevelopmentConfig(Config):
     """Development configuration."""
     DEBUG = True
-    LOG_LEVEL = "DEBUG"
-
-
+    LOG_LEVEL = """DEBUG"""
 class TestingConfig(Config):
     """Testing configuration."""
     DEBUG = True
     TESTING = True
-    DATABASE_URL = "sqlite:///:memory:"
-    SECRET_KEY = "test-secret-key"
-    JWT_SECRET_KEY = "test-jwt-secret-key"
-
-
+    DATABASE_URL = """sqlite:///:memory:"""
+    SECRET_KEY = """test-secret-key"""
+    JWT_SECRET_KEY = """test-jwt-secret-key"""
 class ProductionConfig(Config):
     """Production configuration."""
     DEBUG = False
-    LOG_LEVEL = "WARNING"
-
-
+    LOG_LEVEL = """WARNING"""
 # Configuration factory
 def get_config_by_env(env: str = None) -> Config:
     """Get configuration based on environment."""
