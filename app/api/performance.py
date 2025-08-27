@@ -35,8 +35,8 @@ def health_check():
         # Check Redis cache
         redis_cache = get_redis_cache()
         if redis_cache:
-            health_status["components"]["redis_cache"] = {}
-                "status": "healthy" if redis_cache._redis_client else "unavailable",:
+            health_status["components"]["redis_cache"] = {
+                "status": "healthy" if redis_cache._redis_client else "unavailable",
                 "connected": redis_cache._redis_client is not None
             }
         else:
@@ -45,7 +45,7 @@ def health_check():
         # Check anomaly detector
         anomaly_detector = get_anomaly_detector()
         if anomaly_detector:
-            health_status["components"]["anomaly_detector"] = {}
+            health_status["components"]["anomaly_detector"] = {
                 "status": "healthy",
                 "model_version": anomaly_detector.model_version
             }
@@ -55,7 +55,7 @@ def health_check():
         # Check log manager
         log_manager = get_log_manager()
         if log_manager:
-            health_status["components"]["log_manager"] = {}
+            health_status["components"]["log_manager"] = {
                 "status": "healthy",
                 "async_enabled": log_manager.config.enable_async
             }
@@ -65,7 +65,7 @@ def health_check():
         # Check database
         db = get_optimized_database()
         if db:
-            health_status["components"]["database"] = {}
+            health_status["components"]["database"] = {
                 "status": "healthy",
                 "cache_enabled": db.config.enable_query_cache
             }
@@ -73,7 +73,7 @@ def health_check():
             health_status["components"]["database"] = {"status": "not_initialized"}
         
         # Log business event
-        log_business_event("performance_health_check", {}
+        log_business_event("performance_health_check", {
             "status": health_status["status"],
             "components_count": len(health_status["components"])
         })
@@ -82,7 +82,7 @@ def health_check():
         
     except Exception as e:
         logger.error(f"Performance health check failed: {e}")
-        return jsonify({}
+        return jsonify({
             "status": "unhealthy",
             "error": str(e),
             "timestamp": datetime.utcnow().isoformat()
@@ -100,7 +100,7 @@ def cache_stats():
         stats = redis_cache.get_stats()
         
         # Log business event
-        log_business_event("cache_stats_retrieved", {}
+        log_business_event("cache_stats_retrieved", {
             "hit_rate": stats.get("hit_rate", 0),
             "total_requests": stats.get("total_requests", 0)
         })
@@ -126,12 +126,12 @@ def clear_cache():
         success = redis_cache.clear(namespace)
         
         # Log business event
-        log_business_event("cache_cleared", {}
+        log_business_event("cache_cleared", {
             "namespace": namespace,
             "success": success
         })
         
-        return jsonify({}
+        return jsonify({
             "success": success,
             "namespace": namespace,
             "timestamp": datetime.utcnow().isoformat()
