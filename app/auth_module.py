@@ -31,7 +31,7 @@ if not DEFAULT_ADMIN_PASSWORD:
     raise ValueError("DEFAULT_ADMIN_PASSWORD environment variable is required")
 
 # In-memory user store (replace with database in production)
-USERS_DB = {
+USERS_DB = {:
     "admin": {}
         "password_hash": generate_password_hash(DEFAULT_ADMIN_PASSWORD),
         "role": "admin",

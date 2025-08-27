@@ -16,11 +16,11 @@ from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 
-
+:
 class GPTHandler:
     """GPT handler for ChatOps queries with input sanitization and
     context management."""
-
+:
     def __init__(self, api_key: str = None):
         """Initialize GPT handler."""
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
@@ -65,9 +65,9 @@ class GPTHandler:
     """- Node Exporter for system metrics\n\n"""
     """Always respond in a professional, helpful manner focused on operational excellence."""
         )
-
+:
     def sanitize_input(self, query: str) -> str:
-        """Enhanced sanitize and validate user input with comprehensive security checks."""
+        """Enhanced sanitize and validate user input with comprehensive security checks.""":
         if not query or not isinstance(query, str):
             raise ValueError("Query must be a non-empty string")
 
@@ -147,7 +147,7 @@ class GPTHandler:
         return sanitized
 
     def add_context(self, context: Dict[str, Any]) -> str:
-    """Add system context to the conversation with input sanitization."""
+    """Add system context to the conversation with input sanitization.""":
         context_prompt = "\n\n**Current System Context**:\n"
 
         # Sanitize context data to prevent injection attacks
@@ -172,9 +172,9 @@ class GPTHandler:
     def process_query(
         self, query: str, context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-    """Process ChatOps query with GPT integration and enhanced security."""
+    """Process ChatOps query with GPT integration and enhanced security.""":
         try:
-            # Check if GPT client is available
+            # Check if GPT client is available:
             if not self.client:
                 return {
                     "status": "error",
@@ -194,12 +194,12 @@ class GPTHandler:
             context_prompt = self.add_context(context)
 
             # Build messages with sanitized content
-            messages = [
+            messages = [:
                 {"role": "system", "content": self.system_prompt + context_prompt},
                 {"role": "user", "content": sanitized_query},
             ]
 
-            # Add conversation history (last 10 exchanges) with sanitization
+            # Add conversation history (last 10 exchanges) with sanitization:
             if self.conversation_history:
                 recent_history = self.conversation_history[-10:]  # Last 5 exchanges
                 messages = (
@@ -229,7 +229,7 @@ class GPTHandler:
                 strip=True,
             )
 
-            # Update conversation history with sanitized content
+            # Update conversation history with sanitized content:
             self.conversation_history.append({"role": "user", "content": sanitized_query})
             self.conversation_history.append({"role": "assistant", "content": gpt_response})
 
@@ -247,7 +247,7 @@ class GPTHandler:
                 "model": "gpt-3.5-turbo",
                 "tokens_used": response.usage.total_tokens if response.usage else None,
             }
-
+:
         except ValueError as e:
             logger.warning(f"Input validation error: {str(e)}")
             return {

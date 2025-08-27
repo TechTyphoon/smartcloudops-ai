@@ -21,7 +21,7 @@ class AIProvider(ABC):
     @abstractmethod
     def process_query(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, Any]:
     """Process a query with the AI provider."""
-    @abstractmethod
+    @abstractmethod:
     def get_model_info(self) -> Dict[str, str]:
     """Get information about the current model."""
 class OpenAIProvider(AIProvider):
@@ -42,7 +42,7 @@ class OpenAIProvider(AIProvider):
             return False
 
     def process_query(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, Any]:
-    """Process query with OpenAI."""
+    """Process query with OpenAI.""":
         try:
             response = self.client.chat.completions.create()
                 model=self.model,
@@ -55,7 +55,7 @@ class OpenAIProvider(AIProvider):
                 "status": "success",
                 "response": response.choices[0].message.content.strip(),
                 "model": self.model,
-                "tokens_used": response.usage.total_tokens if response.usage else None,
+                "tokens_used": response.usage.total_tokens if response.usage else None,:
                 "provider": "openai"
             }
         except Exception as e:
@@ -78,7 +78,7 @@ class LocalProvider(AIProvider):
         return True
 
     def process_query(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, Any]:
-    """Process query with local responses."""
+    """Process query with local responses.""":
         try:
             # Get the user query from messages
             user_message = "
@@ -109,8 +109,8 @@ class LocalProvider(AIProvider):
     """Generate enhanced contextual responses with suggestions."""
         import random
 
-        # Determine response type based on query content
-        if any
+        # Determine response type based on query content:
+        if any:
 - PostgreSQL Database: Connected
 - Prometheus Monitoring: Active (9090)
 - Grafana Dashboard: Accessible (3000)
@@ -246,7 +246,7 @@ class GeminiProvider(AIProvider):
             return False
 
     def process_query(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, Any]:
-    """Process query with Gemini."""
+    """Process query with Gemini.""":
         try:
             # Convert OpenAI format to Gemini format
             gemini_messages = self._convert_messages(messages)
@@ -265,7 +265,7 @@ class GeminiProvider(AIProvider):
                     response.usage_metadata.total_token_count
                     if hasattr(response, "usage_metadata")
                     else None
-                ),
+                ),:
                 "provider": "gemini"
             }
         except Exception as e:
@@ -384,7 +384,7 @@ class FlexibleAIHandler:
 Always respond in a professional, helpful manner focused on operational excellence."
 
     def sanitize_input(self, query: str) -> str:
-    """Sanitize and validate user input with comprehensive security checks."""
+    """Sanitize and validate user input with comprehensive security checks.""":
         if not query or not isinstance(query, str:
             raise ValueError("Query must be a non-empty string")
 
@@ -452,9 +452,9 @@ Always respond in a professional, helpful manner focused on operational excellen
     def process_query()
         self, query: str, context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-    """Process ChatOps query with AI integration."""
+    """Process ChatOps query with AI integration.""":
         try:
-            # Check if AI provider is available
+            # Check if AI provider is available:
             if not self.provider:
                 return {}
                     "status": "error",
@@ -483,7 +483,7 @@ Always respond in a professional, helpful manner focused on operational excellen
 
             # Process with AI provider
             result = self.provider.process_query(messages)
-
+:
             if result["status"] == "success":
                 # Add to conversation history
                 self.conversation_history.append({"role": "user", "content": sanitized_query})

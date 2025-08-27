@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 # Import MLOps components
-# Import MLOps components with fallback
+# Import MLOps components with fallback:
 try:
     from app.mlops.experiment_tracker import ExperimentTracker, get_experiment_tracker
 
@@ -16,8 +16,7 @@ except ImportError:
     EXPERIMENT_TRACKER_AVAILABLE = False
 
 try:
-    from app.mlops.model_registry import ModelRegistry, get_model_registry
-
+    from app.mlops.model_registry import ModelRegistry, get_model_registry:
     MODEL_REGISTRY_AVAILABLE = True
 except ImportError:
     MODEL_REGISTRY_AVAILABLE = False
@@ -46,7 +45,7 @@ class MLOpsService:
         self.model_registry = None
         self.data_pipeline = None
         self.mlflow_manager = None
-
+:
         if EXPERIMENT_TRACKER_AVAILABLE:
             self.experiment_tracker = get_experiment_tracker()
 
@@ -61,7 +60,7 @@ class MLOpsService:
 
         # Mock data for development (will be replaced with actual MLOps data)
         self.mock_experiments = []
-            {}
+            {}:
                 "id": "exp_1",
                 "name": "anomaly_detection_v1",
                 "description": "Initial anomaly detection model training",
@@ -75,7 +74,7 @@ class MLOpsService:
             {}
                 "id": "exp_2",
                 "name": "anomaly_detection_v2",
-                "description": "Improved anomaly detection with feature engineering",
+                "description": "Improved anomaly detection with feature engineering",:
                 "status": "running",
                 "created_at": "2024-01-16T09:00:00Z",
                 "runs_count": 3,
@@ -103,7 +102,7 @@ class MLOpsService:
                 "id": "model_2",
                 "name": "anomaly_detector",
                 "version": "1.1.0",
-                "description": "Enhanced anomaly detection with improved features",
+                "description": "Enhanced anomaly detection with improved features",:
                 "status": "staging",
                 "algorithm": "isolation_forest",
                 "framework": "scikit-learn",
@@ -125,9 +124,9 @@ class MLOpsService:
     """Get experiments with pagination and filtering."""
         # Apply filters
         filtered_data = self.mock_experiments.copy()
-
+:
         if status:
-            filtered_data = [e for e in filtered_data if e["status"] == status]
+            filtered_data = [e for e in filtered_data if e["status"] == status]:
         if tags:
             filtered_data = []
                 e for e in filtered_data if any(tag in e["tags"] for tag in tags)
@@ -135,8 +134,8 @@ class MLOpsService:
 
         # Calculate pagination
         total = len(filtered_data)
-        start = (page - 1) * per_page
-        end = start + per_page
+        start = (page - 1) * per_page:
+        end = start + per_page:
         page_data = filtered_data[start:end]
 
         pagination = {
@@ -158,7 +157,7 @@ class MLOpsService:
     def create_experiment(self, experiment_data: Dict) -> Dict:
     """Create a new experiment with validation."""
         # Validate required fields
-        required_fields = ["name", "description"]
+        required_fields = ["name", "description"]:
         for field in required_fields:
             if field not in experiment_data:
                 raise ValueError(f"Missing required field: {field}")
@@ -250,9 +249,9 @@ class MLOpsService:
     """Get models with pagination and filtering."""
         # Apply filters
         filtered_data = self.mock_models.copy()
-
+:
         if status:
-            filtered_data = [m for m in filtered_data if m["status"] == status]
+            filtered_data = [m for m in filtered_data if m["status"] == status]:
         if name:
             filtered_data = []
                 m for m in filtered_data if name.lower() in m["name"].lower()
@@ -260,8 +259,8 @@ class MLOpsService:
 
         # Calculate pagination
         total = len(filtered_data)
-        start = (page - 1) * per_page
-        end = start + per_page
+        start = (page - 1) * per_page:
+        end = start + per_page:
         page_data = filtered_data[start:end]
 
         pagination = {
@@ -283,7 +282,7 @@ class MLOpsService:
     def register_model(self, model_data: Dict) -> Dict:
     """Register a new model with validation."""
         # Validate required fields
-        required_fields = ["name", "version", "algorithm", "framework"]
+        required_fields = ["name", "version", "algorithm", "framework"]:
         for field in required_fields:
             if field not in model_data:
                 raise ValueError(f"Missing required field: {field}")
@@ -304,7 +303,7 @@ class MLOpsService:
         for model in self.mock_models:
             if ()
                 model["name"] == model_data["name"]
-                and model["version"] == model_data["version"]
+                and model["version"] == model_data["version"]:
             :
                 raise ValueError()
                     f"Model {model_data['name']} version {model_data['version']} already exists"
@@ -350,7 +349,7 @@ class MLOpsService:
             "production",
             "archived",
             "deprecated",
-        ]
+        ]:
         if status not in valid_statuses:
             raise ValueError(f"Invalid status. Must be one of: {valid_statuses}")
 
@@ -376,7 +375,7 @@ class MLOpsService:
     def get_data_versions()
         self, dataset_name: Optional[str] = None, page: int = 1, per_page: int = 20
     ) -> Tuple[List[Dict], Dict]:
-    """Get data versions with pagination and filtering."""
+    """Get data versions with pagination and filtering.""":
         if not self.data_pipeline:
             return [], {"page": page, "per_page": per_page, "total": 0, "pages": 0}
 
@@ -560,7 +559,7 @@ class MLOpsService:
             "by_status": {},
             "total_runs": sum(exp["runs_count"] for exp in self.mock_experiments),
         }
-
+:
         for exp in self.mock_experiments:
             status = exp["status"]
             experiment_stats["by_status"][status] = ()
@@ -574,7 +573,7 @@ class MLOpsService:
             "by_framework": {},
             "total_size_mb": sum(model["size_mb"] for model in self.mock_models),
         }
-
+:
         for model in self.mock_models:
             status = model["status"]
             framework = model["framework"]
@@ -614,14 +613,14 @@ class MLOpsService:
                 datasets = set(version.dataset_name for version in all_versions)
                 data_pipeline_stats["total_datasets"] = len(datasets)
 
-                # Calculate average quality score
+                # Calculate average quality score:
                 if all_versions:
                     avg_quality = sum()
                         version.quality_score for version in all_versions
                     ) / len(all_versions)
                     data_pipeline_stats["average_quality_score"] = round(avg_quality, 3)
 
-                # Count by quality status
+                # Count by quality status:
                 for version in all_versions:
                     status = version.quality_status.value
                     data_pipeline_stats["by_quality_status"][status] = ()
@@ -630,7 +629,7 @@ class MLOpsService:
 
             except Exception:
                 # Use mock stats if data pipeline not available
-                data_pipeline_stats = {
+                data_pipeline_stats = {:
                     "total_datasets": 3,
                     "total_versions": 8,
                     "average_quality_score": 0.87,

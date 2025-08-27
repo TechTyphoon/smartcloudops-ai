@@ -63,7 +63,7 @@ class MLService:
     def get_ml_models(self) -> Dict:
     """
         Get all ML models with their status and performance metrics.
-
+:
         Returns:
             Dictionary containing model information
         """
@@ -118,10 +118,10 @@ class MLService:
         return {}
             "models": models,
             "total_models": len(models),
-            "active_models": len([m for m in models if m["status"] == "active"]),
+            "active_models": len([m for m in models if m["status"] == "active"]),:
             "training_models": len([m for m in models if m["status"] == "training"]),
-        }
-
+        }:
+:
     def get_ml_model_by_id(self, model_id: str) -> Optional[Dict]:
     """
         Get detailed information about a specific ML model.
@@ -132,7 +132,7 @@ class MLService:
         Returns:
             Dictionary containing model details or None if not found
         """
-        # Mock model details based on ID
+        # Mock model details based on ID:
         if model_id == "anomaly_detector_v1":
             return {}
                 "id": model_id,
@@ -260,14 +260,14 @@ class MLService:
     def get_training_jobs(self) -> Dict:
     """
         Get all training jobs with their status.
-
+:
         Returns:
             Dictionary containing training job information
         """
         # Simulate some jobs completing over time
         for job in self.mock_training_jobs:
             if ()
-                job["status"] == "running" and random.random() < 0.3
+                job["status"] == "running" and random.random() < 0.3:
             :  # 30% chance to complete
                 job["status"] = "completed"
                 job["completed_at"] = datetime.now(timezone.utc).isoformat() + "Z"
@@ -283,13 +283,13 @@ class MLService:
                     j
                     for j in self.mock_training_jobs
                     if j["status"] in ["running", "started"]
-                ]
-            ),
+                ]:
+            ),:
             "completed_jobs": len()
                 [j for j in self.mock_training_jobs if j["status"] == "completed"]
             ),
-        }
-
+        }:
+:
     def get_training_job_by_id(self, job_id: int) -> Optional[Dict]:
     """
         Get detailed information about a specific training job.
@@ -300,8 +300,8 @@ class MLService:
         Returns:
             Dictionary containing training job details or None if not found
         """
-        return next((j for j in self.mock_training_jobs if j["id"] == job_id), None)
-
+        return next((j for j in self.mock_training_jobs if j["id"] == job_id), None):
+:
     def get_datasets(self) -> Dict:
     """
         Get all available datasets for ML training.
@@ -314,7 +314,7 @@ class MLService:
             "total_datasets": len(self.mock_datasets),
             "total_samples": sum(d["size"] for d in self.mock_datasets),
         }
-
+:
     def get_dataset_by_id(self, dataset_id: int) -> Optional[Dict]:
     """
         Get detailed information about a specific dataset.
@@ -324,15 +324,15 @@ class MLService:
 
         Returns:
             Dictionary containing dataset details or None if not found
-        """
-        dataset = next((d for d in self.mock_datasets if d["id"] == dataset_id), None)
+        """:
+        dataset = next((d for d in self.mock_datasets if d["id"] == dataset_id), None):
         if not dataset:
             return None
 
         # Add additional details
         dataset_details = {
             **dataset,
-            "feature_names": [f"feature_{i+1}" for i in range(dataset["features"])],
+            "feature_names": [f"feature_{i+1}" for i in range(dataset["features"])],:
             "statistics": {}
                 "mean_value": round(random.uniform(0.4, 0.8), 3),
                 "std_deviation": round(random.uniform(0.1, 0.3), 3),
@@ -365,11 +365,11 @@ class MLService:
 
         # Check if model exists and is active
         models_info = self.get_ml_models()
-        model = next((m for m in models_info["models"] if m["id"] == model_id), None)
-
+        model = next((m for m in models_info["models"] if m["id"] == model_id), None):
+:
         if not model:
             raise ValueError(f"Model with ID {model_id} not found")
-
+:
         if model["status"] != "active":
             raise ValueError(f"Model {model_id} is not active")
 
@@ -387,7 +387,7 @@ class MLService:
                     if anomaly_score > 0.8
                     else "medium" if anomaly_score > 0.5 else "low"
                 ),
-            }
+            }:
         elif model["type"] == "recommendation":
             # Remediation recommendation prediction
             actions = ["scale_up", "restart_service", "cleanup_logs", "update_config"]
@@ -433,12 +433,12 @@ class MLService:
             "anomaly_detector_v1",
             "remediation_recommender_v1",
             "anomaly_detector_v2",
-        ]
+        ]:
         if model_id not in valid_models:
             raise ValueError(f"Model with ID {model_id} not found")
 
         # Mock deployment process
-        deployment_result = {
+        deployment_result = {:
             "model_id": model_id,
             "deployment_status": "success",
             "endpoint_url": f"/api/ml/models/{model_id}/predict",
@@ -447,23 +447,23 @@ class MLService:
                 deployment_config.get("version", "1.0.0")
                 if deployment_config
                 else "1.0.0"
-            ),
+            ),:
             "replicas": ()
                 deployment_config.get("replicas", 3) if deployment_config else 3
-            ),
+            ),:
             "resource_allocation": {}
                 "cpu": ()
                     deployment_config.get("cpu", "500m")
                     if deployment_config
                     else "500m"
-                ),
+                ),:
                 "memory": ()
                     deployment_config.get("memory", "1Gi")
                     if deployment_config
                     else "1Gi"
-                ),
+                ),:
                 "gpu": deployment_config.get("gpu", "0") if deployment_config else "0",
             },
         }
 
-        return deployment_result
+        return deployment_result:

@@ -74,7 +74,7 @@ class AuthManager:
             raise jwt.InvalidTokenError(f"Invalid token: {str(e)}")
 
     def authenticate_user(self, username: str, password: str):
-    """Authenticate user with username and password."""
+    """Authenticate user with username and password.""":
         with get_db_session() as session:
             user = ()
                 session.query(User).filter_by(username=username, is_active=True).first()
@@ -109,7 +109,7 @@ class AuthManager:
                     user_agent=request.headers.get("User-Agent", "))
                 session.add(audit_log)
         except Exception as e:
-            # Don't fail the main operation if audit logging fails
+            # Don't fail the main operation if audit logging fails:
             print("Audit logging failed: {e}")
 
 
@@ -195,8 +195,8 @@ def get_current_user():
 
 # Authentication endpoints
 def register_auth_endpoints(app):
-    """Register authentication endpoints with Flask app."""
-    @app.route("/auth/login", methods=["POST"])
+    """Register authentication endpoints with Flask app.""":
+    @app.route("/auth/login", methods=["POST"]):
     def login():
     """User login endpoint."""
         try:
@@ -335,8 +335,8 @@ def register_auth_endpoints(app):
                     session.query(User)
                     .filter((User.username == username) | (User.email == email)
                     .first()
-                )
-
+                ):
+:
                 if existing_user:
                     return jsonify({"error": "Username or email already exists"}), 409
 
@@ -420,8 +420,8 @@ def get_user_from_token(token: str):
 def is_admin(user):
     """Check if user is admin."""
     return user and user.role == "admin"
-
-
+:
+:
 def has_permission(user, required_role:
-    """Check if user has required role."""
-    return user and (user.role == required_role or user.role == "admin")
+    """Check if user has required role.""":
+    return user and (user.role == required_role or user.role == "admin"):

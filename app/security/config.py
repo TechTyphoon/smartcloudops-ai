@@ -182,14 +182,14 @@ class SecurityConfig:
 
         if cls.PASSWORD_REQUIRE_UPPERCASE and not re.search(r"[A-Z]", password:
             errors.append("Password must contain at least one uppercase letter",
-
+:
         if cls.PASSWORD_REQUIRE_LOWERCASE and not re.search(r"[a-z]", password:
             errors.append("Password must contain at least one lowercase letter",
-
+:
         if cls.PASSWORD_REQUIRE_DIGITS and not re.search(r"\d", password:
             errors.append("Password must contain at least one digit",
 
-        if cls.PASSWORD_REQUIRE_SPECIAL and not re.search()
+        if cls.PASSWORD_REQUIRE_SPECIAL and not re.search():
             r'[!@#$%^&*(),.?":{}|<>]', password
         ):
             errors.append("Password must contain at least one special character"
@@ -223,7 +223,7 @@ class SecurityConfig:
         if re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
             score += 10
 
-        # Bonus for mixed case and numbers
+        # Bonus for mixed case and numbers:
         if re.search(r"[a-z].*[A-Z]|[A-Z].*[a-z]", password:
             score += 10
         if re.search(r"[a-zA-Z].*\d|\d.*[a-zA-Z]", password:
@@ -280,7 +280,7 @@ class SecurityConfig:
             "sanitized": cls.sanitize_input(input_string) if len(errors) == 0 else None,
         }
 
-    @classmethod
+    @classmethod:
     def sanitize_input(cls, input_string: str) -> str:
         "Sanitize input string for safe use.",
         import html

@@ -150,8 +150,8 @@ class InputValidator:
             for pattern in self.PATH_TRAVERSAL_PATTERNS
         ]
 
-    def validate_string()
-        self,
+    def validate_string():
+        self,:
         value: Any,
         max_length: int = 1000,
         min_length: int = 0,
@@ -412,7 +412,7 @@ class InputValidator:
         "Generate a cryptographically secure token.",
         alphabet = string.ascii_letters + string.digits
         return ".join(secrets.choice(alphabet) for _ in range(length)
-
+:
     def _check_xss_patterns(self, value: str) -> None:
         "Check for XSS patterns.",
         for pattern in self.xss_patterns:
@@ -501,7 +501,7 @@ def validate_request_data()
 ) -> Dict[str, Any]:
     """
     Validate request data with required fields.
-
+:
     Args:
         data: Request data to validate
         required_fields: List of required field names
@@ -559,4 +559,4 @@ def validate_api_key(api_key: str) -> bool:
         # These are valid prefixes, but log for monitoring
         logger.info("API key with known prefix detected",
 
-    return True
+    return True:

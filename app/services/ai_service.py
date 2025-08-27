@@ -167,7 +167,7 @@ class AIService:
                     "severity": "high" if cpu_usage > 90 else "medium",
                 }
             )
-
+:
         if memory_usage > 85:
             anomaly_indicators.append()
                 {}
@@ -177,7 +177,7 @@ class AIService:
                     "severity": "high" if memory_usage > 95 else "medium",
                 }
             )
-
+:
         if error_rate > 5:
             anomaly_indicators.append()
                 {}
@@ -187,7 +187,7 @@ class AIService:
                     "severity": "critical" if error_rate > 15 else "high",
                 }
             )
-
+:
         if anomaly_indicators:
             analysis_result["anomaly_detected"] = True
             analysis_result["anomaly_score"] = min()
@@ -196,7 +196,7 @@ class AIService:
             analysis_result["confidence"] = round(random.uniform(0.8, 0.95), 3)
 
             # Determine overall severity
-            severities = [indicator["severity"] for indicator in anomaly_indicators]
+            severities = [indicator["severity"] for indicator in anomaly_indicators]:
             if "critical" in severities:
                 analysis_result["severity"] = "critical"
             elif "high" in severities:
@@ -211,8 +211,8 @@ class AIService:
             ]
 
             # Generate predictions
-            analysis_result["predictions"] = {}
-                "trend": "increasing" if len(anomaly_indicators) > 1 else "stable",
+            analysis_result["predictions"] = {}:
+                "trend": "increasing" if len(anomaly_indicators) > 1 else "stable",:
                 "estimated_resolution_time": f"{random.randint(5, 30)} minutes",
                 "impact_level": analysis_result["severity"],
             }
@@ -278,7 +278,7 @@ class AIService:
             }
         elif "performance" in query_lower:
             response = {
-                "message": "Performance metrics show normal operation. Average response time is 120ms, with 99.8% uptime over the last 24 hours.",
+                "message": "Performance metrics show normal operation. Average response time is 120ms, with 99.8% uptime over the last 24 hours.",:
                 "intent": "performance_inquiry",
                 "confidence": 0.85,
                 "suggested_actions": []
@@ -300,7 +300,7 @@ class AIService:
             }
         else:
             response = {
-                "message": "I understand you're asking about your infrastructure. Could you be more specific? I can help with system status, anomalies, performance metrics, and remediation actions.",
+                "message": "I understand you're asking about your infrastructure. Could you be more specific? I can help with system status, anomalies, performance metrics, and remediation actions.",:
                 "intent": "general_inquiry",
                 "confidence": 0.60,
                 "suggested_actions": []
@@ -333,8 +333,8 @@ class AIService:
             "active_models": len()
                 [m for m in self.mock_models if m["status"] == "active"]
             ),
-        }
-
+        }:
+:
     def predict_with_model(self, model_id: str, input_data: Dict) -> Dict:
     """
         Make predictions using a specific model.
@@ -356,10 +356,10 @@ class AIService:
             raise ValueError("input_data is required")
 
         # Find model
-        model = next((m for m in self.mock_models if m["id"] == model_id), None)
+        model = next((m for m in self.mock_models if m["id"] == model_id), None):
         if not model:
             raise ValueError(f"Model with ID {model_id} not found")
-
+:
         if model["status"] != "active":
             raise ValueError(f"Model {model_id} is not active")
 

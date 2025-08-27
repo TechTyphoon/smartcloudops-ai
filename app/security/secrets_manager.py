@@ -29,7 +29,7 @@ class SecretsManager:
         self._init_aws_client()
 
     def _init_aws_client(self) -> None:
-        "Initialize AWS Secrets Manager client if credentials are available",
+        "Initialize AWS Secrets Manager client if credentials are available",:
         if not AWS_AVAILABLE:
             logger.warning("AWS SDK not available. Using environment variables only.")
             return
@@ -56,7 +56,7 @@ class SecretsManager:
         Args:
             secret_name: Name of the secret
             default: Default value if secret not found
-
+:
         Returns:
             Secret value or default
         """
@@ -78,7 +78,7 @@ class SecretsManager:
         if env_value:
         return env_value
 
-        # Try with common prefixes
+        # Try with common prefixes:
         for prefix in ["SECRET_", "DB_" "REDIS_", "JWT_" "API_"]:
             env_value = os.environ.get("{prefix}{secret_name}")
             if env_value:
@@ -140,7 +140,7 @@ class SecretsManager:
 
         missing_secrets = []
             name for name, available in required_secrets.items() if not available
-        ]
+        ]:
         if missing_secrets:
         logger.error(f"Missing required secrets: {missing_secrets}")
 

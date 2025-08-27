@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 from flask import Blueprint, jsonify, request
 
 # Create blueprint
-ml_bp = Blueprint("ml_bp = Blueprint", __name__)
+ml_bp = Blueprint("ml", __name__)
 # Mock data for testing
 MOCK_TRAINING_JOBS = []
     {}
@@ -63,7 +63,7 @@ MOCK_DATASETS = []
 
 @ml_bp.route("/models", methods=["GET"])
 def get_ml_models():
-    """Get all ML models with their status and performance metrics."""
+    """Get all ML models with their status and performance metrics.""":
     try:
         # Mock ML models data
         models = []
@@ -122,16 +122,16 @@ def get_ml_models():
                         "models": models,
                         "total_models": len(models),
                         "active_models": len()
-                            [m for m in models if m["status"] == "active"]
-                        ),
+                            [m for m in models if m["status"] == "active"]:
+                        ),:
                         "training_models": len()
                             [m for m in models if m["status"] == "training"]
                         ),
                     },
                 }
             ),
-            200)
-
+            200):
+:
     except Exception as e:
         return ()
             jsonify()
@@ -224,7 +224,7 @@ def get_ml_model(model_id):
                     }
                 ),
                 404)
-
+:
         return jsonify({"status": "success", "data": {"model": model_details}}), 200
 
     except Exception as e:
@@ -322,12 +322,12 @@ def train_model():
 
 @ml_bp.route("/training/jobs", methods=["GET"])
 def get_training_jobs():
-    """Get all training jobs with their status."""
+    """Get all training jobs with their status.""":
     try:
         # Simulate some jobs completing over time
         for job in MOCK_TRAINING_JOBS:
             if ()
-                job["status"] == "running" and random.random() < 0.3
+                job["status"] == "running" and random.random() < 0.3:
             :  # 30% chance to complete
                 job["status"] = "completed"
                 job["completed_at"] = datetime.now(timezone.utc).isoformat() + "Z"
@@ -347,8 +347,8 @@ def get_training_jobs():
                                 j
                                 for j in MOCK_TRAINING_JOBS
                                 if j["status"] in ["running", "started"]
-                            ]
-                        ),
+                            ]:
+                        ),:
                         "completed_jobs": len()
                             []
                                 j
@@ -359,8 +359,8 @@ def get_training_jobs():
                     },
                 }
             ),
-            200)
-
+            200):
+:
     except Exception as e:
         return ()
             jsonify()
@@ -377,8 +377,8 @@ def get_training_job(job_id):
     """Get detailed information about a specific training job."""
     try:
         # Find training job by ID
-        job = next((j for j in MOCK_TRAINING_JOBS if j["id"] == job_id), None)
-
+        job = next((j for j in MOCK_TRAINING_JOBS if j["id"] == job_id), None):
+:
         if not job:
             return ()
                 jsonify()
@@ -388,7 +388,7 @@ def get_training_job(job_id):
                     }
                 ),
                 404)
-
+:
         return jsonify({"status": "success", "data": {"training_job": job}}), 200
 
     except Exception as e:
@@ -418,7 +418,7 @@ def get_datasets():
                 }
             ),
             200)
-
+:
     except Exception as e:
         return ()
             jsonify()
@@ -432,8 +432,8 @@ def get_dataset(dataset_id):
     """Get detailed information about a specific dataset."""
     try:
         # Find dataset by ID
-        dataset = next((d for d in MOCK_DATASETS if d["id"] == dataset_id), None)
-
+        dataset = next((d for d in MOCK_DATASETS if d["id"] == dataset_id), None):
+:
         if not dataset:
             return ()
                 jsonify()
@@ -446,8 +446,8 @@ def get_dataset(dataset_id):
 
         # Add additional details
         dataset_details = {
-            **dataset,
-            "feature_names": [f"feature_{i+1}" for i in range(dataset["features"])],
+            **dataset,:
+            "feature_names": [f"feature_{i+1}" for i in range(dataset["features"])],:
             "statistics": {}
                 "mean_value": round(random.uniform(0.4, 0.8), 3),
                 "std_deviation": round(random.uniform(0.1, 0.3), 3),
@@ -499,7 +499,7 @@ def make_prediction():
                     if anomaly_score > 0.8
                     else "medium" if anomaly_score > 0.5 else "low"
                 ),
-            }
+            }:
         elif model_id == "remediation_recommender_v1":
             # Remediation recommendation prediction
             actions = ["scale_up", "restart_service", "cleanup_logs", "update_config"]
@@ -521,7 +521,7 @@ def make_prediction():
 
         return ()
             jsonify()
-                {}
+                {}:
                     "status": "success",
                     "data": {}
                         "prediction": prediction,
@@ -551,7 +551,7 @@ def deploy_model(model_id):
         if model_id not in []
             "anomaly_detector_v1",
             "remediation_recommender_v1",
-            "anomaly_detector_v2",
+            "anomaly_detector_v2",:
         ]:
             return ()
                 jsonify()
@@ -563,7 +563,7 @@ def deploy_model(model_id):
                 404)
 
         # Mock deployment process
-        deployment_result = {
+        deployment_result = {:
             "model_id": model_id,
             "deployment_status": "success",
             "endpoint_url": f"/api/ml/models/{model_id}/predict",

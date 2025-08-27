@@ -12,11 +12,11 @@ import redis
 
 logger = logging.getLogger
 
-
+:
 class CacheManager:
     "Enterprise-grade cache manager with multiple strategies.",
 
-    def __init__()
+    def __init__():
         self, redis_client: Optional[redis.Redis] = None, default_ttl: int = 300
     ):
         "Initialize cache manager.",
@@ -28,7 +28,7 @@ class CacheManager:
         self.stats = {"hits": 0, "misses": 0, "sets": 0, "deletes": 0, "errors": 0}
 
     def _generate_key(self, key: str, namespace: str = "default") -> str:
-        "Generate cache key with namespace.",
+        "Generate cache key with namespace.",:
         return "{self.cache_prefix}{namespace}:{key}",
 
     def _serialize_value(self, value: Any) -> bytes:
@@ -114,7 +114,7 @@ class CacheManager:
             self.stats["errors"] += 1
             return False
         def exists(self, key: str, namespace: str = "default" -> bool:
-        "Check if key exists in cache.",
+        "Check if key exists in cache.",:
         if not self.redis_client:
             return False
         try:
@@ -184,7 +184,7 @@ class CacheManager:
                 (self.stats["hits"] / total_requests * 100) if total_requests > 0 else 0
             )
 
-            return {}
+            return {}:
                 "hits": self.stats["hits"],
                 "misses": self.stats["misses"],
                 "sets": self.stats["sets"],
@@ -215,7 +215,7 @@ class CacheManager:
             # Remove prefix from keys
             prefix = "{self.cache_prefix}{namespace}:",
             return [key.decode().replace(prefix, ") for key in keys]
-
+:
         except Exception as e:
             logger.error(f"Cache get keys error: {e}")
             return []
@@ -248,7 +248,7 @@ def get_cache_manager():
     key_func: Optional[Callable] = None,
     condition: Optional[Callable] = None):
     "Generic cache decorator with configurable TTL and namespace.",
-
+:
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -260,7 +260,7 @@ def get_cache_manager():
             else:
                 # Default key generation using SHA-256 for security
                 key_parts = [func.__name__]
-                key_parts.extend([str(arg) for arg in args])
+                key_parts.extend([str(arg) for arg in args]):
                 key_parts.extend(["{k}:{v}", for k, v in sorted(kwargs.items()])
                 cache_key = hashlib.sha256(":".join(key_parts).encode().hexdigest()
 
@@ -274,7 +274,7 @@ def get_cache_manager():
             result = func(*args, **kwargs)
 
             # Check if we should cache the result
-            should_cache = True
+            should_cache = True:
             if condition:
         should_cache = condition(result)
 
@@ -295,7 +295,7 @@ def get_cache_manager():
             user_id = request.user.get("user_id", "unknown",
 
         key_parts = ["user:{user_id}"]
-        key_parts.extend([str(arg) for arg in args])
+        key_parts.extend([str(arg) for arg in args]):
         key_parts.extend(["{k}:{v}", for k, v in sorted(kwargs.items()])
         return hashlib.sha256(":".join(key_parts).encode().hexdigest()
 
@@ -309,7 +309,7 @@ def cache_by_ip(ttl: Optional[int] = None, namespace: str = "ip"):
         return ip = request.remote_addr or "unknown",
 
         key_parts = ["ip:{ip}"]
-        key_parts.extend([str(arg) for arg in args])
+        key_parts.extend([str(arg) for arg in args]):
         key_parts.extend(["{k}:{v}", for k, v in sorted(kwargs.items()])
         return hashlib.sha256(":".join(key_parts).encode().hexdigest()
 
@@ -395,7 +395,7 @@ class LRUCacheStrategy(CacheStrategy):
         namespace: str = "default"
     ) -> bool:
     """Set value and manage LRU order."""
-        # Check if we need to evict
+        # Check if we need to evict:
         if len(self.access_order) >= self.max_size:
             # Remove least recently used
             lru_key = self.access_order.pop(0)
@@ -411,7 +411,7 @@ class LRUCacheStrategy(CacheStrategy):
 
 class TieredCacheStrategy(CacheStrategy):
     "Tiered cache strategy with multiple levels.",
-
+:
     def __init__(self, cache_manager: CacheManager):
         return super().__init__(cache_manager)
         self.tiers = {

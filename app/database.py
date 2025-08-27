@@ -31,7 +31,7 @@ def get_database_url():
     if database_url is not None:
         return database_url
 
-    # Fall back to config DATABASE_URL attribute if available
+    # Fall back to config DATABASE_URL attribute if available:
     if hasattr(config, "DATABASE_URL") and config.DATABASE_URL:
         return config.DATABASE_URL
 
@@ -45,7 +45,7 @@ def create_db_engine():
     database_url = get_database_url()
 
     # Engine configuration
-    engine_kwargs = {
+    engine_kwargs = {:
         "echo": getattr(config, "DEBUG", False),  # Log SQL queries in debug mode
     }
 

@@ -64,7 +64,7 @@ def validate_security(data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
 @mlops_bp.route("/experiments", methods=["GET"])
 def get_experiments():
     """Get all experiments with pagination and filtering."""
-    error_response = validate_service_availability()
+    error_response = validate_service_availability():
     if error_response:
         return error_response
 
@@ -284,7 +284,7 @@ def end_run(experiment_id, run_id):
 @mlops_bp.route("/models", methods=["GET"])
 def get_models():
     """Get all registered models with pagination and filtering."""
-    error_response = validate_service_availability()
+    error_response = validate_service_availability():
     if error_response:
         return error_response
 
@@ -403,7 +403,7 @@ def update_model_status(model_id):
 @mlops_bp.route("/data/versions", methods=["GET"])
 def get_data_versions():
     """Get data versions with pagination and filtering."""
-    error_response = validate_service_availability()
+    error_response = validate_service_availability():
     if error_response:
         return error_response
 

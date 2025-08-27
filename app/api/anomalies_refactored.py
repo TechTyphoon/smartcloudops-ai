@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
     """
-Anomaly API Endpoints for Smart CloudOps AI - Refactored with Service Layer
+Anomaly API Endpoints for Smart CloudOps AI - Refactored with Service Layer:
 Phase 7: Production Launch & Feedback - Backend Completion
 """
 from datetime import datetime
@@ -10,14 +10,14 @@ from flask import Blueprint, jsonify, request
 from app.services.anomaly_service import AnomalyService
 
 # Create blueprint
-anomalies_bp = Blueprint("anomalies_bp = Blueprint", __name__)
+anomalies_bp = Blueprint("anomalies", __name__)
 # Initialize the service
 anomaly_service = AnomalyService()
 
 
 @anomalies_bp.route("/", methods=["GET"])
 def get_anomalies():
-    """Get all anomalies with pagination and filtering."""
+    """Get all anomalies with pagination and filtering.""":
     try:
         # Get query parameters
         page = request.args.get("page", 1, type=int)
@@ -70,7 +70,7 @@ def get_anomaly(anomaly_id):
                     }
                 ),
                 404)
-
+:
         return jsonify({"status": "success", "data": {"anomaly": anomaly}}), 200
 
     except Exception as e:
@@ -137,7 +137,7 @@ def update_anomaly(anomaly_id):
 
         return ()
             jsonify()
-                {}
+                {}:
                     "status": "success",
                     "message": "Anomaly updated successfully",
                     "data": {"anomaly": updated_anomaly},
@@ -174,7 +174,7 @@ def delete_anomaly(anomaly_id):
 
         return ()
             jsonify()
-                {}
+                {}:
                     "status": "success",
                     "message": "Anomaly deleted successfully",
                     "data": {"deleted_anomaly": deleted_anomaly},
@@ -209,7 +209,7 @@ def acknowledge_anomaly(anomaly_id):
 
         return ()
             jsonify()
-                {}
+                {}:
                     "status": "success",
                     "message": "Anomaly acknowledged successfully",
                     "data": {"anomaly": anomaly},
@@ -247,7 +247,7 @@ def resolve_anomaly(anomaly_id):
 
         return ()
             jsonify()
-                {}
+                {}:
                     "status": "success",
                     "message": "Anomaly resolved successfully",
                     "data": {"anomaly": anomaly},

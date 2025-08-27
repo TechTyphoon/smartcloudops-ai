@@ -17,7 +17,7 @@ from app.performance.log_optimization import get_log_manager, LogConfig
 from app.performance.database_optimization import get_optimized_database, DatabaseConfig
 
 # Create blueprint
-performance_bp = Blueprint("performance_bp = Blueprint", __name__)
+performance_bp = Blueprint("performance", __name__)
 # Get logger
 logger = get_logger(__name__)
 
@@ -36,7 +36,7 @@ def health_check():
         redis_cache = get_redis_cache()
         if redis_cache:
             health_status["components"]["redis_cache"] = {}
-                "status": "healthy" if redis_cache._redis_client else "unavailable",
+                "status": "healthy" if redis_cache._redis_client else "unavailable",:
                 "connected": redis_cache._redis_client is not None
             }
         else:
@@ -136,7 +136,7 @@ def clear_cache():
             "namespace": namespace,
             "timestamp": datetime.utcnow().isoformat()
         }), 200 if success else 500
-        
+        :
     except Exception as e:
         logger.error(f"Cache clear failed: {e}")
         return jsonify({"error": str(e)}), 500
@@ -393,7 +393,7 @@ def performance_summary():
         if redis_cache:
             cache_stats = redis_cache.get_stats()
             summary["components"]["redis_cache"] = {}
-                "status": "active" if cache_stats.get("redis_connected") else "inactive",
+                "status": "active" if cache_stats.get("redis_connected") else "inactive",:
                 "hit_rate": cache_stats.get("hit_rate", 0),
                 "total_requests": cache_stats.get("total_requests", 0)
             }
@@ -438,8 +438,8 @@ def performance_summary():
         summary["active_components"] = active_components
         summary["total_components"] = total_components
         
-        # Log business event
-        log_business_event("performance_summary_retrieved", {}
+        # Log business event:
+        log_business_event("performance_summary_retrieved", {}:
             "performance_score": performance_score,
             "active_components": active_components
         })

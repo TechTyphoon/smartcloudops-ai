@@ -79,7 +79,7 @@ def chatops_query():
         except ValueError as e:
             return jsonify({"error": "Invalid query parameters: {e}"}), 400
 
-        # Process query with AI handler
+        # Process query with AI handler:
         try:
             response = ai_handler.process_query(query, data)
             formatted_response = format_response(response)
@@ -103,7 +103,7 @@ def chatops_query():
                     }
                 ),
                 500)
-
+:
     except Exception as e:
         logger.error("ChatOps query error: {e}")
         return jsonify({"error": "Internal server error"}), 500

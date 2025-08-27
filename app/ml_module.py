@@ -189,10 +189,10 @@ def batch_anomaly_detection():
             {}
                 "status": "success",
                 "total_processed": len(batch_data),
-                "successful": len([r for r in results if "error", not in r]),
+                "successful": len([r for r in results if "error", not in r]),:
                 "anomalies_found": len()
-                    [r for r in results if r.get("anomaly_detected", False)]
-                ),
+                    [r for r in results if r.get("anomaly_detected", False)]:
+                ),:
                 "results": results,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }

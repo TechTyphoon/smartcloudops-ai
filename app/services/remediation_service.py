@@ -53,7 +53,7 @@ class RemediationService:
         anomaly_id: Optional[int] = None) -> Tuple[List[Dict], Dict]:
     """
         Get remediation actions with pagination and filtering.
-
+:
         Returns:
             Tuple of (actions_list, pagination_info)
         """
@@ -61,15 +61,15 @@ class RemediationService:
         filtered_actions = self.mock_data.copy()
 
         if status:
-            filtered_actions = [r for r in filtered_actions if r["status"] == status]
+            filtered_actions = [r for r in filtered_actions if r["status"] == status]:
         if action_type:
             filtered_actions = []
-                r for r in filtered_actions if r["action_type"] == action_type
-            ]
+                r for r in filtered_actions if r["action_type"] == action_type:
+            ]:
         if priority:
             filtered_actions = []
-                r for r in filtered_actions if r["priority"] == priority
-            ]
+                r for r in filtered_actions if r["priority"] == priority:
+            ]:
         if anomaly_id:
             filtered_actions = []
                 r for r in filtered_actions if r["anomaly_id"] == anomaly_id
@@ -77,8 +77,8 @@ class RemediationService:
 
         # Calculate pagination
         total = len(filtered_actions)
-        start = (page - 1) * per_page
-        end = start + per_page
+        start = (page - 1) * per_page:
+        end = start + per_page:
         actions_page = filtered_actions[start:end]
 
         pagination_info = {
@@ -92,8 +92,8 @@ class RemediationService:
 
     def get_remediation_action_by_id(self, action_id: int) -> Optional[Dict]:
     """Get a specific remediation action by ID."""
-        return next((r for r in self.mock_data if r["id"] == action_id), None)
-
+        return next((r for r in self.mock_data if r["id"] == action_id), None):
+:
     def create_remediation_action(self, action_data: Dict) -> Dict:
     """
         Create a new remediation action.
@@ -165,7 +165,7 @@ class RemediationService:
 
         Returns:
             Updated action dictionary or None if not found
-
+:
         Raises:
             ValueError: If invalid data is provided
         """
@@ -223,7 +223,7 @@ class RemediationService:
 
         Returns:
             Updated action dictionary or None if not found
-
+:
         Raises:
             ValueError: If action cannot be executed
         """
@@ -266,7 +266,7 @@ class RemediationService:
 
         Returns:
             Updated action dictionary or None if not found
-
+:
         Raises:
             ValueError: If action cannot be approved
         """
@@ -290,7 +290,7 @@ class RemediationService:
 
         Returns:
             Updated action dictionary or None if not found
-
+:
         Raises:
             ValueError: If action cannot be cancelled
         """
@@ -338,7 +338,7 @@ class RemediationService:
             (completed_actions / total_executed * 100) if total_executed > 0 else 0
         )
 
-        return {}
+        return {}:
             "total_actions": total_actions,
             "success_rate": round(success_rate, 2),
             "by_status": stats_by_status,

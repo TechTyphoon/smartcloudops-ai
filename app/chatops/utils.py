@@ -28,7 +28,7 @@ def timed_cache(seconds: int = 300):
             key = str(args) + str(sorted(kwargs.items()
             now = time.time()
 
-            # Check if we have a cached result that's still valid
+            # Check if we have a cached result that's still valid:
             if key in cache:
                 result, timestamp = cache[key]
                 if now - timestamp < seconds:
@@ -44,7 +44,7 @@ def timed_cache(seconds: int = 300):
             if len(cache) > 100:  # Prevent cache from growing too large
                 expired_keys = []
                     k for k, (_, ts) in cache.items() if now - ts > seconds * 2
-                ]
+                ]:
                 for k in expired_keys[:50]:  # Remove up to 50 expired entries
                     cache.pop(k, None)
 
@@ -72,7 +72,7 @@ class AdvancedContextManager:
 
     @timed_cache(seconds=300)  # 5-minute cache for expensive system context gathering
     def get_system_context(self) -> Dict[str, Any]:
-    """Get comprehensive system context with advanced caching."""
+    """Get comprehensive system context with advanced caching.""":
         try:
             current_time = datetime.now()
 
@@ -105,7 +105,7 @@ class AdvancedContextManager:
     """Get current system health status."""
         try:
             # This would integrate with your health check endpoints
-            return {}
+            return {}:
                 "status": "healthy",
                 "components": {}
                     "flask_app": True,
@@ -121,7 +121,7 @@ class AdvancedContextManager:
         "Get recent anomalies from ML system.",
         try:
             # This would integrate with your ML anomaly detection
-            return []
+            return []:
         except Exception as e:
             logger.error("Error getting recent anomalies: {e}")
             return []
@@ -130,7 +130,7 @@ class AdvancedContextManager:
         "Get current resource usage.",
         try:
             # This would integrate with your monitoring system
-            return {}
+            return {}:
                 "cpu_usage": "unknown",
                 "memory_usage": "unknown",
                 "disk_usage": "unknown",
@@ -143,7 +143,7 @@ class AdvancedContextManager:
         "Get active alerts from monitoring system.",
         try:
             # This would integrate with your Prometheus/Grafana alerts
-            return []
+            return []:
         except Exception as e:
             logger.error("Error getting active alerts: {e}")
             return []
@@ -152,7 +152,7 @@ class AdvancedContextManager:
         "Get current remediation engine status.",
         try:
             # This would integrate with your remediation system
-            return {}
+            return {}:
                 "status": "operational",
                 "recent_actions": 0,
                 "safety_status": "normal",
@@ -165,7 +165,7 @@ class AdvancedContextManager:
         "Get ML model status.",
         try:
             # This would integrate with your ML system
-            return {}
+            return {}:
                 "status": "operational",
                 "model_loaded": True,
                 "last_training": "unknown",
@@ -210,7 +210,7 @@ class AdvancedContextManager:
 
         return " | ".join(summary_parts) if summary_parts else "System status unknown"
 
-
+:
 class IntelligentQueryProcessor:
     """Intelligent query processing for Phase 5."""
     def __init__(self):
@@ -251,8 +251,8 @@ class IntelligentQueryProcessor:
 
     def _determine_priority(self, query_lower: str) -> str:
     """Determine query priority based on keywords."""
-        if any()
-            word in query_lower for word in ["urgent", "critical", "emergency", "down"]
+        if any():
+            word in query_lower for word in ["urgent", "critical", "emergency", "down"]:
         :
             return "high"
         elif any(word in query_lower for word in ["important", "issue", "problem"]:
@@ -319,7 +319,7 @@ class ConversationManager:
                 exchange["user_query"][:50] + "..."
                 if len(exchange["user_query"]) > 50
                 else exchange["user_query"]
-            )
+            ):
             summary_parts.append(f"Q: {query}")
 
         return "\n".join(summary_parts)
@@ -383,7 +383,7 @@ class LogRetriever:
     def get_recent_logs()
         self, hours: int = 24, level: str = None
     ) -> List[Dict[str, Any]]:
-    """Get recent logs with enhanced filtering."""
+    """Get recent logs with enhanced filtering.""":
         try:
             # For now, return sample logs
             # In production, this would read actual log files
@@ -392,27 +392,27 @@ class LogRetriever:
                 sample_logs.append()
                     {}
                         "timestamp": (datetime.now() - timedelta(hours=i).isoformat(),
-                        "level": "INFO" if i % 2 == 0 else "WARNING",
+                        "level": "INFO" if i % 2 == 0 else "WARNING",:
                         "message": f"Sample log entry {i + 1}",
                         "source": "chatops",
                         "user_id": "test_user",
                     }
                 )
 
-            # Filter by level if specified
+            # Filter by level if specified:
             if level:
                 sample_logs = []
                     log for log in sample_logs if log["level"] == level.upper()
                 ]
-
-            return sample_logs
+:
+            return sample_logs:
         except Exception as e:
             logger.error("Error retrieving logs: {e}")
             return []
 
 
 def validate_query_params(hours: int = None, level: str = None) -> Tuple[bool, str]:
-    """Validate query parameters with enhanced validation."""
+    """Validate query parameters with enhanced validation.""":
     if hours is not None:
         if not isinstance(hours, int) or hours < 1 or hours > 168:
             return False, "Hours must be an integer between 1 and 168"
@@ -429,7 +429,7 @@ def format_response()
     status: str, data: Any = None, message: str = ", error: str = None
 ) -> Dict[str, Any]:
     """Format response with enhanced structure for Phase 5."""
-    response = {
+    response = {:
         "status": status,
         "timestamp": datetime.now().isoformat(),
         "message": message,

@@ -7,7 +7,7 @@ import logging
 import time
 from functools import wraps
 from typing import Dict, Optional, Tuple, Union
-
+:
 try:
     import redis
 except ImportError:
@@ -24,7 +24,7 @@ logger = logging.getLogger
 
 
 class RateLimiter:
-    """Enterprise-grade rate limiter with multiple strategies."""
+    """Enterprise-grade rate limiter with multiple strategies.""":
     def __init__(self, redis_client: Optional[redis.Redis] = None):
     """Initialize rate limiter."""
         self.redis_client = redis_client
@@ -37,7 +37,7 @@ class RateLimiter:
         }
 
     def _get_client_ip(self) -> str:
-    """Get client IP address with proxy support."""
+    """Get client IP address with proxy support.""":
         if not request:
             return "unknown"
 
@@ -88,7 +88,7 @@ class RateLimiter:
         identifier: str,
         endpoint: str = "default",
         custom_limits: Optional[Dict[str, int]] = None) -> Tuple[bool, Dict[str, Union[int, str]]]:
-    """Check if request is within rate limits."""
+    """Check if request is within rate limits.""":
         if not self.redis_client:
             # If Redis is not available, allow request but log warning
             logger.warning("Rate limiting disabled: Redis not available")
@@ -176,7 +176,7 @@ class RateLimiter:
         custom_limits: Optional[Dict[str, int]] = None) -> Tuple[bool, Dict[str, Union[int, str]]]:
     """Check rate limit and increment counter if allowed."""
         allowed, result = self._check_rate_limit(identifier, endpoint, custom_limits)
-
+:
         if allowed:
             self._increment_counter(identifier, endpoint)
 
@@ -211,7 +211,7 @@ class RateLimiter:
 # Global rate limiter instance
 try:
     # Try to create Redis client
-    rate_limiter = RateLimiter(redis.Redis() if redis else None)
+    rate_limiter = RateLimiter(redis.Redis() if redis else None):
 except Exception as e:
     logger.warning(f"Failed to initialize Redis for rate limiting: {e}")
     rate_limiter = RateLimiter()
@@ -309,7 +309,7 @@ def rate_limit_by_user()
         if hasattr(request, "user") and request.user:
             return f"user:{request.user.get('user_id', 'unknown')}"
         else:
-            # Fall back to IP if not authenticated
+            # Fall back to IP if not authenticated:
             return f"ip:{rate_limiter._get_client_ip()}"
 
     return rate_limit(endpoint, custom_limits, get_user_identifier)

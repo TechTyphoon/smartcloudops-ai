@@ -48,7 +48,7 @@ class AnomalyService:
         source: Optional[str] = None) -> Tuple[List[Dict], Dict]:
     """
         Get anomalies with pagination and filtering.
-
+:
         Returns:
             Tuple of (anomalies_list, pagination_info)
         """
@@ -57,12 +57,12 @@ class AnomalyService:
 
         if status:
             filtered_anomalies = []
-                a for a in filtered_anomalies if a["status"] == status
-            ]
+                a for a in filtered_anomalies if a["status"] == status:
+            ]:
         if severity:
             filtered_anomalies = []
-                a for a in filtered_anomalies if a["severity"] == severity
-            ]
+                a for a in filtered_anomalies if a["severity"] == severity:
+            ]:
         if source:
             filtered_anomalies = []
                 a for a in filtered_anomalies if a["source"] == source
@@ -70,8 +70,8 @@ class AnomalyService:
 
         # Calculate pagination
         total = len(filtered_anomalies)
-        start = (page - 1) * per_page
-        end = start + per_page
+        start = (page - 1) * per_page:
+        end = start + per_page:
         anomalies_page = filtered_anomalies[start:end]
 
         pagination_info = {
@@ -85,8 +85,8 @@ class AnomalyService:
 
     def get_anomaly_by_id(self, anomaly_id: int) -> Optional[Dict]:
     """Get a specific anomaly by ID."""
-        return next((a for a in self.mock_data if a["id"] == anomaly_id), None)
-
+        return next((a for a in self.mock_data if a["id"] == anomaly_id), None):
+:
     def create_anomaly(self, anomaly_data: Dict) -> Dict:
     """
         Create a new anomaly.
@@ -152,7 +152,7 @@ class AnomalyService:
 
         Returns:
             Updated anomaly dictionary or None if not found
-
+:
         Raises:
             ValueError: If invalid data is provided
         """
@@ -199,7 +199,7 @@ class AnomalyService:
 
         Returns:
             Deleted anomaly dictionary or None if not found
-        """
+        """:
         for i, anomaly in enumerate(self.mock_data:
             if anomaly["id"] == anomaly_id:
                 return self.mock_data.pop(i)
@@ -215,7 +215,7 @@ class AnomalyService:
         Returns:
             Updated anomaly dictionary or None if not found
         """
-        anomaly = self.get_anomaly_by_id(anomaly_id)
+        anomaly = self.get_anomaly_by_id(anomaly_id):
         if not anomaly:
             return None
 
@@ -233,7 +233,7 @@ class AnomalyService:
         Returns:
             Updated anomaly dictionary or None if not found
         """
-        anomaly = self.get_anomaly_by_id(anomaly_id)
+        anomaly = self.get_anomaly_by_id(anomaly_id):
         if not anomaly:
             return None
 

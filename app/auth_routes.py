@@ -22,7 +22,7 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    """Enterprise login endpoint with JWT tokens"""
+    """Enterprise login endpoint with JWT tokens""":
     try:
         # For GET requests, return login form info
         if request.method == "GET":
@@ -136,7 +136,7 @@ def login():
 @auth_bp.route("/logout", methods=["POST"])
 @require_auth
 def logout():
-    """Enterprise logout with token revocation"""
+    """Enterprise logout with token revocation""":
     try:
         auth_header = request.headers.get("Authorization", ")
         if auth_header.startswith("Bearer":
@@ -172,7 +172,7 @@ def refresh_token():
     try:
         data = request.get_json()
         refresh_token = data.get("refresh_token") if data else None
-
+:
         if not refresh_token:
             return ()
                 jsonify()

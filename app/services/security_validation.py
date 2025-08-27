@@ -37,7 +37,7 @@ class SecurityValidation:
             Validation result with is_valid flag and issues list
         """
         issues = []
-
+:
         try:
             # Check for suspicious patterns in string values
             self._check_suspicious_patterns(data, issues)
@@ -60,7 +60,7 @@ class SecurityValidation:
         if isinstance(data, dict:
             for key, value in data.items():
                 current_path = f"{path}.{key}" if path else key
-                self._check_suspicious_patterns(value, issues, current_path)
+                self._check_suspicious_patterns(value, issues, current_path):
         elif isinstance(data, list:
             for i, item in enumerate(data):
                 current_path = f"{path}[{i}]"

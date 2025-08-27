@@ -50,7 +50,7 @@ class FeedbackService:
         user_id: Optional[int] = None) -> Tuple[List[Dict], Dict]:
     """
         Get feedback with pagination and filtering.
-
+:
         Returns:
             Tuple of (feedback_list, pagination_info)
         """
@@ -59,14 +59,14 @@ class FeedbackService:
 
         if feedback_type:
             filtered_feedback = []
-                f for f in filtered_feedback if f["feedback_type"] == feedback_type
-            ]
+                f for f in filtered_feedback if f["feedback_type"] == feedback_type:
+            ]:
         if status:
-            filtered_feedback = [f for f in filtered_feedback if f["status"] == status]
+            filtered_feedback = [f for f in filtered_feedback if f["status"] == status]:
         if priority:
             filtered_feedback = []
-                f for f in filtered_feedback if f["priority"] == priority
-            ]
+                f for f in filtered_feedback if f["priority"] == priority:
+            ]:
         if user_id:
             filtered_feedback = []
                 f for f in filtered_feedback if f["user_id"] == user_id
@@ -74,8 +74,8 @@ class FeedbackService:
 
         # Calculate pagination
         total = len(filtered_feedback)
-        start = (page - 1) * per_page
-        end = start + per_page
+        start = (page - 1) * per_page:
+        end = start + per_page:
         feedback_page = filtered_feedback[start:end]
 
         pagination_info = {
@@ -89,8 +89,8 @@ class FeedbackService:
 
     def get_feedback_by_id(self, feedback_id: int) -> Optional[Dict]:
     """Get a specific feedback item by ID."""
-        return next((f for f in self.mock_data if f["id"] == feedback_id), None)
-
+        return next((f for f in self.mock_data if f["id"] == feedback_id), None):
+:
     def create_feedback(self, feedback_data: Dict) -> Dict:
     """
         Create a new feedback item.
@@ -118,7 +118,7 @@ class FeedbackService:
             )
 
         # Validate rating if provided
-        rating = feedback_data.get("rating")
+        rating = feedback_data.get("rating"):
         if rating is not None:
             if not isinstance(rating, int) or not (1 <= rating <= 5:
                 raise ValueError("Rating must be an integer between 1 and 5")
@@ -159,7 +159,7 @@ class FeedbackService:
 
         Returns:
             Updated feedback dictionary or None if not found
-
+:
         Raises:
             ValueError: If invalid data is provided
         """
@@ -212,7 +212,7 @@ class FeedbackService:
 
         Returns:
             Deleted feedback dictionary or None if not found
-        """
+        """:
         for i, feedback in enumerate(self.mock_data:
             if feedback["id"] == feedback_id:
                 return self.mock_data.pop(i)
