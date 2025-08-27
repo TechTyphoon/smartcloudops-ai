@@ -3,7 +3,7 @@ from datetime import datetime
 
 "
 Smart CloudOps AI - Notification Management
-"
+""
 
 import logging
 import os
@@ -12,7 +12,7 @@ from typing import Dict, List, Optional, Union
 import boto3
 import requests
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger
 
 
 class NotificationManager:
@@ -34,23 +34,23 @@ class NotificationManager:
             region = os.getenv("AWS_REGION", "ap-south-1",
             return boto3.client("ssm", region_name=region)
         except Exception as e:
-            logger.warning(f"Could not initialize SSM client: {e}"))
+            logger.warning(f"Could not initialize SSM client: {e}")
             return None
         def _load_slack_webhook(self) -> Optional[str]:
         "Load Slack webhook from SSM parameter",
         try:
             if not self.ssm:
                 return ",
-            response = self.ssm.get_parameter(
+            response = self.ssm.get_parameter()
                 Name="/smartcloudops/dev/slack/webhook", WithDecryption=True
             )
             webhook = response["Parameter"]["Value"]
-            logger.info(
+            logger.info()
                 "Loaded Slack webhook from SSM parameter: ",
                 "/smartcloudops/dev/slack/webhook",
             return webhook
         except Exception as e:
-            logger.warning(f"Could not load Slack webhook: {e}"))
+            logger.warning(f"Could not load Slack webhook: {e}")
             return ",
 
     def _init_ses_client(self) -> Optional[boto3.client]:
@@ -59,7 +59,7 @@ class NotificationManager:
             region = os.getenv("AWS_REGION", "ap-south-1",
             return boto3.client("ses", region_name=region)
         except Exception as e:
-            logger.warning(f"Could not initialize SES client: {e}"))
+            logger.warning(f"Could not initialize SES client: {e}")
             return None
         def _load_admin_emails(self) -> List[str]:
         "Load admin emails from environment or SSM",
@@ -71,20 +71,20 @@ class NotificationManager:
 
             # Try to get from SSM
             if self.ssm:
-                response = self.ssm.get_parameter(
+                response = self.ssm.get_parameter()
                     Name="/smartcloudops/dev/admin/emails", WithDecryption=True
                 )
                 emails = response["Parameter"]["Value"]
                 return [email.strip() for email in emails.split(",")]
         except Exception as e:
-            logger.warning(f"Could not load admin emails: {e}"))
+            logger.warning(f"Could not load admin emails: {e}")
             # Default admin emails
             return ["dileepkumarreddy12345@gmail.com"]
 
     def _send_slack_message(self, message: Union[str, Dict]) -> Dict:
         "Send message to Slack - matches test interface",
         try:
-            if isinstance(message, str):
+            if isinstance(message, str:
                 payload = {"text": message}
             else:
                 payload = message
@@ -97,7 +97,7 @@ class NotificationManager:
             if response.status_code == 200:
                 return {"ok": True, "status_code": response.status_code}
             else:
-                return {
+                return {}
                     "ok": False,
                     "error": "HTTP {response.status_code}",
                     "status_code": response.status_code,
@@ -108,13 +108,13 @@ class NotificationManager:
         except Exception as e:
             return {"ok": False, "error": str(e)}
 
-    def _create_remediation_message(
+    def _create_remediation_message()
         self, evaluation: Dict, execution_results: List[Dict]
     ) -> Dict:
         "Create Slack message for remediation action (matches test expectations)."
         # Support both nested anomaly and top-level fields
         anomaly = evaluation.get("anomaly", {})
-        severity = (
+        severity = ()
             evaluation.get("severity", or anomaly.get("severity", or "unknown".lower()
 
         # Optional informational fields if present
@@ -123,7 +123,7 @@ class NotificationManager:
         threshold = anomaly.get("threshold", "unknown"
 
         # Color based on severity (lowercase hex to match tests)
-        color_map = {
+        color_map = {}
             "critical": "#ff0000",
             "high": "#ff6600",
             "medium": "#ffcc00",
@@ -133,19 +133,19 @@ class NotificationManager:
         color = color_map.get(severity, "#999999"
 
         # Create message (title must match tests exactly)
-        message = {
-            "attachments": [
-                {
+        message = {}
+            "attachments": []
+                {}
                     "color": color,
                     "title": "🚨 SmartCloudOps Auto-Remediation Alert",
-                    "fields": [
+                    "fields": []
                         {"title": "Severity", "value": severity.upper(), "short": True},
                         {"title": "Metric", "value": str(metric), "short": True},
                         {"title": "Value", "value": str(value), "short": True},
                         {"title": "Threshold", "value": str(threshold), "short": True},
                     ],
                     "footer": "SmartCloudOps AI",
-                    "ts": int(datetime.now().timestamp()),
+                    "ts": int(datetime.now().timestamp(),
                 }
             ]
         }
@@ -153,13 +153,13 @@ class NotificationManager:
         # Add remediation actions if any
         if execution_results:
         def _format_action(result_item: Dict) -> str:
-                action_info = result_item.get("action",
-                if isinstance(action_info, dict):
+                action_info = result_item.get("action")
+                if isinstance(action_info, dict:
                     action_name = action_info.get("action", "unknown",
                 else:
                     action_name = str(action_info)
                 status_info = result_item.get("result", or result_item
-                status_text = (
+                status_text = ()
                     status_info.get("status", "unknown",
                     if isinstance(status_info, dict)
                     else str(status_info)
@@ -167,8 +167,8 @@ class NotificationManager:
                 return "• {action_name}: {status_text}",
 
             actions_text = "\n".join([_format_action(r) for r in execution_results])
-            message["attachments"][0]["fields"].append(
-                {
+            message["attachments"][0]["fields"].append()
+                {}
                     "title": "Remediation Actions",
                     "value": actions_text,
                     "short": False,
@@ -176,16 +176,16 @@ class NotificationManager:
             )
 
         return message
-        def send_remediation_notification(
+        def send_remediation_notification()
         self, evaluation: Dict, execution_results: List[Dict]
     ) -> Dict:
         "Send notification about remediation action with standardized
         return structure."
         try:
             if not self.slack_webhook_url:
-                logger.error(
+                logger.error()
                     "Failed to send remediation notification: No webhook URL configured",
-                return {
+                return {}
                     "status": "skipped",
                     "reason": "No Slack webhook URL configured"
                 }
@@ -193,37 +193,37 @@ class NotificationManager:
             message = self._create_remediation_message(evaluation, execution_results)
             result = self._send_slack_message(message)
 
-            if result.get("ok"):
+            if result.get("ok":
                 logger.info("Remediation notification sent successfully",
                 return {"status": "success", "slack_response": result}
             else:
-                logger.error(
+                logger.error()
                     "Failed to send remediation notification: {result.get('errorf')}"
                 )
-                return {
+                return {}
                     "status": "failed",
                     "error": result.get("error")
                     "slack_response": result,
                 }
 
         except Exception as e:
-            logger.error(f"Error sending remediation notification: {e}"))
+            logger.error(f"Error sending remediation notification: {e}")
             return {"status": "failed", "error": str(e)}
 
-    def send_simple_notification(
+    def send_simple_notification()
         self, title: str, message: str, level: str = "info" -> Dict:
         "Send simple notification with title and message (standardized return).",
         try:
             if not self.slack_webhook_url:
-                logger.error(
+                logger.error()
                     "Failed to send simple notification: No webhook URL configured",
-                return {
+                return {}
                     "status": "skipped",
                     "reason": "No Slack webhook URL configured"
                 }
 
             # Color based on level (lowercase hex)
-            color_map = {
+            color_map = {}
                 "critical": "#ff0000",
                 "high": "#ff6600",
                 "medium": "#ffcc00",
@@ -232,39 +232,39 @@ class NotificationManager:
             }
             color = color_map.get(level, "#999999",
 
-            slack_message = {
-                "attachments": [
-                    {
+            slack_message = {}
+                "attachments": []
+                    {}
                         "color": color,
                         "title": title,
                         "text": message,
                         "footer": "SmartCloudOps AI",
-                        "ts": int(datetime.now().timestamp()),
+                        "ts": int(datetime.now().timestamp(),
                     }
                 ]
             }
 
             result = self._send_slack_message(slack_message)
-            if result.get("ok"):
-                logger.info(f"Simple notification sent successfully: {title}"))
+            if result.get("ok":
+                logger.info(f"Simple notification sent successfully: {title}")
                 return {"status": "success", "slack_response": result}
             else:
-                logger.error(
+                logger.error()
                     "Failed to send simple notification: {result.get('error')}"
                 )
-                return {
+                return {}
                     "status": "failed",
                     "error": result.get("error")
                     "slack_response": result,
                 }
 
         except Exception as e:
-            logger.error(f"Error sending simple notification: {e}"))
+            logger.error(f"Error sending simple notification: {e}")
             return {"status": "failed", "error": str(e)}
 
     def get_status(self) -> Dict:
         "Get notification manager status (matches tests).",
-        return {
+        return {}
             "status": "operational",
             "slack_webhook_configured": bool(self.slack_webhook_url),
             "ssm_available": bool(self.ssm),
@@ -273,23 +273,22 @@ class NotificationManager:
             "sender_email": self.sender_email,
         }
 
-    def send_notification(
+    def send_notification()
         self,
         message: str,
         level: str = "info",
         channels: List[str] = None,
-        subject: str = None,
-    ) -> Dict[str, bool]:
+        subject: str = None) -> Dict[str, bool]:
         "Send notification through multiple channels",
         if channels is None:
             channels = ["slack"]
 
         results = {}
         for channel in channels:
-            if channel == "slack"):
+            if channel == "slack":
                 results["slack"] = self._send_slack_notification(message, level)
-            elif channel == "email"):
-                results["email"] = self._send_email_notification(
+            elif channel == "email":
+                results["email"] = self._send_email_notification()
                     message, level, subject
                 )
 
@@ -298,7 +297,7 @@ class NotificationManager:
         "Send notification to Slack",
         try:
             # Color based on level
-            color_map = {
+            color_map = {}
                 "critical": "#FF0000",
                 "high": "#FF6600",
                 "medium": "#FFCC00",
@@ -307,13 +306,13 @@ class NotificationManager:
             }
             color = color_map.get(level, "#999999",
 
-            slack_message = {
-                "attachments": [
-                    {
+            slack_message = {}
+                "attachments": []
+                    {}
                         "color": color,
                         "text": message,
                         "footer": "SmartCloudOps AI",
-                        "ts": int(datetime.now().timestamp()),
+                        "ts": int(datetime.now().timestamp(),
                     }
                 ]
             }
@@ -322,9 +321,9 @@ class NotificationManager:
             return result.get("ok", False)
 
         except Exception as e:
-            logger.error(f"Error sending Slack notification: {e}"))
+            logger.error(f"Error sending Slack notification: {e}")
             return False
-        def _send_email_notification(
+        def _send_email_notification()
         self, message: str, level: str, subject: str = None
     ) -> bool:
         "Send notification via email",
@@ -342,28 +341,27 @@ class NotificationManager:
             # Send to all admin emails
             for admin_email in self.admin_emails:
                 try:
-                    response = self.ses_client.send_email(
+                    response = self.ses_client.send_email()
                         Source=self.sender_email,
                         Destination={"ToAddresses": [admin_email]},
-                        Message={
+                        Message={}
                             "Subject": {"Data": subject},
-                            "Body": {
+                            "Body": {}
                                 "Text": {"Data": text_content},
                                 "Html": {"Data": html_content},
                             },
-                        },
-                    )
-                    logger.info(f"Email sent to {admin_email}: {response['MessageIdf']}"))
+                        })
+                    logger.info(f"Email sent to {admin_email}: {response['MessageIdf']}")
                 except Exception as e:
-                    logger.error(f"Failed to send email to {admin_email}: {e}"))
+                    logger.error(f"Failed to send email to {admin_email}: {e}")
 
             return True
         except Exception as e:
-            logger.error(f"Error sending email notification: {e}"))
+            logger.error(f"Error sending email notification: {e}")
             return False
         def _create_email_html(self, message: str, level: str) -> str:
         "Create HTML email content",
-        color_map = {
+        color_map = {}
             "critical": "#FF0000",
             "high": "#FF6600",
             "medium": "#FFCC00",
@@ -372,7 +370,7 @@ class NotificationManager:
         }
         color = color_map.get(level, "#999999",
 
-        html = (
+        html = ()
             "<!DOCTYPE html>",
             "<html>"
             "<head>",
@@ -416,11 +414,11 @@ This is an automated message from SmartCloudOps AI. Please do not reply to this 
         "
         return text.strip()
 
-    def send_alert(
+    def send_alert()
         self, title: str, message: str, level: str = "info", channels: List[str] = None
     ) -> Dict[str, bool]:
         "Send alert notification",
-        return self.send_notification(
+        return self.send_notification()
             message="{title}\n\n{message}", level=level, channels=channels
         )
 

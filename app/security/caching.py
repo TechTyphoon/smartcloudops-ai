@@ -4,20 +4,20 @@ from typing import Any, Callable, Dict, List, Optional
 "
 Caching System for Smart CloudOps AI
 Enterprise-grade caching with Redis backend, multiple strategies, and cache invalidation
-"
+""
 
 import hashlib
 import logging
 
 import redis
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger
 
 
 class CacheManager:
     "Enterprise-grade cache manager with multiple strategies.",
 
-    def __init__(
+    def __init__()
         self, redis_client: Optional[redis.Redis] = None, default_ttl: int = 300
     ):
         "Initialize cache manager.",
@@ -36,13 +36,13 @@ class CacheManager:
         "Serialize value for storage.",
         try:
             # Try JSON first for simple types
-            if isinstance(value, (dict, list, str, int, float, bool)) or value is None:
+            if isinstance(value, (dict, list, str, int, float, bool) or value is None:
                 return json.dumps(value, default=str).encode("utf-8",
             else:
                 # Use pickle for complex objects
                 return pickle.dumps(value)
         except Exception as e:
-            logger.error(f"Serialization error: {e}"))
+            logger.error(f"Serialization error: {e}")
             return pickle.dumps(value)
 
     def _deserialize_value(self, data: bytes) -> Any:
@@ -56,7 +56,7 @@ class CacheManager:
                 # Fall back to pickle
                 return pickle.loads(data)
             except Exception as e:
-                logger.error(f"Deserialization error: {e}"))
+                logger.error(f"Deserialization error: {e}")
                 return None
         def get(self, key: str, namespace: str = "default" -> Optional[Any]:
         "Get value from cache.",
@@ -73,10 +73,10 @@ class CacheManager:
                 self.stats["misses"] += 1
                 return None
         except Exception as e:
-            logger.error(f"Cache get error: {e}"))
+            logger.error(f"Cache get error: {e}")
             self.stats["errors"] += 1
             return None
-        def set(
+        def set()
         self,
         key: str,
         value: Any,
@@ -96,7 +96,7 @@ class CacheManager:
         self.stats["sets"] += 1
             return result
         except Exception as e:
-            logger.error(f"Cache set error: {e}"))
+            logger.error(f"Cache set error: {e}")
             self.stats["errors"] += 1
             return False
         def delete(self, key: str, namespace: str = "default" -> bool:
@@ -111,7 +111,7 @@ class CacheManager:
             return bool(result)
 
         except Exception as e:
-            logger.error(f"Cache delete error: {e}"))
+            logger.error(f"Cache delete error: {e}")
             self.stats["errors"] += 1
             return False
         def exists(self, key: str, namespace: str = "default" -> bool:
@@ -120,9 +120,9 @@ class CacheManager:
             return False
         try:
             cache_key = self._generate_key(key, namespace)
-            return bool(self.redis_client.exists(cache_key))
+            return bool(self.redis_client.exists(cache_key)
         except Exception as e:
-            logger.error(f"Cache exists error: {e}"))
+            logger.error(f"Cache exists error: {e}")
             return False
         def ttl(self, key: str, namespace: str = "default" -> int:
         "Get TTL for key.",
@@ -133,7 +133,7 @@ class CacheManager:
             cache_key = self._generate_key(key, namespace)
             return self.redis_client.ttl(cache_key)
         except Exception as e:
-            logger.error(f"Cache TTL error: {e}"))
+            logger.error(f"Cache TTL error: {e}")
             return -1
 
     def clear_namespace(self, namespace: str = "default" -> bool:
@@ -151,7 +151,7 @@ class CacheManager:
         return True
 
         except Exception as e:
-            logger.error(f"Cache clear namespace error: {e}"))
+            logger.error(f"Cache clear namespace error: {e}")
             return False
         def clear_all(self) -> bool:
         "Clear all cache keys.",
@@ -168,7 +168,7 @@ class CacheManager:
         return True
 
         except Exception as e:
-            logger.error(f"Cache clear all error: {e}"))
+            logger.error(f"Cache clear all error: {e}")
             return False
         def get_stats(self) -> Dict[str, any]:
         "Get cache statistics.",
@@ -181,11 +181,11 @@ class CacheManager:
 
             # Calculate hit rate
             total_requests = self.stats["hits"] + self.stats["misses"]
-            hit_rate = (
+            hit_rate = ()
                 (self.stats["hits"] / total_requests * 100) if total_requests > 0 else 0
             )
 
-            return {
+            return {}
                 "hits": self.stats["hits"],
                 "misses": self.stats["misses"],
                 "sets": self.stats["sets"],
@@ -193,7 +193,7 @@ class CacheManager:
                 "errors": self.stats["errors"],
                 "hit_rate": round(hit_rate, 2),
                 "total_requests": total_requests,
-                "redis_info": {
+                "redis_info": {}
                     "used_memory": info.get("used_memory_human", "N/A",
                     "connected_clients": info.get("connected_clients", 0),
                     "total_commands_processed": info.get("total_commands_processed", 0),
@@ -201,7 +201,7 @@ class CacheManager:
             }
 
         except Exception as e:
-            logger.error(f"Cache stats error: {e}"))
+            logger.error(f"Cache stats error: {e}")
             return {"error": str(e)}
 
     def get_keys(self, pattern: str = "*", namespace: str = "default" -> List[str]:
@@ -218,7 +218,7 @@ class CacheManager:
             return [key.decode().replace(prefix, ") for key in keys]
 
         except Exception as e:
-            logger.error(f"Cache get keys error: {e}"))
+            logger.error(f"Cache get keys error: {e}")
             return []
 
 
@@ -243,12 +243,11 @@ def get_cache_manager():
     if cache_manager is None:
         init_cache_manager()
     return cache_manager
-        def cache(
+        def cache()
     ttl: Optional[int] = None,
     namespace: str = "default",
     key_func: Optional[Callable] = None,
-    condition: Optional[Callable] = None,
-):
+    condition: Optional[Callable] = None):
     "Generic cache decorator with configurable TTL and namespace.",
 
     def decorator(func):
@@ -263,13 +262,13 @@ def get_cache_manager():
                 # Default key generation using SHA-256 for security
                 key_parts = [func.__name__]
                 key_parts.extend([str(arg) for arg in args])
-                key_parts.extend(["{k}:{v}", for k, v in sorted(kwargs.items())])
-                cache_key = hashlib.sha256(":".join(key_parts).encode()).hexdigest()
+                key_parts.extend(["{k}:{v}", for k, v in sorted(kwargs.items()])
+                cache_key = hashlib.sha256(":".join(key_parts).encode().hexdigest()
 
             # Try to get from cache
             cached_result = cache_manager.get(cache_key, namespace)
             if cached_result is not None:
-                logger.debug(f"Cache hit for {func.__name__}"))
+                logger.debug(f"Cache hit for {func.__name__}")
                 return cached_result
 
             # Execute function
@@ -282,7 +281,7 @@ def get_cache_manager():
 
             if should_cache:
         cache_manager.set(cache_key, result, ttl, namespace)
-                logger.debug(f"Cached result for {func.__name__}"))
+                logger.debug(f"Cached result for {func.__name__}")
 
             return result
         return wrapper
@@ -298,8 +297,8 @@ def get_cache_manager():
 
         key_parts = ["user:{user_id}"]
         key_parts.extend([str(arg) for arg in args])
-        key_parts.extend(["{k}:{v}", for k, v in sorted(kwargs.items())])
-        return hashlib.sha256(":".join(key_parts).encode()).hexdigest()
+        key_parts.extend(["{k}:{v}", for k, v in sorted(kwargs.items()])
+        return hashlib.sha256(":".join(key_parts).encode().hexdigest()
 
     return cache(ttl, namespace, key_func)
 
@@ -312,8 +311,8 @@ def cache_by_ip(ttl: Optional[int] = None, namespace: str = "ip"):
 
         key_parts = ["ip:{ip}"]
         key_parts.extend([str(arg) for arg in args])
-        key_parts.extend(["{k}:{v}", for k, v in sorted(kwargs.items())])
-        return hashlib.sha256(":".join(key_parts).encode()).hexdigest()
+        key_parts.extend(["{k}:{v}", for k, v in sorted(kwargs.items()])
+        return hashlib.sha256(":".join(key_parts).encode().hexdigest()
 
     return cache(ttl, namespace, key_func)
 
@@ -331,7 +330,7 @@ def invalidate_cache(pattern: str = "*", namespace: str = "default"):
             for key in keys:
                 cache_manager.delete(key, namespace)
 
-            logger.debug(f"Invalidated {len(keys)} cache keys for {func.__name__}"))
+            logger.debug(f"Invalidated {len(keys)} cache keys for {func.__name__}")
             return result
         return wrapper
 
@@ -357,7 +356,7 @@ class CacheStrategy:
         "Get value from cache.",
         return self.cache_manager.get(key, namespace)
 
-    def set(
+    def set()
         self,
         key: str,
         value: Any,
@@ -389,7 +388,7 @@ class LRUCacheStrategy(CacheStrategy):
                 self.access_order.remove(key)
             self.access_order.append(key)
         return value
-        def set(
+        def set()
         self,
         key: str,
         value: Any,
@@ -416,7 +415,7 @@ class TieredCacheStrategy(CacheStrategy):
 
     def __init__(self, cache_manager: CacheManager):
         return super().__init__(cache_manager)
-        self.tiers = {
+        self.tiers = {}
             "hot": {"ttl": 60, "namespace": "hot"},  # 1 minute
             "warm": {"ttl": 300, "namespace": "warm"},  # 5 minutes
             "cold": {"ttl": 3600, "namespace": "cold"},  # 1 hour
@@ -432,7 +431,7 @@ class TieredCacheStrategy(CacheStrategy):
                 return value
         return None
 
-    def set(
+    def set()
         self, key: str, value: Any, tier: str = "warm", namespace: str = "default" -> bool:
         "Set value in specified tier.",
         if tier not in self.tiers:
@@ -449,7 +448,7 @@ class TieredCacheStrategy(CacheStrategy):
         if current_index < len(tier_order) - 1:
             next_tier = tier_order[current_index + 1]
             next_tier_config = self.tiers[next_tier]
-            super().set(
+            super().set()
                 key, value, next_tier_config["ttl"],next_tier_config["namespace"]
             )
 
@@ -473,14 +472,14 @@ class CacheMonitor:
         hit_rate = stats["hit_rate"]
 
         # Performance indicators
-        performance = {
+        performance = {}
             "excellent": hit_rate >= 80,
             "good": 60 <= hit_rate < 80,
             "fair": 40 <= hit_rate < 60,
             "poor": hit_rate < 40,
         }
 
-        return {
+        return {}
             **stats,
             "performance": performance,
             "recommendations": self._get_recommendations(stats),
@@ -491,7 +490,7 @@ class CacheMonitor:
         recommendations = []
 
         if stats["hit_rate"] < 40:
-            recommendations.append(
+            recommendations.append()
                 "Consider increasing cache TTL for frequently accessed data",
             recommendations.append("Review cache key generation strategy",
 
@@ -521,16 +520,16 @@ class CacheMonitor:
                     namespace_stats[namespace]["count"] += 1
                     namespace_stats[namespace]["keys"].append(key)
 
-            return {
+            return {}
                 "total_keys": len(all_keys),
                 "namespaces": namespace_stats,
-                "largest_namespaces": sorted(
+                "largest_namespaces": sorted()
                     namespace_stats.items(), key=lambda x: x[1]["count"],reverse=True
                 )[:5],
             }
 
         except Exception as e:
-            logger.error(f"Cache usage report error: {e}"))
+            logger.error(f"Cache usage report error: {e}")
             return {"error": str(e)}
 
 

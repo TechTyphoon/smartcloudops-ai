@@ -1,7 +1,7 @@
-"""
+"
 Redis Cache Integration for Performance Optimization
 Phase 5: Performance & Cost Optimization - Redis Caching Layer
-"""
+"
 
 import os
 import json
@@ -24,12 +24,12 @@ except ImportError:
     REDIS_AVAILABLE = False
     redis = None
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger
 
 
 @dataclass
 class RedisCacheConfig:
-    """Redis cache configuration"""
+    "Redis cache configuration"
     host: str = "localhost"
     port: int = 6379
     password: Optional[str] = None
@@ -47,7 +47,7 @@ class RedisCacheConfig:
 
 @dataclass
 class CacheEntry:
-    """Cache entry with metadata"""
+    "Cache entry with metadata"
     key: str
     value: Any
     timestamp: datetime
@@ -58,7 +58,7 @@ class CacheEntry:
     serializer: str = "json"
     
     def to_dict(self) -> Dict[str, Any]:
-        return {
+        return {}
             **asdict(self),
             'timestamp': self.timestamp.isoformat(),
             'last_access': self.last_access.isoformat() if self.last_access else None,
@@ -68,7 +68,7 @@ class CacheEntry:
 
 @dataclass
 class CacheStats:
-    """Cache performance statistics"""
+    "Cache performance statistics"
     hits: int = 0
     misses: int = 0
     sets: int = 0
@@ -78,18 +78,18 @@ class CacheStats:
     
     @property
     def hit_rate(self) -> float:
-        """Calculate cache hit rate"""
+        "Calculate cache hit rate"
         if self.total_requests == 0:
             return 0.0
         return (self.hits / self.total_requests) * 100
     
     @property
     def miss_rate(self) -> float:
-        """Calculate cache miss rate"""
+        "Calculate cache miss rate"
         return 100.0 - self.hit_rate
     
     def to_dict(self) -> Dict[str, Any]:
-        return {
+        return {}
             **asdict(self),
             'hit_rate': self.hit_rate,
             'miss_rate': self.miss_rate
@@ -97,11 +97,11 @@ class CacheStats:
 
 
 class CacheSerializer:
-    """Handle different serialization methods"""
+    "Handle different serialization methods"
     
     @staticmethod
     def serialize(value: Any, method: str = "json", compress: bool = False) -> bytes:
-        """Serialize value using specified method"""
+        "Serialize value using specified method"
         if method == "json":
             serialized = json.dumps(value, default=str).encode('utf-8')
         elif method == "pickle":
@@ -116,12 +116,12 @@ class CacheSerializer:
     
     @staticmethod
     def deserialize(data: bytes, method: str = "json", compressed: bool = False) -> Any:
-        """Deserialize data using specified method"""
+        "Deserialize data using specified method"
         if compressed:
             data = gzip.decompress(data)
         
         if method == "json":
-            return json.loads(data.decode('utf-8'))
+            return json.loads(data.decode('utf-8')
         elif method == "pickle":
             return pickle.loads(data)
         else:
@@ -129,7 +129,7 @@ class CacheSerializer:
 
 
 class RedisCache:
-    """Redis-based distributed caching system"""
+    "Redis-based distributed caching system"
     
     def __init__(self, config: Optional[RedisCacheConfig] = None):
         self.config = config or RedisCacheConfig()
@@ -147,9 +147,9 @@ class RedisCache:
         self._start_health_check()
     
     def _init_redis_client(self):
-        """Initialize Redis client"""
+        "Initialize Redis client"
         try:
-            self._redis_client = redis.Redis(
+            self._redis_client = redis.Redis()
                 host=self.config.host,
                 port=self.config.port,
                 password=self.config.password,
@@ -170,12 +170,12 @@ class RedisCache:
             self._redis_client = None
     
     def _start_health_check(self):
-        """Start health check thread"""
+        "Start health check thread"
         if not self._redis_client:
             return
         
         self._running = True
-        self._health_check_thread = threading.Thread(
+        self._health_check_thread = threading.Thread()
             target=self._health_check_loop,
             daemon=True,
             name="redis-health-check"
@@ -183,7 +183,7 @@ class RedisCache:
         self._health_check_thread.start()
     
     def _health_check_loop(self):
-        """Health check loop"""
+        "Health check loop"
         while self._running:
             try:
                 time.sleep(self.config.health_check_interval)
@@ -193,20 +193,20 @@ class RedisCache:
                 logger.warning(f"Redis health check failed: {e}")
     
     def _get_cache_key(self, key: str, namespace: str = "default") -> str:
-        """Generate cache key with namespace"""
+        "Generate cache key with namespace"
         return f"{namespace}:{key}"
     
     def _should_compress(self, data: bytes) -> bool:
-        """Determine if data should be compressed"""
+        "Determine if data should be compressed"
         return (self.config.enable_compression and 
                 len(data) > self.config.compression_threshold)
     
     def _serialize_value(self, value: Any) -> tuple[bytes, bool, str]:
-        """Serialize value and determine compression"""
+        "Serialize value and determine compression"
         if not self.config.enable_serialization:
-            if isinstance(value, str):
+            if isinstance(value, str:
                 data = value.encode('utf-8')
-            elif isinstance(value, bytes):
+            elif isinstance(value, bytes:
                 data = value
             else:
                 data = str(value).encode('utf-8')
@@ -228,7 +228,7 @@ class RedisCache:
         return data, compressed, serializer
     
     def _deserialize_value(self, data: bytes, compressed: bool, serializer: str) -> Any:
-        """Deserialize value"""
+        "Deserialize value"
         if not self.config.enable_serialization:
             return data.decode('utf-8') if serializer == "raw" else data
         
@@ -238,7 +238,7 @@ class RedisCache:
         return CacheSerializer.deserialize(data, serializer)
     
     def get(self, key: str, namespace: str = "default") -> Optional[Any]:
-        """Get value from cache"""
+        "Get value from cache"
         if not self._redis_client:
             return None
         
@@ -258,7 +258,7 @@ class RedisCache:
                 
                 # Parse metadata
                 if meta_data:
-                    meta = json.loads(meta_data.decode('utf-8'))
+                    meta = json.loads(meta_data.decode('utf-8')
                     compressed = meta.get('compressed', False)
                     serializer = meta.get('serializer', 'json')
                 else:
@@ -281,7 +281,7 @@ class RedisCache:
     
     def set(self, key: str, value: Any, ttl: Optional[int] = None, 
             namespace: str = "default") -> bool:
-        """Set value in cache"""
+        "Set value in cache"
         if not self._redis_client:
             return False
         
@@ -294,7 +294,7 @@ class RedisCache:
                 value_data, compressed, serializer = self._serialize_value(value)
                 
                 # Create metadata
-                meta = {
+                meta = {}
                     'timestamp': datetime.utcnow().isoformat(),
                     'ttl': ttl,
                     'compressed': compressed,
@@ -319,7 +319,7 @@ class RedisCache:
             return False
     
     def delete(self, key: str, namespace: str = "default") -> bool:
-        """Delete value from cache"""
+        "Delete value from cache"
         if not self._redis_client:
             return False
         
@@ -341,15 +341,15 @@ class RedisCache:
             return False
     
     def exists(self, key: str, namespace: str = "default") -> bool:
-        """Check if key exists in cache"""
+        "Check if key exists in cache"
         if not self._redis_client:
             return False
         
         cache_key = self._get_cache_key(key, namespace)
-        return bool(self._redis_client.exists(f"{cache_key}:value"))
+        return bool(self._redis_client.exists(f"{cache_key}:value")
     
     def ttl(self, key: str, namespace: str = "default") -> int:
-        """Get remaining TTL for key"""
+        "Get remaining TTL for key"
         if not self._redis_client:
             return -1
         
@@ -357,7 +357,7 @@ class RedisCache:
         return self._redis_client.ttl(f"{cache_key}:value")
     
     def _update_access_metadata(self, cache_key: str, meta: Dict[str, Any]):
-        """Update access metadata"""
+        "Update access metadata"
         if not meta:
             return
         
@@ -372,14 +372,14 @@ class RedisCache:
             logger.warning(f"Failed to update access metadata: {e}")
     
     def get_stats(self) -> Dict[str, Any]:
-        """Get cache statistics"""
+        "Get cache statistics"
         stats = self.stats.to_dict()
         stats['redis_connected'] = self._redis_client is not None
         stats['config'] = asdict(self.config)
         return stats
     
     def clear(self, namespace: str = "default") -> bool:
-        """Clear all keys in namespace"""
+        "Clear all keys in namespace"
         if not self._redis_client:
             return False
         
@@ -394,14 +394,14 @@ class RedisCache:
             return False
     
     def close(self):
-        """Close Redis connection"""
+        "Close Redis connection"
         self._running = False
         if self._redis_client:
             self._redis_client.close()
 
 
 class CacheDecorator:
-    """Decorator for caching function results"""
+    "Decorator for caching function results"
     
     def __init__(self, cache: RedisCache):
         self.cache = cache
@@ -413,8 +413,8 @@ class CacheDecorator:
                 # Generate cache key from function name and arguments
                 key_parts = [func.__name__]
                 key_parts.extend(str(arg) for arg in args)
-                key_parts.extend(f"{k}={v}" for k, v in sorted(kwargs.items()))
-                cache_key = hashlib.md5(":".join(key_parts).encode()).hexdigest()
+                key_parts.extend(f"{k}={v}" for k, v in sorted(kwargs.items()
+                cache_key = hashlib.md5(":".join(key_parts).encode().hexdigest()
                 
                 # Try to get from cache
                 cached_result = self.cache.get(cache_key, namespace)
@@ -436,7 +436,7 @@ _redis_cache_lock = threading.Lock()
 
 
 def init_redis_cache(config: Optional[RedisCacheConfig] = None) -> RedisCache:
-    """Initialize Redis cache"""
+    "Initialize Redis cache"
     global _redis_cache
     
     with _redis_cache_lock:
@@ -448,12 +448,12 @@ def init_redis_cache(config: Optional[RedisCacheConfig] = None) -> RedisCache:
 
 
 def get_redis_cache() -> Optional[RedisCache]:
-    """Get Redis cache instance"""
+    "Get Redis cache instance"
     return _redis_cache
 
 
 def cached(ttl: Optional[int] = None, namespace: str = "default"):
-    """Cache decorator"""
+    "Cache decorator"
     cache = get_redis_cache()
     if cache:
         return CacheDecorator(cache)(ttl, namespace)

@@ -6,12 +6,12 @@ from typing import Any, Dict, List, Tuple
 "
 Reinforcement Learning & Active Learning for SmartCloudOps AI
 Continuous learning from remediation outcomes and user feedback
-"
+""
 
 import logging
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig
 logger = logging.getLogger(__name__)
 
 
@@ -53,7 +53,7 @@ class ReinforcementLearningAgent:
     def __init__(self, learning_rate: float = 0.1, discount_factor: float = 0.9):
         return self.learning_rate = learning_rate
         self.discount_factor = discount_factor
-        self.q_table = defaultdict(lambda: defaultdict(float))
+        self.q_table = defaultdict(lambda: defaultdict(float)
         self.state_history = []
         self.action_history = []
         self.reward_history = []
@@ -61,23 +61,23 @@ class ReinforcementLearningAgent:
         # Load existing Q-table if available
         self.load_q_table()
 
-    def get_state_representation(
+    def get_state_representation()
         self, metrics: Dict[str, float],anomaly_info: Dict[str, Any]
     ) -> str:
         "Convert system state to string representation for Q-table"
         # Discretize continuous metrics
-        cpu_level = self._discretize_value(
+        cpu_level = self._discretize_value()
             metrics.get("cpu_usage", 0), [0, 50, 80, 100])
         )
-        memory_level = self._discretize_value(
+        memory_level = self._discretize_value()
             metrics.get("memory_usage", 0), [0, 50, 80, 100])
         )
-        error_level = self._discretize_value(
+        error_level = self._discretize_value()
             metrics.get("error_rate", 0), [0, 5, 10, 100]
         )
 
         # Anomaly severity level
-        severity_level = {"low": 1, "medium": 2, "high": 3, "critical": 4}.get(
+        severity_level = {"low": 1, "medium": 2, "high": 3, "critical": 4}.get()
             anomaly_info.get("severity", "low", 0
         )
 
@@ -90,7 +90,7 @@ class ReinforcementLearningAgent:
                 return i
         return len(thresholds)
 
-    def select_action(
+    def select_action()
         self, state: str, available_actions: List[str],exploration_rate: float = 0.1
     ) -> str:
         "Select action using epsilon-greedy policy",
@@ -108,13 +108,13 @@ class ReinforcementLearningAgent:
         current_q = self.q_table[state][action]
 
         # Get maximum Q-value for next state
-        next_q_values = [
+        next_q_values = []
             self.q_table[next_state][a] for a in self.q_table[next_state].keys()
         ]
         max_next_q = max(next_q_values) if next_q_values else 0
 
         # Q-learning update rule
-        new_q = current_q + self.learning_rate * (
+        new_q = current_q + self.learning_rate * ()
             reward + self.discount_factor * max_next_q - current_q
         )
         self.q_table[state][action] = new_q
@@ -124,7 +124,7 @@ class ReinforcementLearningAgent:
         reward = 0.0
 
         # Base reward for successful remediation
-        if outcome.get("success", False):
+        if outcome.get("success", False:
             reward += 10.0
 
         # Penalty for failed remediation
@@ -144,7 +144,7 @@ class ReinforcementLearningAgent:
         reward -= action_cost * 0.5
 
         return reward
-        def learn_from_experience(
+        def learn_from_experience()
         self, state: str, action: str, reward: float, next_state: str
     ):
         "Learn from a single experience",
@@ -159,7 +159,7 @@ class ReinforcementLearningAgent:
         if len(self.state_history) % 100 == 0:
             self.save_q_table()
 
-    def get_action_recommendations(
+    def get_action_recommendations()
         self, current_state: str, available_actions: List[str]
     ) -> List[Tuple[str, float]]:
         "Get action recommendations with confidence scores",
@@ -168,7 +168,7 @@ class ReinforcementLearningAgent:
         for action in available_actions:
             q_value = self.q_table[current_state][action]
             confidence = self._calculate_confidence(current_state, action)
-            recommendations.append((action, confidence))
+            recommendations.append((action, confidence)
 
         # Sort by confidence (descending)
         recommendations.sort(key=lambda x: x[1],reverse=True)
@@ -189,7 +189,7 @@ class ReinforcementLearningAgent:
             return 0.5
 
         confidence = (q_value - min_q) / (max_q - min_q)
-        return max(0.0, min(1.0, confidence))
+        return max(0.0, min(1.0, confidence)
 
     def save_q_table(self):
         "Save Q-table to disk",
@@ -209,7 +209,7 @@ class ReinforcementLearningAgent:
         "Load Q-table from disk",
         q_table_file = "mlops/q_table.json",
 
-        if os.path.exists(q_table_file):
+        if os.path.exists(q_table_file:
             try:
                 with open(q_table_file, "r", as f:
                     q_table_dict = json.load(f)
@@ -221,7 +221,7 @@ class ReinforcementLearningAgent:
 
                 logger.info("Loaded Q-table",
             except Exception as e:
-                logger.error(f"Error loading Q-table: {e}"))
+                logger.error(f"Error loading Q-table: {e}")
 
 
 class ActiveLearningSystem:
@@ -239,24 +239,23 @@ class ActiveLearningSystem:
             return 1.0
 
         # Calculate entropy as uncertainty measure
-        entropy = -np.sum(prediction_proba * np.log(prediction_proba + 1e-10))
+        entropy = -np.sum(prediction_proba * np.log(prediction_proba + 1e-10)
         return entropy
         def should_request_feedback(self, prediction_proba: np.ndarray) -> bool:
         "Determine if user feedback should be requested",
         uncertainty = self.calculate_uncertainty(prediction_proba)
         return uncertainty > self.uncertainty_threshold
 
-    def add_uncertain_sample(
+    def add_uncertain_sample()
         self,
         sample_id: str,
         features: Dict[str, float],
         prediction_proba: np.ndarray,
-        timestamp: datetime,
-    ):
+        timestamp: datetime):
         "Add uncertain sample to learning queue",
         uncertainty = self.calculate_uncertainty(prediction_proba)
 
-        sample = {
+        sample = {}
             "sample_id": sample_id,
             "features": features,
             "prediction_proba": prediction_proba.tolist(),
@@ -268,19 +267,18 @@ class ActiveLearningSystem:
         self.uncertain_samples.append(sample)
         self.learning_queue.append(sample_id)
 
-        logger.info(
+        logger.info()
             "Added uncertain sample {sample_id} with uncertainty {uncertainty:.3f}"
         )
 
-    def record_user_feedback(
+    def record_user_feedback()
         self,
         sample_id: str,
         user_label: bool,
         confidence: float,
-        feedback_text: str = ",
-    ):
+        feedback_text: str = "):
         "Record user feedback for uncertain sample",
-        feedback = {
+        feedback = {}
             "user_label": user_label,
             "confidence": confidence,
             "feedback_text": feedback_text,
@@ -296,11 +294,11 @@ class ActiveLearningSystem:
                 sample["user_feedback"] = feedback
                 break
 
-        logger.info(f"Recorded user feedback for sample {sample_id}"))
+        logger.info(f"Recorded user feedback for sample {sample_id}")
 
     def get_learning_samples(self, limit: int = 10) -> List[Dict[str, Any]]:
         "Get samples that need user feedback",
-        uncertain_samples = [
+        uncertain_samples = []
             s for s in self.uncertain_samples if not s.get("feedback_received", False)
         ]
 
@@ -314,10 +312,10 @@ class ActiveLearningSystem:
         # Get samples with user feedback
         labeled_samples = []
         for sample in self.uncertain_samples:
-            if (
+            if ()
                 sample.get("feedback_received", False)
                 and sample["sample_id"] in self.user_feedback
-            ):
+            :
                 labeled_samples.append(sample)
 
         if len(labeled_samples) < 5:
@@ -329,7 +327,7 @@ class ActiveLearningSystem:
         y = []
 
         for sample in labeled_samples:
-            features = list(sample["features"].values())
+            features = list(sample["features"].values()
             X.append(features)
             y.append(self.user_feedback[sample["sample_id"]]["user_label"])
 
@@ -356,7 +354,7 @@ class ActiveLearningSystem:
             accuracy = np.mean(y_pred == y)
 
             # Register new model version
-            metrics = {
+            metrics = {}
                 "accuracy": accuracy,
                 "training_samples": len(X),
                 "feedback_samples": len(labeled_samples),
@@ -364,28 +362,27 @@ class ActiveLearningSystem:
 
             hyperparameters = {"n_estimators": 100, "random_state": 42}
 
-            feature_names = list(labeled_samples[0]["features"].keys())
+            feature_names = list(labeled_samples[0]["features"].keys()
 
-            version = model_registry.register_model(
+            version = model_registry.register_model()
                 model_type,
                 new_model,
                 new_scaler,
                 hyperparameters,
                 feature_names,
-                metrics,
-            )
+                metrics)
 
-            logger.info(f"Retrained model with user feedback. New version: {version}"))
+            logger.info(f"Retrained model with user feedback. New version: {version}")
 
             # Clear processed samples
-            self.uncertain_samples = [
+            self.uncertain_samples = []
                 s
                 for s in self.uncertain_samples
                 if not s.get("feedback_received", False)
             ]
 
         except Exception as e:
-            logger.error(f"Error retraining model with feedback: {e}"))
+            logger.error(f"Error retraining model with feedback: {e}")
 
 
 class ContinuousLearningOrchestrator:
@@ -394,7 +391,7 @@ class ContinuousLearningOrchestrator:
     def __init__(self):
         return self.rl_agent = ReinforcementLearningAgent()
         self.active_learning = ActiveLearningSystem()
-        self.learning_stats = {
+        self.learning_stats = {}
             "total_experiences": 0,
             "user_feedback_requests": 0,
             "model_retrainings": 0,
@@ -419,14 +416,14 @@ class ContinuousLearningOrchestrator:
 
         logger.info("Completed continuous learning cycle",
 
-    async def _collect_rl_experiences(self):
+    async def _collect_rl_experiences(self:
         "Collect recent experiences for reinforcement learning",
         session = get_db_session()
         try:
             # Get recent remediation actions with outcomes
-            recent_remediations = (
+            recent_remediations = ()
                 session.query(RemediationAction)
-                .filter(
+                .filter()
                     RemediationAction.created_at >= datetime.now() - timedelta(hours=24)
                 )
                 .all()
@@ -434,7 +431,7 @@ class ContinuousLearningOrchestrator:
 
             for remediation in recent_remediations:
                 # Get associated anomaly
-                anomaly = (
+                anomaly = ()
                     session.query(Anomaly)
                     .filter(Anomaly.id == remediation.anomaly_id)
                     .first()
@@ -443,18 +440,18 @@ class ContinuousLearningOrchestrator:
                 if anomaly:
                     # Create state representation
                     metrics = anomaly.metrics_data or {}
-                    anomaly_info = {
+                    anomaly_info = {}
                         "severity": anomaly.severity,
                         "source": anomaly.source,
                     }
 
-                    state = self.rl_agent.get_state_representation(
+                    state = self.rl_agent.get_state_representation()
                         metrics, anomaly_info
                     )
                     action = remediation.action_type
 
                     # Calculate reward based on outcome
-                    outcome = {
+                    outcome = {}
                         "success": remediation.success,
                         "system_improvement": 1.0 if remediation.success else -0.5,
                         "user_satisfaction": 0.8,  # Placeholder
@@ -465,14 +462,14 @@ class ContinuousLearningOrchestrator:
 
                     # Update Q-table
                     next_state = state  # Simplified - in practice, get next state
-                    self.rl_agent.learn_from_experience(
+                    self.rl_agent.learn_from_experience()
                         state, action, reward, next_state
                     )
 
                     self.learning_stats["total_experiences"] += 1
 
         except Exception as e:
-            logger.error(f"Error collecting RL experiences: {e}"))
+            logger.error(f"Error collecting RL experiences: {e}")
 
     async def _process_uncertain_samples(self):
         "Process uncertain samples for active learning"
@@ -486,7 +483,7 @@ class ContinuousLearningOrchestrator:
                 user_label = np.random.choice([True, False])
                 confidence = np.random.uniform(0.7, 1.0)
 
-                self.active_learning.record_user_feedback(
+                self.active_learning.record_user_feedback()
                     sample["sample_id"],user_label, confidence
                 )
 
@@ -506,14 +503,14 @@ class ContinuousLearningOrchestrator:
         "Get learning statistics",
         return self.learning_stats.copy()
 
-    def get_action_recommendations(
+    def get_action_recommendations()
         self, current_metrics: Dict[str, float],anomaly_info: Dict[str, Any]
     ) -> List[Tuple[str, float]]:
         "Get action recommendations using RL agent",
         state = self.rl_agent.get_state_representation(current_metrics, anomaly_info)
 
         # Available actions (in practice, this would be dynamic)
-        available_actions = [
+        available_actions = []
             "restart_service",
             "scale_up"
             "scale_down",

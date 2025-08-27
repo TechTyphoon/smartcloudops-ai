@@ -1,4 +1,5 @@
-from datetime import datetime
+from abc import ABC, abstractmethod
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 "
@@ -7,10 +8,11 @@ Supports both OpenAI and Google Gemini APIs
 "
 
 import logging
+from flask import Flask, jsonify, request
 import os
 import re
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger
 
 
 class AIProvider(ABC):
@@ -21,12 +23,12 @@ class AIProvider(ABC):
         "Initialize the AI provider."
 
     @abstractmethod
-    def process_query(self, messages: List[Dict[str, str]],**kwargs) -> Dict[str, Any]:
+    def process_query(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, Any]:
         "Process a query with the AI provider."
 
     @abstractmethod
     def get_model_info(self) -> Dict[str, str]:
-        "Get information about the current model.",
+        "Get information about the current model."
 
 
 class OpenAIProvider(AIProvider):
@@ -39,7 +41,8 @@ class OpenAIProvider(AIProvider):
     def initialize(self, api_key: str) -> bool:
         "Initialize OpenAI client."
         try:
-            self.client = OpenAI(api_key=api_key)
+            from openai import OpenAI
+            self.client = OpenAI
             logger.info("OpenAI provider initialized successfully")
             return True
         except Exception as e:
@@ -47,17 +50,16 @@ class OpenAIProvider(AIProvider):
             return False
 
     def process_query(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, Any]:
-        "Process query with OpenAI.",
+        "Process query with OpenAI."
         try:
-            response = self.client.chat.completions.create(
+            response = self.client.chat.completions.create()
                 model=self.model,
                 messages=messages,
                 max_tokens=kwargs.get("max_tokens", 500),
                 temperature=kwargs.get("temperature", 0.3),
-                timeout=kwargs.get("timeout", 30),
-            )
+                timeout=kwargs.get("timeout", 30))
 
-            return {
+            return {}
                 "status": "success",
                 "response": response.choices[0].message.content.strip(),
                 "model": self.model,
@@ -65,505 +67,357 @@ class OpenAIProvider(AIProvider):
                 "provider": "openai"
             }
         except Exception as e:
-            logger.error(f"OpenAI query failed: {str(e)}"))
+            logger.error(f"OpenAI query failed: {str(e)}")
             return {"status": "error", "error": str(e), "provider": "openai"}
 
     def get_model_info(self) -> Dict[str, str]:
-        "Get OpenAI model information.",
+        "Get OpenAI model information."
         return {"provider": "openai", "model": self.model, "name": "GPT-3.5 Turbo"}
 
 
 class LocalProvider(AIProvider):
-    "Local AI provider for testing and development.",
+    "Local AI provider for testing and development."
 
     def __init__(self):
-        return self.model = "local-assistant",
+        self.model = "local-assistant"
 
     def initialize(self, api_key: str = None) -> bool:
-        "Initialize local provider (no API key needed).",
-        logger.info("Local AI provider initialized successfully",
+        "Initialize local provider (no API key needed)."
+        logger.info("Local AI provider initialized successfully")
         return True
-        def process_query(self, messages: List[Dict[str, str]],**kwargs) -> Dict[str, Any]:
-        "Process query with local responses.",
+
+    def process_query(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, Any]:
+        "Process query with local responses."
         try:
             # Get the user query from messages
-            user_message = ",
+            user_message = "
             for message in messages:
-                if message.get("role" == "user"):
+                if message.get("role") == "user":
                     user_message = message.get("content", ")
                     break
 
             # Generate contextual responses based on query content
-            response_data = self._generate_enhanced_response(user_message.lower())
+            response_data = self._generate_enhanced_response(user_message.lower()
 
-            return {
+            return {}
                 "status": "success",
                 "response": response_data["response"],
                 "model": self.model,
                 "provider": "local",
                 "suggestions": response_data.get("suggestions", []),
                 "confidence": response_data.get("confidence", 0.95),
-                "query_type": response_data.get("query_type", "general",
-                "tokens_used": len(user_message.split())
-                + len(response_data["response"].split()),
+                "query_type": response_data.get("query_type", "general"),
+                "tokens_used": len(user_message.split() + len(response_data["response"].split(),
             }
 
-            return {
-                "status": "success",
-                "response": response,
-                "model": self.model,
-                "tokens_used": len(response.split()),
-                "provider": "local"
-            }
         except Exception as e:
-            logger.error(f"Local provider query failed: {str(e)}"))
+            logger.error(f"Local provider query failed: {str(e)}")
             return {"status": "error", "error": str(e), "provider": "local"}
 
     def _generate_enhanced_response(self, query: str) -> Dict[str, Any]:
-        "Generate enhanced contextual responses with suggestions.",
+        "Generate enhanced contextual responses with suggestions."
         import random
 
-        demo_responses = {
-            "system_status": [
-                {
-                    "response": "**Current System Status**: ✅ All systems operational\n\n**Infrastructure Health**:\n- Flask Application: Running ("
-                    (
-                        "Port 5000)\n- PostgreSQL Database: Connected\n- Prometheus M",
-                        "onitoring: Active (9090)\n- Grafana Dashboard: Accessible (13000)\n- Node Exporter: Collecting metrics (9100)\n\n**ML System Status**:\n- Anomaly Detection: Functional\n- Model: IsolationForest loaded (6 features)\n- Last prediction: No anomalies detected\n\n**Recommendations**:\n1. Monitor system metrics in Grafana\n2. Check application logs for any warnings\n3. Review performance trends",
-                    "suggestions": [
-                        "View detailed metrics",
-                        "Check system logs"
-                        "Monitor performance trends",
-                        "Review recent alerts"
-                    ],
-                },
-                {
-                    "response": "**System Health Report**: 🟢 Excellent\n\n**Core Services**:\n- Backend API: Healthy ("
-                    (
-                        "Response time: 45ms)\n- Database: Connected (Active connecti",
-                        "ons: 3)\n- Monitoring: Active (Metrics collected: 1,247)\n- ML Pipeline: Operational (Model accuracy: 94.2%)\n\n**Performance Metrics**:\n- CPU Usage: 23.4% (Normal)\n- Memory Usage: 67.8% (Optimal)\n- Disk Usage: 41.2% (Good)\n- Network: 12.5 Mbps (Stable)\n\n**Security Status**:\n- All endpoints secured\n- Rate limiting active\n- No security alerts",
-                    "suggestions": [
-                        "View performance dashboard",
-                        "Check security logs"
-                        "Monitor resource usage",
-                        "Review system alerts"
-                    ],
-                },
-            ],
-            "anomaly_detection": [
-                {
-                    (
-                        "response": "**Anomaly Detection Report**: 🔍 Analysis Complete\n\n**Current Status**:\n- No anomalies detected in the last 24 hours\n- Model confidence: 96.8%\n- False positive rate: 2.1%\n\n**Monitored Metrics**:\n- CPU utilization patterns\n- Memory consumption trends\n- Disk I/O performance\n- Network traffic analysis\n- Application response times\n\n**Recommendations**:\n1. Continue monitoring for pattern changes\n2. Review historical data for trends\n3. Consider model retraining in 7 days"ort**: 🔍 Analysis Complet",
-                        "e\n\n**Current Status**:\n- No anomalies detected in the last 24 hours\n- Model confidence: 96.8%\n- False positive rate: 2.1%\n\n**Monitored Metrics**:\n- CPU utilization patterns\n- Memory consumption trends\n- Disk I/O performance\n- Network traffic analysis\n- Application response times\n\n**Recommendations**:\n1. Continue monitoring for pattern changes\n2. Review historical data for trends\n3. Consider model retraining in 7 days",
-                    "suggestions": [
-                        "Investigate detected anomalies",
-                        "View historical patterns"
-                        "Adjust detection sensitivity",
-                        "Generate anomaly report"
-                    ],
-                },
-                {
-                    "response": "**Anomaly Alert**: ⚠️ Potential Issue Detected\n\n**Detection Details**:\n- Severity: Medium\n- Confidence: 87.3%\n- Affected metric: CPU usage spike\n- Duration: 15 minutes\n\n**Analysis**:\n- Unusual CPU pattern detected\n- Possible cause: Background process\n- Impact: Minimal ("
-                    (
-                        "system still responsive)\n\n**Recommended Actions**:\n1. Inv",
-                        "estigate background processes\n2. Monitor for escalation\n3. Check application logs",
-                    "suggestions": [
-                        "Investigate background processes",
-                        "Monitor CPU trends"
-                        "Check application logs",
-                        "Review system alerts"
-                    ],
-                },
-            ],
-            "performance_optimization": [
-                {
-                    "response": "**Performance Optimization Analysis**: 🚀 Recommendations\n\n**Current Performance**:\n- Overall Score: 8.7/10\n- Response Time: 45ms ("
-                    (
-                        "Excellent)\n- Throughput: 1,247 req/min (Good)\n- Error Rate",
-                        ": 0.02% (Excellent)\n\n**Optimization Opportunities**:\n1. Database query optimization (Potential 15% improvement)\n2. Cache hit rate enhancement (Potential 20% improvement)\n3. Load balancing fine-tuning (Potential 10% improvement)\n\n**Immediate Actions**:\n- Enable query result caching\n- Optimize database indexes\n- Implement connection pooling",
-                    "suggestions": [
-                        "Apply optimization recommendations",
-                        "Monitor performance improvements"
-                        "Review resource usage",
-                        "Schedule optimization tasks"
-                    ],
-                }
-            ],
-            "security_analysis": [
-                {
-                    "response": "**Security Analysis Report**: 🛡️ All Clear\n\n**Security Status**:\n- Overall Score: 9.2/10\n- Authentication: Secure\n- Authorization: Properly configured\n- Data encryption: Active\n- Rate limiting: Enabled\n\n**Recent Security Events**:\n- No suspicious activities detected\n- All login attempts legitimate\n- No failed authentication attempts\n- API usage within normal limits\n\n**Recommendations**:\n1. Continue monitoring for unusual patterns\n2. Regular security audits (",
-                    "next due: 7 days)\n3. Keep security patches updated"
-                    "suggestions": [
-                        "Review security logs",
-                        "Check access patterns"
-                        "Update security policies",
-                        "Run security audit"
-                    ],
-                }
-            ],
-        }
-
-        # Determine response type based on query
-        if any(
-            word in query for word in ["status", "health" "operational", "running"]
-        ):
-            response_type = "system_status",
-        elif any(
-            word in query
-            for word in ["anomaly", "anomalies" "detect", "issue" "problem"]
-        ):
-            response_type = "anomaly_detection",
-        elif any(
-            word in query for word in ["performance", "optimize" "speed", "fast"]
-        ):
-            response_type = "performance_optimization",
-        elif any(
-            word in query for word in ["security", "secure" "threat", "vulnerability"]
-        ):
-            response_type = "security_analysis",
-        else:
-            response_type = "system_status"
-
-        # Get random response from appropriate category
-        responses = demo_responses.get(response_type, demo_responses["system_status"])
-        selected_response = random.choice(responses)
-
-        return {
-            "response": selected_response["response"],
-            "suggestions": selected_response["suggestions"],
-            "confidence": random.uniform(0.85, 0.98),
-            "query_type": response_type,
-        }
-
-    def _generate_response(self, query: str) -> str:
-        "Generate contextual responses based on query patterns."
-        # Check specific patterns first (most specific to least specific)
-        if "anomaly", in query or "alert", in query or "detection", in query:
-            return (
-                "**Anomaly Analysis**: Recent HIGH severity anomaly detected ",
-                "(score: 0.633)
-
-**Key Metrics**:
-- CPU Usage: 85.5% (threshold exceeded)
-- Memory Usage: 72.3%
-- Active Connections: 1,520 (high)
-- Response Time: 250ms
-
-**Immediate Actions**:
-1. Scale resources if sustained high load
-2. Investigate connection pool usage
-3. Check for memory leaks
-4. Review slow queries in database
-
-**Monitoring**: Continue observing metrics for next 30 minutes"
-            )
-
-        elif "recommendation", in query or "improve", in query or "optimization", in query:
-            return "**System Optimization Recommendations**:
-
-**Performance**:
-- Consider horizontal scaling for high connection loads
-- Implement connection pooling optimization
-- Add Redis caching layer for frequent queries
-
-**Monitoring**:
-- Set up alerting thresholds for key metrics
-- Create custom dashboards for business metrics
-- Implement distributed tracing
-
-**Security**:
-- Regular security scans are active
-- Credentials properly secured
-- Network monitoring enabled
-
-**Next Steps**: Prioritize connection pool optimization and Redis implementation"
-
-        elif "error", in query or "problem", in query or "troubleshoot", in query:
-            return "**Troubleshooting Guide**:
-
-**Recent Issues**:
-- AWS credentials warnings (non-critical for local dev)
-- Slack webhook not configured (notifications disabled)
-
-**Common Solutions**:
-1. **503 Errors**: Check if all containers are running
-2. **Connection Issues**: Verify PostgreSQL container health
-3. **Slow Responses**: Review Grafana metrics for bottlenecks
-4. **Authentication Errors**: Verify API keys in environment
-
-**Debug Commands**:
-```bash
-docker-compose ps
-docker logs cloudops-smartcloudops-app-1
-curl http://localhost:3003/health
-```"
-
-        elif "status", in query or "health", in query:
-            return "**Current System Status**: ✅ All systems operational
-
-**Infrastructure Health**:
-- Flask Application: Running (Port 3003)
+        # Determine response type based on query content
+        if any
 - PostgreSQL Database: Connected
 - Prometheus Monitoring: Active (9090)
-- Grafana Dashboard: Accessible (3004)
+- Grafana Dashboard: Accessible (3000)
 - Node Exporter: Collecting metrics (9100)
 
 **ML System Status**:
 - Anomaly Detection: Functional
-- Model: IsolationForest loaded (18 features)
-- Last prediction: HIGH severity anomaly detected
+- Model: IsolationForest loaded (6 features)
+- Last prediction: No anomalies detected
 
 **Recommendations**:
-1. Monitor the recent HIGH severity anomaly
-2. Review system metrics in Grafana
-3. Check application logs for any warnings"
-            return "**Troubleshooting Guide**:
+1. Monitor system metrics in Grafana
+2. Check application logs for any warnings
+3. Review performance trends"
+            
+            suggestions = ["View detailed metrics", "Check system logs", "Monitor performance trends", "Review recent alerts"]
+            
+        elif response_type == "anomaly_detection":
+            response = "**Anomaly Detection Report**: 🔍 Analysis Complete
 
-**Recent Issues**:
-- AWS credentials warnings (non-critical for local dev)
-- Slack webhook not configured (notifications disabled)
+**Current Status**:
+- No anomalies detected in the last 24 hours
+- Model confidence: 96.8%
+- False positive rate: 2.1%
 
-**Common Solutions**:
-1. **503 Errors**: Check if all containers are running
-2. **Connection Issues**: Verify PostgreSQL container health
-3. **Slow Responses**: Review Grafana metrics for bottlenecks
-4. **Authentication Errors**: Verify API keys in environment
+**Monitored Metrics**:
+- CPU utilization patterns
+- Memory consumption trends
+- Disk I/O performance
+- Network traffic analysis
+- Application response times
 
-**Debug Commands**:
-```bash
-docker-compose ps
-docker logs cloudops-smartcloudops-app-1
-curl http://localhost:3003/health
-```"
+**Recommendations**:
+1. Continue monitoring for pattern changes
+2. Review historical data for trends
+3. Consider model retraining in 7 days"
+            
+            suggestions = ["Investigate detected anomalies", "View historical patterns", "Adjust detection sensitivity", "Generate anomaly report"]
+            
+        elif response_type == "performance_optimization":
+            response = "**Performance Optimization Analysis**: 🚀 Recommendations
 
+**Current Performance**:
+- Overall Score: 8.7/10
+- Response Time: 45ms (Excellent)
+- Throughput: 1,247 req/min (Good)
+- Error Rate: 0.02% (Excellent)
+
+**Optimization Opportunities**:
+1. Database query optimization (Potential 15% improvement)
+2. Cache hit rate enhancement (Potential 20% improvement)
+3. Load balancing fine-tuning (Potential 10% improvement)
+
+**Immediate Actions**:
+- Enable query result caching
+- Optimize database indexes
+- Implement connection pooling"
+            
+            suggestions = ["Apply optimization recommendations", "Monitor performance improvements", "Review resource usage", "Schedule optimization tasks"]
+            
+        elif response_type == "security_analysis":
+            response = "**Security Analysis Report**: 🛡️ All Clear
+
+**Security Status**:
+- Overall Score: 9.2/10
+- Authentication: Secure
+- Authorization: Properly configured
+- Data encryption: Active
+- Rate limiting: Enabled
+
+**Recent Security Events**:
+- No suspicious activities detected
+- All login attempts legitimate
+- No failed authentication attempts
+- API usage within normal limits
+
+**Recommendations**:
+1. Continue monitoring for unusual patterns
+2. Regular security audits (next due: 7 days)
+3. Keep security patches updated"
+            
+            suggestions = ["Review security logs", "Check authentication attempts", "Monitor API usage", "Update security policies"]
+            
         else:
-            return (
-                ""**Smart CloudOps AI Assistant** - Local Mode
+            response = ""**Smart CloudOps AI Assistant** - Local Mode
 
 I can help you with:
-- **System Status**: Current health and performance metrics
-- **Anomaly Analysis**: Detailed investigation of detected issues
-- **Troubleshooting**: Step-by-step problem resolution
-- **Recommendations**: Performance and security improvements
+- System status and health monitoring
+- Anomaly detection and analysis
+- Performance optimization recommendations
+- Security analysis and recommendations
+- Infrastructure troubleshooting
 
-**Query processed**: "{query[:100]}..."
-
-**Available Commands**:
-- "system status" - Get current infrastructure health
-- "analyze anomaly" - Review recent anomaly detections
-- "recommendations" - Get optimization suggestions
+**Quick Commands**:
+- "system status" - Check overall health
+- "anomaly detection" - View anomaly analysis
+- "performance optimization" - Get optimization tips
+- "security analysis" - Security status check
 - "troubleshoot errors" - Debug common issues
 
-*Note: Running in local mode - for production use, configure OpenAI ",
-                "or Gemini API keys.*"
-            )
+*Note: Running in local mode - for production use, configure OpenAI or Gemini API keys.*""
+            
+            suggestions = ["Check system status", "View performance metrics", "Review security logs", "Monitor anomalies"]
+
+        return {}
+            "response": response,
+            "suggestions": suggestions,
+            "confidence": 0.95,
+            "query_type": response_type
+        }
 
     def get_model_info(self) -> Dict[str, str]:
-        "Get local model information.",
+        "Get local model information."
         return {"provider": "local", "model": self.model, "name": "Local Assistant"}
 
 
 class GeminiProvider(AIProvider):
-    "Google Gemini provider implementation.",
+    "Google Gemini provider implementation."
 
     def __init__(self):
-        return self.client = None
-        self.model = "gemini-1.5-pro",
+        self.client = None
+        self.model = "gemini-1.5-pro"
 
     def initialize(self, api_key: str) -> bool:
-        "Initialize Gemini client.",
+        "Initialize Gemini client."
         try:
             import google.generativeai as genai
-
-            genai.configure(api_key=api_key)
+            genai.configure
             self.client = genai.GenerativeModel(self.model)
-            logger.info("Gemini provider initialized successfully",
+            logger.info("Gemini provider initialized successfully")
             return True
         except Exception as e:
-            logger.error(f"Failed to initialize Gemini provider: {str(e)}"))
+            logger.error(f"Failed to initialize Gemini provider: {str(e)}")
             return False
-        def process_query(self, messages: List[Dict[str, str]],**kwargs) -> Dict[str, Any]:
-        "Process query with Gemini.",
+
+    def process_query(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, Any]:
+        "Process query with Gemini."
         try:
             # Convert OpenAI format to Gemini format
             gemini_messages = self._convert_messages(messages)
-
-            import google.generativeai as genai
-
-            response = self.client.generate_content(
+            
+            response = self.client.generate_content()
                 gemini_messages,
-                generation_config=genai.types.GenerationConfig(
+                generation_config=genai.types.GenerationConfig()
                     max_output_tokens=kwargs.get("max_tokens", 500),
-                    temperature=kwargs.get("temperature", 0.3),
-                ),
-            )
+                    temperature=kwargs.get("temperature", 0.3)))
 
-            return {
+            return {}
                 "status": "success",
                 "response": response.text.strip(),
                 "model": self.model,
-                "tokens_used": (
+                "tokens_used": ()
                     response.usage_metadata.total_token_count
-                    if hasattr(response, "usage_metadata",
+                    if hasattr(response, "usage_metadata")
                     else None
                 ),
                 "provider": "gemini"
             }
         except Exception as e:
-            logger.error(f"Gemini query failed: {str(e)}"))
+            logger.error(f"Gemini query failed: {str(e)}")
             return {"status": "error", "error": str(e), "provider": "gemini"}
 
     def _convert_messages(self, messages: List[Dict[str, str]]) -> str:
-        "Convert OpenAI message format to Gemini format.",
+        "Convert OpenAI message format to Gemini format."
         converted = []
         for msg in messages:
-            role = msg.get("role", "user",
+            role = msg.get("role", "user")
             content = msg.get("content", ")
 
-            if role == "system"):
-                converted.append("System: {content}")
-            elif role == "user"):
-                converted.append("User: {content}")
-            elif role == "assistant"):
-                converted.append("Assistant: {content}")
+            if role == "system":
+                converted.append(f"System: {content}")
+            elif role == "user":
+                converted.append(f"User: {content}")
+            elif role == "assistant":
+                converted.append(f"Assistant: {content}")
 
-        return "\n\n".join(converted)
+        return "\n".join(converted)
 
     def get_model_info(self) -> Dict[str, str]:
-        "Get Gemini model information.",
+        "Get Gemini model information."
         return {"provider": "gemini", "model": self.model, "name": "Gemini 1.5 Pro"}
 
 
 class FlexibleAIHandler:
-    "Flexible AI handler supporting multiple providers.",
+    "Flexible AI handler supporting multiple providers."
 
     def __init__(self, provider: str = "auto"):
-        "
+        ""
         Initialize AI handler.
 
         Args:
-            provider: "openai", "gemini", or "auto" (detects based on
-                     available API keys)
+            provider: "openai", "gemini", or "auto" (detects based on available API keys)
         "
         self.provider_name = provider
         self.provider = None
-        self.system_prompt = self._get_system_prompt()
-        self.conversation_history: List[Dict[str, str]] = []
-
-        # Initialize provider
+        self.conversation_history = []
         self._initialize_provider()
 
     def _setup_local_provider(self):
-        "Set up local provider.",
+        "Set up local provider."
         self.provider = LocalProvider()
         self.provider.initialize()
 
     def _detect_auto_provider(self):
-        "Detect available provider automatically."",
-        if os.getenv("OPENAI_API_KEY"):
-            self.provider_name = "openai",
-        elif os.getenv("GEMINI_API_KEY"):
-            self.provider_name = "gemini",
+        "Detect available provider automatically.""
+        if os.getenv("OPENAI_API_KEY":
+            self.provider_name = "openai"
+        elif os.getenv("GEMINI_API_KEY":
+            self.provider_name = "gemini"
         else:
-            logger.warning("No AI provider API keys found, using local provider",
-            self.provider_name = "local",
+            logger.warning("No AI provider API keys found, using local provider")
+            self.provider_name = "local"
             self._setup_local_provider()
 
     def _setup_openai_provider(self):
-        "Set up OpenAI provider.",
+        "Set up OpenAI provider."
         self.provider = OpenAIProvider()
-        api_key = os.getenv("OPENAI_API_KEY",
+        api_key = os.getenv("OPENAI_API_KEY")
         if api_key:
-        if not self.provider.initialize(api_key):
-                logger.warning("OpenAI provider failed, falling back to local",
-                self.provider_name = "local",
+            if not self.provider.initialize(api_key:
+                logger.warning("OpenAI provider failed, falling back to local")
+                self.provider_name = "local"
                 self._setup_local_provider()
+        else:
+            logger.warning("OpenAI API key not found, falling back to local")
+            self.provider_name = "local"
+            self._setup_local_provider()
 
     def _setup_gemini_provider(self):
-        "Set up Gemini provider.",
+        "Set up Gemini provider."
         self.provider = GeminiProvider()
-        api_key = os.getenv("GEMINI_API_KEY",
+        api_key = os.getenv("GEMINI_API_KEY")
         if api_key:
-        if not self.provider.initialize(api_key):
-                logger.warning("Gemini provider failed, falling back to local",
-                self.provider_name = "local",
+            if not self.provider.initialize(api_key:
+                logger.warning("Gemini provider failed, falling back to local")
+                self.provider_name = "local"
                 self._setup_local_provider()
+        else:
+            logger.warning("Gemini API key not found, falling back to local")
+            self.provider_name = "local"
+            self._setup_local_provider()
 
     def _initialize_provider(self):
-        "Initialize the appropriate AI provider.",
-        if self.provider_name == "local"):
+        "Initialize the appropriate AI provider."
+        if self.provider_name == "local":
             self._setup_local_provider()
-            return if
-        self.provider_name == "auto"):
-            self._detect_auto_provider()
-            return if
-        self.provider_name == "openai"):
+        elif self.provider_name == "openai":
             self._setup_openai_provider()
-        elif self.provider_name == "gemini"):
+        elif self.provider_name == "gemini":
             self._setup_gemini_provider()
+        elif self.provider_name == "auto":
+            self._detect_auto_provider()
         else:
-            logger.error(
-                "Unknown provider: {self.provider_name}, falling back to local",
-            self.provider_name = "local",
+            logger.error(f"Unknown provider: {self.provider_name}, falling back to local")
+            self.provider_name = "local"
             self._setup_local_provider()
 
     def _get_system_prompt(self) -> str:
-        "Get the system prompt for DevOps assistant role.",
-        return (
-            "You are a Senior DevOps Engineer and Cloud Operations ",
-            "expert. Your role is to assist with:
+        "Get the system prompt for DevOps assistant role."
+        return "You are a Senior DevOps Engineer and Cloud Operations expert. Your role is to assist with:
 
-1. **Infrastructure Analysis**: Analyze AWS resources, monitoring data, ",
-            "and system metrics
+1. **Infrastructure Analysis**: Analyze AWS resources, monitoring data, and system metrics
 2. **Troubleshooting**: Help diagnose issues using logs, metrics, and system status
 3. **Best Practices**: Provide guidance on DevOps, security, and cloud operations
-4. **Automation**: Suggest improvements and automation opportunities
-5. **Monitoring**: Interpret Prometheus metrics and Grafana dashboards
+4. **Automation**: Suggest improvements for CI/CD pipelines and automation
+5. **Monitoring**: Help interpret Prometheus metrics, Grafana dashboards, and alerts
 
-**Response Guidelines**:
-- Be concise and actionable
-- Use technical terminology appropriately
-- Provide specific recommendations when possible
-- Include relevant metrics or data points
-- Suggest next steps for investigation
-
-**Current System Context**:
-- AWS infrastructure with EC2 instances
-- Prometheus + Grafana monitoring stack
-- Flask application with metrics endpoints
+**Available Tools**:
+- Prometheus for metrics collection
+- Grafana for visualization
 - Node Exporter for system metrics
 
 Always respond in a professional, helpful manner focused on operational excellence."
-        )
 
     def sanitize_input(self, query: str) -> str:
-        "Sanitize and validate user input with comprehensive security checks.",
-        if not query or not isinstance(query, str):
-            raise ValueError("Query must be a non-empty string"
+        "Sanitize and validate user input with comprehensive security checks."
+        if not query or not isinstance(query, str:
+            raise ValueError("Query must be a non-empty string")
 
-        # Remove potentially dangerous characters and patterns
+        # Basic sanitization
         sanitized = query.strip()
-
+        
         # Remove script tags and their content
-        sanitized = re.sub(
-            r"<script[^>]*>.*?</script>", ", sanitized, flags=re.IGNORECASE | re.DOTALL
-        )
-
+        sanitized = re.sub(r"<script[^>]*>.*?</script>", ", sanitized, flags=re.IGNORECASE | re.DOTALL)
+        
         # Remove alert calls
         sanitized = re.sub(r"alert\s*\([^)]*\)", ", sanitized, flags=re.IGNORECASE)
-
+        
         # Remove other dangerous characters
-        sanitized = re.sub(r'[<>"]f', ", sanitized)
-
+        sanitized = re.sub(r'[<>"]', ", sanitized)
+        
         # Limit query length
         if len(sanitized) > 1000:
-            sanitized = sanitized[:1000] + "..."
+            raise ValueError("Query too long (max 1000 characters)")
 
-        # Enhanced injection prevention patterns
-        dangerous_patterns = [
+        # Check for dangerous patterns
+        dangerous_patterns = []
             # Command injection
-            r"system\s*\(",
-            r"eval\s*\(",
             r"exec\s*\(",
             r"subprocess\.",
             r"os\.system",
@@ -579,282 +433,129 @@ Always respond in a professional, helpful manner focused on operational excellen
             r"UNION\s+SELECT",
             r"OR\s+1\s*=\s*1",
             r"AND\s+1\s*=\s*1"
-            # Python code injection
-            r"__import__",
-            r"import\s+os",
-            r"import\s+sys",
-            r"import\s+subprocess",
-            r"globals\(",
-            r"locals\(",
-            r"compile\(",
-            # File system access
-            r"open\s*\(",
-            r"file\s*\(",
-            r"read\s*\(",
-            r"write\s*\(",
-            # Network access
-            r"urllib\.",
-            r"requests\.",
-            r"socket\.",
-            r"http\.",
-            # Reflection and metaprogramming
-            r"getattr\(",
-            r"setattr\(",
-            r"hasattr\(",
-            r"delattr\(",
-            r"type\(",
-            r"isinstance\(",
-            # Dangerous built-ins
-            r"input\(",
-            r"raw_input\(",
-            r"exec\(",
-            r"eval\(",
-            # Unicode normalization attacks
-            r"\\u[0-9a-fA-F]{4}",
-            r"\\x[0-9a-fA-F]{2}",
-            # Template injection
-            r"\{\{.*\}\}",
-            r"\{%.*%\}",
-            r"\{#.*#\}",
-            # XSS patterns
-            r"javascript:",
-            r"on\w+\s*=",
-            r"<iframe",
-            r"<object",
-            r"<embed",
-            r"<form",
-            r"<input",
-            r"<textarea",
-            r"<select",
-            r"<button"
-            # Path traversal
-            r"\.\./",
-            r"\.\.\\",
-            r"~",
-            r"/etc/",
-            r"/proc/",
-            r"/sys/",
-            r"C:\\",
-            r"D:\\",
-            # Shell command patterns (more specific)
-            r"\$\(.*\)",
-            r"`.*`",
-            r"&&\s*[a-zA-Z]",
-            r"\|\|\s*[a-zA-Z]",
-            r";\s*[a-zA-Z]",
-            r"&\s*[a-zA-Z]",
-            r"\|\s*[a-zA-Z]",
-            r">\s*[a-zA-Z]",
-            r"<\s*[a-zA-Z]",
-            r">>\s*[a-zA-Z]",
-            r"<<\s*[a-zA-Z]",
-            # Environment variable access
-            r"\$\{.*\}",
-            r"\$[A-Z_]+",
-            # Hex encoded payloads
-            r"\\x[0-9a-fA-F]{2,}",
-            # URL encoded payloads
-            r"%[0-9a-fA-F]{2}",
         ]
-
+        
         for pattern in dangerous_patterns:
-            if re.search(pattern, sanitized, re.IGNORECASE):
-                logger.warning(f"Potentially dangerous pattern detected: {pattern}"))
-                raise ValueError("Query contains potentially unsafe content: {pattern}")
-
-        # Additional validation checks
-        if self._contains_suspicious_encoding(sanitized):
-            raise ValueError("Query contains suspicious encoding patterns",
-
-        if self._contains_obfuscated_code(sanitized):
-            raise ValueError("Query contains obfuscated code patterns",
-
-        if self._contains_privilege_escalation(sanitized):
-            raise ValueError("Query contains privilege escalation patterns",
+            if re.search(pattern, sanitized, re.IGNORECASE:
+                logger.warning(f"Potentially dangerous pattern detected: {pattern}")
+                raise ValueError(f"Query contains potentially unsafe content: {pattern}")
 
         return sanitized
-        def _contains_suspicious_encoding(self, text: str) -> bool:
-        "Check for suspicious encoding patterns."
-        # Check for excessive encoding
-        encoded_chars = len(re.findall(r"%[0-9a-fA-F]{2}", text))
-        if encoded_chars > len(text) * 0.3:  # More than 30% encoded
-            return True
-
-        # Check for double encoding
-        if re.search(r"%25[0-9a-fA-F]{2}", text):
-            return True
-        return False
-
-    def _contains_obfuscated_code(self, text: str) -> bool:
-        "Check for obfuscated code patterns."
-        # Check for excessive use of special characters
-        special_chars = len(re.findall(r"[^\w\s]", text))
-        special_char_ratio = special_chars / len(text) if text else 0
-
-        if special_char_ratio > 0.7:  # More than 70% special chars (increased from 50%)
-            logger.debug(f"High special character ratio: {special_char_ratio:.2f}"))
-            return True
-
-        # Check for repeated patterns that might indicate obfuscation
-        # Only check for repeated special characters, not alphanumeric
-        if re.search(
-            r"([^\w\s])\1{20,}", text
-        ):  # Same special character repeated 20+ times
-            logger.debug("Detected repeated special character pattern",
-            return True
-        return False
-
-    def _contains_privilege_escalation(self, text: str) -> bool:
-        "Check for privilege escalation patterns.",
-        privilege_patterns = [
-            r"sudo",
-            r"su\s+",
-            r"runas",
-            r"elevate",
-            r"privilege",
-            r"admin",
-            r"root",
-            r"chmod\s+777",
-            r"chown\s+root",
-            r"setuid",
-            r"setgid"
-        ]
-
-        for pattern in privilege_patterns:
-            if re.search(pattern, text, re.IGNORECASE):
-                return True
-        return False
 
     def add_context(self, context: Dict[str, Any]) -> str:
-        "Add system context to the conversation.",
-        context_prompt = "\n\n**Current System Context**:\n",
+        "Add system context to the conversation."
+        context_prompt = "\n\n**Current System Context**:\n"
 
-        if context.get("system_health"):
-            context_prompt += "- System Health: {context['system_health']}\n",
+        if context.get("system_health":
+            context_prompt += f"- System Health: {context['system_health']}\n"
 
-        if context.get("prometheus_metrics"):
-            context_prompt += "- Prometheus Status: {context['prometheus_metricsf']}\n",
+        if context.get("prometheus_metrics":
+            context_prompt += f"- Prometheus Status: {context['prometheus_metrics']}\n"
 
-        if context.get("recent_alerts"):
-            context_prompt += "- Recent Alerts: {context['recent_alerts']}\n",
+        if context.get("recent_alerts":
+            context_prompt += f"- Recent Alerts: {context['recent_alerts']}\n"
 
-        if context.get("resource_usage"):
-            context_prompt += "- Resource Usage: {context['resource_usage']}\n",
+        if context.get("resource_usage":
+            context_prompt += f"- Resource Usage: {context['resource_usage']}\n"
 
         return context_prompt
-        def process_query(
+
+    def process_query()
         self, query: str, context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-        "Process ChatOps query with AI integration.",
+        "Process ChatOps query with AI integration."
         try:
             # Check if AI provider is available
             if not self.provider:
-                return {
+                return {}
                     "status": "error",
-                    "error": "AI functionality not available",
-                    "message": "No AI provider configured. Set ",
-                    "{self.provider_name.upper()}_API_KEY environment variable.",
+                    "message": "AI provider not initialized",
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 
             # Sanitize input
             sanitized_query = self.sanitize_input(query)
 
-            # Prepare context
-            context = context or {}
-            context_prompt = self.add_context(context)
-
-            # Build messages
-            messages = [
-                {"role": "system", "content": self.system_prompt + context_prompt},
-                {"role": "user", "content": sanitized_query},
-            ]
-
-            # Add conversation history (last 10 messages)
-            if self.conversation_history:
-                recent_history = self.conversation_history[-10:]
-                messages = (
-                    [{"role": "system", "content": self.system_prompt + context_prompt}]
-                    + recent_history
-                    + [{"role": "user", "content": sanitized_query}]
-                )
+            # Prepare messages
+            messages = []
+            
+            # Add system prompt
+            system_prompt = self._get_system_prompt()
+            if context:
+                system_prompt += self.add_context(context)
+            
+            messages.append({"role": "system", "content": system_prompt})
+            
+            # Add conversation history
+            messages.extend(self.conversation_history[-10:])  # Last 10 messages
+            
+            # Add current query
+            messages.append({"role": "user", "content": sanitized_query})
 
             # Process with AI provider
             result = self.provider.process_query(messages)
 
-            if result["status"] == "success"):
-                # Update conversation history
-                self.conversation_history.append(
-                    {"role": "user", "content": sanitized_query}
-                )
-                self.conversation_history.append(
-                    {"role": "assistant", "content": result["response"]}
-                )
-
+            if result["status"] == "success":
+                # Add to conversation history
+                self.conversation_history.append({"role": "user", "content": sanitized_query})
+                self.conversation_history.append({"role": "assistant", "content": result["response"]})
+                
                 # Keep history manageable
                 if len(self.conversation_history) > 20:
                     self.conversation_history = self.conversation_history[-20:]
 
-                logger.info(
-                    "Successfully processed query with {self.provider_name}: ",
-                    "{sanitized_query[:50]}..."
-                )
-
-                return {
+                return {}
                     "status": "success",
+                    "message": "Query processed successfully",
                     "response": result["response"],
-                    "query": sanitized_query,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "model": result.get("model", "unknown",
+                    "model": result.get("model", "unknown"),
                     "provider": result.get("provider", self.provider_name),
                     "tokens_used": result.get("tokens_used")
                 }
             else:
-                return {
+                return {}
                     "status": "error",
-                    "error": result.get("error", "Unknown error",
                     "message": "AI processing failed",
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "provider": result.get("provider", self.provider_name),
                 }
 
         except ValueError as e:
-            logger.warning(f"Input validation error: {str(e)}"))
-            return {
+            logger.warning(f"Input validation error: {str(e)}")
+            return {}
                 "status": "error",
-                "error": "Invalid input",
-                "message": str(e),
+                "message": f"Input validation failed: {str(e)}",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         except Exception as e:
-            logger.error(f"AI processing error: {str(e)}"))
-            return {
+            logger.error(f"AI processing error: {str(e)}")
+            return {}
                 "status": "error",
-                "error": "Processing failed",
-                "message": "Unable to process query at this time",
+                "message": f"Processing failed: {str(e)}",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
     def get_conversation_history(self) -> List[Dict[str, str]]:
-        "Get conversation history.",
+        "Get conversation history."
         return self.conversation_history.copy()
 
     def clear_history(self) -> bool:
-        "Clear conversation history.",
+        "Clear conversation history."
         self.conversation_history.clear()
-        logger.info("Conversation history cleared",
+        logger.info("Conversation history cleared")
         return True
-        def get_provider_info(self) -> Dict[str, Any]:
-        "Get information about the current AI provider.",
+
+    def get_provider_info(self) -> Dict[str, Any]:
+        "Get information about the current AI provider."
         if self.provider:
-            return {
+            return {}
                 "provider": self.provider_name,
-                "available": True,
                 "model_info": self.provider.get_model_info(),
+                "status": "initialized"
             }
         else:
-            return {
+            return {}
                 "provider": self.provider_name,
-                "available": False,
-                "model_info": None,
+                "status": "not_initialized"
             }
