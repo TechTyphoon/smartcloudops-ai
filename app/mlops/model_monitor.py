@@ -101,7 +101,7 @@ class ModelMonitor:
         }
 
         # Active monitors
-        self.active_monitors = {
+        self.active_monitors = {}
         self.monitoring_thread = None
         self.is_monitoring = False
 
@@ -110,7 +110,7 @@ class ModelMonitor:
         self.logger = logging.getLogger(__name__)
 
     def _init_database(self):
-        "Initialize SQLite database for monitoring",
+        """Initialize SQLite database for monitoring"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
@@ -183,8 +183,8 @@ class ModelMonitor:
         conn.close()
 
     def start_monitoring(self, model_id: str, model_version: str, monitoring_interval: int = 300):
-        "Start monitoring a model",
-        monitor_key = f"{model_id}_{model_version}",
+        """Start monitoring a model"""
+        monitor_key = f"{model_id}_{model_version}"
 
         if monitor_key in self.active_monitors:
             print(f"⚠️ Already monitoring model: {model_id} v{model_version}")
