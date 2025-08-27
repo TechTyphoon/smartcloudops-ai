@@ -5,7 +5,7 @@ Tests business logic layer for anomaly operations
 """
 
 import pytest
-from datetime import datetime
+from datetime import datetime, timezone
 from unittest.mock import patch
 
 # Import the service we're testing
@@ -268,9 +268,9 @@ class TestAnomalyService:
     @patch('app.services.anomaly_service.datetime')
     def test_create_anomaly_timestamps(self, mock_datetime):
         """Test that anomaly creation sets proper timestamps."""
-        # Mock datetime to return a fixed time
-        fixed_time = datetime(2024, 1, 15, 12, 0, 0)
-        mock_datetime.utcnow.return_value = fixed_time
+        # Mock datetime.now() to return a fixed time
+        fixed_time = datetime(2024, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
+        mock_datetime.now.return_value = fixed_time
         
         anomaly_data = {
             "title": "Test Anomaly",
@@ -282,7 +282,7 @@ class TestAnomalyService:
         
         new_anomaly = self.service.create_anomaly(anomaly_data)
         
-        expected_timestamp = "2024-01-15T12:00:00Z"
+        expected_timestamp = "2024-01-15T12:00:00+00:00Z"
         assert new_anomaly["created_at"] == expected_timestamp
         assert new_anomaly["updated_at"] == expected_timestamp
 
