@@ -15,10 +15,10 @@ from ml_models.mlflow_config import MLflowManager, get_mlflow_manager
 
 @pytest.mark.unit
 class TestMLflowManagerEnhanced:
-    """Test cases for enhanced MLflow manager."""
+    """Test cases for enhanced MLflow manager."""""
     
     def setup_method(self):
-        """Set up test fixtures before each test method."""
+        """Set up test fixtures before each test method."""""
         # Create temporary directory for fallback storage
         self.temp_dir = tempfile.mkdtemp()
         self.mlflow_manager = MLflowManager(
@@ -31,14 +31,14 @@ class TestMLflowManagerEnhanced:
         os.makedirs(self.mlflow_manager.fallback_storage_path, exist_ok=True)
     
     def teardown_method(self):
-        """Clean up test fixtures after each test method."""
+        """Clean up test fixtures after each test method."""""
         if os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
     
     # ===== INITIALIZATION TESTS =====
     
     def test_initialization_without_mlflow(self):
-        """Test MLflow manager initializes correctly without MLflow package."""
+        """Test MLflow manager initializes correctly without MLflow package."""""
         assert self.mlflow_manager is not None
         assert self.mlflow_manager.tracking_uri == "http://test:5000"
         assert self.mlflow_manager.experiment_name == "test_experiment"
@@ -47,7 +47,7 @@ class TestMLflowManagerEnhanced:
         assert self.mlflow_manager.available is False
     
     def test_initialization_with_environment_variables(self):
-        """Test initialization with environment variables."""
+        """Test initialization with environment variables."""""
         with patch.dict(os.environ, {
             'MLFLOW_TRACKING_URI': 'http://env:6000',
             'MLFLOW_REGISTRY_URI': 'sqlite:///env_test.db',
@@ -59,7 +59,7 @@ class TestMLflowManagerEnhanced:
             assert manager.registry_uri == 'sqlite:///env_test.db'
     
     def test_get_experiment_info(self):
-        """Test getting experiment information."""
+        """Test getting experiment information."""""
         info = self.mlflow_manager.get_experiment_info()
         
         assert isinstance(info, dict)
@@ -71,7 +71,7 @@ class TestMLflowManagerEnhanced:
     # ===== RUN MANAGEMENT TESTS =====
     
     def test_start_run_fallback(self):
-        """Test starting a run with fallback logging."""
+        """Test starting a run with fallback logging."""""
         run = self.mlflow_manager.start_run(
             "test_run",
             tags={"custom_tag": "test_value"}
@@ -91,7 +91,7 @@ class TestMLflowManagerEnhanced:
         assert any(f.endswith('.json') for f in run_files)
     
     def test_start_nested_run(self):
-        """Test starting nested runs."""
+        """Test starting nested runs."""""
         parent_run = self.mlflow_manager.start_run("parent_run")
         nested_run = self.mlflow_manager.start_run("nested_run", nested=True)
         
@@ -99,7 +99,7 @@ class TestMLflowManagerEnhanced:
         assert nested_run["run_name"] == "nested_run"
     
     def test_end_run(self):
-        """Test ending a run."""
+        """Test ending a run."""""
         # Should not raise an exception
         self.mlflow_manager.end_run("FINISHED")
         self.mlflow_manager.end_run("FAILED")
@@ -107,7 +107,7 @@ class TestMLflowManagerEnhanced:
     # ===== PARAMETER LOGGING TESTS =====
     
     def test_log_model_params_fallback(self):
-        """Test logging parameters with fallback."""
+        """Test logging parameters with fallback."""""
         params = {
             "learning_rate": 0.01,
             "epochs": 100,
@@ -127,7 +127,7 @@ class TestMLflowManagerEnhanced:
         assert saved_params == params
     
     def test_log_model_params_complex_types(self):
-        """Test logging parameters with complex types."""
+        """Test logging parameters with complex types."""""
         params = {
             "string_param": "test_value",
             "int_param": 42,
@@ -148,7 +148,7 @@ class TestMLflowManagerEnhanced:
     # ===== METRICS LOGGING TESTS =====
     
     def test_log_model_metrics_fallback(self):
-        """Test logging metrics with fallback."""
+        """Test logging metrics with fallback."""""
         metrics = {
             "accuracy": 0.95,
             "precision": 0.92,
@@ -170,7 +170,7 @@ class TestMLflowManagerEnhanced:
         assert "timestamp" in saved_metrics
     
     def test_log_model_metrics_without_step(self):
-        """Test logging metrics without step parameter."""
+        """Test logging metrics without step parameter."""""
         metrics = {"loss": 0.05}
         
         self.mlflow_manager.log_model_metrics(metrics)
@@ -185,7 +185,7 @@ class TestMLflowManagerEnhanced:
     # ===== ARTIFACT LOGGING TESTS =====
     
     def test_log_model_artifact_fallback(self):
-        """Test logging artifacts with fallback."""
+        """Test logging artifacts with fallback."""""
         # Create a temporary test file
         test_file = os.path.join(self.temp_dir, "test_artifact.txt")
         with open(test_file, 'w') as f:
@@ -206,7 +206,7 @@ class TestMLflowManagerEnhanced:
         assert "timestamp" in artifacts[0]
     
     def test_log_multiple_artifacts(self):
-        """Test logging multiple artifacts."""
+        """Test logging multiple artifacts."""""
         # Create multiple test files
         for i in range(3):
             test_file = os.path.join(self.temp_dir, f"test_artifact_{i}.txt")
@@ -227,7 +227,7 @@ class TestMLflowManagerEnhanced:
     # ===== MODEL MANAGEMENT TESTS =====
     
     def test_save_model_fallback(self):
-        """Test saving model with fallback."""
+        """Test saving model with fallback."""""
         # Create a mock model
         mock_model = {"type": "test_model", "parameters": {"test": "value"}}
         
@@ -250,7 +250,7 @@ class TestMLflowManagerEnhanced:
         assert model_files[0].endswith(".pkl")
     
     def test_save_model_different_flavors(self):
-        """Test saving models with different flavors."""
+        """Test saving models with different flavors."""""
         mock_model = {"test": "model"}
         
         sklearn_uri = self.mlflow_manager.save_model(mock_model, "sklearn_model", "sklearn")
@@ -264,7 +264,7 @@ class TestMLflowManagerEnhanced:
         assert len(model_files) == 2
     
     def test_register_model_fallback(self):
-        """Test registering model with fallback."""
+        """Test registering model with fallback."""""
         model_uri = "file:///test/model/path"
         
         result = self.mlflow_manager.register_model(
@@ -292,7 +292,7 @@ class TestMLflowManagerEnhanced:
         assert registry[0]["tags"]["version"] == "1.0"
     
     def test_register_multiple_model_versions(self):
-        """Test registering multiple versions of the same model."""
+        """Test registering multiple versions of the same model."""""
         model_name = "multi_version_model"
         
         # Register version 1
@@ -313,7 +313,7 @@ class TestMLflowManagerEnhanced:
         assert sorted(versions) == [1, 2]
     
     def test_list_registered_models_fallback(self):
-        """Test listing registered models with fallback."""
+        """Test listing registered models with fallback."""""
         # Register some models
         self.mlflow_manager.register_model("uri1", "model1")
         self.mlflow_manager.register_model("uri2", "model2")
@@ -326,17 +326,17 @@ class TestMLflowManagerEnhanced:
         assert "model2" in model_names
     
     def test_list_registered_models_empty(self):
-        """Test listing registered models when registry is empty."""
+        """Test listing registered models when registry is empty."""""
         models = self.mlflow_manager.list_registered_models()
         assert models == []
 
 
 @pytest.mark.unit
 class TestMLflowManagerGlobalInstance:
-    """Test global MLflow manager instance."""
+    """Test global MLflow manager instance."""""
     
     def test_get_mlflow_manager(self):
-        """Test getting global MLflow manager instance."""
+        """Test getting global MLflow manager instance."""""
         manager1 = get_mlflow_manager()
         manager2 = get_mlflow_manager()
         
@@ -345,7 +345,7 @@ class TestMLflowManagerGlobalInstance:
         assert isinstance(manager1, MLflowManager)
     
     def test_global_manager_configuration(self):
-        """Test global manager has correct configuration."""
+        """Test global manager has correct configuration."""""
         manager = get_mlflow_manager()
         
         assert manager.experiment_name == "smartcloudops-ai"
@@ -354,22 +354,22 @@ class TestMLflowManagerGlobalInstance:
 
 @pytest.mark.unit
 class TestMLflowManagerEdgeCases:
-    """Test edge cases and error conditions."""
+    """Test edge cases and error conditions."""""
     
     def setup_method(self):
-        """Set up test fixtures."""
+        """Set up test fixtures."""""
         self.temp_dir = tempfile.mkdtemp()
         self.manager = MLflowManager(enable_fallback_logging=True)
         self.manager.fallback_storage_path = os.path.join(self.temp_dir, "fallback")
         os.makedirs(self.manager.fallback_storage_path, exist_ok=True)
     
     def teardown_method(self):
-        """Clean up test fixtures."""
+        """Clean up test fixtures."""""
         if os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
     
     def test_fallback_logging_disabled(self):
-        """Test manager with fallback logging disabled."""
+        """Test manager with fallback logging disabled."""""
         # Create isolated temp directory for this test
         isolated_temp = tempfile.mkdtemp()
         
@@ -392,7 +392,7 @@ class TestMLflowManagerEdgeCases:
                 shutil.rmtree(isolated_temp)
     
     def test_empty_parameters_and_metrics(self):
-        """Test logging empty parameters and metrics."""
+        """Test logging empty parameters and metrics."""""
         self.manager.log_model_params({})
         self.manager.log_model_metrics({})
         
@@ -404,7 +404,7 @@ class TestMLflowManagerEdgeCases:
         assert os.path.exists(metrics_file)
     
     def test_large_parameter_values(self):
-        """Test logging large parameter values."""
+        """Test logging large parameter values."""""
         large_params = {
             "large_string": "x" * 10000,
             "large_list": list(range(1000)),

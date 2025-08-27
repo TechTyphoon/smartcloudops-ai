@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 class MLTrainingPipeline:
-    """ML training pipeline with MLflow integration."""
+    """ML training pipeline with MLflow integration."""""
 
     def __init__(self, experiment_name: str = "anomaly-detection"):
         """Initialize training pipeline.
@@ -306,7 +306,7 @@ class MLTrainingPipeline:
 
 
 def main():
-    """Main training pipeline execution."""
+    """Main training pipeline execution."""""
     # Initialize pipeline
     pipeline = MLTrainingPipeline()
 

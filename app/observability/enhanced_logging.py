@@ -1,7 +1,7 @@
-"
+"""
 Enhanced Structured Logging with OpenTelemetry Integration
 Phase 4: Observability & Operability - Production-ready logging
-"
+"""
 
 import logging
 import os
@@ -164,9 +164,8 @@ def setup_enhanced_logging()
 
     # Configure structlog if enabled
     if enable_structlog:
-        structlog.configure()
-            processors=[]
-                structlog.stdlib.filter_by_level,
+        structlog.configure(
+    processors = [                structlog.stdlib.filter_by_level,
                 structlog.stdlib.add_logger_name,
                 structlog.stdlib.add_log_level,
                 structlog.stdlib.PositionalArgumentsFormatter(),
@@ -183,8 +182,8 @@ def setup_enhanced_logging()
 
     # Configure standard logging
     if log_format == "json":
-        formatter = EnhancedJSONFormatter()
-            fmt="%(timestamp)s %(level)s %(name)s %(message)s"
+        formatter = EnhancedJSONFormatter(
+    fmt="%(timestamp)s %(level)s %(name)s %(message)s"
         )
     else:
         formatter = logging.Formatter()
@@ -192,8 +191,7 @@ def setup_enhanced_logging()
         )
 
     # Configure handlers
-    handlers = []
-
+    handlers = [
     # Console handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(formatter)
@@ -204,12 +202,12 @@ def setup_enhanced_logging()
         log_dir = "logs"
         os.makedirs(log_dir, exist_ok=True)
         
-        file_handler = logging.FileHandler(f"{log_dir}/app.log")
+        file_handler = logging.FileHandler("{log_dir}/app.log")
         file_handler.setFormatter(formatter)
         handlers.append(file_handler)
 
         # Error log file
-        error_handler = logging.FileHandler(f"{log_dir}/error.log")
+        error_handler = logging.FileHandler("{log_dir}/error.log")
         error_handler.setFormatter(formatter)
         error_handler.setLevel(logging.ERROR)
         handlers.append(error_handler)
@@ -249,8 +247,8 @@ def get_logger(name: str = None) -> Union[structlog.BoundLogger, logging.Logger]
     "Get a logger instance with current context"
     if logger and hasattr(logger, "bind":
         # Return structlog logger with context
-        return logger.bind()
-            correlation_id=correlation_id.get(),
+        return logger.bind(
+    correlation_id=correlation_id.get(),
             request_id=request_id.get(),
             user_id=user_id.get(),
             session_id=session_id.get())
@@ -310,7 +308,8 @@ def log_performance()
     success: bool = True,
     **kwargs: Any) -> None:
     "Log performance metrics with OpenTelemetry integration"
-    log_data = {}
+    log_data = {
+
         "operation": operation,
         "duration_ms": duration_ms,
         "success": success,
@@ -319,7 +318,7 @@ def log_performance()
     log_data.update(kwargs)
 
     # Create span for performance tracking
-    with tracer.start_as_current_span(f"performance.{operation}") as span:
+    with tracer.start_as_current_span("performance.{operation}") as span:
         span.set_attribute("operation", operation)
         span.set_attribute("duration_ms", duration_ms)
         span.set_attribute("success", success)
@@ -336,7 +335,7 @@ def log_performance()
 
         # Log performance data
         level = "info" if success else "warning"
-        get_logger().log(level, f"Performance: {operation}", **log_data)
+        get_logger().log(level, "Performance: {operation}", **log_data)
 
 
 def log_security_event()
@@ -346,7 +345,8 @@ def log_security_event()
     ip_address: Optional[str] = None,
     **kwargs: Any) -> None:
     "Log security events with enhanced context"
-    security_data = {}
+    security_data = {
+
         "event_type": event_type,
         "security_event": True,
         "severity": severity,
@@ -360,7 +360,7 @@ def log_security_event()
     security_data.update(kwargs)
 
     # Create security span
-    with tracer.start_as_current_span(f"security.{event_type}") as span:
+    with tracer.start_as_current_span("security.{event_type}") as span:
         span.set_attribute("event_type", event_type)
         span.set_attribute("severity", severity)
         
@@ -368,15 +368,16 @@ def log_security_event()
             if isinstance(value, (str, int, float, bool:
                 span.set_attribute(key, value)
 
-        get_logger().log(severity, f"Security Event: {event_type}", **security_data)
+        get_logger().log(severity, "Security Event: {event_type}", **security_data)
 
 
-def log_business_event()
-    event_type: str,
+def log_business_event(
+            event_type: str,
     business_value: Optional[float] = None,
     **kwargs: Any) -> None:
     "Log business events with metrics"
-    business_data = {}
+    business_data = {
+
         "event_type": event_type,
         "business_event": True,
     }
@@ -387,11 +388,11 @@ def log_business_event()
     business_data.update(kwargs)
 
     # Create business span
-    with tracer.start_as_current_span(f"business.{event_type}") as span:
+    with tracer.start_as_current_span("business.{event_type}") as span:
         span.set_attribute("event_type", event_type)
         
         for key, value in business_data.items():
             if isinstance(value, (str, int, float, bool:
                 span.set_attribute(key, value)
 
-        get_logger().info(f"Business Event: {event_type}", **business_data)
+        get_logger().info("Business Event: {event_type}", **business_data)

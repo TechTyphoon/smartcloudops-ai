@@ -8,7 +8,7 @@ import os
 
 
 def show_env_status():
-    """Show current environment variable status."""
+    """Show current environment variable status."""""
     print("🔧 Environment Variable Status")
     print("=f" * 40)
 
@@ -29,7 +29,7 @@ def show_env_status():
 
 
 def suggest_env_setup():
-    """Suggest environment variable setup commands."""
+    """Suggest environment variable setup commands."""""
     print("\n🚀 Environment Setup Suggestions")
     print("=" * 40)
     print("To set environment variables, use:")
@@ -47,7 +47,7 @@ def suggest_env_setup():
 
 
 def check_project_health():
-    """Check overall project health."""
+    """Check overall project health."""""
     print("\n🏥 Project Health Check")
     print("=" * 40)
 

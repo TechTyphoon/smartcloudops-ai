@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
 
-"
+"""
 ML Module for Smart CloudOps AI
 Extracted from main.py for modularity
-"
+"""
 
 import logging
 import os
@@ -41,14 +41,14 @@ if ML_AVAILABLE:
 def anomaly_detection():
     "ML Anomaly Detection endpoint.",
     if request.method == "GET":
-        return jsonify()
-            {}
+        return jsonify(
+            {
                 "status": "success",
                 "message": "ML Anomaly Detection Service",
                 "ml_available": ML_AVAILABLE,
                 "model_path": ML_MODEL_PATH,
                 "feature_count": ML_FEATURE_COUNT,
-                "endpoints": {}
+                "endpoints": {
                     "detect": "POST /ml/anomaly",
                     "status": "GET /ml/status",
                     "batch": "POST /ml/batch"
@@ -58,9 +58,9 @@ def anomaly_detection():
 
     try:
         if not ML_AVAILABLE or not anomaly_detector:
-            return ()
-                jsonify()
-                    {}
+            return (
+                jsonify(
+                    {
                         "error": "ML service not available",
                         "message": "Anomaly detection model not loaded"
                     }
@@ -77,18 +77,17 @@ def anomaly_detection():
             return jsonify({"error": "No metrics provided"}), 400
 
         # Convert metrics to feature vector
-        features = []
-        for i in range(ML_FEATURE_COUNT):
-            feature_name = "feature_{i}",
-            features.append(metrics.get(feature_name, 0.0)
+        features = [        for i in range(ML_FEATURE_COUNT):
+            feature_name = "feature_{i}"
+            features.append(metrics.get(feature_name, 0.0))
 
         # Perform anomaly detection
         features_array = np.array(features).reshape(1, -1)
         anomaly_score = anomaly_detector.detect_anomaly(features_array)
         is_anomaly = anomaly_score > 0.5  # Threshold
 
-        return jsonify()
-            {}
+        return jsonify(
+            {
                 "status": "success",
                 "anomaly_detected": bool(is_anomaly),
                 "anomaly_score": float(anomaly_score),
@@ -103,11 +102,11 @@ def anomaly_detection():
         return jsonify({"error": "Internal server error"}), 500
 
 
-@ml_bp.route("//status"route("//status"route("//status", methods=["GET"])
+@ml_bp.route("/status", methods=["GET"])
 def ml_status():
-    "ML Service Status endpoint.",
+    """ML Service Status endpoint."""""
     try:
-        status = {}
+        status = {
             "status": "success",
             "ml_available": ML_AVAILABLE,
             "model_loaded": anomaly_detector is not None,
@@ -117,7 +116,7 @@ def ml_status():
         }
 
         if ML_AVAILABLE and anomaly_detector:
-            status["model_info"] = {}
+            status["model_info"] = {
                 "type": "IsolationForest",
                 "version": "1.0.0",
                 "last_trained": "2024-01-01T00:00:00Z"
@@ -130,14 +129,14 @@ def ml_status():
         return jsonify({"error": "Internal server error"}), 500
 
 
-@ml_bp.route("//batch"route("//batch"route("//batch", methods=["POST"])
+@ml_bp.route("/batch", methods=["POST"])
 def batch_anomaly_detection():
-    "Batch Anomaly Detection endpoint.",
+    """Batch Anomaly Detection endpoint."""""
     try:
         if not ML_AVAILABLE or not anomaly_detector:
-            return ()
-                jsonify()
-                    {}
+            return (
+                jsonify(
+                    {
                         "error": "ML service not available",
                         "message": "Anomaly detection model not loaded"
                     }
@@ -152,25 +151,23 @@ def batch_anomaly_detection():
         if not batch_data:
             return jsonify({"error": "No batch data provided"}), 400
 
-        results = []
-        for i, item in enumerate(batch_data):
+        results = [        for i, item in enumerate(batch_data):
             try:
                 metrics = item.get("metrics", {})
-                features = []
-                for j in range(ML_FEATURE_COUNT):
-                    feature_name = "feature_{j}",
-                    features.append(metrics.get(feature_name, 0.0)
+                features = [                for j in range(ML_FEATURE_COUNT):
+                    feature_name = "feature_{j}"
+                    features.append(metrics.get(feature_name, 0.0))
 
                 features_array = np.array(features).reshape(1, -1)
                 anomaly_score = anomaly_detector.detect_anomaly(features_array)
                 is_anomaly = anomaly_score > 0.5
 
-                results.append()
-                    {}
+                results.append(
+                    {
                         "index": i,
                         "anomaly_detected": bool(is_anomaly),
                         "anomaly_score": float(anomaly_score),
-                        "timestamp": item.get()
+                        "timestamp": item.get(
                             "timestamp", datetime.now(timezone.utc).isoformat()
                         ),
                     }
@@ -178,8 +175,8 @@ def batch_anomaly_detection():
 
             except Exception as e:
                 logger.error("Error processing batch item {i}: {e}")
-                results.append()
-                    {}
+                results.append(
+                    {
                         "index": i,
                         "error": "Processing failed",
                         "anomaly_detected": False,
@@ -187,12 +184,12 @@ def batch_anomaly_detection():
                     }
                 )
 
-        return jsonify()
-            {}
+        return jsonify(
+            {
                 "status": "success",
                 "total_processed": len(batch_data),
-                "successful": len([r for r in results if "error", not in r]),
-                "anomalies_found": len()
+                "successful": len([r for r in results if "error" not in r]),
+                "anomalies_found": len(
                     [r for r in results if r.get("anomaly_detected", False)]
                 ),
                 "results": results,
@@ -208,7 +205,7 @@ def batch_anomaly_detection():
 @ml_bp.route("//train"route("//train"route("//train", methods=["POST"])
 def train_model():
     "Model Training endpoint (disabled in production).",
-    return ()
+    return (
         jsonify()
             {}
                 "error": "Model training disabled in production",

@@ -17,20 +17,20 @@ from app.services.feedback_service import FeedbackService
 
 
 class TestFeedbackService:
-    """Test suite for FeedbackService business logic."""
+    """Test suite for FeedbackService business logic."""""
     
     def setup_method(self):
-        """Set up test fixtures before each test method."""
+        """Set up test fixtures before each test method."""""
         self.service = FeedbackService()
     
     def test_service_initialization(self):
-        """Test that FeedbackService initializes correctly."""
+        """Test that FeedbackService initializes correctly."""""
         assert self.service is not None
         assert len(self.service.mock_data) == 2  # Default mock data
         assert all(isinstance(feedback, dict) for feedback in self.service.mock_data)
     
     def test_get_feedback_default_pagination(self):
-        """Test getting feedback with default pagination."""
+        """Test getting feedback with default pagination."""""
         feedback, pagination = self.service.get_feedback()
         
         assert isinstance(feedback, list)
@@ -42,7 +42,7 @@ class TestFeedbackService:
         assert pagination["pages"] == 1
     
     def test_get_feedback_custom_pagination(self):
-        """Test getting feedback with custom pagination."""
+        """Test getting feedback with custom pagination."""""
         feedback, pagination = self.service.get_feedback(page=1, per_page=1)
         
         assert len(feedback) == 1  # Only one per page
@@ -52,35 +52,35 @@ class TestFeedbackService:
         assert pagination["pages"] == 2
     
     def test_get_feedback_type_filter(self):
-        """Test filtering feedback by type."""
+        """Test filtering feedback by type."""""
         feedback, pagination = self.service.get_feedback(feedback_type="bug_report")
         
         assert len(feedback) == 1
         assert all(f["feedback_type"] == "bug_report" for f in feedback)
     
     def test_get_feedback_status_filter(self):
-        """Test filtering feedback by status."""
+        """Test filtering feedback by status."""""
         feedback, pagination = self.service.get_feedback(status="open")
         
         assert len(feedback) == 1
         assert all(f["status"] == "open" for f in feedback)
     
     def test_get_feedback_priority_filter(self):
-        """Test filtering feedback by priority."""
+        """Test filtering feedback by priority."""""
         feedback, pagination = self.service.get_feedback(priority="medium")
         
         assert len(feedback) == 1
         assert all(f["priority"] == "medium" for f in feedback)
     
     def test_get_feedback_user_id_filter(self):
-        """Test filtering feedback by user ID."""
+        """Test filtering feedback by user ID."""""
         feedback, pagination = self.service.get_feedback(user_id=1)
         
         assert len(feedback) == 1
         assert all(f["user_id"] == 1 for f in feedback)
     
     def test_get_feedback_by_id_existing(self):
-        """Test getting an existing feedback item by ID."""
+        """Test getting an existing feedback item by ID."""""
         feedback = self.service.get_feedback_by_id(1)
         
         assert feedback is not None
@@ -89,13 +89,13 @@ class TestFeedbackService:
         assert "description" in feedback
     
     def test_get_feedback_by_id_nonexistent(self):
-        """Test getting a non-existent feedback item by ID."""
+        """Test getting a non-existent feedback item by ID."""""
         feedback = self.service.get_feedback_by_id(999)
         
         assert feedback is None
     
     def test_create_feedback_valid_data(self):
-        """Test creating feedback with valid data."""
+        """Test creating feedback with valid data."""""
         feedback_data = {
             "feedback_type": "feature_request",
             "title": "Test Feature",
@@ -119,7 +119,7 @@ class TestFeedbackService:
         assert "updated_at" in new_feedback
     
     def test_create_feedback_missing_required_field(self):
-        """Test creating feedback with missing required fields."""
+        """Test creating feedback with missing required fields."""""
         feedback_data = {
             "feedback_type": "bug_report",
             # Missing title and description
@@ -129,7 +129,7 @@ class TestFeedbackService:
             self.service.create_feedback(feedback_data)
     
     def test_create_feedback_invalid_type(self):
-        """Test creating feedback with invalid type."""
+        """Test creating feedback with invalid type."""""
         feedback_data = {
             "feedback_type": "invalid_type",
             "title": "Test Feedback",
@@ -140,7 +140,7 @@ class TestFeedbackService:
             self.service.create_feedback(feedback_data)
     
     def test_create_feedback_invalid_rating(self):
-        """Test creating feedback with invalid rating."""
+        """Test creating feedback with invalid rating."""""
         feedback_data = {
             "feedback_type": "general",
             "title": "Test Feedback",
@@ -152,7 +152,7 @@ class TestFeedbackService:
             self.service.create_feedback(feedback_data)
     
     def test_create_feedback_invalid_priority(self):
-        """Test creating feedback with invalid priority."""
+        """Test creating feedback with invalid priority."""""
         feedback_data = {
             "feedback_type": "general",
             "title": "Test Feedback",
@@ -164,7 +164,7 @@ class TestFeedbackService:
             self.service.create_feedback(feedback_data)
     
     def test_create_feedback_no_rating(self):
-        """Test creating feedback without rating (should be allowed)."""
+        """Test creating feedback without rating (should be allowed)."""""
         feedback_data = {
             "feedback_type": "general",
             "title": "Test Feedback",
@@ -177,7 +177,7 @@ class TestFeedbackService:
         assert new_feedback["priority"] == "medium"  # Default priority
     
     def test_update_feedback_existing(self):
-        """Test updating an existing feedback item."""
+        """Test updating an existing feedback item."""""
         update_data = {
             "title": "Updated Title",
             "priority": "high",
@@ -194,7 +194,7 @@ class TestFeedbackService:
         assert "updated_at" in updated_feedback
     
     def test_update_feedback_nonexistent(self):
-        """Test updating a non-existent feedback item."""
+        """Test updating a non-existent feedback item."""""
         update_data = {"title": "Updated Title"}
         
         updated_feedback = self.service.update_feedback(999, update_data)
@@ -202,28 +202,28 @@ class TestFeedbackService:
         assert updated_feedback is None
     
     def test_update_feedback_invalid_rating(self):
-        """Test updating feedback with invalid rating."""
+        """Test updating feedback with invalid rating."""""
         update_data = {"rating": 0}  # Invalid: < 1
         
         with pytest.raises(ValueError, match="Rating must be an integer between 1 and 5"):
             self.service.update_feedback(1, update_data)
     
     def test_update_feedback_invalid_priority(self):
-        """Test updating feedback with invalid priority."""
+        """Test updating feedback with invalid priority."""""
         update_data = {"priority": "invalid_priority"}
         
         with pytest.raises(ValueError, match="Invalid priority"):
             self.service.update_feedback(1, update_data)
     
     def test_update_feedback_invalid_status(self):
-        """Test updating feedback with invalid status."""
+        """Test updating feedback with invalid status."""""
         update_data = {"status": "invalid_status"}
         
         with pytest.raises(ValueError, match="Invalid status"):
             self.service.update_feedback(1, update_data)
     
     def test_delete_feedback_existing(self):
-        """Test deleting an existing feedback item."""
+        """Test deleting an existing feedback item."""""
         original_count = len(self.service.mock_data)
         deleted_feedback = self.service.delete_feedback(1)
         
@@ -235,7 +235,7 @@ class TestFeedbackService:
         assert self.service.get_feedback_by_id(1) is None
     
     def test_delete_feedback_nonexistent(self):
-        """Test deleting a non-existent feedback item."""
+        """Test deleting a non-existent feedback item."""""
         original_count = len(self.service.mock_data)
         deleted_feedback = self.service.delete_feedback(999)
         
@@ -243,7 +243,7 @@ class TestFeedbackService:
         assert len(self.service.mock_data) == original_count
     
     def test_get_feedback_statistics(self):
-        """Test getting feedback statistics."""
+        """Test getting feedback statistics."""""
         stats = self.service.get_feedback_statistics()
         
         assert isinstance(stats, dict)
@@ -265,7 +265,7 @@ class TestFeedbackService:
         assert "rating_distribution" in stats["ratings"]
     
     def test_get_feedback_types(self):
-        """Test getting available feedback types."""
+        """Test getting available feedback types."""""
         feedback_types = self.service.get_feedback_types()
         
         assert isinstance(feedback_types, list)
@@ -287,14 +287,14 @@ class TestFeedbackService:
 
 @pytest.mark.unit
 class TestFeedbackServiceEdgeCases:
-    """Test edge cases and error conditions for FeedbackService."""
+    """Test edge cases and error conditions for FeedbackService."""""
     
     def setup_method(self):
-        """Set up test fixtures before each test method."""
+        """Set up test fixtures before each test method."""""
         self.service = FeedbackService()
     
     def test_pagination_edge_cases(self):
-        """Test pagination edge cases."""
+        """Test pagination edge cases."""""
         # Test page beyond available data
         feedback, pagination = self.service.get_feedback(page=10, per_page=20)
         assert len(feedback) == 0
@@ -302,13 +302,13 @@ class TestFeedbackServiceEdgeCases:
         assert pagination["total"] == 2
     
     def test_filter_no_matches(self):
-        """Test filtering that returns no matches."""
+        """Test filtering that returns no matches."""""
         feedback, pagination = self.service.get_feedback(feedback_type="nonexistent")
         assert len(feedback) == 0
         assert pagination["total"] == 0
     
     def test_multiple_filters_combined(self):
-        """Test multiple filters applied together."""
+        """Test multiple filters applied together."""""
         feedback, pagination = self.service.get_feedback(
             feedback_type="feature_request",
             status="in_progress",
@@ -320,7 +320,7 @@ class TestFeedbackServiceEdgeCases:
         assert feedback[0]["id"] == 2
     
     def test_rating_statistics_with_mixed_ratings(self):
-        """Test rating statistics calculation with various ratings."""
+        """Test rating statistics calculation with various ratings."""""
         # Add feedback items with different ratings
         self.service.create_feedback({
             "feedback_type": "general",
@@ -359,7 +359,7 @@ class TestFeedbackServiceEdgeCases:
         assert distribution.get("5", 0) == 2
     
     def test_rating_statistics_no_ratings(self):
-        """Test rating statistics when no feedback has ratings."""
+        """Test rating statistics when no feedback has ratings."""""
         # Clear data and add feedback without ratings
         self.service.mock_data = [
             {
@@ -382,7 +382,7 @@ class TestFeedbackServiceEdgeCases:
         assert stats["ratings"]["rating_distribution"] == {}
     
     def test_update_feedback_no_changes(self):
-        """Test updating feedback with no actual changes."""
+        """Test updating feedback with no actual changes."""""
         original_feedback = self.service.get_feedback_by_id(1)
         updated_feedback = self.service.update_feedback(1, {})
         
@@ -392,7 +392,7 @@ class TestFeedbackServiceEdgeCases:
         assert "updated_at" in updated_feedback
     
     def test_create_feedback_with_all_optional_fields(self):
-        """Test creating feedback with all optional fields."""
+        """Test creating feedback with all optional fields."""""
         feedback_data = {
             "feedback_type": "performance",
             "title": "Test Performance Issue",
@@ -413,7 +413,7 @@ class TestFeedbackServiceEdgeCases:
         assert new_feedback["user_id"] == 42
     
     def test_update_feedback_rating_to_none(self):
-        """Test updating feedback to remove rating."""
+        """Test updating feedback to remove rating."""""
         update_data = {"rating": None}
         
         updated_feedback = self.service.update_feedback(1, update_data)

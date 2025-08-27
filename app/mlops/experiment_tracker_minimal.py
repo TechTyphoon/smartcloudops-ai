@@ -1,7 +1,7 @@
-"
+"""
 Experiment Tracker - ML experiment tracking and reproducibility
 Minimal working version for Phase 2 MLOps integration
-"
+"""
 
 import json
 import sqlite3
@@ -64,15 +64,13 @@ class ExperimentTracker:
     "ML experiment tracking and management"
 
     def __init__(self, experiments_path: str = "ml_models/experiments"):
-        "Initialize experiment tracker."
+        """Initialize experiment tracker."""
         self.experiments_path = Path(experiments_path)
         self.experiments_path.mkdir(parents=True, exist_ok=True)
 
-        self.runs_path = self.experiments_path / "runs"
-        self.runs_path.mkdir(exist_ok=True)
+        self.runs_path = self.experiments_path / "runs"""        self.runs_path.mkdir(exist_ok=True)
 
-        self.db_path = self.experiments_path / "experiments.db"
-        self.current_run: Optional[ExperimentRun] = None
+        self.db_path = self.experiments_path / "experiments.db"""        self.current_run: Optional[ExperimentRun] = None
 
         self._init_database()
 
@@ -132,10 +130,10 @@ class ExperimentTracker:
         objective: str = "minimize",
         tags: List[str] = None) -> Experiment:
         "Create a new experiment"
-        experiment_id = f"exp_{int(time.time()}_{str(uuid.uuid4()[:8]}"
+        experiment_id = "exp_{int(time.time()}_{str(uuid.uuid4()[:8]}"
 
-        experiment = Experiment()
-            experiment_id=experiment_id,
+        experiment = Experiment(
+    experiment_id=experiment_id,
             name=name,
             description=description,
             objective=objective,
@@ -157,12 +155,12 @@ class ExperimentTracker:
         seed: int = None) -> ExperimentRun:
         "Start a new experiment run"
         if run_name is None:
-            run_name = f"run_{int(time.time()}"
+            run_name = "run_{int(time.time()}"
 
-        run_id = f"run_{int(time.time()}_{str(uuid.uuid4()[:8]}"
+        run_id = "run_{int(time.time()}_{str(uuid.uuid4()[:8]}"
 
-        run = ExperimentRun()
-            run_id=run_id,
+        run = ExperimentRun(
+    run_id=run_id,
             experiment_id=experiment_id,
             name=run_name,
             status=ExperimentStatus.RUNNING,
@@ -245,10 +243,10 @@ class ExperimentTracker:
         conn.close()
 
         if not row:
-            raise ValueError(f"Experiment {experiment_id} not found")
+            raise ValueError("Experiment {experiment_id} not found")
 
-        return Experiment()
-            experiment_id=row[0],
+        return Experiment(
+    experiment_id=row[0],
             name=row[1],
             description=row[2],
             objective=row[3],
@@ -353,8 +351,7 @@ class ExperimentTracker:
         import platform
         import sys
 
-        return {}
-            "python_version": sys.version,
+        return {            "python_version": sys.version,
             "platform": platform.platform,
             "python_executable": sys.executable,
         }
@@ -365,5 +362,5 @@ experiment_tracker = ExperimentTracker()
 
 
 def get_experiment_tracker() -> ExperimentTracker:
-    "Get the global experiment tracker instance."
+    """Get the global experiment tracker instance."""
     return experiment_tracker

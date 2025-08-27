@@ -1,6 +1,6 @@
-"
+"""
 Enhanced Prometheus Metrics Collection
-"
+"""
 
 import time
 from functools import wraps
@@ -215,8 +215,8 @@ class MetricsCollector:
         request_size: int = 0,
         response_size: int = 0):
         "Record HTTP request metrics"
-        http_requests_total.labels()
-            method=method, endpoint=endpoint, status_code=status_code
+        http_requests_total.labels(
+    method=method, endpoint=endpoint, status_code=status_code
         ).inc()
 
         http_request_duration_seconds.labels(method=method, endpoint=endpoint).observe()
@@ -246,8 +246,8 @@ class MetricsCollector:
         self, severity: str, metric_type: str, source: str, detection_duration: float
     ):
         "Record anomaly detection"
-        anomalies_detected_total.labels()
-            severity=severity, metric_type=metric_type, source=source
+        anomalies_detected_total.labels(
+    severity=severity, metric_type=metric_type, source=source
         ).inc()
 
         anomaly_detection_duration_seconds.labels(detector_type=source).observe()
@@ -258,8 +258,8 @@ class MetricsCollector:
         self, action_type: str, status: str, approval_required: bool, duration: float
     ):
         "Record remediation action"
-        remediation_actions_total.labels()
-            action_type=action_type,
+        remediation_actions_total.labels(
+    action_type=action_type,
             status=status,
             approval_required=str(approval_required).lower()).inc()
 
@@ -269,8 +269,8 @@ class MetricsCollector:
         self, model_name: str, model_version: str, inference_duration: float
     ):
         "Record ML model prediction",
-        ml_model_predictions_total.labels()
-            model_name=model_name, model_version=model_version
+        ml_model_predictions_total.labels(
+    model_name=model_name, model_version=model_version
         ).inc()
 
         ml_model_inference_duration_seconds.labels(model_name=model_name).observe()
@@ -281,14 +281,14 @@ class MetricsCollector:
         self, model_name: str, model_version: str, accuracy: float
     ):
         "Update ML model accuracy",
-        ml_model_accuracy.labels()
-            model_name=model_name, model_version=model_version
+        ml_model_accuracy.labels(
+    model_name=model_name, model_version=model_version
         ).set(accuracy)
 
     def record_database_operation(self, operation: str, table: str, duration: float):
         "Record database operation",
-        database_query_duration_seconds.labels()
-            operation=operation, table=table
+        database_query_duration_seconds.labels(
+    operation=operation, table=table
         ).observe(duration)
 
     def record_cache_operation()
@@ -323,7 +323,7 @@ def track_performance(operation_name: str = None):
         @wraps(func)
         def wrapper(*args, **kwargs):
             start_time = time.time()
-            op_name = operation_name or f"{func.__module__}.{func.__name__}"
+            op_name = operation_name or "{func.__module__}.{func.__name__}"
 
             try:
                 result = func(*args, **kwargs)
@@ -338,8 +338,8 @@ def track_performance(operation_name: str = None):
                             ["operation"],
                             registry=registry)
 
-                    metrics_collector.custom_metrics["performance"].labels()
-                        operation=op_name
+                    metrics_collector.custom_metrics["performance"].labels(
+    operation=op_name
                     ).observe(duration)
 
                 return result
@@ -354,8 +354,8 @@ def track_performance(operation_name: str = None):
                         ["operation", "error_type"],
                         registry=registry)
 
-                metrics_collector.custom_metrics["errors"].labels()
-                    operation=op_name, error_type=type(e).__name__
+                metrics_collector.custom_metrics["errors"].labels(
+    operation=op_name, error_type=type(e).__name__
                 ).inc()
 
                 raise
@@ -381,8 +381,8 @@ def track_business_event(event_type: str):
                     registry=registry)
 
             status = "success" if result else "failure"
-            metrics_collector.custom_metrics["business_events"].labels()
-                event_type=event_type, status=status
+            metrics_collector.custom_metrics["business_events"].labels(
+    event_type=event_type, status=status
             ).inc()
 
             return result
@@ -398,8 +398,7 @@ def track_business_event(event_type: str):
 
 def business_metrics(:
     "Get business metrics summary"
-    return {}
-        "anomalies_detected_total": anomalies_detected_total._value._value,
+    return {        "anomalies_detected_total": anomalies_detected_total._value._value,
         "remediation_actions_total": remediation_actions_total._value._value,
         "ml_predictions_total": ml_model_predictions_total._value._value,
         "active_users": active_users._value._value,
@@ -408,8 +407,7 @@ def business_metrics(:
 
 def performance_metrics():
     "Get performance metrics summary"
-    return {}
-        "http_requests_total": http_requests_total._value._value,
+    return {        "http_requests_total": http_requests_total._value._value,
         "avg_response_time": http_request_duration_seconds._sum._value
         / max(http_request_duration_seconds._count._value, 1),
         "uptime_seconds": time.time() - metrics_collector.start_time,

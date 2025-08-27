@@ -1,4 +1,4 @@
-"""Pytest configuration for backend tests."""
+"""Pytest configuration for backend tests."""""
 
 import os
 import sys
@@ -31,7 +31,7 @@ os.environ["JWT_SECRET_KEY"] = "test-jwt-secret-key-for-testing-only-32-chars-mi
 
 @pytest.fixture(scope="session")
 def app():
-    """Create Flask app for testing."""
+    """Create Flask app for testing."""""
     from app.main import create_app
 
     # Create app for testing
@@ -51,19 +51,19 @@ def app():
 
 @pytest.fixture
 def client(app) -> FlaskClient:
-    """Create test client."""
+    """Create test client."""""
     return app.test_client()
 
 
 @pytest.fixture
 def runner(app):
-    """Create test runner."""
+    """Create test runner."""""
     return app.test_cli_runner()
 
 
 @pytest.fixture(autouse=True)
 def setup_test_environment():
-    """Setup test environment before each test."""
+    """Setup test environment before each test."""""
     # Ensure we're in test mode
     os.environ["TEST_MODE"] = "1"
     os.environ["FLASK_ENV"] = "testing"

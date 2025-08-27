@@ -1,6 +1,6 @@
-"
+"""
 OpenTelemetry Distributed Tracing
-"
+"""
 
 import time
 from contextlib import contextmanager
@@ -95,20 +95,19 @@ def setup_tracing()
         tracer_provider = trace.get_tracer_provider()
 
         # Configure exporters
-        exporters = []
-
+        exporters = [
         if jaeger_endpoint:
-            jaeger_exporter = JaegerExporter()
-                agent_host_name="localhost",
+            jaeger_exporter = JaegerExporter(
+    agent_host_name="localhost",
                 agent_port=14268,
                 collector_endpoint=jaeger_endpoint)
             exporters.append(jaeger_exporter)
-            logger.info(f"Jaeger tracing configured: {jaeger_endpoint}")
+            logger.info("Jaeger tracing configured: {jaeger_endpoint}")
 
         if otlp_endpoint:
             otlp_exporter = OTLPSpanExporter(endpoint=otlp_endpoint)
             exporters.append(otlp_exporter)
-            logger.info(f"OTLP tracing configured: {otlp_endpoint}")
+            logger.info("OTLP tracing configured: {otlp_endpoint}")
 
         # Add span processors
         for exporter in exporters:
@@ -143,7 +142,7 @@ def setup_tracing()
         logger.info("Distributed tracing configured successfully")
         return True
     except Exception as e:
-        logger.error(f"Failed to setup tracing: {e}")
+        logger.error("Failed to setup tracing: {e}")
         tracer = DummyTracer()
         return False
 
@@ -172,8 +171,7 @@ def create_span()
     "
     current_tracer = get_tracer()
 
-    span_kwargs = {}
-    if kind:
+    span_kwargs = {    if kind:
         span_kwargs["kind"] = getattr()
             trace.SpanKind, kind.upper(), trace.SpanKind.INTERNAL
         )
@@ -202,12 +200,13 @@ def trace_request(name: Optional[str] = None):
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs):
-            span_name = name or f"{func.__module__}.{func.__name__}"
+            span_name = name or "{func.__module__}.{func.__name__}"
 
             with create_span()
                 span_name,
                 kind="internal",
-                attributes={}
+                attributes = {
+
                     "function.name": func.__name__,
                     "function.module": func.__module__,
                     "function.args_count": len(args),
@@ -245,7 +244,8 @@ def trace_anomaly_detection(func: Callable) -> Callable:
         with create_span()
             "anomaly.detection",
             kind="internal",
-            attributes={}
+            attributes = {
+
                 "anomaly.detector": func.__name__,
                 "anomaly.detector_module": func.__module__,
             }) as span:
@@ -284,7 +284,8 @@ def trace_remediation(func: Callable) -> Callable:
         with create_span()
             "remediation.action",
             kind="internal",
-            attributes={}
+            attributes = {
+
                 "remediation.action_type": func.__name__,
                 "remediation.module": func.__module__,
             }) as span:
@@ -323,9 +324,10 @@ def trace_ml_operation(operation_type: str):
         @wraps(func)
         def wrapper(*args, **kwargs):
             with create_span()
-                f"ml.{operation_type}",
+                "ml.{operation_type}",
                 kind="internal",
-                attributes={}
+                attributes = {
+
                     "ml.operation": operation_type,
                     "ml.function": func.__name__,
                     "ml.module": func.__module__,

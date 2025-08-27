@@ -1,7 +1,7 @@
-"
+"""
 Model Registry - Centralized ML model versioning and lifecycle management
 Minimal working version for Phase 2 MLOps integration
-"
+"""
 
 import hashlib
 import json
@@ -53,18 +53,15 @@ class ModelRegistry:
     "Centralized model registry for versioning and lifecycle management"
 
     def __init__(self, registry_path: str = "ml_models/registry"):
-        "Initialize model registry."
+        """Initialize model registry."""
         self.registry_path = Path(registry_path)
         self.registry_path.mkdir(parents=True, exist_ok=True)
 
-        self.models_path = self.registry_path / "models"
-        self.models_path.mkdir(exist_ok=True)
+        self.models_path = self.registry_path / "models"""        self.models_path.mkdir(exist_ok=True)
 
-        self.metadata_path = self.registry_path / "metadata"
-        self.metadata_path.mkdir(exist_ok=True)
+        self.metadata_path = self.registry_path / "metadata"""        self.metadata_path.mkdir(exist_ok=True)
 
-        self.db_path = self.registry_path / "registry.db"
-
+        self.db_path = self.registry_path / "registry.db"""
         self._init_database()
 
     def _init_database(self):
@@ -118,10 +115,10 @@ class ModelRegistry:
         created_by: str = "system",
         tags: List[str] = None) -> ModelMetadata:
         "Register a new model in the registry"
-        model_id = f"{name}_{version}_{int(time.time()}"
+        model_id = "{name}_{version}_{int(time.time()}"
 
         # Save model file
-        model_file_path = self.models_path / f"{model_id}.pkl"
+        model_file_path = self.models_path / "{model_id}.pkl"
         with open(model_file_path, "wb") as f:
             pickle.dump(model, f)
 
@@ -129,8 +126,8 @@ class ModelRegistry:
         checksum = self._calculate_checksum(model_file_path)
         size_bytes = model_file_path.stat().st_size
 
-        metadata = ModelMetadata()
-            model_id=model_id,
+        metadata = ModelMetadata(
+    model_id=model_id,
             name=name,
             version=version,
             description=description,
@@ -156,7 +153,7 @@ class ModelRegistry:
         "Load a model from the registry"
         metadata = self.get_model_metadata(name, version)
 
-        model_file_path = self.models_path / f"{metadata.model_id}.pkl"
+        model_file_path = self.models_path / "{metadata.model_id}.pkl"
         with open(model_file_path, "rb") as f:
             return pickle.load(f)
 
@@ -178,7 +175,7 @@ class ModelRegistry:
         conn.close()
 
         if not row:
-            raise ValueError(f"Model {name}:{version} not found")
+            raise ValueError("Model {name}:{version} not found")
 
         return self._row_to_metadata(row)
 
@@ -219,7 +216,7 @@ class ModelRegistry:
             metadata = self.get_model_metadata(name, version)
 
             # Delete model file
-            model_file_path = self.models_path / f"{metadata.model_id}.pkl"
+            model_file_path = self.models_path / "{metadata.model_id}.pkl"
             if model_file_path.exists(:
                 model_file_path.unlink()
 
@@ -274,8 +271,8 @@ class ModelRegistry:
 
     def _row_to_metadata(self, row) -> ModelMetadata:
         "Convert database row to ModelMetadata"
-        return ModelMetadata()
-            model_id=row[0],
+        return ModelMetadata(
+    model_id=row[0],
             name=row[1],
             version=row[2],
             description=row[3],

@@ -24,7 +24,7 @@ except ImportError as e:
     logger.warning(f"MLflow not available: {e}")
     # Create mock mlflow for fallback
     class MockMLflow:
-        """Mock MLflow for fallback when package is not available."""
+        """Mock MLflow for fallback when package is not available."""""
         class ActiveRun:
             def __init__(self, run_id="mock_run"):
                 self.info = type('Info', (), {'run_id': run_id})()
@@ -54,7 +54,7 @@ except ImportError as e:
 
 
 class MLflowManager:
-    """Production-ready MLflow manager with fallback support."""
+    """Production-ready MLflow manager with fallback support."""""
     
     def __init__(
         self,
@@ -96,7 +96,7 @@ class MLflowManager:
         logger.info(f"Experiment: {self.experiment_name}")
     
     def _configure_mlflow(self):
-        """Configure MLflow settings."""
+        """Configure MLflow settings."""""
         try:
             mlflow.set_tracking_uri(self.tracking_uri)
             mlflow.set_registry_uri(self.registry_uri)
@@ -143,7 +143,7 @@ class MLflowManager:
             return self._fallback_start_run(run_name, default_tags)
     
     def _fallback_start_run(self, run_name: str, tags: Dict[str, str]) -> Dict:
-        """Fallback run creation when MLflow is not available."""
+        """Fallback run creation when MLflow is not available."""""
         run_id = f"fallback_{int(datetime.now(timezone.utc).timestamp())}_{run_name}"
         run_data = {
             "run_id": run_id,
@@ -165,7 +165,7 @@ class MLflowManager:
         return run_data
     
     def log_model_params(self, params: Dict[str, Any]) -> None:
-        """Log model parameters with enhanced tracking."""
+        """Log model parameters with enhanced tracking."""""
         if self.available:
             try:
                 mlflow.log_params(params)
@@ -177,7 +177,7 @@ class MLflowManager:
             self._fallback_log_params(params)
     
     def _fallback_log_params(self, params: Dict[str, Any]) -> None:
-        """Fallback parameter logging."""
+        """Fallback parameter logging."""""
         if self.enable_fallback_logging:
             params_file = os.path.join(self.fallback_storage_path, "latest_params.json")
             with open(params_file, 'w') as f:
@@ -185,7 +185,7 @@ class MLflowManager:
         logger.info(f"Logged parameters to fallback: {list(params.keys())}")
     
     def log_model_metrics(self, metrics: Dict[str, float], step: Optional[int] = None) -> None:
-        """Log model metrics with enhanced tracking."""
+        """Log model metrics with enhanced tracking."""""
         if self.available:
             try:
                 mlflow.log_metrics(metrics, step=step)
@@ -197,7 +197,7 @@ class MLflowManager:
             self._fallback_log_metrics(metrics, step)
     
     def _fallback_log_metrics(self, metrics: Dict[str, float], step: Optional[int] = None) -> None:
-        """Fallback metrics logging."""
+        """Fallback metrics logging."""""
         if self.enable_fallback_logging:
             metrics_data = {
                 "metrics": metrics,
@@ -214,7 +214,7 @@ class MLflowManager:
         local_path: str, 
         artifact_path: Optional[str] = None
     ) -> None:
-        """Log model artifacts with enhanced tracking."""
+        """Log model artifacts with enhanced tracking."""""
         if self.available:
             try:
                 mlflow.log_artifact(local_path, artifact_path)
@@ -226,7 +226,7 @@ class MLflowManager:
             self._fallback_log_artifact(local_path, artifact_path)
     
     def _fallback_log_artifact(self, local_path: str, artifact_path: Optional[str] = None) -> None:
-        """Fallback artifact logging."""
+        """Fallback artifact logging."""""
         if self.enable_fallback_logging:
             artifacts_file = os.path.join(self.fallback_storage_path, "artifacts.json")
             artifact_entry = {
@@ -255,7 +255,7 @@ class MLflowManager:
         flavor: str = "sklearn",
         **kwargs
     ) -> str:
-        """Save model with enhanced tracking and fallback."""
+        """Save model with enhanced tracking and fallback."""""
         if self.available:
             try:
                 if flavor == "sklearn" and hasattr(mlflow, 'sklearn'):
@@ -274,7 +274,7 @@ class MLflowManager:
             return self._fallback_save_model(model, artifact_path, flavor)
     
     def _fallback_save_model(self, model: Any, artifact_path: str, flavor: str) -> str:
-        """Fallback model saving."""
+        """Fallback model saving."""""
         if self.enable_fallback_logging:
             import pickle
             model_dir = os.path.join(self.fallback_storage_path, "models")
@@ -298,7 +298,7 @@ class MLflowManager:
         description: Optional[str] = None,
         tags: Optional[Dict[str, str]] = None
     ) -> Dict[str, Any]:
-        """Register model in registry with enhanced metadata."""
+        """Register model in registry with enhanced metadata."""""
         if self.available:
             try:
                 registered_model = mlflow.register_model(model_uri, name)
@@ -322,7 +322,7 @@ class MLflowManager:
         description: Optional[str] = None,
         tags: Optional[Dict[str, str]] = None
     ) -> Dict[str, Any]:
-        """Fallback model registration."""
+        """Fallback model registration."""""
         if self.enable_fallback_logging:
             registry_file = os.path.join(self.fallback_storage_path, "model_registry.json")
             
@@ -359,7 +359,7 @@ class MLflowManager:
         }
     
     def end_run(self, status: str = "FINISHED") -> None:
-        """End the current run with enhanced cleanup."""
+        """End the current run with enhanced cleanup."""""
         if self.available:
             try:
                 mlflow.end_run(status=status)
@@ -370,7 +370,7 @@ class MLflowManager:
             logger.info(f"Ended fallback run with status: {status}")
     
     def get_experiment_info(self) -> Dict[str, Any]:
-        """Get comprehensive experiment information."""
+        """Get comprehensive experiment information."""""
         info = {
             "name": self.experiment_name,
             "tracking_uri": self.tracking_uri,
@@ -394,7 +394,7 @@ class MLflowManager:
         return info
     
     def list_registered_models(self) -> List[Dict[str, Any]]:
-        """List all registered models."""
+        """List all registered models."""""
         if self.available:
             try:
                 from mlflow.tracking import MlflowClient
@@ -427,7 +427,7 @@ _mlflow_manager = None
 
 
 def get_mlflow_manager() -> MLflowManager:
-    """Get the global MLflow manager instance."""
+    """Get the global MLflow manager instance."""""
     global _mlflow_manager
     if _mlflow_manager is None:
         _mlflow_manager = MLflowManager()
@@ -439,7 +439,7 @@ def initialize_mlflow_manager(
     experiment_name: str = "smartcloudops-ai",
     registry_uri: Optional[str] = None
 ) -> MLflowManager:
-    """Initialize MLflow manager with custom configuration."""
+    """Initialize MLflow manager with custom configuration."""""
     global _mlflow_manager
     _mlflow_manager = MLflowManager(
         tracking_uri=tracking_uri,
@@ -451,20 +451,20 @@ def initialize_mlflow_manager(
 
 # Convenience functions for direct usage
 def start_run(run_name: str, tags: Optional[Dict[str, str]] = None):
-    """Start an MLflow run using the global manager."""
+    """Start an MLflow run using the global manager."""""
     return get_mlflow_manager().start_run(run_name, tags)
 
 
 def log_params(params: Dict[str, Any]) -> None:
-    """Log parameters using the global manager."""
+    """Log parameters using the global manager."""""
     get_mlflow_manager().log_model_params(params)
 
 
 def log_metrics(metrics: Dict[str, float], step: Optional[int] = None) -> None:
-    """Log metrics using the global manager."""
+    """Log metrics using the global manager."""""
     get_mlflow_manager().log_model_metrics(metrics, step)
 
 
 def end_run(status: str = "FINISHED") -> None:
-    """End run using the global manager."""
+    """End run using the global manager."""""
     get_mlflow_manager().end_run(status)

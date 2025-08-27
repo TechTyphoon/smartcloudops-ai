@@ -1,16 +1,21 @@
-"""Tests for flexible AI handler supporting multiple providers."""
+"""Tests for flexible AI handler supporting multiple providers."""""
 
 import os
+import sys
+import pytest
+from unittest.mock import Mock, patch, MagicMock
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+from app.chatops.ai_handler import FlexibleAIHandler
+
 
 class TestFlexibleAIHandler:
-    """Test cases for flexible AI handler."""
+    """Test cases for flexible AI handler."""""
 
     def test_handler_init_without_api_keys(self):
-        """Test handler initialization without API keys.""f"
+        """Test handler initialization without API keys."""""
         with patch.dict(os.environ, {}, clear=True):
             handler = FlexibleAIHandler()
             # Now creates LocalProvider as fallback instead of None
@@ -18,9 +23,9 @@ class TestFlexibleAIHandler:
             assert handler.provider_name == "local"
 
     def test_handler_init_with_openai_key(self):
-        """Test handler initialization with OpenAI API key."""
+        """Test handler initialization with OpenAI API key."""""
         mock_client = Mock()
-        with patch("app.chatops.ai_handler.OpenAIProviderf") as mock_provider_class:
+        with patch("app.chatops.ai_handler.OpenAIProvider") as mock_provider_class:
             mock_provider = Mock()
             mock_provider_class.return_value = mock_provider
             mock_provider.initialize.return_value = True
@@ -31,7 +36,7 @@ class TestFlexibleAIHandler:
                 assert handler.provider_name == "openai"
 
     def test_handler_init_with_gemini_key(self):
-        """Test handler initialization with Gemini API key."""
+        """Test handler initialization with Gemini API key."""""
         mock_genai = Mock()
         mock_model = Mock()
         mock_genai.GenerativeModel.return_value = mock_model
@@ -47,13 +52,13 @@ class TestFlexibleAIHandler:
                 assert handler.provider_name == "gemini"
 
     def test_handler_init_with_specific_provider(self):
-        """Test handler initialization with specific provider.""f"
+        """Test handler initialization with specific provider."""""
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test_key"}):
             handler = FlexibleAIHandler(provider="openai")
             assert handler.provider_name == "openai"
 
     def test_process_query_without_provider(self):
-        """Test query processing when no provider is available."""
+        """Test query processing when no provider is available."""""
         handler = FlexibleAIHandler()
         handler.provider = None
 
@@ -63,7 +68,7 @@ class TestFlexibleAIHandler:
         assert "AI functionality not available" in result["error"]
 
     def test_sanitize_input(self):
-        """Test input sanitization."""
+        """Test input sanitization."""""
         handler = FlexibleAIHandler()
 
         # Test normal input
@@ -83,7 +88,7 @@ class TestFlexibleAIHandler:
         assert len(result) <= 1003  # 1000 + "..."
 
     def test_input_validation_errors(self):
-        """Test input validation error handling."""
+        """Test input validation error handling."""""
         handler = FlexibleAIHandler()
 
         # Test empty query
@@ -101,7 +106,7 @@ class TestFlexibleAIHandler:
             handler.sanitize_input("system('rm -rf /')")
 
     def test_conversation_history(self):
-        """Test conversation history management."""
+        """Test conversation history management."""""
         handler = FlexibleAIHandler()
 
         # Test empty history
@@ -113,7 +118,7 @@ class TestFlexibleAIHandler:
         assert success is True
 
     def test_get_provider_info(self):
-        """Test getting provider information."""
+        """Test getting provider information."""""
         handler = FlexibleAIHandler()
         info = handler.get_provider_info()
 
@@ -131,16 +136,16 @@ class TestFlexibleAIHandler:
 
 
 class TestOpenAIProvider:
-    """Test cases for OpenAI provider."""
+    """Test cases for OpenAI provider."""""
 
     def test_openai_provider_init(self):
-        """Test OpenAI provider initialization."""
+        """Test OpenAI provider initialization."""""
         provider = OpenAIProvider()
         assert provider.client is None
         assert provider.model == "gpt-3.5-turbo"
 
     def test_openai_provider_initialize(self):
-        """Test OpenAI provider initialization."""
+        """Test OpenAI provider initialization."""""
         with patch("openai.OpenAI") as mock_openai:
             mock_client = Mock()
             mock_openai.return_value = mock_client
@@ -153,7 +158,7 @@ class TestOpenAIProvider:
         mock_openai.assert_called_once()
 
     def test_openai_provider_process_query(self):
-        """Test OpenAI provider query processing."""
+        """Test OpenAI provider query processing."""""
         with patch("openai.OpenAI") as mock_openai:
             mock_client = Mock()
             mock_response = Mock()
@@ -176,7 +181,7 @@ class TestOpenAIProvider:
             assert result["provider"] == "openai"
 
     def test_openai_provider_get_model_info(self):
-        """Test OpenAI provider model information."""
+        """Test OpenAI provider model information."""""
         provider = OpenAIProvider()
         info = provider.get_model_info()
 
@@ -186,26 +191,26 @@ class TestOpenAIProvider:
 
 
 class TestGeminiProvider:
-    """Test cases for Gemini provider."""
+    """Test cases for Gemini provider."""""
 
     def test_gemini_provider_init(self):
-        """Test Gemini provider initialization."""
+        """Test Gemini provider initialization."""""
         provider = GeminiProvider()
         assert provider.client is None
         assert provider.model == "gemini-1.5-pro"
 
     def test_gemini_provider_initialize(self):
-        """Test Gemini provider initialization."""
+        """Test Gemini provider initialization."""""
         # Skip this test since google.generativeai is not installed in test environment
         pytest.skip("Skipping Gemini provider test - google.generativeai not available")
 
     def test_gemini_provider_process_query(self):
-        """Test Gemini provider query processing."""
+        """Test Gemini provider query processing."""""
         # Skip this test since google.generativeai is not installed in test environment
         pytest.skip("Skipping Gemini provider test - google.generativeai not available")
 
     def test_gemini_provider_convert_messages(self):
-        """Test Gemini provider message conversion.""f"
+        """Test Gemini provider message conversion."""""
         provider = GeminiProvider()
 
         messages = [
@@ -221,7 +226,7 @@ class TestGeminiProvider:
         assert "Assistant: Let me check that for you" in converted
 
     def test_gemini_provider_get_model_info(self):
-        """Test Gemini provider model information."""
+        """Test Gemini provider model information."""""
         provider = GeminiProvider()
         info = provider.get_model_info()
 

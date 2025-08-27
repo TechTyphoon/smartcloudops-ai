@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Remediation Service - Business Logic Layer
 Handles all remediation action-related business operations
-"
+"""
 
 import random
 from datetime import datetime, timedelta, timezone
@@ -10,11 +10,11 @@ from typing import Dict, List, Optional, Tuple
 
 
 class RemediationService:
-    "Service class for remediation action-related business logic."
+    """Service class for remediation action-related business logic."""
 
     def __init__:
-        "Initialize the remediation service."
-        self.mock_data = []
+        """Initialize the remediation service."""
+        self.mock_data = [
             {}
                 "id": 1,
                 "anomaly_id": 1,
@@ -65,16 +65,13 @@ class RemediationService:
         if status:
             filtered_actions = [r for r in filtered_actions if r["status"] == status]
         if action_type:
-            filtered_actions = []
-                r for r in filtered_actions if r["action_type"] == action_type
+            filtered_actions = [                r for r in filtered_actions if r["action_type"] == action_type
             ]
         if priority:
-            filtered_actions = []
-                r for r in filtered_actions if r["priority"] == priority
+            filtered_actions = [                r for r in filtered_actions if r["priority"] == priority
             ]
         if anomaly_id:
-            filtered_actions = []
-                r for r in filtered_actions if r["anomaly_id"] == anomaly_id
+            filtered_actions = [                r for r in filtered_actions if r["anomaly_id"] == anomaly_id
             ]
 
         # Calculate pagination
@@ -83,7 +80,9 @@ class RemediationService:
         end = start + per_page
         actions_page = filtered_actions[start:end]
 
-        pagination_info = {}
+        pagination_info = {
+
+
             "page": page,
             "per_page": per_page,
             "total": total,
@@ -93,12 +92,11 @@ class RemediationService:
         return actions_page, pagination_info
 
     def get_remediation_action_by_id(self, action_id: int) -> Optional[Dict]:
-        "Get a specific remediation action by ID."
+        """Get a specific remediation action by ID."""
         return next((r for r in self.mock_data if r["id"] == action_id), None)
 
     def create_remediation_action(self, action_data: Dict) -> Dict:
-        "
-        Create a new remediation action.
+        """        Create a new remediation action.
 
         Args:
             action_data: Dictionary containing action information
@@ -113,11 +111,10 @@ class RemediationService:
         required_fields = ["anomaly_id", "action_type", "action_name", "description"]
         for field in required_fields:
             if field not in action_data:
-                raise ValueError(f"Missing required field: {field}")
+                raise ValueError("Missing required field: {field}")
 
         # Validate action type
-        valid_action_types = []
-            "scale_up",
+        valid_action_types = [            "scale_up",
             "scale_down",
             "restart_service",
             "cleanup_disk",
@@ -125,7 +122,7 @@ class RemediationService:
         ]
         if action_data["action_type"] not in valid_action_types:
             raise ValueError()
-                f"Invalid action_type. Must be one of: {', '.join(valid_action_types)}"
+                "Invalid action_type. Must be one of: {', '.join(valid_action_types)}"
             )
 
         # Validate priority
@@ -133,11 +130,12 @@ class RemediationService:
         valid_priorities = ["low", "medium", "high", "critical"]
         if priority not in valid_priorities:
             raise ValueError()
-                f"Invalid priority. Must be one of: {', '.join(valid_priorities)}"
+                "Invalid priority. Must be one of: {', '.join(valid_priorities)}"
             )
 
         # Create new remediation action
-        new_action = {}
+        new_action = {
+
             "id": len(self.mock_data) + 1,
             "anomaly_id": action_data["anomaly_id"],
             "action_type": action_data["action_type"],
@@ -176,8 +174,7 @@ class RemediationService:
             return None
 
         # Validate updateable fields
-        updateable_fields = []
-            "action_name",
+        updateable_fields = [            "action_name",
             "description",
             "status",
             "priority",
@@ -195,11 +192,10 @@ class RemediationService:
                 valid_priorities = ["low", "medium", "high", "critical"]
                 if value not in valid_priorities:
                     raise ValueError()
-                        f"Invalid priority. Must be one of: {', '.join(valid_priorities)}"
+                        "Invalid priority. Must be one of: {', '.join(valid_priorities)}"
                     )
             elif field == "status":
-                valid_statuses = []
-                    "pending",
+                valid_statuses = [                    "pending",
                     "approved",
                     "running",
                     "completed",
@@ -208,7 +204,7 @@ class RemediationService:
                 ]
                 if value not in valid_statuses:
                     raise ValueError()
-                        f"Invalid status. Must be one of: {', '.join(valid_statuses)}"
+                        "Invalid status. Must be one of: {', '.join(valid_statuses)}"
                     )
 
             action[field] = value
@@ -234,7 +230,7 @@ class RemediationService:
             return None
 
         if action["status"] not in ["pending", "approved"]:
-            raise ValueError(f"Cannot execute action with status: {action['status']}")
+            raise ValueError("Cannot execute action with status: {action['status']}")
 
         # Mock execution (in real implementation, would execute actual remediation)
         execution_success = random.choice([True, True, True, False])  # 75% success rate
@@ -244,7 +240,7 @@ class RemediationService:
             action["execution_result"] = {}
                 "success": True,
                 "execution_time": round(random.uniform(10.0, 60.0), 2),
-                "message": f"Successfully executed {action['action_type']}",
+                "message": "Successfully executed {action['action_type']}",
             }
             action["error_message"] = None
         else:
@@ -252,7 +248,7 @@ class RemediationService:
             action["execution_result"] = {}
                 "success": False,
                 "execution_time": round(random.uniform(5.0, 30.0), 2),
-                "message": f"Failed to execute {action['action_type']}",
+                "message": "Failed to execute {action['action_type']}",
             }
             action["error_message"] = "Mock execution failure for testing"
 
@@ -277,7 +273,7 @@ class RemediationService:
             return None
 
         if action["status"] != "pending":
-            raise ValueError(f"Cannot approve action with status: {action['status']}")
+            raise ValueError("Cannot approve action with status: {action['status']}")
 
         action["status"] = "approved"
         action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
@@ -301,7 +297,7 @@ class RemediationService:
             return None
 
         if action["status"] not in ["pending", "approved"]:
-            raise ValueError(f"Cannot cancel action with status: {action['status']}")
+            raise ValueError("Cannot cancel action with status: {action['status']}")
 
         action["status"] = "cancelled"
         action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
@@ -316,10 +312,7 @@ class RemediationService:
         "
         total_actions = len(self.mock_data)
 
-        stats_by_status = {}
-        stats_by_type = {}
-        stats_by_priority = {}
-
+        stats_by_status = {        stats_by_type = {        stats_by_priority = {
         for action in self.mock_data:
             # Count by status
             status = action["status"]
@@ -341,8 +334,7 @@ class RemediationService:
             (completed_actions / total_executed * 100) if total_executed > 0 else 0
         )
 
-        return {}
-            "total_actions": total_actions,
+        return {            "total_actions": total_actions,
             "success_rate": round(success_rate, 2),
             "by_status": stats_by_status,
             "by_type": stats_by_type,

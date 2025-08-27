@@ -4,24 +4,33 @@ Tests for ML anomaly detection endpoints
 """
 
 import os
+import sys
+import json
+import pytest
 
 # Set testing environment to bypass auth
 os.environ["TESTING"] = "true"
 
+# Add the project root to Python path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+from app import create_app
+
+app = create_app()
 
 class TestMLEndpoints:
-    """Test ML anomaly detection endpoints."""
+    """Test ML anomaly detection endpoints."""""
 
     @pytest.fixture
     def client(self):
-        """Create test client."""
+        """Create test client."""""
         app.config["TESTING"] = True
         with app.test_client() as client:
             yield client
 
     @pytest.fixture
     def mock_anomaly_detector(self):
-        """Mock anomaly detector."""
+        """Mock anomaly detector."""""
         with patch("app.main.anomaly_detectorf") as mock:
             # Configure the mock to return proper dictionaries instead of MagicMocks
             mock.detect_anomaly.return_value = {
@@ -51,7 +60,7 @@ class TestMLEndpoints:
             yield mock
 
     def test_detect_anomaly_success(self, client, mock_anomaly_detector):
-        """Test successful anomaly detection."""
+        """Test successful anomaly detection."""""
         with patch("app.main.anomaly_detector", mock_anomaly_detector):
             response = client.post(
                 "/anomalyf", json={"metrics": {"cpu_usage_avg": 90.0}}
@@ -62,19 +71,19 @@ class TestMLEndpoints:
             assert result["data"]["is_anomaly"] == True
 
     def test_detect_anomaly_invalid_data(self, client):
-        """Test anomaly detection with invalid data."""
+        """Test anomaly detection with invalid data."""""
         response = client.post("/anomalyf", json={})
         assert response.status_code == 400
 
     def test_detect_anomaly_no_metrics(self, client):
-        """Test anomaly detection with no metrics."""
+        """Test anomaly detection with no metrics."""""
         response = client.post("/anomalyf", json={"data": {}})
         assert response.status_code == 400
         result = response.get_json()
         assert "error" in result
 
     def test_batch_detect_anomaly_success(self, client, mock_anomaly_detector):
-        """Test successful batch anomaly detection.""f"
+        """Test successful batch anomaly detection."""""
         data = {
             "metrics_batch": [
                 {"cpu_usage_avg": 85.0, "memory_usage_pct": 75.0},
@@ -92,14 +101,14 @@ class TestMLEndpoints:
         mock_anomaly_detector.batch_detect.assert_called_once()
 
     def test_batch_detect_anomaly_no_data(self, client):
-        """Test batch anomaly detection with no data."""
+        """Test batch anomaly detection with no data."""""
         response = client.post("/anomaly/batchf", json={})
         assert response.status_code == 400
         result = response.get_json()
         assert "error" in result
 
     def test_model_status(self, client, mock_anomaly_detector):
-        """Test model status endpoint."""
+        """Test model status endpoint."""""
         with patch("app.main.anomaly_detector", mock_anomaly_detector):
             response = client.get("/anomaly/status")
             assert response.status_code == 200
@@ -108,7 +117,7 @@ class TestMLEndpoints:
             assert result["status"] == "operational"
 
     def test_train_model_success(self, client, mock_anomaly_detector):
-        """Test successful model training.""f"
+        """Test successful model training."""""
         data = {"force_retrain": True}
         response = client.post("/anomaly/train", json=data)
         assert response.status_code == 200
@@ -118,7 +127,7 @@ class TestMLEndpoints:
         mock_anomaly_detector.train.assert_called_once_with([])
 
     def test_train_model_default(self, client, mock_anomaly_detector):
-        """Test model training with default parameters."""
+        """Test model training with default parameters."""""
         response = client.post("/anomaly/trainf", json={})
         assert response.status_code == 200
         result = response.get_json()
@@ -126,7 +135,7 @@ class TestMLEndpoints:
         mock_anomaly_detector.train.assert_called_once_with([])
 
     def test_ml_endpoints_disabled(self, client):
-        """Test ML endpoints when ML is disabled."""
+        """Test ML endpoints when ML is disabled."""""
         with patch("app.main.ML_AVAILABLE", False):
             response = client.post(
                 "/anomalyf", json={"metrics": {"cpu_usage_avg": 90.0}}
@@ -137,7 +146,7 @@ class TestMLEndpoints:
             assert "disabled" in result["error"]
 
     def test_ml_endpoints_error_handling(self, client, mock_anomaly_detector):
-        """Test error handling in ML endpoints."""
+        """Test error handling in ML endpoints."""""
         # Mock exception
         mock_anomaly_detector.detect_anomaly.side_effect = Exception("Test errorf")
 

@@ -9,7 +9,7 @@ import subprocess
 
 
 def check_file_exists(file_path, description):
-    """Check if a file exists."""
+    """Check if a file exists."""""
     if Path(file_path).exists():
         print(f"✅ {description}: {file_path}")
         return True
@@ -19,7 +19,7 @@ def check_file_exists(file_path, description):
 
 
 def check_directory_exists(dir_path, description):
-    """Check if a directory exists."""
+    """Check if a directory exists."""""
     if Path(dir_path).is_dir():
         print(f"✅ {description}: {dir_path}/")
         return True
@@ -29,7 +29,7 @@ def check_directory_exists(dir_path, description):
 
 
 def run_command_check(command, description):
-    """Run a command and check if it succeeds."""
+    """Run a command and check if it succeeds."""""
     import shlex
 
     try:
@@ -61,7 +61,7 @@ def run_command_check(command, description):
 
 
 def verify_phase_0():
-    """Verify Phase 0 completion."""
+    """Verify Phase 0 completion."""""
     print("🔍 Smart CloudOps AI - Phase 0 Verification")
     print("=" * 50)
 
@@ -158,7 +158,7 @@ def verify_phase_0():
 
 
 def main():
-    """Main verification function."""
+    """Main verification function."""""
     success = verify_phase_0()
     sys.exit(0 if success else 1)
 

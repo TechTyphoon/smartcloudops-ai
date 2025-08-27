@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Rate Limiting System for Smart CloudOps AI - Minimal Working Version
 Enterprise-grade rate limiter with multiple strategies
-"
+"""
 
 import logging
 import time
@@ -25,10 +25,10 @@ logger = logging.getLogger
 
 
 class RateLimiter:
-    "Enterprise-grade rate limiter with multiple strategies."
+    """Enterprise-grade rate limiter with multiple strategies."""
 
     def __init__(self, redis_client: Optional[redis.Redis] = None):
-        "Initialize rate limiter."
+        """Initialize rate limiter."""
         self.redis_client = redis_client
         self.default_limits = {}
             "default": {"per_minute": 60, "per_hour": 1000, "per_day": 10000},
@@ -39,10 +39,9 @@ class RateLimiter:
         }
 
     def _get_client_ip(self) -> str:
-        "Get client IP address with proxy support."
+        """Get client IP address with proxy support."""
         if not request:
-            return "unknown"
-
+            return "unknown"""
         # Check for forwarded headers (for proxy/load balancer setups)
         forwarded_for = request.headers.get("X-Forwarded-For")
         if forwarded_for:
@@ -56,18 +55,15 @@ class RateLimiter:
         return request.remote_addr or "unknown"
 
     def _get_user_identifier(self) -> str:
-        "Get user identifier for rate limiting."
+        """Get user identifier for rate limiting."""
         # Try to get user ID from JWT token
         if hasattr(request, "user") and request.user:
-            return f"user:{request.user.get('user_id', 'unknown')}"
-
+            return "user:{request.user.get('user_id', 'unknown')}"""
         # Fall back to IP address
-        return f"ip:{self._get_client_ip()}"
-
+        return "ip:{self._get_client_ip()}"""
     def _get_rate_limit_key()
-        self, identifier: str, window: str, endpoint: str = "default"
-    ) -> str:
-        "Generate Redis key for rate limiting."
+        self, identifier: str, window: str, endpoint: str = "default"""    ) -> str:
+        """Generate Redis key for rate limiting."""
         timestamp = int(time.time()
 
         if window == "per_minute":
@@ -79,10 +75,10 @@ class RateLimiter:
         else:
             window_timestamp = timestamp
 
-        return f"rate_limit:{endpoint}:{identifier}:{window}:{window_timestamp}"
+        return "rate_limit:{endpoint}:{identifier}:{window}:{window_timestamp}"
 
     def _get_limits(self, endpoint: str = "default") -> Dict[str, int]:
-        "Get rate limits for endpoint."
+        """Get rate limits for endpoint."""
         return self.default_limits.get(endpoint, self.default_limits["default"])
 
     def _check_rate_limit()
@@ -90,7 +86,7 @@ class RateLimiter:
         identifier: str,
         endpoint: str = "default",
         custom_limits: Optional[Dict[str, int]] = None) -> Tuple[bool, Dict[str, Union[int, str]]]:
-        "Check if request is within rate limits."
+        """Check if request is within rate limits."""
         if not self.redis_client:
             # If Redis is not available, allow request but log warning
             logger.warning("Rate limiting disabled: Redis not available")
@@ -99,7 +95,9 @@ class RateLimiter:
         limits = custom_limits or self._get_limits(endpoint)
         current_time = int(time.time()
 
-        result = {}
+        result = {
+
+
             "allowed": True,
             "limits": limits,
             "current_usage": {},
@@ -115,7 +113,7 @@ class RateLimiter:
 
                 if current_count >= limit:
                     result["allowed"] = False
-                    result["reason"] = f"Rate limit exceeded for {window}"
+                    result["reason"] = "Rate limit exceeded for {window}"
 
                     # Calculate reset time
                     if window == "per_minute":
@@ -132,14 +130,14 @@ class RateLimiter:
                     break
 
         except Exception as e:
-            logger.error(f"Error checking rate limit: {e}")
+            logger.error("Error checking rate limit: {e}")
             # On error, allow request to prevent service disruption
             return True, {"allowed": True, "reason": "check_error", "error": str(e)}
 
         return result["allowed"], result
 
     def _increment_counter(self, identifier: str, endpoint: str = "default") -> bool:
-        "Increment rate limit counter."
+        """Increment rate limit counter."""
         if not self.redis_client:
             return True
 
@@ -166,7 +164,7 @@ class RateLimiter:
                 self.redis_client.expire(key, expire_seconds)
 
         except Exception as e:
-            logger.error(f"Failed to increment rate limit counter: {e}")
+            logger.error("Failed to increment rate limit counter: {e}")
             return False
 
         return True
@@ -176,7 +174,7 @@ class RateLimiter:
         identifier: str,
         endpoint: str = "default",
         custom_limits: Optional[Dict[str, int]] = None) -> Tuple[bool, Dict[str, Union[int, str]]]:
-        "Check rate limit and increment counter if allowed."
+        """Check rate limit and increment counter if allowed."""
         allowed, result = self._check_rate_limit(identifier, endpoint, custom_limits)
 
         if allowed:
@@ -187,12 +185,12 @@ class RateLimiter:
     def get_rate_limit_info()
         self, identifier: str, endpoint: str = "default"
     ) -> Dict[str, Union[int, str]]:
-        "Get current rate limit information without incrementing."
+        """Get current rate limit information without incrementing."""
         allowed, result = self._check_rate_limit(identifier, endpoint)
         return result
 
     def reset_rate_limit(self, identifier: str, endpoint: str = "default") -> bool:
-        "Reset rate limit for identifier (admin function)."
+        """Reset rate limit for identifier (admin function)."""
         if not self.redis_client:
             return False
 
@@ -202,11 +200,11 @@ class RateLimiter:
                 key = self._get_rate_limit_key(identifier, window, endpoint)
                 self.redis_client.delete(key)
 
-            logger.info(f"Rate limit reset for {identifier} on {endpoint}")
+            logger.info("Rate limit reset for {identifier} on {endpoint}")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to reset rate limit: {e}")
+            logger.error("Failed to reset rate limit: {e}")
             return False
 
 
@@ -215,7 +213,7 @@ try:
     # Try to create Redis client
     rate_limiter = RateLimiter(redis.Redis() if redis else None)
 except Exception as e:
-    logger.warning(f"Failed to initialize Redis for rate limiting: {e}")
+    logger.warning("Failed to initialize Redis for rate limiting: {e}")
     rate_limiter = RateLimiter()
 
 
@@ -223,7 +221,7 @@ def rate_limit()
     endpoint: str = "default",
     custom_limits: Optional[Dict[str, int]] = None,
     identifier_func=None):
-    "Rate limiting decorator."
+    """Rate limiting decorator."""
 
     def decorator(f):
         @wraps(f)
@@ -244,7 +242,7 @@ def rate_limit()
                     response = jsonify()
                         {}
                             "error": "Rate limit exceeded",
-                            "message": f"Too many requests. Limit: {result['limits']}, Current: {result['current_usage']}",
+                            "message": "Too many requests. Limit: {result['limits']}, Current: {result['current_usage']}",
                             "retry_after": result.get("retry_after", 60),
                             "reset_times": result.get("reset_times", {}),
                         }
@@ -285,7 +283,7 @@ def rate_limit()
                 return f(*args, **kwargs)
 
             except Exception as e:
-                logger.error(f"Rate limiting error: {e}")
+                logger.error("Rate limiting error: {e}")
                 # On error, allow request to continue
                 return f(*args, **kwargs)
 
@@ -297,45 +295,42 @@ def rate_limit()
 def rate_limit_by_ip()
     endpoint: str = "default", custom_limits: Optional[Dict[str, int]] = None
 ):
-    "Rate limit by IP address."
+    """Rate limit by IP address."""
 
     def get_ip_identifier():
-        return f"ip:{rate_limiter._get_client_ip()}"
-
+        return "ip:{rate_limiter._get_client_ip()}"""
     return rate_limit(endpoint, custom_limits, get_ip_identifier)
 
 
 def rate_limit_by_user()
     endpoint: str = "default", custom_limits: Optional[Dict[str, int]] = None
 ):
-    "Rate limit by user ID (requires authentication)."
+    """Rate limit by user ID (requires authentication)."""
 
     def get_user_identifier():
         if hasattr(request, "user") and request.user:
-            return f"user:{request.user.get('user_id', 'unknown')}"
-        else:
+            return "user:{request.user.get('user_id', 'unknown')}"""        else:
             # Fall back to IP if not authenticated
-            return f"ip:{rate_limiter._get_client_ip()}"
-
+            return "ip:{rate_limiter._get_client_ip()}"""
     return rate_limit(endpoint, custom_limits, get_user_identifier)
 
 
 # Predefined rate limit decorators for common endpoints
 def auth_rate_limit(f):
-    "Rate limit for authentication endpoints."
+    """Rate limit for authentication endpoints."""
     return rate_limit_by_ip("auth")(f)
 
 
 def api_rate_limit(f):
-    "Rate limit for API endpoints."
+    """Rate limit for API endpoints."""
     return rate_limit_by_user("api")(f)
 
 
 def ml_rate_limit(f):
-    "Rate limit for ML endpoints."
+    """Rate limit for ML endpoints."""
     return rate_limit_by_user("ml")(f)
 
 
 def admin_rate_limit(f):
-    "Rate limit for admin endpoints."
+    """Rate limit for admin endpoints."""
     return rate_limit_by_user("admin")(f)

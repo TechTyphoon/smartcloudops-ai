@@ -1,7 +1,7 @@
-"
+"""
 Redis Cache Integration for Performance Optimization
 Phase 5: Performance & Cost Optimization - Redis Caching Layer
-"
+"""
 
 import os
 import json
@@ -58,8 +58,7 @@ class CacheEntry:
     serializer: str = "json"
     
     def to_dict(self) -> Dict[str, Any]:
-        return {}
-            **asdict(self),
+        return {            **asdict(self),
             'timestamp': self.timestamp.isoformat(),
             'last_access': self.last_access.isoformat() if self.last_access else None,
             'value': None  # Don't serialize the actual value in metadata
@@ -89,8 +88,7 @@ class CacheStats:
         return 100.0 - self.hit_rate
     
     def to_dict(self) -> Dict[str, Any]:
-        return {}
-            **asdict(self),
+        return {            **asdict(self),
             'hit_rate': self.hit_rate,
             'miss_rate': self.miss_rate
         }
@@ -107,7 +105,7 @@ class CacheSerializer:
         elif method == "pickle":
             serialized = pickle.dumps(value)
         else:
-            raise ValueError(f"Unsupported serialization method: {method}")
+            raise ValueError("Unsupported serialization method: {method}")
         
         if compress:
             serialized = gzip.compress(serialized)
@@ -125,7 +123,7 @@ class CacheSerializer:
         elif method == "pickle":
             return pickle.loads(data)
         else:
-            raise ValueError(f"Unsupported serialization method: {method}")
+            raise ValueError("Unsupported serialization method: {method}")
 
 
 class RedisCache:
@@ -149,8 +147,8 @@ class RedisCache:
     def _init_redis_client(self):
         "Initialize Redis client"
         try:
-            self._redis_client = redis.Redis()
-                host=self.config.host,
+            self._redis_client = redis.Redis(
+    host=self.config.host,
                 port=self.config.port,
                 password=self.config.password,
                 db=self.config.db,
@@ -163,10 +161,10 @@ class RedisCache:
             
             # Test connection
             self._redis_client.ping()
-            logger.info(f"✅ Redis cache connected to {self.config.host}:{self.config.port}")
+            logger.info("✅ Redis cache connected to {self.config.host}:{self.config.port}")
             
         except Exception as e:
-            logger.error(f"❌ Redis connection failed: {e}")
+            logger.error("❌ Redis connection failed: {e}")
             self._redis_client = None
     
     def _start_health_check(self):
@@ -175,8 +173,8 @@ class RedisCache:
             return
         
         self._running = True
-        self._health_check_thread = threading.Thread()
-            target=self._health_check_loop,
+        self._health_check_thread = threading.Thread(
+    target=self._health_check_loop,
             daemon=True,
             name="redis-health-check"
         )
@@ -190,11 +188,11 @@ class RedisCache:
                 if self._redis_client:
                     self._redis_client.ping()
             except Exception as e:
-                logger.warning(f"Redis health check failed: {e}")
+                logger.warning("Redis health check failed: {e}")
     
     def _get_cache_key(self, key: str, namespace: str = "default") -> str:
         "Generate cache key with namespace"
-        return f"{namespace}:{key}"
+        return "{namespace}:{key}"
     
     def _should_compress(self, data: bytes) -> bool:
         "Determine if data should be compressed"
@@ -249,8 +247,8 @@ class RedisCache:
                 self.stats.total_requests += 1
                 
                 # Get value and metadata
-                value_data = self._redis_client.get(f"{cache_key}:value")
-                meta_data = self._redis_client.get(f"{cache_key}:meta")
+                value_data = self._redis_client.get("{cache_key}:value")
+                meta_data = self._redis_client.get("{cache_key}:meta")
                 
                 if value_data is None:
                     self.stats.misses += 1
@@ -294,8 +292,7 @@ class RedisCache:
                 value_data, compressed, serializer = self._serialize_value(value)
                 
                 # Create metadata
-                meta = {}
-                    'timestamp': datetime.utcnow().isoformat(),
+                meta = {                    'timestamp': datetime.utcnow().isoformat(),
                     'ttl': ttl,
                     'compressed': compressed,
                     'serializer': serializer,
@@ -307,14 +304,14 @@ class RedisCache:
                 # Store value and metadata
                 pipe = self._redis_client.pipeline()
                 pipe.setex(f"{cache_key}:value", ttl, value_data)
-                pipe.setex(f"{cache_key}:meta", ttl, meta_data)
+                pipe.setex("{cache_key}:meta", ttl, meta_data)
                 pipe.execute()
                 
                 self.stats.sets += 1
                 return True
                 
         except Exception as e:
-            logger.error(f"Cache set error for key {cache_key}: {e}")
+            logger.error("Cache set error for key {cache_key}: {e}")
             self.stats.errors += 1
             return False
     
@@ -328,15 +325,15 @@ class RedisCache:
         try:
             with self._lock:
                 pipe = self._redis_client.pipeline()
-                pipe.delete(f"{cache_key}:value")
-                pipe.delete(f"{cache_key}:meta")
+                pipe.delete("{cache_key}:value")
+                pipe.delete("{cache_key}:meta")
                 pipe.execute()
                 
                 self.stats.deletes += 1
                 return True
                 
         except Exception as e:
-            logger.error(f"Cache delete error for key {cache_key}: {e}")
+            logger.error("Cache delete error for key {cache_key}: {e}")
             self.stats.errors += 1
             return False
     
@@ -346,7 +343,7 @@ class RedisCache:
             return False
         
         cache_key = self._get_cache_key(key, namespace)
-        return bool(self._redis_client.exists(f"{cache_key}:value")
+        return bool(self._redis_client.exists("{cache_key}:value")
     
     def ttl(self, key: str, namespace: str = "default") -> int:
         "Get remaining TTL for key"
@@ -354,7 +351,7 @@ class RedisCache:
             return -1
         
         cache_key = self._get_cache_key(key, namespace)
-        return self._redis_client.ttl(f"{cache_key}:value")
+        return self._redis_client.ttl("{cache_key}:value")
     
     def _update_access_metadata(self, cache_key: str, meta: Dict[str, Any]):
         "Update access metadata"
@@ -369,7 +366,7 @@ class RedisCache:
             ttl = meta.get('ttl', self.config.default_ttl)
             self._redis_client.setex(f"{cache_key}:meta", ttl, meta_data)
         except Exception as e:
-            logger.warning(f"Failed to update access metadata: {e}")
+            logger.warning("Failed to update access metadata: {e}")
     
     def get_stats(self) -> Dict[str, Any]:
         "Get cache statistics"
@@ -384,13 +381,13 @@ class RedisCache:
             return False
         
         try:
-            pattern = f"{namespace}:*"
+            pattern = "{namespace}:*"
             keys = self._redis_client.keys(pattern)
             if keys:
                 self._redis_client.delete(*keys)
             return True
         except Exception as e:
-            logger.error(f"Cache clear error for namespace {namespace}: {e}")
+            logger.error("Cache clear error for namespace {namespace}: {e}")
             return False
     
     def close(self):
@@ -413,7 +410,7 @@ class CacheDecorator:
                 # Generate cache key from function name and arguments
                 key_parts = [func.__name__]
                 key_parts.extend(str(arg) for arg in args)
-                key_parts.extend(f"{k}={v}" for k, v in sorted(kwargs.items()
+                key_parts.extend("{k}={v}" for k, v in sorted(kwargs.items()
                 cache_key = hashlib.md5(":".join(key_parts).encode().hexdigest()
                 
                 # Try to get from cache

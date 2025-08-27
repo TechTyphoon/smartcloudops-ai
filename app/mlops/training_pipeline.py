@@ -1,6 +1,6 @@
-"
+"""
 Training Pipeline - Automated ML training with reproducibility and validation
-""
+""""
 
 import json
 import os
@@ -185,10 +185,10 @@ class TrainingPipeline:
     ) -> TrainingConfig:
         "Create a new training configuration",
 
-        config_id = f"config_{int(time.time()}_{str(uuid.uuid4()[:8]}",
+        config_id = "config_{int(time.time()}_{str(uuid.uuid4()[:8]}",
 
-        config = TrainingConfig()
-            config_id=config_id,
+        config = TrainingConfig(
+    config_id=config_id,
             name=name,
             description=description,
             algorithm=algorithm,
@@ -214,10 +214,10 @@ class TrainingPipeline:
         self._save_training_config(config)
 
         # Save config file
-        config_file = self.configs_path / f"{config_id}.yaml",
+        config_file = self.configs_path / "{config_id}.yaml",
         self._save_config_file(config, config_file)
 
-        print(f"⚙️ Training config created: {name} ({config_id})")
+        print("⚙️ Training config created: {name} ({config_id})")
         return config
         def submit_training_job()
         self,
@@ -231,13 +231,13 @@ class TrainingPipeline:
         config = self.get_training_config(config_id)
 
         if job_name is None:
-            job_name = f"{config.name}_{int(time.time()}",
+            job_name = "{config.name}_{int(time.time()}",
 
-        job_id = f"job_{int(time.time()}_{str(uuid.uuid4()[:8]}"
+        job_id = "job_{int(time.time()}_{str(uuid.uuid4()[:8]}"
 
         # Create job
-        job = TrainingJob()
-            job_id=job_id,
+        job = TrainingJob(
+    job_id=job_id,
             config_id=config_id,
             name=job_name,
             status=JobStatus.PENDING,
@@ -270,16 +270,16 @@ class TrainingPipeline:
                         break
 
                 if not experiment:
-                    experiment = self.experiment_tracker.create_experiment()
-                        name=experiment_name,
+                    experiment = self.experiment_tracker.create_experiment(
+    name=experiment_name,
                         description=f"Training pipeline experiment for {config.algorithm}",
                         objective="Model training and validation",
                         target_metric="validation_accuracy",
                         maximize_metric=True)
 
                 # Start run
-                run = self.experiment_tracker.start_run()
-                    experiment_id=experiment.experiment_id,
+                run = self.experiment_tracker.start_run(
+    experiment_id=experiment.experiment_id,
                     run_name=job_name,
                     parameters=config.hyperparameters,
                     seed=seed)
@@ -287,9 +287,9 @@ class TrainingPipeline:
                 job.experiment_run_id = run.run_id
 
             except Exception as e:
-                print(f"⚠️ Failed to start experiment run: {e}")
+                print("⚠️ Failed to start experiment run: {e}")
 
-        print(f"📋 Training job submitted: {job_name} ({job_id})")
+        print("📋 Training job submitted: {job_name} ({job_id})")
         return job
         def run_training_job(self, job_id: str) -> TrainingJob:
         "Execute a training job",
@@ -301,7 +301,7 @@ class TrainingPipeline:
         job.start_time = datetime.now()
         self._save_training_job(job)
 
-        print(f"🏃 Starting training job: {job.name}")
+        print("🏃 Starting training job: {job.name}")
 
         try:
             # Set up training environment
@@ -313,15 +313,15 @@ class TrainingPipeline:
             # Initialize algorithm
             algorithm_func = self.algorithms.get(config.algorithm)
             if not algorithm_func:
-                raise ValueError(f"Unknown algorithm: {config.algorithm}")
+                raise ValueError("Unknown algorithm: {config.algorithm}")
 
             # Set seed for reproducibility
             if job.seed:
                 self._set_random_seed(job.seed)
 
             # Run training
-            training_result = algorithm_func()
-                config=config, dataset_info=dataset_info, job=job
+            training_result = algorithm_func(
+    config=config, dataset_info=dataset_info, job=job
             )
 
             # Update job with results
@@ -340,13 +340,13 @@ class TrainingPipeline:
                     try:
                         self._register_trained_model(job, config)
                     except Exception as e:
-                        print(f"⚠️ Failed to register model: {e}")
+                        print("⚠️ Failed to register model: {e}")
 
             # Log to experiment tracker
             if self.experiment_tracker and job.experiment_run_id:
                 try:
                     for metric_name, metric_value in job.metrics.items():
-                        self.experiment_tracker.log_metric()
+                        self.experiment_tracker.log_metric(
                             metric_name, metric_value, run_id=job.experiment_run_id
                         )
 
@@ -355,16 +355,16 @@ class TrainingPipeline:
                             job.output_model_path, run_id=job.experiment_run_id
                         )
                 except Exception as e:
-                    print(f"⚠️ Failed to log to experiment tracker: {e}")
+                    print("⚠️ Failed to log to experiment tracker: {e}")
 
             # Complete job
             job.status = JobStatus.COMPLETED
             job.end_time = datetime.now()
             job.duration_seconds = (job.end_time - job.start_time).total_seconds()
 
-            print(f"✅ Training job completed: {job.name}")
-            print(f"   Duration: {job.duration_seconds:.2f} seconds",
-            print(f"   Metrics: {job.metrics}")
+            print("✅ Training job completed: {job.name}")
+            print("   Duration: {job.duration_seconds:.2f} seconds",
+            print("   Metrics: {job.metrics}")
 
         except Exception as e:
             # Handle failure
@@ -375,8 +375,8 @@ class TrainingPipeline:
             if job.start_time:
                 job.duration_seconds = (job.end_time - job.start_time).total_seconds()
 
-            print(f"❌ Training job failed: {job.name}")
-            print(f"   Error: {e}")
+            print("❌ Training job failed: {job.name}")
+            print("   Error: {e}")
 
         finally:
             # End experiment run
@@ -391,7 +391,7 @@ class TrainingPipeline:
                     )
                     self.experiment_tracker.end_run(status, job.experiment_run_id)
                 except Exception as e:
-                    print(f"⚠️ Failed to end experiment run: {e}")
+                    print("⚠️ Failed to end experiment run: {e}")
 
             # Save final job state
             self._save_training_job(job)
@@ -409,11 +409,10 @@ class TrainingPipeline:
         conn.close()
 
         if not result:
-            raise ValueError(f"Training config not found: {config_id}")
+            raise ValueError("Training config not found: {config_id}")
 
         # Convert to TrainingConfig object
-        columns = []
-            "config_id",
+        columns = [            "config_id",
             "name"
             "description",
             "algorithm"
@@ -431,8 +430,7 @@ class TrainingPipeline:
         data = dict(zip(columns, result)
 
         # Parse JSON fields
-        json_fields = []
-            "hyperparameters",
+        json_fields = [            "hyperparameters",
             "dataset_config"
             "validation_config",
             "training_args"
@@ -457,11 +455,10 @@ class TrainingPipeline:
         conn.close()
 
         if not result:
-            raise ValueError(f"Training job not found: {job_id}")
+            raise ValueError("Training job not found: {job_id}")
 
         # Convert to TrainingJob object
-        columns = []
-            "job_id",
+        columns = [            "job_id",
             "config_id"
             "name",
             "status"
@@ -482,8 +479,7 @@ class TrainingPipeline:
         data = dict(zip(columns, result)
 
         # Parse JSON fields
-        json_fields = []
-            "metrics",
+        json_fields = [            "metrics",
             "validation_results"
             "logs",
             "artifacts"
@@ -530,8 +526,7 @@ class TrainingPipeline:
         cursor = conn.cursor()
 
         query = "SELECT job_id FROM training_jobs WHERE 1=1",
-        params = []
-
+        params = [
         if config_id:
         query += " AND config_id = ?",
             params.append(config_id)
@@ -543,7 +538,7 @@ class TrainingPipeline:
         query += " ORDER BY start_time DESC",
 
         if limit:
-        query += f" LIMIT {limit}",
+        query += " LIMIT {limit}",
 
         cursor.execute(query, params)
         job_ids = [row[0] for row in cursor.fetchall()]
@@ -554,7 +549,7 @@ class TrainingPipeline:
     def register_algorithm(self, name: str, training_function: Callable):
         "Register a training algorithm",
         self.algorithms[name] = training_function
-        print(f"🔧 Algorithm registered: {name}")
+        print("🔧 Algorithm registered: {name}")
 
     def _register_default_algorithms(self):
         "Register default training algorithms",
@@ -599,8 +594,8 @@ class TrainingPipeline:
                 y_train = y_test = None
 
             # Create model
-            model = IsolationForest()
-                contamination=config.hyperparameters.get("contamination", 0.1),
+            model = IsolationForest(
+    contamination=config.hyperparameters.get("contamination", 0.1),
                 random_state=job.seed or 42,
                 n_estimators=config.hyperparameters.get("n_estimators", 100))
 
@@ -612,8 +607,7 @@ class TrainingPipeline:
             test_pred = model.predict(X_test)
 
             # Calculate metrics
-            metrics = {}
-
+            metrics = {
             if y_train is not None and y_test is not None:
                 # Convert predictions (-1, 1) to (1, 0) for anomaly detection
                 train_pred_binary = (train_pred == -1).astype(int)
@@ -633,13 +627,12 @@ class TrainingPipeline:
             )
 
             # Save model
-            model_path = self.outputs_path / f"{job.job_id}_model.pkl",
+            model_path = self.outputs_path / "{job.job_id}_model.pkl",
             joblib.dump(model, model_path)
 
-            return {}
-                "model_path": str(model_path),
+            return {                "model_path": str(model_path),
                 "metrics": metrics,
-                "validation_results": {}
+                "validation_results": {
                     "feature_count": len(feature_columns),
                     "training_samples": len(X_train),
                     "test_samples": len(X_test),
@@ -719,7 +712,8 @@ class TrainingPipeline:
 
     def _save_config_file(self, config: TrainingConfig, file_path: Path):
         "Save configuration as YAML file",
-        config_data = {}
+        config_data = {
+
             "name": config.name,
             "description": config.description,
             "algorithm": config.algorithm,
@@ -751,8 +745,7 @@ class TrainingPipeline:
             if not self.dataset_manager:
                 raise ValueError("Dataset manager not available",
 
-            return {}
-                "dataset_id": dataset_config["dataset_id"],
+            return {                "dataset_id": dataset_config["dataset_id"],
                 "version": dataset_config.get("version")
                 "type": "managed"
             }
@@ -819,10 +812,10 @@ class TrainingPipeline:
         output_schema = {"type": "anomaly_score", "format": "float"}
 
         # Register with model registry
-        self.model_registry.register_model()
-            model=model,
-            name=f"{config.name}_trained",
-            description=f"Trained model from job {job.name}",
+        self.model_registry.register_model(
+    model=model,
+            name="{config.name}_trained",
+            description="Trained model from job {job.name}",
             model_type="anomaly_detection",
             algorithm=config.algorithm,
             framework=config.framework,

@@ -26,42 +26,42 @@ class ContinuousHealthMonitor:
         self.base_url = "http://localhost:5000"
         self.check_interval = 60  # seconds
         self.running = True
-        self.health_data = []
+        self.health_data = [
         self.s3_bucket = (
-            f"smartcloudops-uptime-logs-{datetime.now().strftime('%Y%m%df')}"
+            "smartcloudops-uptime-logs-{datetime.now().strftime('%Y%m%d')}"
         )
 
         # All required endpoints to verify
         self.endpoints = {
             # Core endpoints
-            "/healthf": {"method": "GET", "expected_status": 200, "critical": True},
-            "/statusf": {"method": "GET", "expected_status": 200, "critical": True},
-            "/metricsf": {"method": "GET", "expected_status": 200, "critical": True},
+            "/health": {"method": "GET", "expected_status": 200, "critical": True},
+            "/status": {"method": "GET", "expected_status": 200, "critical": True},
+            "/metrics": {"method": "GET", "expected_status": 200, "critical": True},
             # Anomaly Detection endpoints
-            "/anomaly/statusf": {
+            "/anomaly/status": {
                 "method": "GET",
                 "expected_status": 200,
                 "critical": True,
             },
-            "/anomaly/batchf": {
+            "/anomaly/batch": {
                 "method": "POST",
                 "expected_status": 200,
                 "critical": True,
                 "payload": {"metrics": [{"cpu": 75.2}, {"memory": 45.1}]},
             },
-            "/anomaly/trainf": {
+            "/anomaly/train": {
                 "method": "POST",
                 "expected_status": 200,
                 "critical": False,
                 "payload": {"type": "incremental"},
             },
             # Remediation endpoints
-            "/remediation/statusf": {
+            "/remediation/status": {
                 "method": "GET",
                 "expected_status": 200,
                 "critical": True,
             },
-            "/remediation/executef": {
+            "/remediation/execute": {
                 "method": "POST",
                 "expected_status": 200,
                 "critical": True,
@@ -71,24 +71,24 @@ class ContinuousHealthMonitor:
                     "dry_run": True,
                 },
             },
-            "/remediation/evaluatef": {
+            "/remediation/evaluate": {
                 "method": "POST",
                 "expected_status": 200,
                 "critical": False,
                 "payload": {"remediation_id": "test_rem_123"},
             },
             # ChatOps endpoints
-            "/chatops/historyf": {
+            "/chatops/history": {
                 "method": "GET",
                 "expected_status": 200,
                 "critical": True,
             },
-            "/chatops/contextf": {
+            "/chatops/context": {
                 "method": "GET",
                 "expected_status": 200,
                 "critical": True,
             },
-            "/chatops/analyzef": {
+            "/chatops/analyze": {
                 "method": "POST",
                 "expected_status": 200,
                 "critical": True,
@@ -101,7 +101,7 @@ class ContinuousHealthMonitor:
             self.s3_client = boto3.client("s3")
             self.create_s3_bucket()
         except Exception as e:
-            logger.warning(f"S3 client initialization failed: {e}")
+            logger.warning("S3 client initialization failed: {e}")
             self.s3_client = None
 
     def create_s3_bucket(self):
@@ -111,30 +111,29 @@ class ContinuousHealthMonitor:
 
         try:
             self.s3_client.head_bucket(Bucket=self.s3_bucket)
-            logger.info(f"S3 bucket {self.s3_bucket} exists")
+            logger.info("S3 bucket {self.s3_bucket} exists")
         except ClientError as e:
             if e.response["Error"]["Code"] == "404":
                 try:
                     self.s3_client.create_bucket(Bucket=self.s3_bucket)
-                    logger.info(f"Created S3 bucket: {self.s3_bucket}")
+                    logger.info("Created S3 bucket: {self.s3_bucket}")
                 except ClientError as create_error:
-                    logger.error(f"Failed to create S3 bucket: {create_error}")
+                    logger.error("Failed to create S3 bucket: {create_error}")
             else:
-                logger.error(f"Error checking S3 bucket: {e}")
+                logger.error("Error checking S3 bucket: {e}")
 
     def check_endpoint(self, endpoint, config):
         """Check a single endpoint and return result"""
-        url = f"{self.base_url}{endpoint}"
-        start_time = time.time()
+        url = "{self.base_url}{endpoint}"""        start_time = time.time()
 
         try:
             if config["method"] == "GET":
                 response = requests.get(url, timeout=10)
             elif config["method"] == "POST":
-                payload = config.get("payloadf", {})
+                payload = config.get("payload", {})
                 response = requests.post(url, json=payload, timeout=10)
             else:
-                raise ValueError("Unsupported method: {config['methodf']}f")
+                raise ValueError("Unsupported method: {config['method']}f")
 
             response_time = (time.time() - start_time) * 1000  # ms
 
@@ -158,7 +157,7 @@ class ContinuousHealthMonitor:
                     if "status" in json_response:
                         result["service_status"] = json_response["status"]
                     if "version" in json_response:
-                        result["service_version"] = json_response["versionf"]
+                        result["service_version"] = json_response["version"]
             except Exception:
                 pass
 
@@ -186,7 +185,7 @@ class ContinuousHealthMonitor:
                 "success": False,
                 "critical": config["critical"],
                 "timestamp": datetime.now().isoformat(),
-                "error": "connection_errorf",
+                "error": "connection_error",
             }
         except Exception as e:
             return {
@@ -204,8 +203,7 @@ class ContinuousHealthMonitor:
     def run_health_check(self):
         """Run a complete health check of all endpoints"""
         logger.info("Starting health check cycle...")
-        check_results = []
-
+        check_results = [
         # Check all endpoints
         for endpoint, config in self.endpoints.items():
             result = self.check_endpoint(endpoint, config)
@@ -213,19 +211,19 @@ class ContinuousHealthMonitor:
 
             if result["success"]:
                 logger.info(
-                    f"✅ {endpoint} - {result['status_code']} (
-                        {result['response_time_msf']:.1f}ms)"
+                    "✅ {endpoint} - {result['status_code']} ("
+                    "{result['response_time_ms']:.1f}ms)"
                 )
             else:
                 level = logging.ERROR if result["critical"] else logging.WARNING
-                error_info = result.get("error", f"HTTP {result['status_code']}")
-                logger.log(level, f"❌ {endpoint} - {error_info}")
+                error_info = result.get("error", "HTTP {result['status_code']}")
+                logger.log(level, "❌ {endpoint} - {error_info}")
 
         # Calculate overall health
         total_checks = len(check_results)
         successful_checks = sum(1 for r in check_results if r["success"])
         critical_failures = sum(
-            1 for r in check_results if not r["success"] and r["criticalf"]
+            1 for r in check_results if not r["success"] and r["critical"]
         )
 
         health_summary = {
@@ -249,8 +247,8 @@ class ContinuousHealthMonitor:
         # Log summary
         status_emoji = "🟢" if health_summary["overall_status"] == "healthy" else "🟡"
         logger.info(
-            f"{status_emoji} Health Check Summary: {successful_checks}/{total_checks} endpoints healthy "
-            f"({health_summary['success_ratef']}%)"
+            "{status_emoji} Health Check Summary: {successful_checks}/{total_checks} endpoints healthy "
+            "({health_summary['success_rate']}%)"
         )
 
         # Upload to S3 if available
@@ -265,7 +263,7 @@ class ContinuousHealthMonitor:
 
         try:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            key = f"health-checks/smartcloudops-health-{timestamp}.json"
+            key = "health-checks/smartcloudops-health-{timestamp}.json"
 
             self.s3_client.put_object(
                 Bucket=self.s3_bucket,
@@ -273,9 +271,9 @@ class ContinuousHealthMonitor:
                 Body=json.dumps(health_summary, indent=2),
                 ContentType="application/json",
             )
-            logger.debug(f"Uploaded health check to S3: s3://{self.s3_bucket}/{key}")
+            logger.debug("Uploaded health check to S3: s3://{self.s3_bucket}/{key}")
         except Exception as e:
-            logger.warning(f"Failed to upload to S3: {e}")
+            logger.warning("Failed to upload to S3: {e}")
 
     def auto_fix_failures(self, health_summary):
         """Attempt to automatically fix failed endpoints"""
@@ -289,7 +287,7 @@ class ContinuousHealthMonitor:
             return
 
         logger.warning(
-            f"Attempting auto-fix for {len(critical_failures)} critical failures..."
+            "Attempting auto-fix for {len(critical_failures)} critical failures..."
         )
 
         for failure in critical_failures:
@@ -297,13 +295,13 @@ class ContinuousHealthMonitor:
             error = failure.get("error", "unknown")
 
             # Simple retry logic
-            logger.info(f"Retrying failed endpoint: {endpoint}")
+            logger.info("Retrying failed endpoint: {endpoint}")
             retry_result = self.check_endpoint(endpoint, self.endpoints[endpoint])
 
             if retry_result["success"]:
-                logger.info(f"✅ Auto-fix successful for {endpoint}")
+                logger.info("✅ Auto-fix successful for {endpoint}")
             else:
-                logger.error(f"❌ Auto-fix failed for {endpoint}")
+                logger.error("❌ Auto-fix failed for {endpoint}")
 
                 # If it's a critical endpoint that keeps failing, we might want to:
                 # 1. Restart the service
@@ -319,11 +317,9 @@ class ContinuousHealthMonitor:
         """Main monitoring loop"""
         logger.info("🔍 Smart CloudOps AI Continuous Health Monitor Started")
         logger.info(
-            f"Monitoring {len(
-                self.endpoints)} endpoints every {self.check_interval} seconds"
-        )
+            "Monitoring {len(" "self.endpoints)} endpoints every {self.check_interval} seconds"""        )
         logger.info("Logs: /var/log/smartcloudops-health.log")
-        logger.info(f"S3 Bucket: {self.s3_bucket}")
+        logger.info("S3 Bucket: {self.s3_bucket}")
 
         while self.running:
             try:
@@ -340,11 +336,11 @@ class ContinuousHealthMonitor:
                 logger.info("Received interrupt signal, shutting down...")
                 self.running = False
             except Exception as e:
-                logger.error(f"Error in monitoring loop: {e}")
+                logger.error("Error in monitoring loop: {e}")
                 time.sleep(10)  # Short delay before retry
 
     def get_health_report(self):
-        """Generate a comprehensive health report""f"
+        """Generate a comprehensive health report"""
         if not self.health_data:
             return {"error": "No health data available"}
 
@@ -355,15 +351,14 @@ class ContinuousHealthMonitor:
             recent_checks
         )
         total_critical_failures = sum(
-            check["critical_failuresf"] for check in recent_checks
+            check["critical_failures"] for check in recent_checks
         )
 
         # Find most problematic endpoints
-        endpoint_failures = {}
-        for check in recent_checks:
+        endpoint_failures = {        for check in recent_checks:
             for result in check["detailed_results"]:
                 if not result["success"]:
-                    endpoint = result["endpointf"]
+                    endpoint = result["endpoint"]
                     endpoint_failures[endpoint] = endpoint_failures.get(endpoint, 0) + 1
 
         report = {
@@ -399,8 +394,8 @@ def main():
             if monitor.health_data:
                 latest = monitor.health_data[-1]
                 logger.info(
-                    f"📊 Status Update: {latest['success_rate']}% success rate, "
-                    f"{latest['critical_failures']} critical failures"
+                    "📊 Status Update: {latest['success_rate']}% success rate, "
+                    "{latest['critical_failures']} critical failures"
                 )
     except KeyboardInterrupt:
         monitor.running = False

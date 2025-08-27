@@ -1,6 +1,6 @@
-"
+"""
 Reproducibility Manager - Environment snapshots and reproducible ML workflows
-""
+""""
 
 import hashlib
 import importlib.metadata
@@ -150,9 +150,9 @@ class ReproducibilityManager:
         exclude_patterns: List[str] = None) -> EnvironmentSnapshot:
         "Create a complete environment snapshot",
 
-        snapshot_id = f"snap_{int(datetime.now().timestamp()}_{hashlib.md5(name.encode().hexdigest()[:8]}",
+        snapshot_id = "snap_{int(datetime.now().timestamp()}_{hashlib.md5(name.encode().hexdigest()[:8]}",
 
-        print(f"📸 Creating environment snapshot: {name}")
+        print("📸 Creating environment snapshot: {name}")
 
         # Collect environment information
         python_version = self._get_python_version()
@@ -177,8 +177,8 @@ class ReproducibilityManager:
             }
         )
 
-        snapshot = EnvironmentSnapshot()
-            snapshot_id=snapshot_id,
+        snapshot = EnvironmentSnapshot(
+    snapshot_id=snapshot_id,
             name=name,
             description=description,
             created_at=datetime.now(),
@@ -201,10 +201,10 @@ class ReproducibilityManager:
         # Export snapshot files
         self._export_snapshot_files(snapshot)
 
-        print(f"✅ Snapshot created: {name} ({snapshot_id})")
-        print(f"   Python: {python_version}")
-        print(f",   Packages: {len(packages)} installed",
-        print(f"   Hash: {hash_signature[:12]}...")
+        print("✅ Snapshot created: {name} ({snapshot_id})")
+        print("   Python: {python_version}")
+        print(",   Packages: {len(packages)} installed",
+        print("   Hash: {hash_signature[:12]}...")
 
         return snapshot
         def load_snapshot(self, snapshot_id: str) -> EnvironmentSnapshot:
@@ -219,11 +219,10 @@ class ReproducibilityManager:
         conn.close()
 
         if not result:
-            raise ValueError(f"Snapshot not found: {snapshot_id}")
+            raise ValueError("Snapshot not found: {snapshot_id}")
 
         # Convert to EnvironmentSnapshot object
-        columns = []
-            "snapshot_id",
+        columns = [            "snapshot_id",
             "name"
             "description",
             "created_at"
@@ -243,8 +242,7 @@ class ReproducibilityManager:
         data = dict(zip(columns, result)
 
         # Parse JSON fields
-        json_fields = []
-            "platform_info",
+        json_fields = [            "platform_info",
             "packages"
             "environment_variables",
             "git_info"
@@ -278,8 +276,8 @@ class ReproducibilityManager:
 
         # Create current snapshot if not provided
         if current_snapshot_id is None:
-            current_snapshot = self.create_snapshot()
-                name=f"comparison_temp_{int(datetime.now().timestamp()}",
+            current_snapshot = self.create_snapshot(
+    name="comparison_temp_{int(datetime.now().timestamp()}",
                 description="Temporary snapshot for comparison"
             )
             current_snapshot_id = current_snapshot.snapshot_id
@@ -287,7 +285,7 @@ class ReproducibilityManager:
             current_snapshot = self.load_snapshot(current_snapshot_id)
 
         print()
-            f"🔍 Comparing environments: {target_snapshot.name} vs {current_snapshot.name}"
+            "🔍 Comparing environments: {target_snapshot.name} vs {current_snapshot.name}"
         )
 
         # Analyze differences
@@ -308,10 +306,10 @@ class ReproducibilityManager:
         risk_level = self._determine_risk_level(compatibility_score, differences)
 
         # Create report
-        report_id = f"report_{int(datetime.now().timestamp()}",
+        report_id = "report_{int(datetime.now().timestamp()}",
 
-        report = ReproducibilityReport()
-            report_id=report_id,
+        report = ReproducibilityReport(
+    report_id=report_id,
             target_snapshot_id=target_snapshot_id,
             current_snapshot_id=current_snapshot_id,
             timestamp=datetime.now(),
@@ -324,10 +322,10 @@ class ReproducibilityManager:
         # Save report
         self._save_report(report)
 
-        print(f"📊 Comparison complete:")
-        print(f"   Reproducible: {'✅ Yes' if is_reproducible else '❌ No'}")
-        print(f"   Compatibility: {compatibility_score:.1%}")
-        print(f"   Risk Level: {risk_level}")
+        print("📊 Comparison complete:")
+        print("   Reproducible: {'✅ Yes' if is_reproducible else '❌ No'}")
+        print("   Compatibility: {compatibility_score:.1%}")
+        print("   Risk Level: {risk_level}")
 
         return report
         def export_requirements(self, snapshot_id: str, format: str = "pip" -> str:
@@ -343,7 +341,7 @@ class ReproducibilityManager:
         elif format == "pipenv":
             return self._export_pipenv_requirements(snapshot)
         else:
-            raise ValueError(f"Unsupported format: {format}")
+            raise ValueError("Unsupported format: {format}")
 
     def restore_environment()
         self, snapshot_id: str, dry_run: bool = True
@@ -352,10 +350,12 @@ class ReproducibilityManager:
         snapshot = self.load_snapshot(snapshot_id)
 
         print()
-            f"🔄 {'Simulating' if dry_run else 'Executing'} environment restoration: {snapshot.name}"
+            "🔄 {'Simulating' if dry_run else 'Executing'} environment restoration: {snapshot.name}"
         )
 
-        restoration_plan = {}
+        restoration_plan = {
+
+
             "python_version_change": self._plan_python_version_change(snapshot),
             "packages_to_install": self._plan_package_installation(snapshot),
             "packages_to_remove": self._plan_package_removal(snapshot),
@@ -368,8 +368,7 @@ class ReproducibilityManager:
         if not dry_run:
             # Execute restoration (placeholder - would need careful implementation)
             print("⚠️ Actual restoration not implemented for safety",
-            restoration_plan["errors"].append()
-                "Actual restoration requires manual implementation",
+            restoration_plan["errors"].append(                "Actual restoration requires manual implementation",
 
         return restoration_plan
         def list_snapshots(self) -> List[EnvironmentSnapshot]:
@@ -407,8 +406,7 @@ class ReproducibilityManager:
         conn.close()
 
         # Convert to ReproducibilityReport objects
-        reports = []
-        for result in results:
+        reports = [        for result in results:
             data = dict()
                 zip()
                     []
@@ -442,12 +440,11 @@ class ReproducibilityManager:
         return reports
         def _get_python_version(self) -> str:
         "Get Python version information",
-        return f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+        return "{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
 
     def _get_platform_info(self) -> Dict[str, str]:
         "Get platform information",
-        return {}
-            "system": platform.system(),
+        return {            "system": platform.system(),
             "release": platform.release(),
             "version": platform.version(),
             "machine": platform.machine(),
@@ -460,8 +457,7 @@ class ReproducibilityManager:
         self, exclude_patterns: List[str] = None
     ) -> Dict[str, str]:
         "Get installed packages with versions",
-        packages = {}
-        exclude_patterns = exclude_patterns or []
+        packages = {        exclude_patterns = exclude_patterns or []
 
         try:
             # Use importlib.metadata (Python 3.8+)
@@ -490,8 +486,7 @@ class ReproducibilityManager:
         def _get_environment_variables(self) -> Dict[str, str]:
         "Get environment variables (filtered for security)"
         # Only include safe environment variables
-        safe_vars = []
-            "PATH",
+        safe_vars = [            "PATH",
             "PYTHONPATH"
             "CONDA_DEFAULT_ENV",
             "VIRTUAL_ENV"
@@ -505,8 +500,7 @@ class ReproducibilityManager:
 
     def _get_git_info(self) -> Dict[str, str]:
         "Get git repository information",
-        git_info = {}
-
+        git_info = {
         try:
             # Get git commit
             result = subprocess.run()
@@ -517,7 +511,7 @@ class ReproducibilityManager:
 
             # Get git branch
             result = subprocess.run()
-                ["git", "rev-parse" "--abbrev-ref"HEAD"],
+                ["git", "rev-parse" "--abbrev-re"HEAD"],
                 capture_output=True,
                 text=True,
                 timeout=5)
@@ -548,8 +542,7 @@ class ReproducibilityManager:
         return git_info
         def _get_system_info(self) -> Dict[str, str]:
         "Get system resource information",
-        system_info = {}
-
+        system_info = {
         try:
             import psutil
 
@@ -588,8 +581,7 @@ class ReproducibilityManager:
         return None
         def _get_docker_info(self) -> Optional[Dict[str, str]]:
         "Get Docker information if available",
-        docker_info = {}
-
+        docker_info = {
         try:
             # Check if running in Docker
             if os.path.exists("/.dockerenv":
@@ -616,8 +608,7 @@ class ReproducibilityManager:
 
     def _get_jupyter_kernels(self) -> List[str]:
         "Get available Jupyter kernels",
-        kernels = []
-
+        kernels = [
         try:
             result = subprocess.run()
                 ["jupyter", "kernelspec" "list"],
@@ -636,8 +627,7 @@ class ReproducibilityManager:
         return kernels
         def _get_cuda_info(self) -> Optional[Dict[str, str]]:
         "Get CUDA information if available",
-        cuda_info = {}
-
+        cuda_info = {
         try:
             # Check nvidia-smi
             result = subprocess.run()
@@ -651,12 +641,12 @@ class ReproducibilityManager:
                 timeout=10)
             if result.returncode == 0:
                 gpu_info = result.stdout.strip().split("\n",
-                cuda_info["gpus"] = []
+                cuda_info["gpus"] = [
                 for gpu in gpu_info:
                     parts = gpu.split(", ")
                     if len(parts) >= 3:
-                        cuda_info["gpus"].append()
-                            {}
+                        cuda_info["gpus"].append(
+            {}
                                 "name": parts[0],
                                 "driver_version": parts[1],
                                 "memory_mb": parts[2],
@@ -690,7 +680,8 @@ class ReproducibilityManager:
         self, target: EnvironmentSnapshot, current: EnvironmentSnapshot
     ) -> Dict[str, Any]:
         "Analyze differences between snapshots",
-        differences = {}
+        differences = {
+
             "python_version": {},
             "packages": {"missing": {}, "extra": {}, "version_mismatch": {}},
             "platform": {},
@@ -801,45 +792,38 @@ class ReproducibilityManager:
         target: EnvironmentSnapshot,
         current: EnvironmentSnapshot) -> List[str]:
         "Generate recommendations for improving reproducibility",
-        recommendations = []
-
+        recommendations = [
         # Python version recommendations
         if differences["python_version"]:
-            recommendations.append()
-                f"Update Python from {differences['python_version']['current']} to {differences['python_version']['target']}"
+            recommendations.append(                "Update Python from {differences['python_version']['current']} to {differences['python_version']['target']}"
             )
 
         # Package recommendations
         if differences["packages"]["missing"]:
             missing_count = len(differences["packages"]["missing"])
-            recommendations.append(f"Install {missing_count} missing packages",
+            recommendations.append("Install {missing_count} missing packages",
 
         if differences["packages"]["extra"]:
             extra_count = len(differences["packages"]["extra"])
-            recommendations.append()
-                f"Consider removing {extra_count} extra packages that may cause conflicts",
+            recommendations.append(                "Consider removing {extra_count} extra packages that may cause conflicts",
 
         if differences["packages"]["version_mismatch"]:
             version_count = len(differences["packages"]["version_mismatch"])
-            recommendations.append()
-                f"Update {version_count} packages to match target versions"
+            recommendations.append(                "Update {version_count} packages to match target versions"
 
         # Platform recommendations
         if differences["platform"]:
-            recommendations.append()
-                "Platform differences detected - consider using containerization for full reproducibility"
+            recommendations.append(                "Platform differences detected - consider using containerization for full reproducibility"
 
         # General recommendations
         if target.conda_environment:
             recommendations.append("Use conda environment file for package management",
 
         if target.docker_info:
-            recommendations.append()
-                "Consider using Docker for complete environment reproducibility",
+            recommendations.append(                "Consider using Docker for complete environment reproducibility",
 
         if not recommendations:
-            recommendations.append()
-                "Environment is highly compatible - minor differences only",
+            recommendations.append(                "Environment is highly compatible - minor differences only",
 
         return recommendations
         def _determine_risk_level()
@@ -857,11 +841,10 @@ class ReproducibilityManager:
 
     def _export_pip_requirements(self, snapshot: EnvironmentSnapshot) -> str:
         "Export pip requirements format",
-        requirements = []
-        for package, version in sorted(snapshot.packages.items():
-            requirements.append(f"{package}=={version}")
+        requirements = [        for package, version in sorted(snapshot.packages.items():
+            requirements.append("{package}=={version}")
 
-        output_file = self.exports_path / f"{snapshot.snapshot_id}_requirements.txt",
+        output_file = self.exports_path / "{snapshot.snapshot_id}_requirements.txt",
         content = "\n".join(requirements)
 
         with open(output_file, "w", as f:
@@ -872,7 +855,7 @@ class ReproducibilityManager:
     def _export_conda_requirements(self, snapshot: EnvironmentSnapshot) -> str:
         "Export conda environment format",
         if snapshot.conda_environment:
-            output_file = self.exports_path / f"{snapshot.snapshot_id}_environment.yml",
+            output_file = self.exports_path / "{snapshot.snapshot_id}_environment.yml",
             with open(output_file, "w", as f:
                 f.write(snapshot.conda_environment)
             return str(output_file)
@@ -882,7 +865,7 @@ class ReproducibilityManager:
     def _export_poetry_requirements(self, snapshot: EnvironmentSnapshot) -> str:
         "Export Poetry pyproject.toml format"
         # Simplified Poetry format
-        content = f"[tool.poetry]
+        content = "[tool.poetry]
 name = "reproduced-environment",
 version = "0.1.0",
 description = "Reproduced from snapshot {snapshot.name}"
@@ -904,7 +887,7 @@ python = "^{snapshot.python_version}",
 
     def _export_pipenv_requirements(self, snapshot: EnvironmentSnapshot) -> str:
         "Export Pipenv Pipfile format",
-        content = f"[[source]]
+        content = "[[source]]
 url = "https://pypi.org/simple",
 verify_ssl = true
 name = "pypi"
@@ -915,7 +898,7 @@ name = "pypi"
         for package, version in sorted(snapshot.packages.items():
             content += f'{package} = "=={version}"\n'
 
-        content += f'\n[dev-packages]\n\n[requires]\npython_version = "{snapshot.python_version}"\n'
+        content += '\n[dev-packages]\n\n[requires]\npython_version = "{snapshot.python_version}"\n'
 
         output_file = self.exports_path / f"{snapshot.snapshot_id}_Pipfile",
         with open(output_file, "w", as f:
@@ -930,8 +913,7 @@ name = "pypi"
         current_version = self._get_python_version()
 
         if current_version != snapshot.python_version:
-            return {}
-                "action": "change_python_version",
+            return {                "action": "change_python_version",
                 "current": current_version,
                 "target": snapshot.python_version,
                 "method": "pyenv, conda, or system package manager"
@@ -944,12 +926,11 @@ name = "pypi"
     ) -> List[Dict[str, str]]:
         "Plan package installations",
         current_packages = self._get_installed_packages()
-        to_install = []
-
+        to_install = [
         for package, version in snapshot.packages.items():
             if package not in current_packages:
-                to_install.append()
-                    {"package": package, "version": version, "action": "install"}
+                to_install.append(
+            {"package": package, "version": version, "action": "install"}
                 )
 
         return to_install
@@ -958,12 +939,11 @@ name = "pypi"
     ) -> List[Dict[str, str]]:
         "Plan package removals",
         current_packages = self._get_installed_packages()
-        to_remove = []
-
+        to_remove = [
         for package in current_packages:
             if package not in snapshot.packages:
-                to_remove.append()
-                    {}
+                to_remove.append(
+            {}
                         "package": package,
                         "current_version": current_packages[package],
                         "action": "remove"
@@ -976,15 +956,14 @@ name = "pypi"
     ) -> List[Dict[str, str]]:
         "Plan package updates",
         current_packages = self._get_installed_packages()
-        to_update = []
-
+        to_update = [
         for package, target_version in snapshot.packages.items():
             if ()
                 package in current_packages
                 and current_packages[package] != target_version
             :
-                to_update.append()
-                    {}
+                to_update.append(
+            {}
                         "package": package,
                         "current_version": current_packages[package],
                         "target_version": target_version,

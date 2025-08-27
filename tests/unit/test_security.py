@@ -14,12 +14,12 @@ from app.security.input_validation import InputValidator
 
 
 class TestSecurityConfiguration:
-    """Test security configuration requirements."""
+    """Test security configuration requirements."""""
     
     @pytest.mark.critical
     @pytest.mark.security
     def test_required_environment_variables(self):
-        """Test that required security environment variables are validated."""
+        """Test that required security environment variables are validated."""""
         required_vars = [
             "SECRET_KEY",
             "JWT_SECRET_KEY",
@@ -31,7 +31,7 @@ class TestSecurityConfiguration:
     
     @pytest.mark.security
     def test_secret_key_length(self):
-        """Test that secret keys meet minimum length requirements."""
+        """Test that secret keys meet minimum length requirements."""""
         secret_key = os.environ.get("SECRET_KEY", "")
         jwt_secret = os.environ.get("JWT_SECRET_KEY", "")
         
@@ -41,18 +41,18 @@ class TestSecurityConfiguration:
     
     @pytest.mark.security
     def test_password_complexity_requirements(self):
-        """Test password complexity requirements."""
+        """Test password complexity requirements."""""
         admin_password = os.environ.get("DEFAULT_ADMIN_PASSWORD", "")
         assert len(admin_password) >= 16, "Admin password must be at least 16 characters"
 
 
 class TestAuthentication:
-    """Test authentication mechanisms."""
+    """Test authentication mechanisms."""""
     
     @pytest.mark.critical
     @pytest.mark.auth
     def test_jwt_token_generation(self):
-        """Test JWT token generation."""
+        """Test JWT token generation."""""
         auth_manager = AuthManager()
         tokens = auth_manager.generate_tokens(
             user_id=1,
@@ -66,7 +66,7 @@ class TestAuthentication:
     
     @pytest.mark.auth
     def test_jwt_token_verification(self):
-        """Test JWT token verification."""
+        """Test JWT token verification."""""
         auth_manager = AuthManager()
         tokens = auth_manager.generate_tokens(
             user_id=1,
@@ -83,7 +83,7 @@ class TestAuthentication:
     
     @pytest.mark.auth
     def test_expired_token_rejection(self):
-        """Test that expired tokens are rejected."""
+        """Test that expired tokens are rejected."""""
         auth_manager = AuthManager()
         
         # Create an expired token
@@ -107,7 +107,7 @@ class TestAuthentication:
     
     @pytest.mark.auth
     def test_invalid_token_rejection(self):
-        """Test that invalid tokens are rejected."""
+        """Test that invalid tokens are rejected."""""
         auth_manager = AuthManager()
         
         # Test various invalid tokens
@@ -125,7 +125,7 @@ class TestAuthentication:
     
     @pytest.mark.auth
     def test_token_with_wrong_secret(self):
-        """Test that tokens signed with wrong secret are rejected."""
+        """Test that tokens signed with wrong secret are rejected."""""
         auth_manager = AuthManager()
         
         # Create token with different secret
@@ -148,11 +148,11 @@ class TestAuthentication:
 
 
 class TestInputValidation:
-    """Test input validation and sanitization."""
+    """Test input validation and sanitization."""""
     
     @pytest.mark.security
     def test_sql_injection_prevention(self):
-        """Test SQL injection prevention."""
+        """Test SQL injection prevention."""""
         validator = InputValidator()
         
         sql_injection_attempts = [
@@ -170,7 +170,7 @@ class TestInputValidation:
     
     @pytest.mark.security
     def test_xss_prevention(self):
-        """Test XSS attack prevention."""
+        """Test XSS attack prevention."""""
         validator = InputValidator()
         
         xss_attempts = [
@@ -187,7 +187,7 @@ class TestInputValidation:
     
     @pytest.mark.security
     def test_command_injection_prevention(self):
-        """Test command injection prevention."""
+        """Test command injection prevention."""""
         validator = InputValidator()
         
         command_injection_attempts = [
@@ -204,7 +204,7 @@ class TestInputValidation:
     
     @pytest.mark.security
     def test_path_traversal_prevention(self):
-        """Test path traversal prevention."""
+        """Test path traversal prevention."""""
         validator = InputValidator()
         
         path_traversal_attempts = [
@@ -221,11 +221,11 @@ class TestInputValidation:
 
 
 class TestRateLimiting:
-    """Test rate limiting functionality."""
+    """Test rate limiting functionality."""""
     
     @pytest.mark.security
     def test_rate_limit_enforcement(self, client):
-        """Test that rate limits are enforced."""
+        """Test that rate limits are enforced."""""
         # Make multiple requests
         responses = []
         for _ in range(10):
@@ -238,7 +238,7 @@ class TestRateLimiting:
     
     @pytest.mark.security
     def test_rate_limit_headers(self, client):
-        """Test that rate limit headers are present."""
+        """Test that rate limit headers are present."""""
         response = client.get("/api/status")
         
         # Check for rate limit headers (if implemented)
@@ -248,11 +248,11 @@ class TestRateLimiting:
 
 
 class TestSecurityHeaders:
-    """Test security headers in responses."""
+    """Test security headers in responses."""""
     
     @pytest.mark.security
     def test_security_headers_present(self, client):
-        """Test that security headers are present in responses."""
+        """Test that security headers are present in responses."""""
         response = client.get("/api/status")
         
         # Check for security headers (when enabled)
@@ -270,11 +270,11 @@ class TestSecurityHeaders:
 
 
 class TestPasswordSecurity:
-    """Test password security features."""
+    """Test password security features."""""
     
     @pytest.mark.security
     def test_password_hashing(self):
-        """Test that passwords are properly hashed."""
+        """Test that passwords are properly hashed."""""
         from werkzeug.security import generate_password_hash, check_password_hash
         
         password = "TestPassword123!@#"
@@ -291,7 +291,7 @@ class TestPasswordSecurity:
     
     @pytest.mark.security
     def test_password_not_logged(self, caplog):
-        """Test that passwords are not logged."""
+        """Test that passwords are not logged."""""
         import logging
         
         # Simulate password operations
@@ -309,12 +309,12 @@ class TestPasswordSecurity:
 
 
 class TestAPISecurity:
-    """Test API security features."""
+    """Test API security features."""""
     
     @pytest.mark.security
     @pytest.mark.api
     def test_api_requires_authentication(self, client):
-        """Test that protected API endpoints require authentication."""
+        """Test that protected API endpoints require authentication."""""
         protected_endpoints = [
             "/api/anomalies",
             "/api/remediation",
@@ -330,7 +330,7 @@ class TestAPISecurity:
     @pytest.mark.security
     @pytest.mark.api
     def test_api_validates_content_type(self, client):
-        """Test that API validates content-type header."""
+        """Test that API validates content-type header."""""
         response = client.post(
             "/api/anomalies",
             data="not json",
@@ -342,18 +342,18 @@ class TestAPISecurity:
 
 
 class TestDataProtection:
-    """Test data protection features."""
+    """Test data protection features."""""
     
     @pytest.mark.security
     def test_sensitive_data_not_in_response(self, client, auth_headers):
-        """Test that sensitive data is not exposed in API responses."""
+        """Test that sensitive data is not exposed in API responses."""""
         # This test checks that sensitive fields are filtered
         # Actual implementation depends on your API
         pass  # Placeholder for actual implementation
     
     @pytest.mark.security
     def test_pii_data_masking(self):
-        """Test that PII data is properly masked in logs."""
+        """Test that PII data is properly masked in logs."""""
         # Test that email, phone numbers, etc. are masked
         pass  # Placeholder for actual implementation
 

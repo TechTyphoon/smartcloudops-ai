@@ -14,10 +14,10 @@ from app.chatops.utils import timed_cache, AdvancedContextManager
 
 
 class TestTimedCache:
-    """Test suite for timed_cache decorator."""
+    """Test suite for timed_cache decorator."""""
 
     def test_timed_cache_basic_functionality(self):
-        """Test basic timed cache functionality."""
+        """Test basic timed cache functionality."""""
         call_count = 0
 
         @timed_cache(seconds=1)
@@ -37,7 +37,7 @@ class TestTimedCache:
         assert call_count == 1  # Should not increment
 
     def test_timed_cache_different_arguments(self):
-        """Test that different arguments create different cache entries."""
+        """Test that different arguments create different cache entries."""""
         call_count = 0
 
         @timed_cache(seconds=1)
@@ -57,7 +57,7 @@ class TestTimedCache:
         assert call_count == 2  # Only 2 actual function calls
 
     def test_timed_cache_expiration(self):
-        """Test that cache entries expire after the specified time."""
+        """Test that cache entries expire after the specified time."""""
         call_count = 0
 
         @timed_cache(seconds=0.1)  # Very short cache duration
@@ -85,7 +85,7 @@ class TestTimedCache:
         assert call_count == 2  # Should increment again
 
     def test_timed_cache_keyword_arguments(self):
-        """Test cache behavior with keyword arguments."""
+        """Test cache behavior with keyword arguments."""""
         call_count = 0
 
         @timed_cache(seconds=1)
@@ -105,7 +105,7 @@ class TestTimedCache:
         assert call_count == 2  # Should cache same arguments regardless of order
 
     def test_timed_cache_clear(self):
-        """Test cache clearing functionality."""
+        """Test cache clearing functionality."""""
         call_count = 0
 
         @timed_cache(seconds=1)
@@ -130,7 +130,7 @@ class TestTimedCache:
         assert call_count == 2
 
     def test_timed_cache_info(self):
-        """Test cache information retrieval."""
+        """Test cache information retrieval."""""
 
         @timed_cache(seconds=1)
         def expensive_function(x):
@@ -147,7 +147,7 @@ class TestTimedCache:
         assert info["size"] == 2
 
     def test_timed_cache_cleanup(self):
-        """Test automatic cache cleanup for large caches."""
+        """Test automatic cache cleanup for large caches."""""
         call_count = 0
 
         @timed_cache(seconds=1)
@@ -166,16 +166,16 @@ class TestTimedCache:
 
 
 class TestAdvancedContextManager:
-    """Test suite for AdvancedContextManager class."""
+    """Test suite for AdvancedContextManager class."""""
 
     @pytest.fixture
     def context_manager(self):
-        """Create AdvancedContextManager instance for testing."""
+        """Create AdvancedContextManager instance for testing."""""
         return AdvancedContextManager(max_context_size=50, cache_duration=300)
 
     @pytest.fixture
     def mock_system_data(self) -> Dict[str, Any]:
-        """Mock system data for testing."""
+        """Mock system data for testing."""""
         return {
             "system_health": "healthy",
             "recent_anomalies": [],
@@ -186,7 +186,7 @@ class TestAdvancedContextManager:
         }
 
     def test_init_default_values(self):
-        """Test AdvancedContextManager initialization with default values."""
+        """Test AdvancedContextManager initialization with default values."""""
         manager = AdvancedContextManager()
 
         assert manager.max_context_size == 100
@@ -196,7 +196,7 @@ class TestAdvancedContextManager:
         assert manager.system_state_history.maxlen == 50
 
     def test_init_custom_values(self):
-        """Test AdvancedContextManager initialization with custom values."""
+        """Test AdvancedContextManager initialization with custom values."""""
         manager = AdvancedContextManager(max_context_size=200, cache_duration=600)
 
         assert manager.max_context_size == 200
@@ -207,7 +207,7 @@ class TestAdvancedContextManager:
     def test_get_system_context_success(
         self, mock_datetime, context_manager, mock_system_data
     ):
-        """Test successful system context retrieval."""
+        """Test successful system context retrieval."""""
         # Mock datetime
         mock_now = datetime(2023, 1, 1, 12, 0, 0)
         mock_datetime.now.return_value = mock_now
@@ -266,7 +266,7 @@ class TestAdvancedContextManager:
     def test_get_system_context_exception_handling(
         self, mock_datetime, context_manager
     ):
-        """Test system context retrieval with exception handling."""
+        """Test system context retrieval with exception handling."""""
         mock_now = datetime(2023, 1, 1, 12, 0, 0)
         mock_datetime.now.return_value = mock_now
 
@@ -281,7 +281,7 @@ class TestAdvancedContextManager:
             assert "timestamp" in context
 
     def test_get_system_context_caching(self, context_manager, mock_system_data):
-        """Test that system context is properly cached."""
+        """Test that system context is properly cached."""""
         # Mock the private methods
         with (
             patch.object(
@@ -328,7 +328,7 @@ class TestAdvancedContextManager:
     def test_get_system_context_history_management(
         self, context_manager, mock_system_data
     ):
-        """Test that system context history is properly managed."""
+        """Test that system context history is properly managed."""""
         # Mock the private methods
         with (
             patch.object(
@@ -371,7 +371,7 @@ class TestAdvancedContextManager:
             assert len(context_manager.system_state_history) <= 50
 
     def test_get_system_context_structure(self, context_manager, mock_system_data):
-        """Test that system context has the correct structure."""
+        """Test that system context has the correct structure."""""
         # Mock the private methods
         with (
             patch.object(
@@ -423,7 +423,7 @@ class TestAdvancedContextManager:
                 assert field in context
 
     def test_context_manager_state_persistence(self, context_manager):
-        """Test that context manager state persists between calls."""
+        """Test that context manager state persists between calls."""""
         # Verify initial state
         assert context_manager.context_cache == {}
         assert len(context_manager.system_state_history) == 0
@@ -437,7 +437,7 @@ class TestAdvancedContextManager:
         assert len(context_manager.system_state_history) == 1
 
     def test_context_manager_max_context_size(self):
-        """Test that context manager respects max_context_size parameter."""
+        """Test that context manager respects max_context_size parameter."""""
         manager = AdvancedContextManager(max_context_size=10)
 
         # Add more entries than max_context_size
@@ -451,7 +451,7 @@ class TestAdvancedContextManager:
     def test_context_manager_timestamp_format(
         self, mock_datetime, context_manager, mock_system_data
     ):
-        """Test that timestamps are properly formatted."""
+        """Test that timestamps are properly formatted."""""
         mock_now = datetime(2023, 1, 1, 12, 0, 0)
         mock_datetime.now.return_value = mock_now
 
@@ -495,7 +495,7 @@ class TestAdvancedContextManager:
             assert context["timestamp"] == "2023-01-01T12:00:00"
 
     def test_context_manager_empty_context_handling(self, context_manager):
-        """Test handling of empty or None context data."""
+        """Test handling of empty or None context data."""""
         # Mock methods to return empty/None values
         with (
             patch.object(context_manager, "_get_system_health", return_value=None),

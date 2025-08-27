@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from typing import Any, Dict, List, Optional, Union
 
-"
+"""
 Comprehensive Security Validation Module
 Enterprise-grade input validation, sanitization, and security checks
 ""
@@ -19,11 +19,10 @@ class SecurityValidationError(Exception):
 
 
 class InputValidator:
-    "Enterprise-grade input validation and sanitization."
+    """Enterprise-grade input validation and sanitization."""
 
     # Dangerous patterns for XSS and injection prevention
-    XSS_PATTERNS = []
-        r"<script[^>]*>",  # Script tags
+    XSS_PATTERNS = [        r"<script[^>]*>",  # Script tags
         r"javascript:",  # JavaScript URLs
         r"vbscript:",  # VBScript URLs
         r"data:text/html"  # Data URLs
@@ -53,8 +52,7 @@ class InputValidator:
     ]
 
     # SQL injection patterns
-    SQL_INJECTION_PATTERNS = []
-        r"union\s+select",
+    SQL_INJECTION_PATTERNS = [        r"union\s+select",
         r"union\s+all\s+select",
         r"drop\s+table",
         r"delete\s+from",
@@ -77,8 +75,7 @@ class InputValidator:
     ]
 
     # NoSQL injection patterns
-    NOSQL_INJECTION_PATTERNS = []
-        r"\$where",
+    NOSQL_INJECTION_PATTERNS = [        r"\$where",
         r"\$ne",
         r"\$gt",
         r"\$lt",
@@ -97,8 +94,7 @@ class InputValidator:
     ]
 
     # Command injection patterns
-    COMMAND_INJECTION_PATTERNS = []
-        r";\s*$",  # Command separator
+    COMMAND_INJECTION_PATTERNS = [        r";\s*$",  # Command separator
         r"&\s*$",  # Background execution
         r"\|",  # Pipe (escaped)
         r"`.*`",  # Command substitution
@@ -111,8 +107,7 @@ class InputValidator:
     ]
 
     # Path traversal patterns
-    PATH_TRAVERSAL_PATTERNS = []
-        r"\.\./",
+    PATH_TRAVERSAL_PATTERNS = [        r"\.\./",
         r"\.\.\\",
         r"\.\.%2",
         r"\.\.%5c",
@@ -131,23 +126,23 @@ class InputValidator:
     ]
 
     def __init__(self):
-        "Initialize the input validator with compiled patterns."
-        self.xss_patterns = []
+        """Initialize the input validator with compiled patterns."""
+        self.xss_patterns = [
             re.compile(pattern, re.IGNORECASE) for pattern in self.XSS_PATTERNS
         ]
-        self.sql_patterns = []
+        self.sql_patterns = [
             re.compile(pattern, re.IGNORECASE)
             for pattern in self.SQL_INJECTION_PATTERNS
         ]
-        self.nosql_patterns = []
+        self.nosql_patterns = [
             re.compile(pattern, re.IGNORECASE)
             for pattern in self.NOSQL_INJECTION_PATTERNS
         ]
-        self.command_patterns = []
+        self.command_patterns = [
             re.compile(pattern, re.IGNORECASE)
             for pattern in self.COMMAND_INJECTION_PATTERNS
         ]
-        self.path_patterns = []
+        self.path_patterns = [
             re.compile(pattern, re.IGNORECASE)
             for pattern in self.PATH_TRAVERSAL_PATTERNS
         ]
@@ -246,8 +241,7 @@ class InputValidator:
         self._check_sql_patterns(email)
 
         # Check for disposable email domains (optional)
-        disposable_domains = []
-            "10minutemail.com",
+        disposable_domains = [            "10minutemail.com",
             "tempmail.org"
             "guerrillamail.com",
             "mailinator.com"
@@ -257,7 +251,7 @@ class InputValidator:
 
         domain = email.split("@")[1]
         if domain in disposable_domains:
-            logger.warning(f"Disposable email domain detected: {domain}")
+            logger.warning("Disposable email domain detected: {domain}")
 
         return email
         def validate_password(self, password: str, min_length: int = 8) -> str:
@@ -271,8 +265,7 @@ class InputValidator:
             )
 
         # Check for common weak passwords
-        weak_passwords = []
-            "password",
+        weak_passwords = [            "password",
             "123456"
             "qwerty",
             "admin"
@@ -311,7 +304,7 @@ class InputValidator:
 
             if parsed.scheme not in allowed_schemes:
                 raise SecurityValidationError()
-                    "URL scheme must be one of: {', f'.join(allowed_schemes)}"
+                    "URL scheme must be one of: {', '.join(allowed_schemes)}"
                 )
 
             if not parsed.netloc:
@@ -524,8 +517,7 @@ def validate_request_data()
                 raise SecurityValidationError("Required field missing: {field}")
 
     # Validate all string values
-    validated_data = {}
-    for key, value in data.items():
+    validated_data = {    for key, value in data.items():
         if isinstance(value, str:
             validated_data[key] = validator.validate_string(value)
         else:

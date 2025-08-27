@@ -1,6 +1,6 @@
-"
+"""
 Model Monitor - Production model performance monitoring and drift detection
-""
+""""
 
 import json
 import logging
@@ -195,10 +195,10 @@ class ModelMonitor:
         self, model_id: str, model_version: str, monitoring_interval: int = 300
     ):
         "Start monitoring a model",
-        monitor_key = f"{model_id}_{model_version}",
+        monitor_key = "{model_id}_{model_version}",
 
         if monitor_key in self.active_monitors:
-            print(f"⚠️ Already monitoring model: {model_id} v{model_version}")
+            print("⚠️ Already monitoring model: {model_id} v{model_version}")
             return
 
         self.active_monitors[monitor_key] = {}
@@ -215,15 +215,15 @@ class ModelMonitor:
             self.monitoring_thread.daemon = True
             self.monitoring_thread.start()
 
-        print(f"📊 Started monitoring: {model_id} v{model_version}")
+        print("📊 Started monitoring: {model_id} v{model_version}")
 
     def stop_monitoring(self, model_id: str, model_version: str):
         "Stop monitoring a model",
-        monitor_key = f"{model_id}_{model_version}",
+        monitor_key = "{model_id}_{model_version}",
 
         if monitor_key in self.active_monitors:
             del self.active_monitors[monitor_key]
-            print(f"⏹️ Stopped monitoring: {model_id} v{model_version}")
+            print("⏹️ Stopped monitoring: {model_id} v{model_version}")
 
         # Stop monitoring thread if no active monitors
         if not self.active_monitors and self.is_monitoring:
@@ -239,7 +239,7 @@ class ModelMonitor:
         prediction_time_ms: float = None,
         error_message: str = None):
         "Log a model prediction",
-        log_id = f"pred_{model_id}_{int(time.time() * 1000)}",
+        log_id = "pred_{model_id}_{int(time.time() * 1000)}",
 
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -286,16 +286,14 @@ class ModelMonitor:
         error_rate = error_count / prediction_count if prediction_count > 0 else 0
 
         # Prediction times
-        prediction_times = []
-            p.get("prediction_time_ms", 0)
+        prediction_times = [            p.get("prediction_time_ms", 0)
             for p in predictions
             if p.get("prediction_time_ms"
         ]
         avg_prediction_time_ms = np.mean(prediction_times) if prediction_times else 0
 
         # Confidence distribution
-        confidences = []
-            p.get("confidence", 0)
+        confidences = [            p.get("confidence", 0)
             for p in predictions
             if p.get("confidence", is not None
         ]
@@ -315,8 +313,8 @@ class ModelMonitor:
             model_id, model_version, predictions
         )
 
-        metrics = ModelPerformanceMetrics()
-            model_id=model_id,
+        metrics = ModelPerformanceMetrics(
+    model_id=model_id,
             model_version=model_version,
             timestamp=end_time,
             prediction_count=prediction_count,
@@ -338,17 +336,15 @@ class ModelMonitor:
         return metrics
         def check_alerts(self, metrics: ModelPerformanceMetrics) -> List[ModelAlert]:
         "Check for alert conditions based on metrics",
-        alerts = []
-
+        alerts = [
         # High error rate alert
         if metrics.error_rate > self.monitoring_config["error_rate_threshold"]:
-            alerts.append()
-                self._create_alert()
+            alerts.append(                self._create_alert()
                     metrics.model_id,
                     metrics.model_version,
                     "high_error_rate",
                     AlertSeverity.CRITICAL,
-                    f"High error rate: {metrics.error_rate:.2%}",
+                    "High error rate: {metrics.error_rate:.2%}",
                     {}
                         "error_rate": metrics.error_rate,
                         "threshold": self.monitoring_config["error_rate_threshold"],
@@ -360,13 +356,12 @@ class ModelMonitor:
             metrics.avg_prediction_time_ms
             > self.monitoring_config["response_time_threshold_ms"]
         :
-            alerts.append()
-                self._create_alert()
+            alerts.append(                self._create_alert()
                     metrics.model_id,
                     metrics.model_version,
                     "slow_response_time",
                     AlertSeverity.WARNING,
-                    f"Slow response time: {metrics.avg_prediction_time_ms:.1f}ms"
+                    "Slow response time: {metrics.avg_prediction_time_ms:.1f}ms"
                     {}
                         "avg_time_ms": metrics.avg_prediction_time_ms,
                         "threshold": self.monitoring_config[]
@@ -380,13 +375,12 @@ class ModelMonitor:
             metrics.drift_score
             and metrics.drift_score > self.monitoring_config["drift_threshold"]
         :
-            alerts.append()
-                self._create_alert()
+            alerts.append(                self._create_alert()
                     metrics.model_id,
                     metrics.model_version,
                     "data_drift",
                     AlertSeverity.WARNING,
-                    f"Data drift detected: {metrics.drift_score:.3f}",
+                    "Data drift detected: {metrics.drift_score:.3f}",
                     {}
                         "drift_score": metrics.drift_score,
                         "threshold": self.monitoring_config["drift_threshold"],
@@ -395,13 +389,12 @@ class ModelMonitor:
 
         # High outlier rate alert
         if metrics.outlier_rate > self.monitoring_config["outlier_rate_threshold"]:
-            alerts.append()
-                self._create_alert()
+            alerts.append(                self._create_alert()
                     metrics.model_id,
                     metrics.model_version,
                     "high_outlier_rate",
                     AlertSeverity.INFO,
-                    f"High outlier rate: {metrics.outlier_rate:.2%}",
+                    "High outlier rate: {metrics.outlier_rate:.2%}",
                     {}
                         "outlier_rate": metrics.outlier_rate,
                         "threshold": self.monitoring_config["outlier_rate_threshold"],
@@ -413,13 +406,12 @@ class ModelMonitor:
             metrics.data_quality_score
             < self.monitoring_config["data_quality_threshold"]
         :
-            alerts.append()
-                self._create_alert()
+            alerts.append(                self._create_alert()
                     metrics.model_id,
                     metrics.model_version,
                     "low_data_quality",
                     AlertSeverity.WARNING,
-                    f"Low data quality score: {metrics.data_quality_score:.2f}",
+                    "Low data quality score: {metrics.data_quality_score:.2f}",
                     {}
                         "quality_score": metrics.data_quality_score,
                         "threshold": self.monitoring_config["data_quality_threshold"],
@@ -484,8 +476,7 @@ class ModelMonitor:
         conn.close()
 
         # Convert to ModelPerformanceMetrics objects
-        metrics_list = []
-        for result in results:
+        metrics_list = [        for result in results:
             data = dict()
                 zip()
                     []
@@ -565,8 +556,7 @@ class ModelMonitor:
         conn.close()
 
         # Convert to ModelAlert objects
-        alerts = []
-        for result in results:
+        alerts = [        for result in results:
             data = dict()
                 zip()
                     []
@@ -620,7 +610,7 @@ class ModelMonitor:
 
                         # Log monitoring activity
                         self.logger.info()
-                            f"Monitored {model_id} v{model_version}: {len(alerts)} alerts, health: {health.value}"
+                            "Monitored {model_id} v{model_version}: {len(alerts)} alerts, health: {health.value}"
                         )
 
                         # Update last check time
@@ -630,7 +620,7 @@ class ModelMonitor:
                 time.sleep(30)  # Check every 30 seconds
 
             except Exception as e:
-                self.logger.error(f"Monitoring error: {e}")
+                self.logger.error("Monitoring error: {e}")
                 time.sleep(60)  # Wait longer on error
 
     def _get_prediction_logs()
@@ -655,8 +645,7 @@ class ModelMonitor:
         conn.close()
 
         # Convert to dict format
-        logs = []
-        for result in results:
+        logs = [        for result in results:
             data = dict()
                 zip()
                     []
@@ -686,8 +675,8 @@ class ModelMonitor:
         self, model_id: str, model_version: str
     ) -> ModelPerformanceMetrics:
         "Create empty metrics when no data available",
-        return ModelPerformanceMetrics()
-            model_id=model_id,
+        return ModelPerformanceMetrics(
+    model_id=model_id,
             model_version=model_version,
             timestamp=datetime.now(),
             prediction_count=0,
@@ -708,11 +697,9 @@ class ModelMonitor:
     ) -> Dict[str, float]:
         "Calculate confidence distribution",
         if not confidences:
-            return {}
-
+            return {
         confidence_array = np.array(confidences)
-        return {}
-            "mean": float(np.mean(confidence_array),
+        return {            "mean": float(np.mean(confidence_array),
             "std": float(np.std(confidence_array),
             "min": float(np.min(confidence_array),
             "max": float(np.max(confidence_array),
@@ -754,8 +741,7 @@ class ModelMonitor:
         if not predictions:
             return 0.0
 
-        confidences = []
-            p.get("confidence", 0.5)
+        confidences = [            p.get("confidence", 0.5)
             for p in predictions
             if p.get("confidence", is not None
         ]
@@ -783,8 +769,7 @@ class ModelMonitor:
 
         # For now, return a
         dummy drift score based on confidence variance
-        confidences = []
-            p.get("confidence", 0.5)
+        confidences = [            p.get("confidence", 0.5)
             for p in current_predictions
             if p.get("confidence", is not None
         ]
@@ -803,8 +788,7 @@ class ModelMonitor:
     ) -> Dict[str, float]:
         "Calculate feature importance drift"
         # Placeholder implementation - would need feature importance tracking
-        return {}
-
+        return {
     def _create_alert()
         self,
         model_id: str,
@@ -814,10 +798,10 @@ class ModelMonitor:
         message: str,
         details: Dict[str, Any]) -> ModelAlert:
         "Create a new alert",
-        alert_id = f"alert_{model_id}_{int(time.time() * 1000)}",
+        alert_id = "alert_{model_id}_{int(time.time() * 1000)}",
 
-        return ModelAlert()
-            alert_id=alert_id,
+        return ModelAlert(
+    alert_id=alert_id,
             model_id=model_id,
             model_version=model_version,
             alert_type=alert_type,
@@ -832,7 +816,7 @@ class ModelMonitor:
     def _save_metrics(self, metrics: ModelPerformanceMetrics):
         "Save metrics to database",
         metric_id = ()
-            f"metric_{metrics.model_id}_{int(metrics.timestamp.timestamp() * 1000)}"
+            "metric_{metrics.model_id}_{int(metrics.timestamp.timestamp() * 1000)}"
         )
 
         conn = sqlite3.connect(self.db_path)

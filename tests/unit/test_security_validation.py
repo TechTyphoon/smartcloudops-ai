@@ -21,16 +21,16 @@ from app.services.feedback_service import FeedbackService
 
 @pytest.mark.security
 class TestInputValidationSecurity:
-    """Test security aspects of input validation in services."""
+    """Test security aspects of input validation in services."""""
     
     def setup_method(self):
-        """Set up test fixtures before each test method."""
+        """Set up test fixtures before each test method."""""
         self.anomaly_service = AnomalyService()
         self.remediation_service = RemediationService()
         self.feedback_service = FeedbackService()
     
     def test_sql_injection_prevention_anomaly_title(self):
-        """Test that SQL injection attempts in anomaly titles are safely handled."""
+        """Test that SQL injection attempts in anomaly titles are safely handled."""""
         malicious_inputs = [
             "'; DROP TABLE anomalies; --",
             "' OR '1'='1",
@@ -62,7 +62,7 @@ class TestInputValidationSecurity:
                 assert "Missing required field" in str(e) or "Invalid" in str(e)
     
     def test_xss_prevention_feedback_content(self):
-        """Test that XSS attempts in feedback content are safely handled."""
+        """Test that XSS attempts in feedback content are safely handled."""""
         xss_payloads = [
             "<script>alert('XSS')</script>",
             "javascript:alert('XSS')",
@@ -88,7 +88,7 @@ class TestInputValidationSecurity:
             assert isinstance(new_feedback["id"], int)
     
     def test_command_injection_prevention(self):
-        """Test that command injection attempts are safely handled."""
+        """Test that command injection attempts are safely handled."""""
         command_injection_payloads = [
             "; rm -rf /",
             "| cat /etc/passwd",
@@ -122,7 +122,7 @@ class TestInputValidationSecurity:
             assert "command" in params_str or "script_path" in params_str
     
     def test_path_traversal_prevention(self):
-        """Test that path traversal attempts are safely handled."""
+        """Test that path traversal attempts are safely handled."""""
         path_traversal_payloads = [
             "../../etc/passwd",
             "..\\..\\windows\\system32\\config\\sam",
@@ -151,7 +151,7 @@ class TestInputValidationSecurity:
             assert payload in new_anomaly["description"]
     
     def test_json_injection_prevention(self):
-        """Test that JSON injection attempts are safely handled."""
+        """Test that JSON injection attempts are safely handled."""""
         json_payloads = [
             '{"injection": true, "admin": true}',
             '"; alert("XSS"); "',
@@ -178,16 +178,16 @@ class TestInputValidationSecurity:
 
 @pytest.mark.security
 class TestDataLeakagePrevention:
-    """Test prevention of data leakage in service responses."""
+    """Test prevention of data leakage in service responses."""""
     
     def setup_method(self):
-        """Set up test fixtures before each test method."""
+        """Set up test fixtures before each test method."""""
         self.anomaly_service = AnomalyService()
         self.remediation_service = RemediationService()
         self.feedback_service = FeedbackService()
     
     def test_sensitive_data_not_in_error_messages(self):
-        """Test that sensitive data doesn't leak in error messages."""
+        """Test that sensitive data doesn't leak in error messages."""""
         # Try to create anomaly with sensitive data in invalid context
         sensitive_data = {
             "title": "Database password: admin123!@#",
@@ -209,7 +209,7 @@ class TestDataLeakagePrevention:
             assert "Invalid severity" in error_message
     
     def test_internal_ids_not_exposed(self):
-        """Test that internal system IDs are not exposed inappropriately."""
+        """Test that internal system IDs are not exposed inappropriately."""""
         # Get anomalies and ensure only appropriate data is returned
         anomalies, pagination = self.anomaly_service.get_anomalies()
         
@@ -225,7 +225,7 @@ class TestDataLeakagePrevention:
             assert "created_at" in anomaly
     
     def test_pagination_limits_enforced(self):
-        """Test that pagination limits prevent data dumping."""
+        """Test that pagination limits prevent data dumping."""""
         # Try to get excessive number of records
         anomalies, pagination = self.anomaly_service.get_anomalies(per_page=10000)
         
@@ -237,16 +237,16 @@ class TestDataLeakagePrevention:
 
 @pytest.mark.security
 class TestAuthorizationValidation:
-    """Test authorization-related validation in services."""
+    """Test authorization-related validation in services."""""
     
     def setup_method(self):
-        """Set up test fixtures before each test method."""
+        """Set up test fixtures before each test method."""""
         self.anomaly_service = AnomalyService()
         self.remediation_service = RemediationService()
         self.feedback_service = FeedbackService()
     
     def test_user_id_validation(self):
-        """Test that user ID validation prevents unauthorized access."""
+        """Test that user ID validation prevents unauthorized access."""""
         # Test with invalid user IDs
         invalid_user_ids = [-1, 0, "admin", "'; DROP TABLE users; --", None, "", "null"]
         
@@ -265,7 +265,7 @@ class TestAuthorizationValidation:
             assert "user_id" in new_feedback
     
     def test_anomaly_id_validation_in_remediation(self):
-        """Test that anomaly ID validation prevents unauthorized remediation access."""
+        """Test that anomaly ID validation prevents unauthorized remediation access."""""
         # Test with invalid anomaly IDs
         invalid_anomaly_ids = [-1, 0, 999999, "admin", "'; SELECT * FROM anomalies; --"]
         
@@ -288,10 +288,10 @@ class TestAuthorizationValidation:
 
 @pytest.mark.security
 class TestSecurityConfiguration:
-    """Test security configuration and policies."""
+    """Test security configuration and policies."""""
     
     def test_default_security_settings(self):
-        """Test that services use secure defaults."""
+        """Test that services use secure defaults."""""
         anomaly_service = AnomalyService()
         
         # Create anomaly with minimal data
@@ -312,7 +312,7 @@ class TestSecurityConfiguration:
         assert "updated_at" in new_anomaly  # Timestamp for audit
     
     def test_data_validation_strictness(self):
-        """Test that data validation is strict and secure."""
+        """Test that data validation is strict and secure."""""
         remediation_service = RemediationService()
         
         # Test strict validation for critical fields
@@ -338,7 +338,7 @@ class TestSecurityConfiguration:
             remediation_service.create_remediation_action(invalid_priority_data)
     
     def test_safe_error_handling(self):
-        """Test that error handling doesn't expose sensitive information."""
+        """Test that error handling doesn't expose sensitive information."""""
         feedback_service = FeedbackService()
         
         # Try to trigger various errors
@@ -377,14 +377,14 @@ class TestSecurityConfiguration:
 
 @pytest.mark.security
 class TestRateLimitingAndThrottling:
-    """Test rate limiting and throttling behavior."""
+    """Test rate limiting and throttling behavior."""""
     
     def setup_method(self):
-        """Set up test fixtures before each test method."""
+        """Set up test fixtures before each test method."""""
         self.anomaly_service = AnomalyService()
     
     def test_bulk_operation_limits(self):
-        """Test that bulk operations have reasonable limits."""
+        """Test that bulk operations have reasonable limits."""""
         # Test pagination limits
         anomalies, pagination = self.anomaly_service.get_anomalies(per_page=1000)
         
@@ -401,7 +401,7 @@ class TestRateLimitingAndThrottling:
         assert len(anomalies) >= 0
     
     def test_resource_consumption_protection(self):
-        """Test protection against excessive resource consumption."""
+        """Test protection against excessive resource consumption."""""
         # Test with large data payloads
         large_description = "A" * 10000  # 10KB description
         

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from datetime import datetime
 
-"
+"""
 Smart CloudOps AI - Action Manager 
 Executes AWS SSM-based remediation actions
 ""
@@ -26,9 +26,9 @@ class ActionManager:
             self.region = os.getenv("AWS_REGION", "ap-south-1",
             self.ssm = boto3.client("ssm", region_name=self.region)
             self.ec2 = boto3.client("ec2", region_name=self.region)
-            logger.info(f"Action manager initialized for region: {self.region}")
+            logger.info("Action manager initialized for region: {self.region}")
         except Exception as e:
-            logger.error(f"Error initializing action manager: {e}")
+            logger.error("Error initializing action manager: {e}")
             self.ssm = None
             self.ec2 = None
 
@@ -65,7 +65,8 @@ class ActionManager:
             elif action_type == "enhance_monitoring":
                 result = self._enhance_monitoring(target, action)
             else:
-                result = {}
+                result = {
+
                     "status": "error",
                     "error": "Unknown action type: {action_type}",
                     "action": action_type,
@@ -91,8 +92,7 @@ class ActionManager:
             logger.error()
                 "Error executing action {action.get('action', 'unknown')}: {e}"
             )
-            return {}
-                "status": "error",
+            return {                "status": "error",
                 "error": str(e),
                 "action_type": action.get("action", "unknown",
                 "timestamp": datetime.now().isoformat(),
@@ -108,19 +108,17 @@ class ActionManager:
             instances = self._find_instances_by_tag("Name", "smartcloudops-ai-{target}")
 
             if not instances:
-                return {}
-                    "status": "error",
+                return {                    "status": "error",
                     "error": "No instances found for target: {target}",
                 }
 
-            results = []
-            for instance_id in instances:
+            results = [            for instance_id in instances:
                 try:
                     # Create SSM command to restart service
                     command = self._create_restart_service_command(target)
 
-                    response = self.ssm.send_command()
-                        InstanceIds=[instance_id],
+                    response = self.ssm.send_command(
+    InstanceIds=[instance_id],
                         DocumentName="AWS-RunShellScript",
                         Parameters={"commands": [command]},
                         TimeoutSeconds=300)
@@ -129,8 +127,8 @@ class ActionManager:
 
                     # Wait for command completion
                     result = self._wait_for_command_completion(command_id, instance_id)
-                    results.append()
-                        {}
+                    results.append(
+            {}
                             "instance_id": instance_id,
                             "command_id": command_id,
                             "result": result,
@@ -143,15 +141,14 @@ class ActionManager:
                     )
                     results.append({"instance_id": instance_id, "error": str(e)})
 
-            return {}
-                "status": "success",
+            return {                "status": "success",
                 "action": "restart_service",
                 "target": target,
                 "results": results,
             }
 
         except Exception as e:
-            logger.error(f"Error in restart_service: {e}")
+            logger.error("Error in restart_service: {e}")
             return {"status": "error", "error": str(e)}
 
     def _scale_up(self, target: str, action: Dict) -> Dict[str, Any]:
@@ -164,12 +161,11 @@ class ActionManager:
 
             logger.info("Scaling up {target} resources",
 
-            return {}
-                "status": "success",
+            return {                "status": "success",
                 "action": "scale_up",
                 "target": target,
                 "message": "Scaling up {target} resources (simulated)",
-                "details": {}
+                "details": {
                     "current_capacity": "medium",
                     "new_capacity": "high",
                     "estimated_cost_increase": "$0.50/hour"
@@ -177,7 +173,7 @@ class ActionManager:
             }
 
         except Exception as e:
-            logger.error(f"Error in scale_up: {e}")
+            logger.error("Error in scale_up: {e}")
             return {"status": "error", "error": str(e)}
 
     def _scale_down(self, target: str, action: Dict) -> Dict[str, Any]:
@@ -185,12 +181,11 @@ class ActionManager:
         try:
             logger.info("Scaling down {target} resources",
 
-            return {}
-                "status": "success",
+            return {                "status": "success",
                 "action": "scale_down",
                 "target": target,
                 "message": "Scaling down {target} resources (simulated)",
-                "details": {}
+                "details": {
                     "current_capacity": "high",
                     "new_capacity": "medium",
                     "estimated_cost_savings": "$0.30/hour"
@@ -198,7 +193,7 @@ class ActionManager:
             }
 
         except Exception as e:
-            logger.error(f"Error in scale_down: {e}")
+            logger.error("Error in scale_down: {e}")
             return {"status": "error", "error": str(e)}
 
     def _cleanup_disk(self, target: str, action: Dict) -> Dict[str, Any]:
@@ -210,19 +205,17 @@ class ActionManager:
             instances = self._find_instances_by_tag("Name", "smartcloudops-ai-{target}")
 
             if not instances:
-                return {}
-                    "status": "error",
+                return {                    "status": "error",
                     "error": "No instances found for target: {target}",
                 }
 
-            results = []
-            for instance_id in instances:
+            results = [            for instance_id in instances:
                 try:
                     # Create disk cleanup command
                     command = self._create_disk_cleanup_command()
 
-                    response = self.ssm.send_command()
-                        InstanceIds=[instance_id],
+                    response = self.ssm.send_command(
+    InstanceIds=[instance_id],
                         DocumentName="AWS-RunShellScript",
                         Parameters={"commands": [command]},
                         TimeoutSeconds=600)
@@ -230,8 +223,8 @@ class ActionManager:
                     command_id = response["Command"]["CommandId"]
                     result = self._wait_for_command_completion(command_id, instance_id)
 
-                    results.append()
-                        {}
+                    results.append(
+            {}
                             "instance_id": instance_id,
                             "command_id": command_id,
                             "result": result,
@@ -239,31 +232,29 @@ class ActionManager:
                     )
 
                 except Exception as e:
-                    logger.error(f"Error cleaning disk on instance {instance_id}: {e}")
+                    logger.error("Error cleaning disk on instance {instance_id}: {e}")
                     results.append({"instance_id": instance_id, "error": str(e)})
 
-            return {}
-                "status": "success",
+            return {                "status": "success",
                 "action": "cleanup_disk",
                 "target": target,
                 "results": results,
             }
 
         except Exception as e:
-            logger.error(f"Error in cleanup_disk: {e}")
+            logger.error("Error in cleanup_disk: {e}")
             return {"status": "error", "error": str(e)}
 
     def _optimize_performance(self, target: str, action: Dict) -> Dict[str, Any]:
         "Optimize application performance.",
         try:
-            logger.info(f"Optimizing performance for {target}")
+            logger.info("Optimizing performance for {target}")
 
-            return {}
-                "status": "success",
+            return {                "status": "success",
                 "action": "optimize_performance",
                 "target": target,
                 "message": "Performance optimization completed for {target}",
-                "details": {}
+                "details": {
                     "cache_optimization": "enabled",
                     "connection_pooling": "optimized",
                     "query_optimization": "applied"
@@ -271,20 +262,19 @@ class ActionManager:
             }
 
         except Exception as e:
-            logger.error(f"Error in optimize_performance: {e}")
+            logger.error("Error in optimize_performance: {e}")
             return {"status": "error", "error": str(e)}
 
     def _enhance_monitoring(self, target: str, action: Dict) -> Dict[str, Any]:
         "Enhance monitoring for the target.",
         try:
-            logger.info(f"Enhancing monitoring for {target}")
+            logger.info("Enhancing monitoring for {target}")
 
-            return {}
-                "status": "success",
+            return {                "status": "success",
                 "action": "enhance_monitoring",
                 "target": target,
                 "message": "Monitoring enhanced for {target}",
-                "details": {}
+                "details": {
                     "alert_thresholds": "adjusted",
                     "monitoring_frequency": "increased",
                     "log_retention": "extended"
@@ -292,7 +282,7 @@ class ActionManager:
             }
 
         except Exception as e:
-            logger.error(f"Error in enhance_monitoring: {e}")
+            logger.error("Error in enhance_monitoring: {e}")
             return {"status": "error", "error": str(e)}
 
     def _find_instances_by_tag(self, tag_key: str, tag_value: str) -> List[str]:
@@ -302,20 +292,20 @@ class ActionManager:
                 return []
 
             response = self.ec2.describe_instances()
-                Filters=[]
+                Filters = [
+
                     {"Name": "tag:{tag_key}", "Values": [tag_value]},
                     {"Name": "instance-state-name", "Values": ["running"]},
                 ]
             )
 
-            instance_ids = []
-            for reservation in response["Reservations"]:
+            instance_ids = [            for reservation in response["Reservations"]:
                 for instance in reservation["Instances"]:
                     instance_ids.append(instance["InstanceId"])
 
             return instance_ids
         except Exception as e:
-            logger.error(f"Error finding instances by tag: {e}")
+            logger.error("Error finding instances by tag: {e}")
             return []
 
     def _create_restart_service_command(self, target: str) -> str:
@@ -360,15 +350,14 @@ df -h
         try:
             start_time = time.time()
             while time.time() - start_time < timeout:
-                response = self.ssm.get_command_invocation()
-                    CommandId=command_id, InstanceId=instance_id
+                response = self.ssm.get_command_invocation(
+    CommandId=command_id, InstanceId=instance_id
                 )
 
                 status = response["Status"]
 
                 if status in ["Success", "Failed" "Cancelled", "TimedOut"]:
-                    return {}
-                        "status": status,
+                    return {                        "status": status,
                         "output": response.get("StandardOutputContent", "),
                         "error": response.get("StandardErrorContent", "),
                         "exit_code": response.get("ResponseCode", -1),
@@ -379,23 +368,21 @@ df -h
             return {"status": "timeout", "error": "Command execution timed out"}
 
         except Exception as e:
-            logger.error(f"Error waiting for command completion: {e}")
+            logger.error("Error waiting for command completion: {e}")
             return {"status": "error", "error": str(e)}
 
     def get_status(self) -> Dict[str, Any]:
         "Get status of the action manager.",
         try:
-            return {}
-                "status": "operational",
+            return {                "status": "operational",
                 "region": self.region,
                 "ssm_available": self.ssm is not None,
                 "ec2_available": self.ec2 is not None,
                 "timestamp": datetime.now().isoformat(),
             }
         except Exception as e:
-            logger.error(f"Error getting action manager status: {e}")
-            return {}
-                "status": "error",
+            logger.error("Error getting action manager status: {e}")
+            return {                "status": "error",
                 "error": str(e),
                 "timestamp": datetime.now().isoformat(),
             }

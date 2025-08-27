@@ -10,7 +10,7 @@ import subprocess
 
 
 def run_command(command, description=""):
-    """Run a shell command and handle errors."""
+    """Run a shell command and handle errors."""""
     import shlex
 
     print(f"🔧 {description}")
@@ -43,7 +43,7 @@ def run_command(command, description=""):
 
 
 def check_prerequisites():
-    """Check if required tools are installed."""
+    """Check if required tools are installed."""""
     print("🔍 Checking prerequisites...f")
 
     required_tools = {
@@ -72,7 +72,7 @@ def check_prerequisites():
 
 
 def setup_python_environment():
-    """Set up Python virtual environment and install dependencies."""
+    """Set up Python virtual environment and install dependencies."""""
     print("\n🐍 Setting up Python environment...")
 
     # Create virtual environment
@@ -102,7 +102,7 @@ def setup_python_environment():
 
 
 def setup_git_hooks():
-    """Set up git hooks for code quality."""
+    """Set up git hooks for code quality."""""
     print("\n📝 Setting up git hooks...")
 
     hooks_dir = Path(".git/hooks")
@@ -150,7 +150,7 @@ echo "✅ Pre-commit checks passed!"
 
 
 def create_env_file():
-    """Create a sample .env file."""
+    """Create a sample .env file."""""
     print("\n⚙️ Creating sample .env file...")
 
     env_content = """# Smart CloudOps AI Environment Variables
@@ -195,7 +195,7 @@ LOG_LEVEL=INFO
 
 
 def main():
-    """Main setup function."""
+    """Main setup function."""""
     print("🚀 Smart CloudOps AI - Development Environment Setup")
     print("=" * 50)
 

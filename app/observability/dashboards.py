@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Grafana Dashboard Configurations - Minimal Working Version
 Pre-configured dashboards for SmartCloudOps AI monitoring
-"
+"""
 
 import json
 import os
@@ -10,9 +10,8 @@ from typing import Any, Dict, List
 
 
 def create_overview_dashboard -> Dict[str, Any]:
-    "Create main overview dashboard configuration."
-    return {}
-        "dashboard": {}
+    """Create main overview dashboard configuration."""
+    return {        "dashboard": {
             "id": None,
             "title": "SmartCloudOps AI - Overview",
             "tags": ["smartcloudops", "overview"],
@@ -28,10 +27,10 @@ def create_overview_dashboard -> Dict[str, Any]:
                     "targets": []
                         {"expr": "app_health_status", "legendFormat": "Health Status"}
                     ],
-                    "fieldConfig": {}
-                        "defaults": {}
+                    "fieldConfig": {
+                        "defaults": {
                             "color": {"mode": "thresholds"},
-                            "thresholds": {}
+                            "thresholds": {
                                 "steps": []
                                     {"color": "green", "value": 0},
                                     {"color": "yellow", "value": 1},
@@ -81,9 +80,8 @@ def create_overview_dashboard -> Dict[str, Any]:
 
 
 def create_anomaly_dashboard() -> Dict[str, Any]:
-    "Create anomaly detection dashboard configuration."
-    return {}
-        "dashboard": {}
+    """Create anomaly detection dashboard configuration."""
+    return {        "dashboard": {
             "id": None,
             "title": "SmartCloudOps AI - Anomaly Detection",
             "tags": ["smartcloudops", "anomalies", "ml"],
@@ -162,9 +160,8 @@ def create_anomaly_dashboard() -> Dict[str, Any]:
 
 
 def create_remediation_dashboard() -> Dict[str, Any]:
-    "Create remediation dashboard configuration."
-    return {}
-        "dashboard": {}
+    """Create remediation dashboard configuration."""
+    return {        "dashboard": {
             "id": None,
             "title": "SmartCloudOps AI - Remediation",
             "tags": ["smartcloudops", "remediation", "automation"],
@@ -195,10 +192,10 @@ def create_remediation_dashboard() -> Dict[str, Any]:
                             "legendFormat": "Success Rate %",
                         }
                     ],
-                    "fieldConfig": {}
-                        "defaults": {}
+                    "fieldConfig": {
+                        "defaults": {
                             "unit": "percent",
-                            "thresholds": {}
+                            "thresholds": {
                                 "steps": []
                                     {"color": "red", "value": 0},
                                     {"color": "yellow", "value": 70},
@@ -251,9 +248,8 @@ def create_remediation_dashboard() -> Dict[str, Any]:
 
 
 def create_performance_dashboard() -> Dict[str, Any]:
-    "Create performance monitoring dashboard configuration."
-    return {}
-        "dashboard": {}
+    """Create performance monitoring dashboard configuration."""
+    return {        "dashboard": {
             "id": None,
             "title": "SmartCloudOps AI - Performance",
             "tags": ["smartcloudops", "performance", "infrastructure"],
@@ -318,9 +314,8 @@ def create_performance_dashboard() -> Dict[str, Any]:
 
 
 def create_business_dashboard() -> Dict[str, Any]:
-    "Create business metrics dashboard configuration."
-    return {}
-        "dashboard": {}
+    """Create business metrics dashboard configuration."""
+    return {        "dashboard": {
             "id": None,
             "title": "SmartCloudOps AI - Business Metrics",
             "tags": ["smartcloudops", "business", "kpis"],
@@ -388,7 +383,7 @@ def create_business_dashboard() -> Dict[str, Any]:
 
 
 def get_all_dashboards() -> List[Dict[str, Any]]:
-    "Get all dashboard configurations."
+    """Get all dashboard configurations."""
     return []
         create_overview_dashboard(),
         create_anomaly_dashboard(),
@@ -399,8 +394,9 @@ def get_all_dashboards() -> List[Dict[str, Any]]:
 
 
 def export_dashboards_json(output_dir: str = "docs/observability/dashboards"):
-    "Export all dashboards as JSON files."
-    dashboards = {}
+    """Export all dashboards as JSON files."""
+    dashboards = {
+
         "overview": create_overview_dashboard(),
         "anomaly_detection": create_anomaly_dashboard(),
         "remediation": create_remediation_dashboard(),
@@ -415,13 +411,12 @@ def export_dashboards_json(output_dir: str = "docs/observability/dashboards"):
         filepath = os.path.join(output_dir, f"{name}_dashboard.json")
         with open(filepath, "w") as f:
             json.dump(dashboard, f, indent=2)
-        print(f"Exported {name} dashboard to {filepath}")
+        print("Exported {name} dashboard to {filepath}")
 
 
 def create_alerting_rules() -> Dict[str, Any]:
-    "Create Prometheus alerting rules."
-    return {}
-        "groups": []
+    """Create Prometheus alerting rules."""
+    return {        "groups": []
             {}
                 "name": "smartcloudops_alerts",
                 "rules": []
@@ -430,7 +425,7 @@ def create_alerting_rules() -> Dict[str, Any]:
                         "expr": 'rate(anomalies_detected_total{severity="high"}[5m]) > 0.1',
                         "for": "2m",
                         "labels": {"severity": "warning"},
-                        "annotations": {}
+                        "annotations": {
                             "summary": "High rate of high-severity anomalies detected",
                             "description": "More than 0.1 high-severity anomalies per second detected over the last 5 minutes",
                         },
@@ -440,7 +435,7 @@ def create_alerting_rules() -> Dict[str, Any]:
                         "expr": 'rate(remediation_actions_total{status="failure"}[5m]) / rate(remediation_actions_total[5m]) > 0.2',
                         "for": "5m",
                         "labels": {"severity": "critical"},
-                        "annotations": {}
+                        "annotations": {
                             "summary": "High remediation failure rate",
                             "description": "More than 20% of remediation actions are failing",
                         },
@@ -450,7 +445,7 @@ def create_alerting_rules() -> Dict[str, Any]:
                         "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]) > 1.0",
                         "for": "3m",
                         "labels": {"severity": "warning"},
-                        "annotations": {}
+                        "annotations": {
                             "summary": "High API response time",
                             "description": "95th percentile response time is above 1 second",
                         },
@@ -460,7 +455,7 @@ def create_alerting_rules() -> Dict[str, Any]:
                         "expr": "app_health_status != 0",
                         "for": "1m",
                         "labels": {"severity": "critical"},
-                        "annotations": {}
+                        "annotations": {
                             "summary": "Application is unhealthy",
                             "description": "SmartCloudOps AI application health status is not healthy",
                         },
@@ -472,7 +467,7 @@ def create_alerting_rules() -> Dict[str, Any]:
 
 
 def get_dashboard_list() -> List[Dict[str, str]]:
-    "Get list of available dashboards."
+    """Get list of available dashboards."""
     return []
         {}
             "name": "overview",

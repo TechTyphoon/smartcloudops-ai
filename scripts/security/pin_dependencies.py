@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 
 def pin_dependencies():
-    """Generate requirements.lock with pinned dependencies and hashes."""
+    """Generate requirements.lock with pinned dependencies and hashes."""""
     
     print("🔒 Pinning dependencies with SHA256 hashes...")
     
@@ -82,7 +82,7 @@ def pin_dependencies():
         return False
 
 def verify_lock_file():
-    """Verify that the lock file can be installed."""
+    """Verify that the lock file can be installed."""""
     
     project_root = Path(__file__).parent.parent.parent
     lock_file = project_root / "requirements.lock"
@@ -117,7 +117,7 @@ def verify_lock_file():
         return False
 
 def main():
-    """Main entry point."""
+    """Main entry point."""""
     
     print("=" * 60)
     print("🔐 SmartCloudOps AI - Dependency Security Tool")
