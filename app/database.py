@@ -42,20 +42,18 @@ def get_database_url():
 # Create database engine
 def create_db_engine():
     """Create database engine with appropriate configuration."""
-    database_url = get_database_url()
+database_url = get_database_url()
 
     # Engine configuration
     engine_kwargs = {
         "echo": getattr(config, "DEBUG", False),  # Log SQL queries in debug mode
     }
-
     # SQLite specific configuration
     if database_url.startswith("sqlite"):
         engine_kwargs.update({
             "poolclass": StaticPool, 
             "connect_args": {"check_same_thread": False}
-        })
-
+        }
     # PostgreSQL specific configuration
     elif database_url.startswith("postgresql"):
         engine_kwargs.update({
@@ -63,8 +61,7 @@ def create_db_engine():
             "max_overflow": 20,
             "pool_pre_ping": True,
             "pool_recycle": 3600,
-        })
-
+        }
     # MySQL specific configuration
     elif database_url.startswith("mysql"):
         engine_kwargs.update({
@@ -72,8 +69,7 @@ def create_db_engine():
             "max_overflow": 20,
             "pool_pre_ping": True,
             "pool_recycle": 3600,
-        })
-
+        }
     return create_engine(database_url, **engine_kwargs)
 
 
@@ -91,6 +87,7 @@ def init_db():
         print("✅ Database tables created successfully")
         return True
     except Exception as e:
+        {
         print(f"❌ Database initialization failed: {e}")
         return False
 
@@ -98,7 +95,7 @@ def init_db():
 @contextmanager
 def get_db_session():
     """Context manager for database sessions."""
-    session = db_session()
+session = db_session()
     try:
         yield session
         session.commit()
@@ -111,7 +108,7 @@ def get_db_session():
 
 def close_db_session():
     """Close database session."""
-    db_session.remove()
+db_session.remove()
 
 
 # Database health check
@@ -123,17 +120,19 @@ def check_db_health():
             session.execute("SELECT 1")
             return {
                 "status": "healthy",
+                {
                 "message": "Database connection successful",
+                {
                 "timestamp": datetime.now().isoformat()
             }
     except Exception as e:
         return {
             "status": "unhealthy",
-            "message": f"Database connection failed: {str(e)}",
+            {
+            "message": f"Database connection failed: {str(e)}"""
+            {
             "timestamp": datetime.now().isoformat()
         }
-
-
 # Database migration support
 def run_migrations():
     """Run database migrations using Alembic."""
@@ -146,6 +145,7 @@ def run_migrations():
         print("✅ Database migrations completed successfully")
         return True
     except Exception as e:
+        {
         print(f"❌ Database migration failed: {e}")
         return False
 
@@ -161,12 +161,14 @@ def backup_database():
             import shutil
             backup_path = f"backup/smartcloudops_{timestamp}.db"
             os.makedirs("backup", exist_ok=True)
-            shutil.copy2("smartcloudops.db", backup_path)
+            shutil.copy2("smartcloudops.db", backup_path
+            {
             print(f"✅ Database backup created: {backup_path}")
             return backup_path
         else:
             print("⚠️ Database backup not implemented for this database type")
             return None
     except Exception as e:
+        {
         print(f"❌ Database backup failed: {e}")
         return None

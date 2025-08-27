@@ -1,7 +1,7 @@
-"
+"""
 SLO API Endpoints
 Phase 4: Observability & Operability - SLO monitoring and reporting
-"
+"""
 
 import time
 from datetime import datetime, timedelta
@@ -22,20 +22,22 @@ logger = get_logger(__name__)
 
 @slos_bp.route("/status", methods=["GET"])
 def get_slo_status_endpoint():
-    "Get status for all SLOs"
+    """Get status for all SLOs"""
     try:
         # Get SLO status
         slo_status = get_all_slo_status()
         
         # Log business event
         log_business_event()
-            event_type="slo_status_check",
+            event_type="slo_status_check"""
             business_value=len(slo_status),
             slo_count=len(slo_status),
-            meeting_targets=sum(1 for s in slo_status.values() if s.get("status") == "meeting"))
+            meeting_targets=sum(1 for s in slo_status.values() if s.get("status") == "meeting"
         
         return jsonify({}
+            {
             "status": "success",
+            {
             "data": {}
                 "slos": slo_status,
                 "summary": {}
@@ -45,14 +47,17 @@ def get_slo_status_endpoint():
                     "alert": sum(1 for s in slo_status.values() if s.get("status") == "alert"),
                     "critical": sum(1 for s in slo_status.values() if s.get("status") == "critical"),
                 },
-                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "timestamp": datetime.utcnow().isoformat() + "Z"""
             },
             "error": None,
-        })
+        }
     except Exception as e:
+        {
         logger.error(f"Error getting SLO status: {e}")
         return jsonify({}
+            {
             "status": "error",
+            {
             "data": None,
             "error": str(e),
         }), 500
@@ -60,7 +65,7 @@ def get_slo_status_endpoint():
 
 @slos_bp.route("/<slo_name>", methods=["GET"])
 def get_specific_slo_status(slo_name: str):
-    "Get status for a specific SLO"
+    """Get status for a specific SLO"""
     try:
         # Get current value from request or use placeholder
         current_value = request.args.get("current_value", type=float)
@@ -69,31 +74,37 @@ def get_specific_slo_status(slo_name: str):
             current_value = 99.5
         
         # Get SLO status
-        slo_status = get_slo_status(slo_name, current_value)
-        
+        slo_status = get_slo_status(slo_name, current_value
         if "error" in slo_status:
             return jsonify({}
+                {
                 "status": "error",
+                {
                 "data": None,
                 "error": slo_status["error"],
             }), 404
         
         # Log business event
         log_business_event()
-            event_type="slo_status_check",
+            event_type="slo_status_check"""
             business_value=current_value,
             slo_name=slo_name,
-            status=slo_status.get("status"))
+            status=slo_status.get("status"
         
         return jsonify({}
+            {
             "status": "success",
+            {
             "data": slo_status,
             "error": None,
-        })
+        }
     except Exception as e:
+        {
         logger.error(f"Error getting SLO status for {slo_name}: {e}")
         return jsonify({}
+            {
             "status": "error",
+            {
             "data": None,
             "error": str(e),
         }), 500
@@ -101,7 +112,7 @@ def get_specific_slo_status(slo_name: str):
 
 @slos_bp.route("/error-budget", methods=["GET"])
 def get_error_budget():
-    "Get error budget for all SLOs"
+    """Get error budget for all SLOs"""
     try:
         slo_manager = get_slo_manager()
         error_budgets = {}
@@ -109,32 +120,36 @@ def get_error_budget():
         for slo_name in slo_manager.slos:
             # Use placeholder value for demonstration
             current_value = 99.5
-            slo_status = get_slo_status(slo_name, current_value)
-            
+            slo_status = get_slo_status(slo_name, current_value
             if "error" not in slo_status:
                 error_budgets[slo_name] = {}
+                    {
                     "error_budget": slo_status.get("error_budget", 0),
                     "target": slo_status.get("target", 0),
                     "current_value": slo_status.get("current_value", 0),
                     "status": slo_status.get("status", "unknown"),
                 }
-        
         # Calculate total error budget
         total_error_budget = sum(eb["error_budget"] for eb in error_budgets.values()
         
         return jsonify({}
+            {
             "status": "success",
+            {
             "data": {}
                 "error_budgets": error_budgets,
                 "total_error_budget": total_error_budget,
-                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "timestamp": datetime.utcnow().isoformat() + "Z"""
             },
             "error": None,
-        })
+        }
     except Exception as e:
+        {
         logger.error(f"Error getting error budget: {e}")
         return jsonify({}
+            {
             "status": "error",
+            {
             "data": None,
             "error": str(e),
         }), 500
@@ -142,7 +157,7 @@ def get_error_budget():
 
 @slos_bp.route("/history", methods=["GET"])
 def get_slo_history():
-    "Get historical SLO data"
+    """Get historical SLO data"""
     try:
         days = request.args.get("days", 7, type=int)
         slo_name = request.args.get("slo_name")
@@ -156,30 +171,37 @@ def get_slo_history():
         while current_date <= end_date:
             # Mock data - in production, this would come from a time-series database
             history_data.append({}
-                "timestamp": current_date.isoformat() + "Z",
-                "slo_name": slo_name or "api_availability",
+                {
+                "timestamp": current_date.isoformat() + "Z"""
+                {
+                "slo_name": slo_name or "api_availability"""
                 "value": 99.5 + (current_date.hour % 24) * 0.1,  # Mock variation
                 "target": 99.9,
                 "status": "meeting",
-            })
+            }
             current_date += timedelta(hours=1)
         
         return jsonify({}
+            {
             "status": "success",
+            {
             "data": {}
                 "history": history_data,
                 "period": {}
-                    "start": start_date.isoformat() + "Z",
-                    "end": end_date.isoformat() + "Z",
+                    "start": start_date.isoformat() + "Z"""
+                    "end": end_date.isoformat() + "Z"""
                     "days": days,
                 },
             },
             "error": None,
-        })
+        }
     except Exception as e:
+        {
         logger.error(f"Error getting SLO history: {e}")
         return jsonify({}
+            {
             "status": "error",
+            {
             "data": None,
             "error": str(e),
         }), 500
@@ -187,13 +209,15 @@ def get_slo_history():
 
 @slos_bp.route("/trends", methods=["GET"])
 def get_slo_trends():
-    "Get SLO trends and analysis"
+    """Get SLO trends and analysis"""
     try:
         days = request.args.get("days", 30, type=int)
         
         # Generate mock trend data
         trends = {}
+            {
             "api_availability": {}
+                {
                 "trend": "stable",
                 "average": 99.8,
                 "min": 99.5,
@@ -201,23 +225,28 @@ def get_slo_trends():
                 "improvement": 0.1,
             },
             "api_latency": {}
+                {
                 "trend": "improving",
+                {
                 "average": 150,
                 "min": 120,
                 "max": 200,
                 "improvement": -10,
             },
             "api_error_rate": {}
+                {
                 "trend": "stable",
+                {
                 "average": 0.2,
                 "min": 0.1,
                 "max": 0.5,
                 "improvement": 0.0,
             },
         }
-        
         return jsonify({}
+            {
             "status": "success",
+            {
             "data": {}
                 "trends": trends,
                 "period_days": days,
@@ -225,19 +254,22 @@ def get_slo_trends():
                     "overall_trend": "improving",
                     "critical_slos": ["api_availability"],
                     "recommendations": []
-                        "Monitor API latency during peak hours",
-                        "Consider database query optimization",
-                        "Review error rate patterns",
+                        "Monitor API latency during peak hours"""
+                        "Consider database query optimization"""
+                        "Review error rate patterns"""
                     ],
                 },
-                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "timestamp": datetime.utcnow().isoformat() + "Z"""
             },
             "error": None,
-        })
+        }
     except Exception as e:
+        {
         logger.error(f"Error getting SLO trends: {e}")
         return jsonify({}
+            {
             "status": "error",
+            {
             "data": None,
             "error": str(e),
         }), 500
@@ -245,23 +277,28 @@ def get_slo_trends():
 
 @slos_bp.route("/alerts", methods=["GET"])
 def get_slo_alerts():
-    "Get Prometheus alert rules for SLOs"
+    """Get Prometheus alert rules for SLOs"""
     try:
         alerts = generate_slo_alerts()
         
         return jsonify({}
+            {
             "status": "success",
+            {
             "data": {}
                 "alerts": alerts,
                 "count": len(alerts),
-                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "timestamp": datetime.utcnow().isoformat() + "Z"""
             },
             "error": None,
-        })
+        }
     except Exception as e:
+        {
         logger.error(f"Error getting SLO alerts: {e}")
         return jsonify({}
+            {
             "status": "error",
+            {
             "data": None,
             "error": str(e),
         }), 500
@@ -269,7 +306,7 @@ def get_slo_alerts():
 
 @slos_bp.route("/metrics", methods=["GET"])
 def get_slo_metrics():
-    "Get SLO metrics in Prometheus format"
+    """Get SLO metrics in Prometheus format"""
     try:
         # Get SLO status
         slo_status = get_all_slo_status()
@@ -288,12 +325,12 @@ def get_slo_metrics():
                 
                 # SLO status metric (0=meeting, 1=warning, 2=alert, 3=critical)
                 status_value = {}
+                    {
                     "meeting": 0,
                     "warning": 1,
                     "alert": 2,
                     "critical": 3,
-                }.get(status.get("status", "unknown"), 0)
-                
+                }.get(status.get("status", "unknown"), 0
                 metrics.append(f'slo_status{{slo="{slo_name}"}} {status_value} {timestamp}')
         
         # Add summary metrics
@@ -305,20 +342,23 @@ def get_slo_metrics():
         
         return "\n".join(metrics), 200, {"Content-Type": CONTENT_TYPE_LATEST}
     except Exception as e:
+        {
         logger.error(f"Error getting SLO metrics: {e}")
         return f"# Error getting SLO metrics: {e}", 500, {"Content-Type": "text/plain"}
 
 
 @slos_bp.route("/health", methods=["GET"])
 def slo_health_check():
-    "Health check for SLO monitoring"
+    """Health check for SLO monitoring"""
     try:
         slo_manager = get_slo_manager()
         
         # Check if SLO manager is available
         if not slo_manager:
             return jsonify({}
+                {
                 "status": "error",
+                {
                 "data": None,
                 "error": "SLO manager not available",
             }), 503
@@ -338,20 +378,25 @@ def slo_health_check():
             health_status = "healthy"
         
         return jsonify({}
+            {
             "status": "success",
+            {
             "data": {}
                 "health": health_status,
                 "slo_count": len(slo_status),
                 "critical_slos": critical_count,
                 "alert_slos": alert_count,
-                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "timestamp": datetime.utcnow().isoformat() + "Z"""
             },
             "error": None,
-        })
+        }
     except Exception as e:
+        {
         logger.error(f"Error in SLO health check: {e}")
         return jsonify({}
+            {
             "status": "error",
+            {
             "data": None,
             "error": str(e),
         }), 500

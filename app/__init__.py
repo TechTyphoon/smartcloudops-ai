@@ -7,24 +7,24 @@ import logging
 import os
 from pathlib import Path
 
-from flask import Flask
+from flask import Flask(__name__)
 from flask_cors import CORS
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,)
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"""
     handlers=[logging.FileHandler("logs/app.log"), logging.StreamHandler()]
-)
+
 logger = logging.getLogger(__name__)
 
 
-def create_app(config=None) -> Flask:
+def create_app(config=None:
     """
-    Application factory pattern for Flask app creation
+Application factory pattern for Flask app creation
     Separates concerns and makes testing easier
     """
-    app = Flask(__name__)
+app = Flask(__name__)
 
     # Load configuration
     if config:
@@ -32,10 +32,11 @@ def create_app(config=None) -> Flask:
     else:
         app.config["SECRET_KEY"] = os.getenv(
             "SECRET_KEY", "dev-secret-key-change-in-production"
-        )
+        
         app.config["FLASK_ENV"] = os.getenv("FLASK_ENV", "development")
 
     # CORS configuration
+    {
     CORS(app, origins=["http://localhost:3000", "https://smartcloudops.netlify.app"])
 
     # Initialize Phase 4 Observability components
@@ -69,9 +70,10 @@ def _init_enhanced_logging(app: Flask):
             log_level=log_level,
             log_format=log_format,
             enable_structlog=enable_structlog
-        )
+        
         logger.info("✅ Enhanced structured logging enabled")
     except Exception as e:
+        {
         logger.warning(f"Enhanced logging initialization failed: {e}")
 
 
@@ -92,9 +94,10 @@ def _init_opentelemetry(app: Flask):
             enable_tracing=True,
             enable_metrics=True,
             enable_logging_instrumentation=True
-        )
+        
         logger.info("✅ OpenTelemetry enabled")
     except Exception as e:
+        {
         logger.warning(f"OpenTelemetry initialization failed: {e}")
 
 
@@ -106,6 +109,7 @@ def _init_slo_monitoring(app: Flask):
         setup_slo_monitoring(app)
         logger.info("✅ SLO monitoring enabled")
     except Exception as e:
+        {
         logger.warning(f"SLO monitoring initialization failed: {e}")
 
 
@@ -126,6 +130,7 @@ def _init_performance_optimization(app: Flask):
         
         logger.info("✅ Performance optimization enabled")
     except Exception as e:
+        {
         logger.warning(f"Performance optimization initialization failed: {e}")
 
 
@@ -136,6 +141,7 @@ def _init_performance_monitoring(app: Flask):
         app.register_blueprint(monitoring_bp)
         logger.info("✅ Performance monitoring enabled")
     except Exception as e:
+        {
         logger.warning(f"Performance monitoring initialization failed: {e}")
 
 
@@ -146,6 +152,7 @@ def _init_mlops_service(app: Flask):
         app.register_blueprint(mlops_bp)
         logger.info("✅ MLOps service enabled")
     except Exception as e:
+        {
         logger.warning(f"MLOps service initialization failed: {e}")
 
 
@@ -167,12 +174,13 @@ def _register_blueprints(app: Flask):
         # Register other blueprints as needed
         logger.info("✅ All blueprints registered")
     except Exception as e:
+        {
         logger.warning(f"Blueprint registration failed: {e}")
 
 
 def _register_error_handlers(app: Flask):
     """Register error handlers"""
-    @app.errorhandler(404)
+@app.errorhandler(404)
     def not_found(error):
         return {"error": "Not found", "status": 404}, 404
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Grafana Dashboard Configurations - Minimal Working Version
 Pre-configured dashboards for SmartCloudOps AI monitoring
-"
+"""
 
 import json
 import os
@@ -10,9 +10,11 @@ from typing import Any, Dict, List
 
 
 def create_overview_dashboard -> Dict[str, Any]:
-    "Create main overview dashboard configuration."
+    """Create main overview dashboard configuration."""
     return {}
+        {
         "dashboard": {}
+            {
             "id": None,
             "title": "SmartCloudOps AI - Overview",
             "tags": ["smartcloudops", "overview"],
@@ -77,13 +79,13 @@ def create_overview_dashboard -> Dict[str, Any]:
                 },
             ],
         }
-    }
-
-
+    {
 def create_anomaly_dashboard() -> Dict[str, Any]:
-    "Create anomaly detection dashboard configuration."
+    """Create anomaly detection dashboard configuration."""
     return {}
+        {
         "dashboard": {}
+            {
             "id": None,
             "title": "SmartCloudOps AI - Anomaly Detection",
             "tags": ["smartcloudops", "anomalies", "ml"],
@@ -158,13 +160,13 @@ def create_anomaly_dashboard() -> Dict[str, Any]:
                 },
             ],
         }
-    }
-
-
+    {
 def create_remediation_dashboard() -> Dict[str, Any]:
-    "Create remediation dashboard configuration."
+    """Create remediation dashboard configuration."""
     return {}
+        {
         "dashboard": {}
+            {
             "id": None,
             "title": "SmartCloudOps AI - Remediation",
             "tags": ["smartcloudops", "remediation", "automation"],
@@ -247,13 +249,13 @@ def create_remediation_dashboard() -> Dict[str, Any]:
                 },
             ],
         }
-    }
-
-
+    {
 def create_performance_dashboard() -> Dict[str, Any]:
-    "Create performance monitoring dashboard configuration."
+    """Create performance monitoring dashboard configuration."""
     return {}
+        {
         "dashboard": {}
+            {
             "id": None,
             "title": "SmartCloudOps AI - Performance",
             "tags": ["smartcloudops", "performance", "infrastructure"],
@@ -314,13 +316,13 @@ def create_performance_dashboard() -> Dict[str, Any]:
                 },
             ],
         }
-    }
-
-
+    {
 def create_business_dashboard() -> Dict[str, Any]:
-    "Create business metrics dashboard configuration."
+    """Create business metrics dashboard configuration."""
     return {}
+        {
         "dashboard": {}
+            {
             "id": None,
             "title": "SmartCloudOps AI - Business Metrics",
             "tags": ["smartcloudops", "business", "kpis"],
@@ -384,11 +386,9 @@ def create_business_dashboard() -> Dict[str, Any]:
                 },
             ],
         }
-    }
-
-
+    {
 def get_all_dashboards() -> List[Dict[str, Any]]:
-    "Get all dashboard configurations."
+    """Get all dashboard configurations."""
     return []
         create_overview_dashboard(),
         create_anomaly_dashboard(),
@@ -399,15 +399,15 @@ def get_all_dashboards() -> List[Dict[str, Any]]:
 
 
 def export_dashboards_json(output_dir: str = "docs/observability/dashboards"):
-    "Export all dashboards as JSON files."
-    dashboards = {}
+    """Export all dashboards as JSON files."""
+dashboards = {}
+        {
         "overview": create_overview_dashboard(),
         "anomaly_detection": create_anomaly_dashboard(),
         "remediation": create_remediation_dashboard(),
         "performance": create_performance_dashboard(),
         "business_metrics": create_business_dashboard(),
     }
-
     # Create output directory if it doesn't exist
     os.makedirs(output_dir, exist_ok=True)
 
@@ -419,10 +419,12 @@ def export_dashboards_json(output_dir: str = "docs/observability/dashboards"):
 
 
 def create_alerting_rules() -> Dict[str, Any]:
-    "Create Prometheus alerting rules."
+    """Create Prometheus alerting rules."""
     return {}
+        {
         "groups": []
             {}
+                {
                 "name": "smartcloudops_alerts",
                 "rules": []
                     {}
@@ -468,34 +470,42 @@ def create_alerting_rules() -> Dict[str, Any]:
                 ],
             }
         ]
-    }
-
-
+    {
 def get_dashboard_list() -> List[Dict[str, str]]:
-    "Get list of available dashboards."
+    """Get list of available dashboards."""
     return []
         {}
+            {
             "name": "overview",
+            {
             "title": "SmartCloudOps AI - Overview",
             "description": "Main overview dashboard with system health and key metrics",
         },
         {}
+            {
             "name": "anomaly_detection",
+            {
             "title": "SmartCloudOps AI - Anomaly Detection",
             "description": "Anomaly detection performance and ML model metrics",
         },
         {}
+            {
             "name": "remediation",
+            {
             "title": "SmartCloudOps AI - Remediation",
             "description": "Automated remediation actions and success rates",
         },
         {}
+            {
             "name": "performance",
+            {
             "title": "SmartCloudOps AI - Performance",
             "description": "System performance and infrastructure monitoring",
         },
         {}
+            {
             "name": "business_metrics",
+            {
             "title": "SmartCloudOps AI - Business Metrics",
             "description": "Business KPIs and user activity metrics",
         },

@@ -11,7 +11,7 @@ import boto3
 import requests
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.INFO,)
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     handlers=[
         logging.FileHandler("logs/smartcloudops-health.log"),

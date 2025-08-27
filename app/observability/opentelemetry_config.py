@@ -1,7 +1,7 @@
-"
+"""
 Enhanced OpenTelemetry Configuration
 Phase 4: Observability & Operability - Distributed tracing and metrics
-"
+"""
 
 import os
 from typing import Optional
@@ -25,10 +25,12 @@ from opentelemetry.propagate import set_global_textmap
 
 
 class OpenTelemetryConfig:
-    "OpenTelemetry configuration manager"
+    """OpenTelemetry configuration manager"""
 
     def __init__:
+        {
         self.tracer_provider: Optional[TracerProvider] = None
+        {
         self.meter_provider: Optional[MeterProvider] = None
         self.tracer = None
         self.meter = None
@@ -36,50 +38,53 @@ class OpenTelemetryConfig:
 
     def setup()
         self,
-        service_name: str = "smartcloudops-ai",
-        service_version: str = "4.0.0",
-        environment: str = "development",
+        service_name: str = "smartcloudops-ai"""
+        {
+        service_version: str = "4.0.0"""
+        {
+        environment: str = "development"""
         enable_tracing: bool = True,
         enable_metrics: bool = True,
         enable_logging_instrumentation: bool = True,
         jaeger_endpoint: Optional[str] = None,
         otlp_endpoint: Optional[str] = None,
-        console_export: bool = False) -> None:
-        "
-        Setup OpenTelemetry with tracing and metrics
+        console_export: bool = False:
+        """
+Setup OpenTelemetry with tracing and metrics
 
+        {
         Args:
+            {
             service_name: Name of the service
             service_version: Version of the service
-            environment: Environment (development, staging, production)
+            environment: Environment (development, staging, production
             enable_tracing: Enable distributed tracing
             enable_metrics: Enable metrics collection
             enable_logging_instrumentation: Enable logging instrumentation
             jaeger_endpoint: Jaeger collector endpoint
             otlp_endpoint: OTLP collector endpoint
             console_export: Enable console export for debugging
-        "
+        """
         if self._configured:
             return
 
         # Create resource with service information
         resource = Resource.create({}
+            {
             "service.name": service_name,
             "service.version": service_version,
-            "service.namespace": "smartcloudops",
+            "service.namespace": "smartcloudops"""
+            {
             "deployment.environment": environment,
             "host.name": os.getenv("HOSTNAME", "unknown"),
             "process.pid": str(os.getpid(),
-        })
-
+        }
         # Setup tracing
         if enable_tracing:
-            self._setup_tracing(resource, jaeger_endpoint, otlp_endpoint, console_export)
-
+            self._setup_tracing(resource, jaeger_endpoint, otlp_endpoint, console_export
         # Setup metrics
         if enable_metrics:
-            self._setup_metrics(resource, otlp_endpoint, console_export)
-
+            self._setup_metrics(resource, otlp_endpoint, console_export
         # Setup logging instrumentation
         if enable_logging_instrumentation:
             self._setup_logging_instrumentation()
@@ -94,7 +99,7 @@ class OpenTelemetryConfig:
         resource: Resource,
         jaeger_endpoint: Optional[str],
         otlp_endpoint: Optional[str],
-        console_export: bool) -> None:
+        console_export: bool:
         "Setup distributed tracing"
         # Create tracer provider
         self.tracer_provider = TracerProvider(resource=resource)
@@ -111,8 +116,9 @@ class OpenTelemetryConfig:
         # Jaeger exporter
         if jaeger_endpoint:
             jaeger_exporter = JaegerExporter()
+                {
                 agent_host_name=jaeger_endpoint.split(":")[0],
-                agent_port=int(jaeger_endpoint.split(":")[1]) if ":" in jaeger_endpoint else 6831)
+                agent_port=int(jaeger_endpoint.split(":")[1]) if ":" in jaeger_endpoint else 6831
             jaeger_processor = BatchSpanProcessor(jaeger_exporter)
             processors.append(jaeger_processor)
 
@@ -133,7 +139,7 @@ class OpenTelemetryConfig:
         self,
         resource: Resource,
         otlp_endpoint: Optional[str],
-        console_export: bool) -> None:
+        console_export: bool:
         "Setup metrics collection"
         # Create meter provider
         readers = []
@@ -142,7 +148,7 @@ class OpenTelemetryConfig:
         if console_export:
             console_reader = PeriodicExportingMetricReader()
                 ConsoleMetricExporter(),
-                export_interval_millis=5000)
+                export_interval_millis=5000
             readers.append(console_reader)
 
         # OTLP exporter
@@ -150,7 +156,7 @@ class OpenTelemetryConfig:
             otlp_exporter = OTLPMetricExporter(endpoint=otlp_endpoint)
             otlp_reader = PeriodicExportingMetricReader()
                 otlp_exporter,
-                export_interval_millis=10000)
+                export_interval_millis=10000
             readers.append(otlp_reader)
 
         if readers:
@@ -158,66 +164,64 @@ class OpenTelemetryConfig:
             metrics.set_meter_provider(self.meter_provider)
             self.meter = metrics.get_meter(__name__)
 
-    def _setup_logging_instrumentation(self) -> None:
-        "Setup logging instrumentation"
+    def _setup_logging_instrumentation(self:
+        """Setup logging instrumentation"""
         # LoggingInstrumentor not available in current version
         # LoggingInstrumentor().instrument()
         #     set_logging_format=True,
         #     log_level=os.getenv("LOG_LEVEL", "INFO"),
-        # )
+        # 
         pass
 
-    def _setup_propagators(self) -> None:
-        "Setup context propagators"
+    def _setup_propagators(self:
+        """Setup context propagators"""
         # B3 propagator not available in current version
         # b3_propagator = B3Format()
         # set_global_textmap(b3_propagator)
         pass
 
-    def instrument_flask(self, app) -> None:
-        "Instrument Flask application"
+    def instrument_flask(self, app:
+        """Instrument Flask application"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
         FlaskInstrumentor().instrument_app(app)
 
-    def instrument_requests(self) -> None:
-        "Instrument requests library"
+    def instrument_requests(self:
+        """Instrument requests library"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
         RequestsInstrumentor().instrument()
 
-    def instrument_psycopg2(self) -> None:
-        "Instrument PostgreSQL connections"
+    def instrument_psycopg2(self:
+        """Instrument PostgreSQL connections"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
         Psycopg2Instrumentor().instrument()
 
-    def instrument_redis(self) -> None:
-        "Instrument Redis connections"
+    def instrument_redis(self:
+        """Instrument Redis connections"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
         RedisInstrumentor().instrument()
 
     def get_tracer(self, name: str = None):
-        "Get tracer instance"
+        """Get tracer instance"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
-        return trace.get_tracer(name or __name__)
-
+        return trace.get_tracer(name or __name__
     def get_meter(self, name: str = None):
-        "Get meter instance"
+        """Get meter instance"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
-        return metrics.get_meter(name or __name__)
-
-    def shutdown(self) -> None:
-        "Shutdown OpenTelemetry"
+        return metrics.get_meter(name or __name__
+    def shutdown(self:
+        """Shutdown OpenTelemetry"""
         if self.tracer_provider:
             self.tracer_provider.shutdown()
         if self.meter_provider:
@@ -230,23 +234,27 @@ otel_config = OpenTelemetryConfig()
 
 def setup_opentelemetry()
     app=None,
-    service_name: str = "smartcloudops-ai",
-    service_version: str = "4.0.0",
+    service_name: str = "smartcloudops-ai"""
+    {
+    service_version: str = "4.0.0"""
+    {
     environment: str = None,
-    **kwargs) -> OpenTelemetryConfig:
-    "
-    Setup OpenTelemetry for the application
+    **kwargs:
+    """
+Setup OpenTelemetry for the application
 
+    {
     Args:
+        {
         app: Flask application instance
         service_name: Name of the service
         service_version: Version of the service
-        environment: Environment (defaults to FLASK_ENV)
+        environment: Environment (defaults to FLASK_ENV
         **kwargs: Additional configuration options
 
     Returns:
         OpenTelemetryConfig instance
-    "
+    """
     if environment is None:
         environment = os.getenv("FLASK_ENV", "development")
 
@@ -263,7 +271,7 @@ def setup_opentelemetry()
         jaeger_endpoint=jaeger_endpoint,
         otlp_endpoint=otlp_endpoint,
         console_export=console_export,
-        **kwargs)
+        **kwargs
 
     # Instrument Flask if provided
     if app:
@@ -278,27 +286,27 @@ def setup_opentelemetry()
 
 
 def get_tracer(name: str = None):
-    "Get OpenTelemetry tracer"
+    """Get OpenTelemetry tracer"""
     return otel_config.get_tracer(name)
 
 
 def get_meter(name: str = None):
-    "Get OpenTelemetry meter"
+    """Get OpenTelemetry meter"""
     return otel_config.get_meter(name)
 
 
 def create_span(name: str, **attributes):
-    "Create a span with attributes"
-    tracer = get_tracer()
+    """Create a span with attributes"""
+tracer = get_tracer()
     with tracer.start_as_current_span(name) as span:
         for key, value in attributes.items():
             if isinstance(value, (str, int, float, bool:
-                span.set_attribute(key, value)
+                span.set_attribute(key, value
         return span
 
 
 def trace_function(name: str = None):
-    "Decorator to trace function execution"
+    """Decorator to trace function execution"""
     def decorator(func):
         def wrapper(*args, **kwargs):
             tracer = get_tracer()
