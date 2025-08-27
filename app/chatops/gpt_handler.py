@@ -158,12 +158,12 @@ class GPTHandler:
             sanitized_metrics = self.sanitize_input(str(context["prometheus_metrics"]))
             context_prompt += f"- Prometheus Status: {sanitized_metrics}\n"
 
-        if context.get("recent_alerts":
-            sanitized_alerts = self.sanitize_input(str(context["recent_alerts"])
+        if context.get("recent_alerts"):
+            sanitized_alerts = self.sanitize_input(str(context["recent_alerts"]))
             context_prompt += f"- Recent Alerts: {sanitized_alerts}\n"
 
-        if context.get("resource_usage":
-            sanitized_usage = self.sanitize_input(str(context["resource_usage"])
+        if context.get("resource_usage"):
+            sanitized_usage = self.sanitize_input(str(context["resource_usage"]))
             context_prompt += f"- Resource Usage: {sanitized_usage}\n"
 
         return context_prompt
@@ -201,14 +201,14 @@ class GPTHandler:
             # Add conversation history (last 10 exchanges) with sanitization
             if self.conversation_history:
                 recent_history = self.conversation_history[-10:]  # Last 5 exchanges
-                messages = ()
+                messages = (
                     [{"role": "system", "content": self.system_prompt + context_prompt}]
                     + recent_history
                     + [{"role": "user", "content": sanitized_query}]
                 )
 
             # Call OpenAI API with timeout and error handling
-            response = self.client.chat.completions.create()
+            response = self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=messages,
                 max_tokens=500,
@@ -219,7 +219,7 @@ class GPTHandler:
             gpt_response = response.choices[0].message.content.strip()
 
             # Additional sanitization of GPT response to prevent XSS
-            gpt_response = bleach.clean()
+            gpt_response = bleach.clean(
                 gpt_response,
                 tags=[],  # No HTML tags allowed
                 attributes={},

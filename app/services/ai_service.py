@@ -314,7 +314,7 @@ class AIService:
 
         return {
             "response": response,
-            "query_metadata": {}
+            "query_metadata": {
                 "original_query": query,
                 "processing_time_ms": round(random.uniform(50, 200), 1),
                 "language": "en",
@@ -323,22 +323,22 @@ class AIService:
         }
 
     def get_models(self) -> Dict:
-        "
+        """
         Get information about available AI/ML models.
 
         Returns:
             Dictionary containing model information
-        "
+        """
         return {
             "models": self.mock_models,
             "total_models": len(self.mock_models),
-            "active_models": len()
+            "active_models": len(
                 [m for m in self.mock_models if m["status"] == "active"]
             ),
         }
 
     def predict_with_model(self, model_id: str, input_data: Dict) -> Dict:
-        "
+        """
         Make predictions using a specific model.
 
         Args:
@@ -350,7 +350,7 @@ class AIService:
 
         Raises:
             ValueError: If model not found or invalid input
-        "
+        """
         if not model_id:
             raise ValueError("model_id is required")
 
@@ -367,14 +367,14 @@ class AIService:
 
         # Mock prediction based on model type
         if model["type"] == "anomaly_detection":
-            prediction = {}
+            prediction = {
                 "anomaly_probability": round(random.uniform(0.1, 0.9), 3),
                 "is_anomaly": random.choice([True, False]),
                 "confidence": round(random.uniform(0.7, 0.95), 3),
             }
         elif model["type"] == "recommendation":
-            prediction = {}
-                "recommended_action": random.choice()
+            prediction = {
+                "recommended_action": random.choice(
                     ["scale_up", "restart_service", "cleanup_logs"]
                 ),
                 "confidence": round(random.uniform(0.6, 0.9), 3),
@@ -393,5 +393,3 @@ class AIService:
             },
             "processing_time_ms": round(random.uniform(10, 100), 1),
         }
-
-"""
