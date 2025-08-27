@@ -1,27 +1,27 @@
 #!/usr/bin/env python3
-"
+"""
 ML Processing Service for Smart CloudOps AI
 Dedicated microservice for ML operations
-"
+"""
 
 import logging
 import os
 from flask import Flask, jsonify, request
 
-app = Flask
+app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 @app.route("/health")
 def health():
-    "Health check endpoint for ML service."
+    """Health check endpoint for ML service."""
     return jsonify({"status": "healthy", "service": "ml-processor"})
 
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    "ML prediction endpoint."
+    """ML prediction endpoint."""
     try:
         data = request.get_json()
         if not data:
@@ -29,13 +29,13 @@ def predict():
         
         # ML processing logic here
         # This is a placeholder - in production you'd load your model and make predictions
-        prediction = {}
+        prediction = {
             "result": "processed",
             "confidence": 0.95,
             "model_version": "1.0.0"
         }
         
-        return jsonify({}
+        return jsonify({
             "status": "success",
             "prediction": prediction,
             "input_data": data
@@ -47,7 +47,7 @@ def predict():
 
 @app.route("/train", methods=["POST"])
 def train():
-    "ML training endpoint."
+    """ML training endpoint."""
     try:
         data = request.get_json()
         if not data:
@@ -55,7 +55,7 @@ def train():
         
         # Training logic here
         # This is a placeholder - in production you'd implement actual training
-        training_status = {}
+        training_status = {
             "status": "training_started",
             "model_id": f"model_{os.getpid()}",
             "timestamp": "2024-01-01T00:00:00Z"
@@ -72,5 +72,5 @@ def train():
 if __name__ == "__main__":
     # Use environment variable for host, default to localhost for security
     host = os.getenv("FLASK_HOST", "127.0.0.1")
-    port = int(os.getenv("FLASK_PORT", "5000")
+    port = int(os.getenv("FLASK_PORT", "5000"))
     app.run(host=host, port=port, debug=False)

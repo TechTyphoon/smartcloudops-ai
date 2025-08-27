@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
 
-"
+"""
 Monitoring Module for Smart CloudOps AI
 Extracted from main.py for modularity
-"
+"""
 
 import logging
 import os
@@ -14,19 +14,19 @@ from flask import Blueprint, jsonify, request
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
 # Configure logging
-logger = logging.getLogger
+logger = logging.getLogger(__name__)
 
 # Create blueprint
 monitoring_bp = Blueprint("monitoring", __name__, url_prefix="/monitoring")
 
 # Prometheus metrics
-REQUEST_COUNT = Counter()
+REQUEST_COUNT = Counter(
     "http_requests_total", "Total HTTP requests", ["method", "endpoint", "status"]
 )
 REQUEST_LATENCY = Histogram("http_request_duration_seconds", "HTTP request latency")
 
 # System metrics
-SYSTEM_METRICS = {}
+SYSTEM_METRICS = {
     "cpu_percent": 0.0,
     "memory_percent": 0.0,
     "disk_percent": 0.0,
@@ -35,7 +35,7 @@ SYSTEM_METRICS = {}
 
 
 def update_system_metrics():
-    "Update system metrics."
+    """Update system metrics."""
     try:
         SYSTEM_METRICS["cpu_percent"] = psutil.cpu_percent(interval=1)
         SYSTEM_METRICS["memory_percent"] = psutil.virtual_memory().percent
@@ -47,7 +47,7 @@ def update_system_metrics():
 
 @monitoring_bp.route("/metrics", methods=["GET"])
 def prometheus_metrics():
-    "Prometheus metrics endpoint."
+    """Prometheus metrics endpoint."""
     try:
         return generate_latest(), 200, {"Content-Type": CONTENT_TYPE_LATEST}
     except Exception as e:
@@ -57,22 +57,22 @@ def prometheus_metrics():
 
 @monitoring_bp.route("/health", methods=["GET"])
 def health_check():
-    "Health check endpoint."
+    """Health check endpoint."""
     try:
         # Update system metrics
         update_system_metrics()
 
         # Check critical services
-        health_status = {}
+        health_status = {
             "status": "healthy",
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "version": "1.0.0",
-            "services": {}
+            "services": {
                 "app": "healthy",
                 "database": "unknown",  # Will be checked if DB connection available
                 "ml_service": "unknown"  # Will be checked if ML available
             },
-            "system": {}
+            "system": {
                 "cpu_percent": SYSTEM_METRICS["cpu_percent"],
                 "memory_percent": SYSTEM_METRICS["memory_percent"],
                 "disk_percent": SYSTEM_METRICS["disk_percent"],
@@ -84,14 +84,14 @@ def health_check():
             import psycopg2
 
             # Get database configuration from environment
-            db_host = os.getenv
+            db_host = os.getenv("POSTGRES_HOST", "localhost")
             db_port = os.getenv("POSTGRES_PORT", "5434")
             db_name = os.getenv("POSTGRES_DB", "cloudops")
             db_user = os.getenv("POSTGRES_USER", "cloudops")
             db_password = os.getenv("POSTGRES_PASSWORD", "cloudops")
 
             # Test direct connection
-            conn = psycopg2.connect()
+            conn = psycopg2.connect(
                 host=db_host,
                 port=db_port,
                 database=db_name,
@@ -107,15 +107,7 @@ def health_check():
 
     except Exception as e:
         logger.error(f"Health check error: {e}")
-        return ()
-            jsonify()
-                {}
-                    "status": "unhealthy",
-                    "error": "Health check failed",
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                }
-            ),
-            503)
+        return jsonify({"error": "Health check failed", "timestamp": datetime.now(timezone.utc).isoformat()}), 503
 
 
 @monitoring_bp.route("/status", methods=["GET"])
@@ -125,22 +117,22 @@ def system_status():
         # Update system metrics
         update_system_metrics()
 
-        status = {}
+        status = {
             "status": "success",
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "system": {}
+            "system": {
                 "cpu_percent": SYSTEM_METRICS["cpu_percent"],
                 "memory_percent": SYSTEM_METRICS["memory_percent"],
                 "disk_percent": SYSTEM_METRICS["disk_percent"],
                 "last_updated": SYSTEM_METRICS["last_updated"],
             },
-            "application": {}
+            "application": {
                 "name": "Smart CloudOps AI",
                 "version": "1.0.0",
                 "environment": os.getenv("FLASK_ENV", "development"),
                 "port": os.getenv("FLASK_PORT", "3003"),
             },
-            "endpoints": {}
+            "endpoints": {
                 "health": "/monitoring/health",
                 "metrics": "/monitoring/metrics",
                 "status": "/monitoring/status"
@@ -162,25 +154,15 @@ def get_logs():
         # In production, you'd want to integrate with a proper logging system
         log_file = os.getenv("LOG_FILE", "logs/app.log")
 
-        if not os.path.exists(log_file:
-            return jsonify()
-                {"status": "success", "message": "No log file found", "logs": []}
-            )
+        if not os.path.exists(log_file):
+            return jsonify({"status": "success", "message": "No log file found", "logs": []})
 
         # Read last 100 lines
         with open(log_file, "r") as f:
             lines = f.readlines()
             recent_logs = lines[-100:] if len(lines) > 100 else lines
 
-        return jsonify()
-            {}
-                "status": "success",
-                "log_file": log_file,
-                "total_lines": len(lines),
-                "recent_lines": len(recent_logs),
-                "logs": recent_logs,
-            }
-        )
+        return jsonify({"status": "success", "log_file": log_file, "total_lines": len(lines), "recent_lines": len(recent_logs), "logs": recent_logs})
 
     except Exception as e:
         logger.error(f"Log retrieval error: {e}")
@@ -191,16 +173,7 @@ def get_logs():
 def alerts():
     "Alerts endpoint."
     if request.method == "GET":
-        return jsonify()
-            {}
-                "status": "success",
-                "message": "Alerts endpoint",
-                "endpoints": {}
-                    "get_alerts": "GET /monitoring/alerts",
-                    "create_alert": "POST /monitoring/alerts"
-                },
-            }
-        )
+        return jsonify({"status": "success", "message": "Alerts endpoint", "endpoints": {"get_alerts": "GET /monitoring/alerts", "create_alert": "POST /monitoring/alerts"}})
     else:
         # POST - Create new alert
         try:
@@ -209,21 +182,17 @@ def alerts():
                 return jsonify({"error": "No data provided"}), 400
 
             # In a real implementation, you'd save this to a database
-            alert = {}
+            alert = {
                 "id": f"alert_{datetime.now().timestamp()}",
                 "severity": data.get("severity", "info"),
-                "message": data.get("message", "),
+                "message": data.get("message", ""),
                 "timestamp": datetime.now(timezone.utc).isoformat(),
                 "source": data.get("source", "manual"),
             }
 
             logger.info(f"Alert created: {alert['id']} - {alert['message']}")
 
-            return jsonify({}
-                "status": "success",
-                "message": "Alert created successfully",
-                "alert": alert
-            }), 201
+            return jsonify({"status": "success", "message": "Alert created successfully", "alert": alert}), 201
 
         except Exception as e:
             logger.error(f"Alert creation error: {e}")

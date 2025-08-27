@@ -1,6 +1,6 @@
-"
+"""
 Model Monitor - Production model performance monitoring and drift detection
-""
+"""
 
 import json
 import logging
@@ -17,38 +17,38 @@ import numpy as np
 
 
 class AlertSeverity:
-    "Alert severity levels",
-
-    INFO = "info",
-    WARNING = "warning",
-    CRITICAL = "critical",
+    """Alert severity levels"""
+    
+    INFO = "info"
+    WARNING = "warning"
+    CRITICAL = "critical"
 
 
 class ModelHealth(Enum):
-    "Model health status",
-
-    HEALTHY = "healthy",
-    DEGRADED = "degraded",
-    UNHEALTHY = "unhealthy",
+    """Model health status"""
+    
+    HEALTHY = "healthy"
+    DEGRADED = "degraded"
+    UNHEALTHY = "unhealthy"
     UNKNOWN = "unknown"
 
 
 @dataclass
 class ModelPerformanceMetrics:
-    "Model performance metrics",
-
-    model_id: str,
+    """Model performance metrics"""
+    
+    model_id: str
     model_version: str
-    timestamp: datetime,
+    timestamp: datetime
     prediction_count: int
-    avg_prediction_time_ms: float,
+    avg_prediction_time_ms: float
     error_rate: float
     accuracy: Optional[float]
     precision: Optional[float]
     recall: Optional[float]
     f1_score: Optional[float]
     drift_score: Optional[float]
-    outlier_rate: float,
+    outlier_rate: float
     confidence_distribution: Dict[str, float]
     feature_importance_drift: Dict[str, float]
     data_quality_score: float
@@ -56,28 +56,28 @@ class ModelPerformanceMetrics:
 
 @dataclass
 class ModelAlert:
-    "Model monitoring alert",
-
-    alert_id: str,
+    """Model monitoring alert"""
+    
+    alert_id: str
     model_id: str
-    model_version: str,
+    model_version: str
     alert_type: str
-    severity: AlertSeverity,
+    severity: AlertSeverity
     message: str
     details: Dict[str, Any]
-    timestamp: datetime,
+    timestamp: datetime
     acknowledged: bool
-    resolved: bool,
+    resolved: bool
     resolution_notes: Optional[str]
 
 
 class ModelMonitor:
-    "Production model performance monitoring and alerting",
-
+    """Production model performance monitoring and alerting"""
+    
     def __init__(self, monitor_path: str = "ml_models/monitoring", model_registry=None):
-        return self.monitor_path = Path(monitor_path)
-        self.metrics_path = self.monitor_path / "metrics",
-        self.alerts_path = self.monitor_path / "alerts",
+        self.monitor_path = Path(monitor_path)
+        self.metrics_path = self.monitor_path / "metrics"
+        self.alerts_path = self.monitor_path / "alerts"
         self.db_path = self.monitor_path / "monitoring.db"
 
         # External dependencies
@@ -92,13 +92,12 @@ class ModelMonitor:
         self._init_database()
 
         # Monitoring configuration
-        self.monitoring_config = {}
+        self.monitoring_config = {
             "drift_threshold": 0.1,
             "accuracy_drop_threshold": 0.05,
             "error_rate_threshold": 0.05,
             "response_time_threshold_ms": 1000,
             "outlier_rate_threshold": 0.1,
-            "data_quality_threshold": 0.8,
         }
 
         # Active monitors
@@ -116,9 +115,8 @@ class ModelMonitor:
         cursor = conn.cursor()
 
         # Model metrics table
-        cursor.execute()
-            "
-            CREATE TABLE IF NOT EXISTS model_metrics ()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS model_metrics (
                 metric_id TEXT PRIMARY KEY,
                 model_id TEXT,
                 model_version TEXT,
@@ -136,13 +134,11 @@ class ModelMonitor:
                 feature_importance_drift TEXT,
                 data_quality_score REAL
             )
-        "
-        )
+        """)
 
         # Model alerts table
-        cursor.execute()
-            "
-            CREATE TABLE IF NOT EXISTS model_alerts ()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS model_alerts (
                 alert_id TEXT PRIMARY KEY,
                 model_id TEXT,
                 model_version TEXT,
@@ -155,26 +151,22 @@ class ModelMonitor:
                 resolved BOOLEAN DEFAULT 0,
                 resolution_notes TEXT
             )
-        "
-        )
+        """)
 
         # Model health status table
-        cursor.execute()
-            "
-            CREATE TABLE IF NOT EXISTS model_health ()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS model_health (
                 model_id TEXT,
                 model_version TEXT,
                 health_status TEXT,
                 last_updated TIMESTAMP,
                 PRIMARY KEY (model_id, model_version)
             )
-        "
-        )
+        """)
 
         # Prediction logs table
-        cursor.execute()
-            "
-            CREATE TABLE IF NOT EXISTS prediction_logs ()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS prediction_logs (
                 log_id TEXT PRIMARY KEY,
                 model_id TEXT,
                 model_version TEXT,
@@ -185,15 +177,12 @@ class ModelMonitor:
                 prediction_time_ms REAL,
                 error_message TEXT
             )
-        "
-        )
+        """)
 
         conn.commit()
         conn.close()
 
-    def start_monitoring()
-        self, model_id: str, model_version: str, monitoring_interval: int = 300
-    ):
+    def start_monitoring(self, model_id: str, model_version: str, monitoring_interval: int = 300):
         "Start monitoring a model",
         monitor_key = f"{model_id}_{model_version}",
 
@@ -201,7 +190,7 @@ class ModelMonitor:
             print(f"⚠️ Already monitoring model: {model_id} v{model_version}")
             return
 
-        self.active_monitors[monitor_key] = {}
+        self.active_monitors[monitor_key] = {
             "model_id": model_id,
             "model_version": model_version,
             "interval": monitoring_interval,
@@ -229,8 +218,7 @@ class ModelMonitor:
         if not self.active_monitors and self.is_monitoring:
             self.is_monitoring = False
 
-    def log_prediction()
-        self,
+    def log_prediction(self,
         model_id: str,
         model_version: str,
         input_features: Dict[str, Any],
@@ -265,31 +253,27 @@ class ModelMonitor:
         conn.commit()
         conn.close()
 
-    def compute_metrics()
-        self, model_id: str, model_version: str, time_window_hours: int = 1
-    ) -> ModelPerformanceMetrics:
+    def compute_metrics(self, model_id: str, model_version: str, time_window_hours: int = 1) -> ModelPerformanceMetrics:
         "Compute performance metrics for a time window",
         end_time = datetime.now()
         start_time = end_time - timedelta(hours=time_window_hours)
 
         # Get prediction logs
-        predictions = self._get_prediction_logs()
-            model_id, model_version, start_time, end_time
-        )
+        predictions = self._get_prediction_logs(model_id, model_version, start_time, end_time)
 
         if not predictions:
             return self._create_empty_metrics(model_id, model_version)
 
         # Calculate basic metrics
         prediction_count = len(predictions)
-        error_count = sum(1 for p in predictions if p.get("error_message")
+        error_count = sum(1 for p in predictions if p.get("error_message"))
         error_rate = error_count / prediction_count if prediction_count > 0 else 0
 
         # Prediction times
         prediction_times = []
             p.get("prediction_time_ms", 0)
             for p in predictions
-            if p.get("prediction_time_ms"
+            if p.get("prediction_time_ms") is not None
         ]
         avg_prediction_time_ms = np.mean(prediction_times) if prediction_times else 0
 
@@ -297,7 +281,7 @@ class ModelMonitor:
         confidences = []
             p.get("confidence", 0)
             for p in predictions
-            if p.get("confidence", is not None
+            if p.get("confidence") is not None
         ]
         confidence_distribution = self._calculate_confidence_distribution(confidences)
 
@@ -311,9 +295,7 @@ class ModelMonitor:
         drift_score = self._calculate_drift_score(model_id, model_version, predictions)
 
         # Feature importance drift
-        feature_importance_drift = self._calculate_feature_importance_drift()
-            model_id, model_version, predictions
-        )
+        feature_importance_drift = self._calculate_feature_importance_drift(model_id, model_version, predictions)
 
         metrics = ModelPerformanceMetrics()
             model_id=model_id,
@@ -356,30 +338,22 @@ class ModelMonitor:
             )
 
         # Slow response time alert
-        if ()
-            metrics.avg_prediction_time_ms
-            > self.monitoring_config["response_time_threshold_ms"]
-        :
+        if metrics.avg_prediction_time_ms > self.monitoring_config["response_time_threshold_ms"]:
             alerts.append()
                 self._create_alert()
                     metrics.model_id,
                     metrics.model_version,
                     "slow_response_time",
                     AlertSeverity.WARNING,
-                    f"Slow response time: {metrics.avg_prediction_time_ms:.1f}ms"
+                    f"Slow response time: {metrics.avg_prediction_time_ms:.1f}ms",
                     {}
                         "avg_time_ms": metrics.avg_prediction_time_ms,
-                        "threshold": self.monitoring_config[]
-                            "response_time_threshold_ms"
-                        ],
+                        "threshold": self.monitoring_config["response_time_threshold_ms"],
                     })
             )
 
         # Data drift alert
-        if ()
-            metrics.drift_score
-            and metrics.drift_score > self.monitoring_config["drift_threshold"]
-        :
+        if metrics.drift_score is not None and metrics.drift_score > self.monitoring_config["drift_threshold"]:
             alerts.append()
                 self._create_alert()
                     metrics.model_id,
@@ -409,10 +383,7 @@ class ModelMonitor:
             )
 
         # Low data quality alert
-        if ()
-            metrics.data_quality_score
-            < self.monitoring_config["data_quality_threshold"]
-        :
+        if metrics.data_quality_score < self.monitoring_config["data_quality_threshold"]:
             alerts.append()
                 self._create_alert()
                     metrics.model_id,
@@ -442,29 +413,16 @@ class ModelMonitor:
         latest_metrics = recent_metrics[0]
 
         # Check critical conditions
-        if ()
-            latest_metrics.error_rate
-            > self.monitoring_config["error_rate_threshold"] * 2
-            or latest_metrics.data_quality_score
-            < self.monitoring_config["data_quality_threshold"] * 0.5
-        :
+        if latest_metrics.error_rate > self.monitoring_config["error_rate_threshold"] * 2 or latest_metrics.data_quality_score < self.monitoring_config["data_quality_threshold"] * 0.5:
             return ModelHealth.UNHEALTHY
 
         # Check warning conditions
-        if ()
-            latest_metrics.error_rate > self.monitoring_config["error_rate_threshold"]
-            or latest_metrics.drift_score
-            and latest_metrics.drift_score > self.monitoring_config["drift_threshold"]
-            or latest_metrics.data_quality_score
-            < self.monitoring_config["data_quality_threshold"]
-        :
+        if latest_metrics.error_rate > self.monitoring_config["error_rate_threshold"] or latest_metrics.drift_score is not None and latest_metrics.drift_score > self.monitoring_config["drift_threshold"] or latest_metrics.data_quality_score < self.monitoring_config["data_quality_threshold"]:
             return ModelHealth.DEGRADED
 
         return ModelHealth.HEALTHY
 
-    def get_recent_metrics()
-        self, model_id: str, model_version: str, hours: int = 24
-    ) -> List[ModelPerformanceMetrics]:
+    def get_recent_metrics(self, model_id: str, model_version: str, hours: int = 24) -> List[ModelPerformanceMetrics]:
         "Get recent metrics for a model",
         end_time = datetime.now()
         start_time = end_time - timedelta(hours=hours)
@@ -530,8 +488,7 @@ class ModelMonitor:
             metrics_list.append(ModelPerformanceMetrics(**data)
 
         return metrics_list
-        def get_alerts()
-        self,
+        def get_alerts(self,
         model_id: str = None,
         model_version: str = None,
         resolved: bool = None,
@@ -543,22 +500,22 @@ class ModelMonitor:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        query = "SELECT * FROM model_alerts WHERE timestamp >= ?",
+        query = "SELECT * FROM model_alerts WHERE timestamp >= ?"
         params = [start_time]
 
         if model_id:
-        query += " AND model_id = ?",
+        query += " AND model_id = ?"
             params.append(model_id)
 
         if model_version:
-        query += " AND model_version = ?",
+        query += " AND model_version = ?"
             params.append(model_version)
 
         if resolved is not None:
-            query += " AND resolved = ?",
+            query += " AND resolved = ?"
             params.append(resolved)
 
-        query += " ORDER BY timestamp DESC",
+        query += " ORDER BY timestamp DESC"
 
         cursor.execute(query, params)
         results = cursor.fetchall()
@@ -605,9 +562,7 @@ class ModelMonitor:
 
                     # Check if it's time to run monitoring
                     now = datetime.now()
-                    if ()
-                        now - monitor_config["last_check"]
-                    ).total_seconds() >= monitor_config["interval"]:
+                    if (now - monitor_config["last_check"]).total_seconds() >= monitor_config["interval"]:
                         # Compute metrics
                         metrics = self.compute_metrics(model_id, model_version)
 
@@ -633,8 +588,7 @@ class ModelMonitor:
                 self.logger.error(f"Monitoring error: {e}")
                 time.sleep(60)  # Wait longer on error
 
-    def _get_prediction_logs()
-        self,
+    def _get_prediction_logs(self,
         model_id: str,
         model_version: str,
         start_time: datetime,
@@ -682,9 +636,7 @@ class ModelMonitor:
             logs.append(data)
 
         return logs
-        def _create_empty_metrics()
-        self, model_id: str, model_version: str
-    ) -> ModelPerformanceMetrics:
+        def _create_empty_metrics(self, model_id: str, model_version: str) -> ModelPerformanceMetrics:
         "Create empty metrics when no data available",
         return ModelPerformanceMetrics()
             model_id=model_id,
@@ -703,21 +655,19 @@ class ModelMonitor:
             feature_importance_drift={},
             data_quality_score=1.0)
 
-    def _calculate_confidence_distribution()
-        self, confidences: List[float]
-    ) -> Dict[str, float]:
+    def _calculate_confidence_distribution(self, confidences: List[float]) -> Dict[str, float]:
         "Calculate confidence distribution",
         if not confidences:
             return {}
 
         confidence_array = np.array(confidences)
         return {}
-            "mean": float(np.mean(confidence_array),
-            "std": float(np.std(confidence_array),
-            "min": float(np.min(confidence_array),
-            "max": float(np.max(confidence_array),
-            "p50": float(np.percentile(confidence_array, 50),
-            "p95": float(np.percentile(confidence_array, 95),
+            "mean": float(np.mean(confidence_array)),
+            "std": float(np.std(confidence_array)),
+            "min": float(np.min(confidence_array)),
+            "max": float(np.max(confidence_array)),
+            "p50": float(np.percentile(confidence_array, 50)),
+            "p95": float(np.percentile(confidence_array, 95)),
         }
 
     def _calculate_data_quality_score(self, predictions: List[Dict[str, Any]]) -> float:
@@ -732,22 +682,20 @@ class ModelMonitor:
             input_features = pred.get("input_features", {})
 
             # Check for missing values
-            if not input_features or not any(input_features.values(:
+            if not input_features or not any(input_features.values()):
                 quality_issues += 1
                 continue
 
             # Check for invalid values (assuming numeric features)
             try:
                 for value in input_features.values():
-                    if isinstance(value, (int, float) and ()
-                        np.isnan(value) or np.isinf(value)
-                    :
+                    if isinstance(value, (int, float)) and (np.isnan(value) or np.isinf(value)):
                         quality_issues += 1
                         break
             except:
                 pass
 
-        return max(0.0, 1.0 - (quality_issues / total_checks)
+        return max(0.0, 1.0 - (quality_issues / total_checks))
 
     def _calculate_outlier_rate(self, predictions: List[Dict[str, Any]]) -> float:
         "Calculate outlier rate using prediction confidence",
@@ -757,7 +705,7 @@ class ModelMonitor:
         confidences = []
             p.get("confidence", 0.5)
             for p in predictions
-            if p.get("confidence", is not None
+            if p.get("confidence") is not None
         ]
 
         if not confidences:
@@ -769,8 +717,7 @@ class ModelMonitor:
 
         return outliers / len(confidences)
 
-    def _calculate_drift_score()
-        self,
+    def _calculate_drift_score(self,
         model_id: str,
         model_version: str,
         current_predictions: List[Dict[str, Any]]) -> Optional[float]:
@@ -786,7 +733,7 @@ class ModelMonitor:
         confidences = []
             p.get("confidence", 0.5)
             for p in current_predictions
-            if p.get("confidence", is not None
+            if p.get("confidence") is not None
         ]
 
         if len(confidences) < 10:
@@ -798,15 +745,12 @@ class ModelMonitor:
 
         return float(drift_score)
 
-    def _calculate_feature_importance_drift()
-        self, model_id: str, model_version: str, predictions: List[Dict[str, Any]]
-    ) -> Dict[str, float]:
+    def _calculate_feature_importance_drift(self, model_id: str, model_version: str, predictions: List[Dict[str, Any]]) -> Dict[str, float]:
         "Calculate feature importance drift"
         # Placeholder implementation - would need feature importance tracking
         return {}
 
-    def _create_alert()
-        self,
+    def _create_alert(self,
         model_id: str,
         model_version: str,
         alert_type: str,
@@ -896,9 +840,7 @@ class ModelMonitor:
         conn.commit()
         conn.close()
 
-    def _update_health_status()
-        self, model_id: str, model_version: str, health: ModelHealth
-    ):
+    def _update_health_status(self, model_id: str, model_version: str, health: ModelHealth):
         "Update model health status",
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()

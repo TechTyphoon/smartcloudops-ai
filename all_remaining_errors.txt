@@ -1,0 +1,61 @@
+Sorry: IndentationError: unexpected indent (ai_handler.py, line 56)  File "./app/chatops/gpt_handler.py", line 187
+SyntaxError: closing parenthesis '}' does not match opening parenthesis '(' on line 166
+SyntaxError: closing parenthesis '}' does not match opening parenthesis '(' on line 32
+Sorry: IndentationError: unexpected indent (monitoring_module.py, line 24)  File "./app/ml_service.py", line 75
+SyntaxError: '(' was never closed
+SyntaxError: unterminated string literal (detected at line 6)
+SyntaxError: unterminated string literal (detected at line 7)
+SyntaxError: unterminated string literal (detected at line 3)
+SyntaxError: unterminated string literal (detected at line 7)
+SyntaxError: unmatched ')'
+SyntaxError: unmatched ')'
+Sorry: IndentationError: unexpected indent (rate_limiting.py, line 34)  File "./app/services/mlops_service.py", line 76
+SyntaxError: unmatched '}'
+SyntaxError: unmatched '}'
+Sorry: IndentationError: unexpected indent (security_validation.py, line 17)  File "./app/services/feedback_service.py", line 29
+SyntaxError: unmatched '}'
+SyntaxError: unmatched '}'
+SyntaxError: unmatched '}'
+SyntaxError: unmatched '}'
+Sorry: IndentationError: unexpected indent (slos.py, line 32)Sorry: IndentationError: unexpected indent (ml.py, line 18)Sorry: IndentationError: unexpected indent (core.py, line 18)Sorry: IndentationError: unexpected indent (ai.py, line 17)Sorry: IndentationError: unexpected indent (mlops.py, line 38)Sorry: IndentationError: unexpected indent (chat.py, line 31)Sorry: IndentationError: unexpected indent (remediation.py, line 16)Sorry: IndentationError: unexpected indent (feedback.py, line 16)Sorry: IndentationError: unexpected indent (anomalies.py, line 33)Sorry: IndentationError: unexpected indent (anomalies_refactored.py, line 33)Sorry: IndentationError: unexpected indent (performance.py, line 31)  File "./app/ml_module.py", line 98
+SyntaxError: closing parenthesis '}' does not match opening parenthesis '(' on line 83
+Sorry: IndentationError: unexpected indent (metrics.py, line 33)Sorry: IndentationError: unexpected indent (knowledge_base.py, line 61)  File "./app/mlops/model_monitor.py", line 1
+SyntaxError: unterminated string literal (detected at line 1)
+Sorry: IndentationError: unexpected indent (model_registry.py, line 76)Sorry: IndentationError: unexpected indent (experiment_tracker_minimal.py, line 86)  File "./app/mlops/training_pipeline.py", line 1
+SyntaxError: unterminated string literal (detected at line 1)
+SyntaxError: unterminated string literal (detected at line 1)
+SyntaxError: unmatched ']'
+SyntaxError: closing parenthesis '}' does not match opening parenthesis '(' on line 34
+Sorry: IndentationError: unexpected indent (model_registry_minimal.py, line 76)  File "./app/mlops/experiment_tracker.py", line 135
+SyntaxError: closing parenthesis '}' does not match opening parenthesis '('
+SyntaxError: unmatched ')'
+SyntaxError: unterminated string literal (detected at line 9)
+SyntaxError: unterminated string literal (detected at line 1)
+SyntaxError: unterminated string literal (detected at line 74)
+Sorry: IndentationError: unexpected indent (auth_routes.py, line 51)Sorry: IndentationError: unexpected indent (caching.py, line 68)Sorry: IndentationError: unexpected indent (api_optimization.py, line 67)Sorry: IndentationError: unexpected indent (redis_cache.py, line 62)  File "./app/performance/database_optimization.py", line 95
+SyntaxError: closing parenthesis '}' does not match opening parenthesis '(' on line 80
+Sorry: IndentationError: unexpected indent (anomaly_optimization.py, line 96)  File "./app/performance/log_optimization.py", line 311
+SyntaxError: closing parenthesis '}' does not match opening parenthesis '(' on line 131
+Sorry: IndentationError: unexpected indent (__init__.py, line 12)  File "./app/auth_module.py", line 161
+SyntaxError: unmatched '}'
+Sorry: IndentationError: unexpected indent (slos.py, line 67)  File "./app/observability/middleware.py", line 1
+SyntaxError: unterminated string literal (detected at line 1)
+SyntaxError: unmatched ')'
+SyntaxError: unmatched ')'
+SyntaxError: unmatched ')'
+SyntaxError: unmatched ')'
+SyntaxError: unmatched ']'
+SyntaxError: unmatched ')'
+Sorry: IndentationError: unexpected indent (__init__.py, line 11)  File "./app/remediation/actions.py", line 7
+SyntaxError: unterminated string literal (detected at line 7)
+SyntaxError: unterminated string literal (detected at line 4)
+SyntaxError: unterminated string literal (detected at line 5)
+SyntaxError: unterminated string literal (detected at line 8)
+SyntaxError: invalid syntax
+SyntaxError: unmatched ')'
+SyntaxError: unterminated string literal (detected at line 12)
+SyntaxError: unterminated string literal (detected at line 65)
+SyntaxError: unterminated f-string literal (detected at line 30)
+SyntaxError: unterminated f-string literal (detected at line 163)
+SyntaxError: invalid syntax
+SyntaxError: unterminated f-string literal (detected at line 216)
