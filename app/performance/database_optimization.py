@@ -1,490 +1,394 @@
 """
-Database Optimization and Query Performance
-Phase 2C Week 1: Performance & Scaling - Database Layer
+Database Optimization and Query Performance Enhancement
+Phase 5: Performance & Cost Optimization - Database Optimization
 """
 
-import json
-import logging
-import sqlite3
-import threading
+import os
 import time
-from contextlib import contextmanager
-from dataclasses import dataclass
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union
+import logging
+import threading
+from typing import Any, Dict, List, Optional, Tuple, Callable
+from dataclasses import dataclass, asdict
+from datetime import datetime, timedelta
+from functools import wraps
+import sqlite3
+import json
+
+try:
+    import psycopg2
+    from psycopg2 import pool
+    POSTGRES_AVAILABLE = True
+except ImportError:
+    POSTGRES_AVAILABLE = False
+    psycopg2 = None
+    pool = None
+
+from .redis_cache import get_redis_cache, cached
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
-class QueryStats:
-    """Database query statistics"""
+class DatabaseConfig:
+    """Database optimization configuration"""
+    database_path: str = "data/optimized.db"
+    max_connections: int = 20
+    min_connections: int = 5
+    connection_timeout: int = 30
+    query_timeout: int = 60
+    enable_query_cache: bool = True
+    enable_connection_pooling: bool = True
+    enable_query_logging: bool = True
+    enable_slow_query_logging: bool = True
+    slow_query_threshold: float = 1.0  # seconds
+    cache_ttl: int = 300  # 5 minutes
+    max_cache_size: int = 1000
 
-    query_hash: str
-    query_type: str
-    execution_time: float
-    rows_affected: int
-    timestamp: datetime
-    parameters: Dict[str, Any]
+
+class QueryCache:
+    """Query result caching"""
+    
+    def __init__(self, config: DatabaseConfig):
+        self.config = config
+        self.cache = get_redis_cache()
+        self._lock = threading.RLock()
+        
+    def get(self, query: str, params: tuple = None) -> Optional[Any]:
+        """Get cached query result"""
+        if not self.config.enable_query_cache or not self.cache:
+            return None
+        
+        cache_key = self._generate_cache_key(query, params)
+        return self.cache.get(cache_key, "query_cache")
+    
+    def set(self, query: str, params: tuple, result: Any):
+        """Cache query result"""
+        if not self.config.enable_query_cache or not self.cache:
+            return
+        
+        cache_key = self._generate_cache_key(query, params)
+        self.cache.set(cache_key, result, self.config.cache_ttl, "query_cache")
+    
+    def _generate_cache_key(self, query: str, params: tuple = None) -> str:
+        """Generate cache key for query"""
+        import hashlib
+        
+        key_data = query
+        if params:
+            key_data += str(params)
+        
+        return hashlib.md5(key_data.encode()).hexdigest()
 
 
-class DatabaseMetrics:
-    """Database performance metrics collector"""
-
-    def __init__(self):
-        self.query_stats: List[QueryStats] = []
-        self.connection_pool_stats = {
-            "active_connections": 0,
-            "total_connections": 0,
-            "max_connections": 0,
-            "failed_connections": 0,
+class QueryLogger:
+    """Query performance logging"""
+    
+    def __init__(self, config: DatabaseConfig):
+        self.config = config
+        self.slow_queries = []
+        self.query_stats = {
+            'total_queries': 0,
+            'slow_queries': 0,
+            'cached_queries': 0,
+            'total_time': 0.0,
+            'avg_time': 0.0
         }
-        self._lock = threading.Lock()
-
-    def record_query(self, stats: QueryStats):
+        self._lock = threading.RLock()
+    
+    def log_query(self, query: str, execution_time: float, cached: bool = False):
+        """Log query execution"""
         with self._lock:
-            self.query_stats.append(stats)
-            # Keep only last 1000 queries
-            if len(self.query_stats) > 1000:
-                self.query_stats = self.query_stats[-1000:]
-
-    def get_slow_queries(self, threshold: float = 1.0) -> List[QueryStats]:
-        """Get queries slower than threshold (seconds)"""
-        return [q for q in self.query_stats if q.execution_time > threshold]
-
-    def get_query_summary(self) -> Dict[str, Any]:
-        """Get summary statistics"""
-        if not self.query_stats:
-            return {}
-
-        execution_times = [q.execution_time for q in self.query_stats]
-        return {
-            "total_queries": len(self.query_stats),
-            "avg_execution_time": sum(execution_times) / len(execution_times),
-            "max_execution_time": max(execution_times),
-            "min_execution_time": min(execution_times),
-            "slow_query_count": len(self.get_slow_queries()),
-            "queries_by_type": self._group_by_type(),
-        }
-
-    def _group_by_type(self) -> Dict[str, int]:
-        """Group queries by type"""
-        type_counts = {}
-        for query in self.query_stats:
-            type_counts[query.query_type] = type_counts.get(query.query_type, 0) + 1
-        return type_counts
-
-
-class ConnectionPool:
-    """Simple SQLite connection pool"""
-
-    def __init__(self, database_path: str, max_connections: int = 10):
-        self.database_path = database_path
-        self.max_connections = max_connections
-        self._pool: List[sqlite3.Connection] = []
-        self._lock = threading.Semaphore(max_connections)
-        self._pool_lock = threading.Lock()
-        self.metrics = DatabaseMetrics()
-
-        # Initialize pool
-        self._initialize_pool()
-
-    def _initialize_pool(self):
-        """Initialize connection pool"""
-        try:
-            for _ in range(self.max_connections):
-                conn = self._create_connection()
-                self._pool.append(conn)
-
-            self.metrics.connection_pool_stats["total_connections"] = len(self._pool)
-            self.metrics.connection_pool_stats["max_connections"] = self.max_connections
-            logger.info(
-                f"Initialized connection pool with {len(self._pool)} connections"
-            )
-
-        except Exception as e:
-            logger.error(f"Failed to initialize connection pool: {e}")
-            raise
-
-    def _create_connection(self) -> sqlite3.Connection:
-        """Create optimized SQLite connection"""
-        conn = sqlite3.connect(self.database_path, check_same_thread=False)
-
-        # SQLite optimization settings
-        conn.execute("PRAGMA synchronous = NORMAL")  # Balance safety/performance
-        conn.execute("PRAGMA cache_size = 10000")  # 10MB cache
-        conn.execute("PRAGMA temp_store = MEMORY")  # Use memory for temp tables
-        conn.execute("PRAGMA mmap_size = 268435456")  # 256MB memory map
-        conn.execute("PRAGMA journal_mode = WAL")  # Write-Ahead Logging
-        conn.execute("PRAGMA foreign_keys = ON")  # Enable foreign keys
-
-        # Set row factory for dict-like access
-        conn.row_factory = sqlite3.Row
-
-        return conn
-
-    @contextmanager
-    def get_connection(self):
-        """Get connection from pool with automatic return"""
-        self._lock.acquire()
-        try:
-            with self._pool_lock:
-                if self._pool:
-                    conn = self._pool.pop()
-                    self.metrics.connection_pool_stats["active_connections"] += 1
-                else:
-                    # Create new connection if pool is empty
-                    conn = self._create_connection()
-                    self.metrics.connection_pool_stats["total_connections"] += 1
-
-            yield conn
-
-        except Exception as e:
-            logger.error(f"Database connection error: {e}")
-            self.metrics.connection_pool_stats["failed_connections"] += 1
-            raise
-        finally:
-            # Return connection to pool
-            with self._pool_lock:
-                self._pool.append(conn)
-                self.metrics.connection_pool_stats["active_connections"] -= 1
-
-            self._lock.release()
-
-    def close_all(self):
-        """Close all connections"""
-        with self._pool_lock:
-            for conn in self._pool:
-                conn.close()
-            self._pool.clear()
-
-
-class QueryOptimizer:
-    """Query optimization utilities"""
-
-    @staticmethod
-    def analyze_query_plan(
-        conn: sqlite3.Connection, query: str, params: Tuple = ()
-    ) -> List[Dict]:
-        """Analyze query execution plan"""
-        try:
-            cursor = conn.cursor()
-            explain_query = f"EXPLAIN QUERY PLAN {query}"
-            cursor.execute(explain_query, params)
-
-            plan = []
-            for row in cursor.fetchall():
-                plan.append(
-                    {
-                        "id": row[0],
-                        "parent": row[1],
-                        "notused": row[2],
-                        "detail": row[3],
-                    }
-                )
-
-            return plan
-        except Exception as e:
-            logger.warning(f"Failed to analyze query plan: {e}")
-            return []
-
-    @staticmethod
-    def suggest_indexes(conn: sqlite3.Connection, table_name: str) -> List[str]:
-        """Suggest indexes for table based on query patterns"""
-        suggestions = []
-
-        try:
-            # Get table info
-            cursor = conn.cursor()
-            cursor.execute(f"PRAGMA table_info({table_name})")
-            columns = [row[1] for row in cursor.fetchall()]
-
-            # Get existing indexes
-            cursor.execute(f"PRAGMA index_list({table_name})")
-            existing_indexes = [row[1] for row in cursor.fetchall()]
-
-            # Suggest common index patterns
-            id_columns = [col for col in columns if "id" in col.lower()]
-            date_columns = [
-                col
-                for col in columns
-                if any(
-                    date_word in col.lower()
-                    for date_word in ["date", "time", "created", "updated"]
-                )
-            ]
-            status_columns = [col for col in columns if "status" in col.lower()]
-
-            # Suggest indexes for ID columns
-            for col in id_columns:
-                index_name = f"idx_{table_name}_{col}"
-                if index_name not in existing_indexes:
-                    suggestions.append(
-                        f"CREATE INDEX {index_name} ON {table_name}({col})"
-                    )
-
-            # Suggest indexes for date columns
-            for col in date_columns:
-                index_name = f"idx_{table_name}_{col}"
-                if index_name not in existing_indexes:
-                    suggestions.append(
-                        f"CREATE INDEX {index_name} ON {table_name}({col})"
-                    )
-
-            # Suggest indexes for status columns
-            for col in status_columns:
-                index_name = f"idx_{table_name}_{col}"
-                if index_name not in existing_indexes:
-                    suggestions.append(
-                        f"CREATE INDEX {index_name} ON {table_name}({col})"
-                    )
-
-        except Exception as e:
-            logger.error(f"Failed to suggest indexes: {e}")
-
-        return suggestions
+            self.query_stats['total_queries'] += 1
+            self.query_stats['total_time'] += execution_time
+            self.query_stats['avg_time'] = self.query_stats['total_time'] / self.query_stats['total_queries']
+            
+            if cached:
+                self.query_stats['cached_queries'] += 1
+            
+            # Log slow queries
+            if execution_time > self.config.slow_query_threshold:
+                self.query_stats['slow_queries'] += 1
+                self.slow_queries.append({
+                    'query': query,
+                    'execution_time': execution_time,
+                    'timestamp': datetime.now().isoformat()
+                })
+                
+                # Keep only recent slow queries
+                if len(self.slow_queries) > 100:
+                    self.slow_queries = self.slow_queries[-100:]
+                
+                logger.warning(f"Slow query detected: {execution_time:.3f}s - {query[:100]}...")
+    
+    def get_stats(self) -> Dict[str, Any]:
+        """Get query statistics"""
+        with self._lock:
+            stats = self.query_stats.copy()
+            stats['slow_queries_list'] = self.slow_queries[-10:]  # Last 10 slow queries
+            return stats
 
 
 class OptimizedDatabase:
-    """Optimized database interface with performance monitoring"""
-
-    def __init__(self, database_path: str, max_connections: int = 10):
-        self.pool = ConnectionPool(database_path, max_connections)
-        self.metrics = self.pool.metrics
-        self.query_cache = {}
-        self._setup_tables()
-
-    def _setup_tables(self):
-        """Setup optimized database tables"""
-        with self.pool.get_connection() as conn:
-            # Create performance metrics table
-            conn.execute(
-                """
-                CREATE TABLE IF NOT EXISTS query_metrics (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    query_hash TEXT NOT NULL,
-                    query_type TEXT NOT NULL,
-                    execution_time REAL NOT NULL,
-                    rows_affected INTEGER DEFAULT 0,
-                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-                    parameters TEXT
-                )
-            """
-            )
-
-            # Create indexes for metrics table
-            conn.execute(
-                """
-                CREATE INDEX IF NOT EXISTS idx_query_metrics_timestamp 
-                ON query_metrics(timestamp)
-            """
-            )
-
-            conn.execute(
-                """
-                CREATE INDEX IF NOT EXISTS idx_query_metrics_type 
-                ON query_metrics(query_type)
-            """
-            )
-
-            conn.commit()
-
-    def execute_query(
-        self, query: str, params: Tuple = (), fetch: str = "none"
-    ) -> Union[List[Dict], Dict, None]:
-        """Execute optimized query with performance monitoring"""
-        start_time = time.time()
-        query_hash = str(hash(query))
-        query_type = query.strip().upper().split()[0]
-
+    """Optimized database connection and query management"""
+    
+    def __init__(self, config: DatabaseConfig):
+        self.config = config
+        self.query_cache = QueryCache(config)
+        self.query_logger = QueryLogger(config)
+        self.connection_pool = None
+        self._lock = threading.RLock()
+        
+        # Ensure database directory exists
+        os.makedirs(os.path.dirname(config.database_path), exist_ok=True)
+        
+        # Initialize connection pool
+        self._init_connection_pool()
+        
+        # Create indexes for common queries
+        self._create_indexes()
+        
+        logger.info(f"✅ Optimized database initialized: {config.database_path}")
+    
+    def _init_connection_pool(self):
+        """Initialize connection pool"""
+        if not self.config.enable_connection_pooling:
+            return
+        
         try:
-            with self.pool.get_connection() as conn:
-                cursor = conn.cursor()
-                cursor.execute(query, params)
-
-                result = None
-                rows_affected = cursor.rowcount
-
-                if fetch == "all":
-                    rows = cursor.fetchall()
-                    result = [dict(row) for row in rows]
-                elif fetch == "one":
-                    row = cursor.fetchone()
-                    result = dict(row) if row else None
-
-                if query_type in ["INSERT", "UPDATE", "DELETE"]:
-                    conn.commit()
-
-                execution_time = time.time() - start_time
-
-                # Record query statistics
-                stats = QueryStats(
-                    query_hash=query_hash,
-                    query_type=query_type,
-                    execution_time=execution_time,
-                    rows_affected=rows_affected,
-                    timestamp=datetime.now(),
-                    parameters=dict(enumerate(params)),
+            if POSTGRES_AVAILABLE and self.config.database_path.startswith('postgresql://'):
+                # PostgreSQL connection pool
+                self.connection_pool = pool.ThreadedConnectionPool(
+                    minconn=self.config.min_connections,
+                    maxconn=self.config.max_connections,
+                    dsn=self.config.database_path
                 )
-
-                self.metrics.record_query(stats)
-
-                # Log slow queries
-                if execution_time > 1.0:
-                    logger.warning(
-                        f"Slow query detected: {execution_time:.3f}s - {query[:100]}..."
-                    )
-
-                return result
-
+                logger.info("✅ PostgreSQL connection pool initialized")
+            else:
+                # SQLite doesn't need connection pooling, but we can implement a simple one
+                logger.info("✅ Using SQLite database")
+                
+        except Exception as e:
+            logger.error(f"❌ Failed to initialize connection pool: {e}")
+    
+    def _create_indexes(self):
+        """Create database indexes for performance"""
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                
+                # Create indexes for common queries
+                indexes = [
+                    "CREATE INDEX IF NOT EXISTS idx_metrics_timestamp ON metrics(timestamp)",
+                    "CREATE INDEX IF NOT EXISTS idx_metrics_type ON metrics(type)",
+                    "CREATE INDEX IF NOT EXISTS idx_anomalies_timestamp ON anomalies(timestamp)",
+                    "CREATE INDEX IF NOT EXISTS idx_anomalies_severity ON anomalies(severity)",
+                    "CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp)",
+                    "CREATE INDEX IF NOT EXISTS idx_logs_level ON logs(level)",
+                ]
+                
+                for index_sql in indexes:
+                    try:
+                        cursor.execute(index_sql)
+                    except Exception as e:
+                        logger.warning(f"Failed to create index: {e}")
+                
+                conn.commit()
+                logger.info("✅ Database indexes created")
+                
+        except Exception as e:
+            logger.error(f"❌ Failed to create indexes: {e}")
+    
+    def get_connection(self):
+        """Get database connection"""
+        if self.connection_pool:
+            return self.connection_pool.getconn()
+        else:
+            # SQLite connection
+            return sqlite3.connect(self.config.database_path)
+    
+    def return_connection(self, conn):
+        """Return connection to pool"""
+        if self.connection_pool:
+            self.connection_pool.putconn(conn)
+        else:
+            conn.close()
+    
+    def execute_query(self, query: str, params: tuple = None, use_cache: bool = True) -> List[Dict[str, Any]]:
+        """Execute query with optimization"""
+        start_time = time.time()
+        
+        # Try cache first
+        if use_cache:
+            cached_result = self.query_cache.get(query, params)
+            if cached_result is not None:
+                execution_time = time.time() - start_time
+                self.query_logger.log_query(query, execution_time, cached=True)
+                return cached_result
+        
+        # Execute query
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                
+                if params:
+                    cursor.execute(query, params)
+                else:
+                    cursor.execute(query)
+                
+                # Fetch results
+                if query.strip().upper().startswith('SELECT'):
+                    columns = [desc[0] for desc in cursor.description]
+                    results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+                else:
+                    results = [{'affected_rows': cursor.rowcount}]
+                
+                conn.commit()
+                
+                execution_time = time.time() - start_time
+                self.query_logger.log_query(query, execution_time, cached=False)
+                
+                # Cache result
+                if use_cache and query.strip().upper().startswith('SELECT'):
+                    self.query_cache.set(query, params, results)
+                
+                return results
+                
         except Exception as e:
             execution_time = time.time() - start_time
-            logger.error(f"Query failed after {execution_time:.3f}s: {e}")
+            self.query_logger.log_query(query, execution_time, cached=False)
+            logger.error(f"Query execution error: {e}")
             raise
-
-    def bulk_insert(
-        self,
-        table: str,
-        columns: List[str],
-        data: List[List[Any]],
-        batch_size: int = 1000,
-    ) -> int:
-        """Optimized bulk insert with batching"""
-        total_inserted = 0
-        placeholders = ",".join(["?" for _ in columns])
-        column_names = ",".join(columns)
-        query = f"INSERT INTO {table} ({column_names}) VALUES ({placeholders})"
-
-        try:
-            with self.pool.get_connection() as conn:
-                cursor = conn.cursor()
-
-                # Process in batches
-                for i in range(0, len(data), batch_size):
-                    batch = data[i : i + batch_size]
-                    cursor.executemany(query, batch)
-                    total_inserted += len(batch)
-
-                conn.commit()
-                logger.info(f"Bulk inserted {total_inserted} rows into {table}")
-
-        except Exception as e:
-            logger.error(f"Bulk insert failed: {e}")
-            raise
-
-        return total_inserted
-
-    def optimize_table(self, table_name: str) -> Dict[str, Any]:
-        """Optimize table performance"""
-        optimization_results = {
-            "table": table_name,
-            "actions_taken": [],
-            "suggestions": [],
-        }
-
-        try:
-            with self.pool.get_connection() as conn:
-                # Analyze table
-                cursor = conn.cursor()
-                cursor.execute(f"ANALYZE {table_name}")
-                optimization_results["actions_taken"].append("ANALYZE executed")
-
-                # Get index suggestions
-                suggestions = QueryOptimizer.suggest_indexes(conn, table_name)
-                optimization_results["suggestions"] = suggestions
-
-                # Get table stats
-                cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
-                row_count = cursor.fetchone()[0]
-                optimization_results["row_count"] = row_count
-
-                conn.commit()
-
-        except Exception as e:
-            logger.error(f"Table optimization failed: {e}")
-            optimization_results["error"] = str(e)
-
-        return optimization_results
-
-    def vacuum_database(self) -> Dict[str, Any]:
-        """Vacuum database to reclaim space and optimize"""
+    
+    def execute_many(self, query: str, params_list: List[tuple]) -> int:
+        """Execute multiple queries efficiently"""
         start_time = time.time()
-
+        
         try:
-            with self.pool.get_connection() as conn:
-                # Get database size before vacuum
+            with self.get_connection() as conn:
                 cursor = conn.cursor()
-                cursor.execute("PRAGMA page_count")
-                pages_before = cursor.fetchone()[0]
-                cursor.execute("PRAGMA page_size")
-                page_size = cursor.fetchone()[0]
-                size_before = pages_before * page_size
-
-                # Perform vacuum
-                conn.execute("VACUUM")
-
-                # Get database size after vacuum
-                cursor.execute("PRAGMA page_count")
-                pages_after = cursor.fetchone()[0]
-                size_after = pages_after * page_size
-
+                cursor.executemany(query, params_list)
+                affected_rows = cursor.rowcount
+                conn.commit()
+                
                 execution_time = time.time() - start_time
-                space_saved = size_before - size_after
-
-                result = {
-                    "execution_time": execution_time,
-                    "size_before": size_before,
-                    "size_after": size_after,
-                    "space_saved": space_saved,
-                    "space_saved_mb": space_saved / (1024 * 1024),
-                }
-
-                logger.info(
-                    f"Database vacuum completed: saved {result['space_saved_mb']:.2f}MB"
-                )
-                return result
-
+                self.query_logger.log_query(f"BATCH: {query}", execution_time, cached=False)
+                
+                return affected_rows
+                
         except Exception as e:
-            logger.error(f"Database vacuum failed: {e}")
+            execution_time = time.time() - start_time
+            self.query_logger.log_query(f"BATCH: {query}", execution_time, cached=False)
+            logger.error(f"Batch execution error: {e}")
             raise
-
-    def get_performance_report(self) -> Dict[str, Any]:
-        """Generate comprehensive performance report"""
-        return {
-            "query_summary": self.metrics.get_query_summary(),
-            "slow_queries": [
-                {
-                    "query_type": q.query_type,
-                    "execution_time": q.execution_time,
-                    "timestamp": q.timestamp.isoformat(),
-                    "rows_affected": q.rows_affected,
-                }
-                for q in self.metrics.get_slow_queries()
-            ],
-            "connection_pool": self.metrics.connection_pool_stats,
-            "cache_stats": {"cached_queries": len(self.query_cache)},
+    
+    def get_stats(self) -> Dict[str, Any]:
+        """Get database statistics"""
+        stats = {
+            'config': asdict(self.config),
+            'query_stats': self.query_logger.get_stats(),
+            'cache_enabled': self.config.enable_query_cache,
+            'pooling_enabled': self.config.enable_connection_pooling,
         }
-
+        
+        if self.query_cache.cache:
+            stats['cache_stats'] = self.query_cache.cache.get_stats()
+        
+        return stats
+    
+    def optimize_tables(self):
+        """Optimize database tables"""
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                
+                # SQLite optimization
+                if not POSTGRES_AVAILABLE or not self.config.database_path.startswith('postgresql://'):
+                    cursor.execute("VACUUM")
+                    cursor.execute("ANALYZE")
+                    conn.commit()
+                    logger.info("✅ SQLite tables optimized")
+                else:
+                    # PostgreSQL optimization
+                    cursor.execute("VACUUM ANALYZE")
+                    conn.commit()
+                    logger.info("✅ PostgreSQL tables optimized")
+                    
+        except Exception as e:
+            logger.error(f"❌ Table optimization failed: {e}")
+    
     def close(self):
         """Close database connections"""
-        self.pool.close_all()
+        if self.connection_pool:
+            self.connection_pool.closeall()
+            logger.info("✅ Database connections closed")
 
 
-# Global database instance (will be initialized by service)
-optimized_db: Optional[OptimizedDatabase] = None
+# Global database instance
+_optimized_db = None
+_db_lock = threading.Lock()
 
 
-def init_optimized_database(database_path: str, max_connections: int = 10):
-    """Initialize global optimized database"""
-    global optimized_db
-    optimized_db = OptimizedDatabase(database_path, max_connections)
-    return optimized_db
+def init_optimized_database(database_path: str, max_connections: int = 20) -> OptimizedDatabase:
+    """Initialize optimized database"""
+    global _optimized_db
+    
+    config = DatabaseConfig(
+        database_path=database_path,
+        max_connections=max_connections
+    )
+    
+    with _db_lock:
+        if _optimized_db is None:
+            _optimized_db = OptimizedDatabase(config)
+            logger.info("✅ Optimized database initialized")
+    
+    return _optimized_db
 
 
-def get_database() -> OptimizedDatabase:
-    """Get global database instance"""
-    if optimized_db is None:
-        raise RuntimeError(
-            "Database not initialized. Call init_optimized_database() first."
-        )
-    return optimized_db
+def get_optimized_database() -> Optional[OptimizedDatabase]:
+    """Get optimized database instance"""
+    return _optimized_db
+
+
+def execute_query(query: str, params: tuple = None, use_cache: bool = True) -> List[Dict[str, Any]]:
+    """Execute optimized query"""
+    db = get_optimized_database()
+    if db:
+        return db.execute_query(query, params, use_cache)
+    else:
+        # Fallback to direct SQLite
+        conn = sqlite3.connect("smartcloudops.db")
+        cursor = conn.cursor()
+        if params:
+            cursor.execute(query, params)
+        else:
+            cursor.execute(query)
+        
+        if query.strip().upper().startswith('SELECT'):
+            columns = [desc[0] for desc in cursor.description]
+            results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        else:
+            results = [{'affected_rows': cursor.rowcount}]
+        
+        conn.commit()
+        conn.close()
+        return results
+
+
+# Decorator for query optimization
+def optimized_query(use_cache: bool = True):
+    """Decorator for query optimization"""
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            # This would integrate with the query optimization system
+            # For now, just execute the function
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+# Decorator for caching query results
+def cached_query(ttl: Optional[int] = None):
+    """Decorator for caching query results"""
+    return cached(ttl or 300, "query_cache")

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
 
-"""
+"
 Monitoring Module for Smart CloudOps AI
 Extracted from main.py for modularity
-"""
+"
 
 import logging
 import os
@@ -33,29 +33,29 @@ SYSTEM_METRICS = {
 
 
 def update_system_metrics():
-    """"Update system metrics.""",
+    "Update system metrics.",
     try:
         SYSTEM_METRICS["cpu_percent"] = psutil.cpu_percent(interval=1)
         SYSTEM_METRICS["memory_percent"] = psutil.virtual_memory().percent
         SYSTEM_METRICS["disk_percent"] = psutil.disk_usage("/").percent
         SYSTEM_METRICS["last_updated"] = datetime.now(timezone.utc).isoformat()
     except Exception as e:
-        logger.error("Error updating system metrics: {e}")
+        logger.error(f"Error updating system metrics: {e}"))
 
 
-@monitoring_bp.route(""/metrics", methods=["GET"])
+@@monitoring_bp.route("/metrics"route("//metrics", methods=["GET"])
 def prometheus_metrics():
-    """"Prometheus metrics endpoint.""",
+    "Prometheus metrics endpoint.",
     try:
         return generate_latest(), 200, {"Content-Type": CONTENT_TYPE_LATEST}
     except Exception as e:
-        logger.error("Error generating metrics: {e}")
+        logger.error(f"Error generating metrics: {e}"))
         return jsonify({"error": "Metrics generation failed"}), 500
 
 
-@monitoring_bp.route(""/health", methods=["GET"])
+@@monitoring_bp.route("/health"route("//health", methods=["GET"])
 def health_check():
-    """"Health check endpoint.""",
+    "Health check endpoint.",
     try:
         # Update system metrics
         update_system_metrics()
@@ -84,10 +84,10 @@ def health_check():
             import psycopg2
 
             # Get database configuration from environment
-            db_host = os.getenv(""POSTGRES_HOST", "localhost",
-            db_port = os.getenv(""POSTGRES_PORT", "5434",
-            db_name = os.getenv(""POSTGRES_DB", "cloudops",
-            db_user = os.getenv(""POSTGRES_USER", "cloudops",
+            db_host = os.getenv("POSTGRES_HOST", "localhost",
+            db_port = os.getenv("POSTGRES_PORT", "5434",
+            db_name = os.getenv("POSTGRES_DB", "cloudops",
+            db_user = os.getenv("POSTGRES_USER", "cloudops",
             db_password = os.getenv("POSTGRES_PASSWORD", "cloudops"
 
             # Test direct connection
@@ -100,27 +100,27 @@ def health_check():
             )
 
             cursor = conn.cursor()
-            cursor.execute(""SELECT 1",
+            cursor.execute("SELECT 1",
             cursor.fetchone()
             cursor.close()
             conn.close()
 
-            health_status[""services"]["database"] = "healthy",
+            health_status["services"]["database"] = "healthy",
         except ImportError:
-            logger.info(""psycopg2 not available - skipping database health check",
-            health_status[""services"]["database"] = "not_configured",
+            logger.info("psycopg2 not available - skipping database health check",
+            health_status["services"]["database"] = "not_configured",
         except Exception as e:
-            logger.warning("Database health check failed: {e}")
+            logger.warning(f"Database health check failed: {e}"))
             health_status["services"]["database"] = "unhealthy"
 
         # Check ML service if available
         try:
             if ML_AVAILABLE and anomaly_detector:
-                health_status[""services"]["ml_service"] = "healthy",
+                health_status["services"]["ml_service"] = "healthy",
             else:
-                health_status[""services"]["ml_service"] = "unavailable",
+                health_status["services"]["ml_service"] = "unavailable",
         except Exception as e:
-            logger.warning("ML service health check failed: {e}")
+            logger.warning(f"ML service health check failed: {e}"))
             health_status["services"]["ml_service"] = "unhealthy"
 
         # Determine overall health
@@ -128,12 +128,12 @@ def health_check():
             s for s in health_status["services"].values() if s == "unhealthy"
         ]
         if unhealthy_services:
-        health_status[""status"] = "degraded",
+        health_status["status"] = "degraded",
 
         return jsonify(health_status)
 
     except Exception as e:
-        logger.error("Health check error: {e}")
+        logger.error(f"Health check error: {e}"))
         return (
             jsonify(
                 {
@@ -146,9 +146,9 @@ def health_check():
         )
 
 
-@monitoring_bp.route(""/status", methods=["GET"])
+@@monitoring_bp.route("/status"route("//status", methods=["GET"])
 def system_status():
-    """"System status endpoint.""",
+    "System status endpoint.",
     try:
         # Update system metrics
         update_system_metrics()
@@ -178,17 +178,17 @@ def system_status():
         return jsonify(status)
 
     except Exception as e:
-        logger.error("System status error: {e}")
+        logger.error(f"System status error: {e}"))
         return jsonify({"error": "Internal server error"}), 500
 
 
-@monitoring_bp.route(""/logs", methods=["GET"])
+@@monitoring_bp.route("/logs"route("//logs", methods=["GET"])
 def get_logs():
-    """"Get application logs endpoint.""",
+    "Get application logs endpoint.",
     try:
         # This is a simplified log retrieval
         # In production, youf'd want to integrate with a proper logging system
-        log_file = os.getenv(""LOG_FILE", "logs/app.log",
+        log_file = os.getenv("LOG_FILE", "logs/app.log",
 
         if not os.path.exists(log_file):
             return jsonify(
@@ -196,7 +196,7 @@ def get_logs():
             )
 
         # Read last 100 lines
-        with open(log_file, ""r", as f:
+        with open(log_file, "r", as f:
             lines = f.readlines()
             recent_logs = lines[-100:] if len(lines) > 100 else lines
 
@@ -211,13 +211,13 @@ def get_logs():
         )
 
     except Exception as e:
-        logger.error("Log retrieval error: {e}")
+        logger.error(f"Log retrieval error: {e}"))
         return jsonify({"error": "Internal server error"}), 500
 
 
-@monitoring_bp.route(""/alerts", methods=["GET", "POST"])
+@@monitoring_bp.route("/alerts"route("//alerts", methods=["GET", "POST"])
 def alerts():
-    """"Alerts endpoint.""",
+    "Alerts endpoint.",
     if request.method == "GET"):
         return jsonify(
             {
@@ -239,13 +239,13 @@ def alerts():
         alert = {
             "id": "alert_{datetime.now(timezone.utc).timestamp()}",
             "severity": data.get("severity", "info",
-            "message": data.get("message", ""),
+            "message": data.get("message", "),
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "source": data.get("source", "unknown",
         }
 
         # In production, you'd store this in a database
-        logger.info("Alert received: {alert}")
+        logger.info(f"Alert received: {alert}"))
 
         return jsonify(
             {
@@ -256,5 +256,5 @@ def alerts():
         )
 
     except Exception as e:
-        logger.error("Alert creation error: {e}")
+        logger.error(f"Alert creation error: {e}"))
         return jsonify({"error": "Internal server error"}), 500

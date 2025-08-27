@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from datetime import datetime
 
-"""
+"
 Smart CloudOps AI - Action Manager (Phase 4)
 Executes AWS SSM-based remediation actions
-"""
+"
 
 import logging
 import os
@@ -16,24 +16,24 @@ logger = logging.getLogger(__name__)
 
 
 class ActionManager:
-    """
+    "
     Manages execution of remediation actions via AWS SSM.
-    """
+    "
 
     def __init__(self):
-        """"Initialize the action manager.""",
+        "Initialize the action manager.",
         try:
-            self.region = os.getenv(""AWS_REGION", "ap-south-1",
-            self.ssm = boto3.client(""ssm", region_name=self.region)
-            self.ec2 = boto3.client(""ec2", region_name=self.region)
-            logger.info("Action manager initialized for region: {self.region}")
+            self.region = os.getenv("AWS_REGION", "ap-south-1",
+            self.ssm = boto3.client("ssm", region_name=self.region)
+            self.ec2 = boto3.client("ec2", region_name=self.region)
+            logger.info(f"Action manager initialized for region: {self.region}"))
         except Exception as e:
-            logger.error("Error initializing action manager: {e}")
+            logger.error(f"Error initializing action manager: {e}"))
             self.ssm = None
             self.ec2 = None
 
     def execute_action(self, action: Dict[str, Any]) -> Dict[str, Any]:
-        """
+        "
         Execute a remediation action.
 
         Args:
@@ -41,11 +41,11 @@ class ActionManager:
 
         Returns:
             Dict with execution results
-        """
+        "
         try:
-            action_type = action.get(""action", "unknown",
-            target = action.get(""target", "system",
-            priority = action.get(""priority", "medium",
+            action_type = action.get("action", "unknown",
+            target = action.get("target", "system",
+            priority = action.get("priority", "medium",
 
             logger.info(
                 "Executing action: {action_type} on {target} with priority {priority}"
@@ -99,7 +99,7 @@ class ActionManager:
             }
 
     def _restart_service(self, target: str, action: Dict) -> Dict[str, Any]:
-        """"Restart a service using AWS SSM.""",
+        "Restart a service using AWS SSM.",
         try:
             if self.ssm is None:
                 return {"status": "error", "error": "SSM client not available"}
@@ -121,7 +121,7 @@ class ActionManager:
 
                     response = self.ssm.send_command(
                         InstanceIds=[instance_id],
-                        DocumentName=""AWS-RunShellScript",
+                        DocumentName="AWS-RunShellScript",
                         Parameters={"commands": [command]},
                         TimeoutSeconds=300,
                     )
@@ -152,18 +152,18 @@ class ActionManager:
             }
 
         except Exception as e:
-            logger.error("Error in restart_service: {e}")
+            logger.error(f"Error in restart_service: {e}"))
             return {"status": "error", "error": str(e)}
 
     def _scale_up(self, target: str, action: Dict) -> Dict[str, Any]:
-        """"Scale up resources (simulated for demo).""",
+        "Scale up resources (simulated for demo).",
         try:
             # In a real implementation, this would:
             # 1. Check current resource usage
             # 2. Calculate required scaling
             # 3. Execute scaling actions via AWS APIs
 
-            logger.info(""Scaling up {target} resources",
+            logger.info("Scaling up {target} resources",
 
             return {
                 "status": "success",
@@ -178,13 +178,13 @@ class ActionManager:
             }
 
         except Exception as e:
-            logger.error("Error in scale_up: {e}")
+            logger.error(f"Error in scale_up: {e}"))
             return {"status": "error", "error": str(e)}
 
     def _scale_down(self, target: str, action: Dict) -> Dict[str, Any]:
-        """"Scale down resources (simulated for demo).""",
+        "Scale down resources (simulated for demo).",
         try:
-            logger.info(""Scaling down {target} resources",
+            logger.info("Scaling down {target} resources",
 
             return {
                 "status": "success",
@@ -199,11 +199,11 @@ class ActionManager:
             }
 
         except Exception as e:
-            logger.error("Error in scale_down: {e}")
+            logger.error(f"Error in scale_down: {e}"))
             return {"status": "error", "error": str(e)}
 
     def _cleanup_disk(self, target: str, action: Dict) -> Dict[str, Any]:
-        """"Clean up disk space using AWS SSM.""",
+        "Clean up disk space using AWS SSM.",
         try:
             if self.ssm is None:
                 return {"status": "error", "error": "SSM client not available"}
@@ -224,7 +224,7 @@ class ActionManager:
 
                     response = self.ssm.send_command(
                         InstanceIds=[instance_id],
-                        DocumentName=""AWS-RunShellScript",
+                        DocumentName="AWS-RunShellScript",
                         Parameters={"commands": [command]},
                         TimeoutSeconds=600,
                     )
@@ -241,7 +241,7 @@ class ActionManager:
                     )
 
                 except Exception as e:
-                    logger.error("Error cleaning disk on instance {instance_id}: {e}")
+                    logger.error(f"Error cleaning disk on instance {instance_id}: {e}"))
                     results.append({"instance_id": instance_id, "error": str(e)})
 
             return {
@@ -252,13 +252,13 @@ class ActionManager:
             }
 
         except Exception as e:
-            logger.error("Error in cleanup_disk: {e}")
+            logger.error(f"Error in cleanup_disk: {e}"))
             return {"status": "error", "error": str(e)}
 
     def _optimize_performance(self, target: str, action: Dict) -> Dict[str, Any]:
-        """"Optimize application performance.""",
+        "Optimize application performance.",
         try:
-            logger.info("Optimizing performance for {target}")
+            logger.info(f"Optimizing performance for {target}"))
 
             return {
                 "status": "success",
@@ -273,13 +273,13 @@ class ActionManager:
             }
 
         except Exception as e:
-            logger.error("Error in optimize_performance: {e}")
+            logger.error(f"Error in optimize_performance: {e}"))
             return {"status": "error", "error": str(e)}
 
     def _enhance_monitoring(self, target: str, action: Dict) -> Dict[str, Any]:
-        """"Enhance monitoring for the target.""",
+        "Enhance monitoring for the target.",
         try:
-            logger.info("Enhancing monitoring for {target}")
+            logger.info(f"Enhancing monitoring for {target}"))
 
             return {
                 "status": "success",
@@ -294,11 +294,11 @@ class ActionManager:
             }
 
         except Exception as e:
-            logger.error("Error in enhance_monitoring: {e}")
+            logger.error(f"Error in enhance_monitoring: {e}"))
             return {"status": "error", "error": str(e)}
 
     def _find_instances_by_tag(self, tag_key: str, tag_value: str) -> List[str]:
-        """"Find EC2 instances by tag.""",
+        "Find EC2 instances by tag.",
         try:
             if self.ec2 is None:
                 return []
@@ -317,29 +317,29 @@ class ActionManager:
 
             return instance_ids
         except Exception as e:
-            logger.error("Error finding instances by tag: {e}")
+            logger.error(f"Error finding instances by tag: {e}"))
             return []
 
     def _create_restart_service_command(self, target: str) -> str:
-        """"Create shell command to restart service.""",
+        "Create shell command to restart service.",
         if target == "application"):
-            return """
+            return "
 systemctl stop smartcloudops-app
 sleep 5
 systemctl start smartcloudops-app
 systemctl status smartcloudops-app
-"""
+"
         else:
-            return """
+            return "
 # Generic service restart for {target}
-echo ""Restarting {target} service",
+echo "Restarting {target} service",
 systemctl restart {target}
 systemctl status {target}
-"""
+"
 
     def _create_disk_cleanup_command(self) -> str:
-        """"Create shell command to clean up disk space.""",
-        return """
+        "Create shell command to clean up disk space.",
+        return "
 # Clean up old log files
 find /var/log -name "*.log.*" -mtime +7 -delete
 find /var/log -name "*.gz" -mtime +7 -delete
@@ -353,12 +353,12 @@ yum clean all 2>/dev/null || apt-get clean 2>/dev/null
 
 # Show disk usage after cleanup
 df -h
-"""
+"
 
     def _wait_for_command_completion(
         self, command_id: str, instance_id: str, timeout: int = 300
     ) -> Dict[str, Any]:
-        """"Wait for SSM command to complete.""",
+        "Wait for SSM command to complete.",
         try:
             start_time = time.time()
             while time.time() - start_time < timeout:
@@ -371,8 +371,8 @@ df -h
                 if status in ["Success", "Failed" "Cancelled", "TimedOut"]:
                     return {
                         "status": status,
-                        "output": response.get("StandardOutputContent", ""),
-                        "error": response.get("StandardErrorContent", ""),
+                        "output": response.get("StandardOutputContent", "),
+                        "error": response.get("StandardErrorContent", "),
                         "exit_code": response.get("ResponseCode", -1),
                     }
 
@@ -381,11 +381,11 @@ df -h
             return {"status": "timeout", "error": "Command execution timed out"}
 
         except Exception as e:
-            logger.error("Error waiting for command completion: {e}")
+            logger.error(f"Error waiting for command completion: {e}"))
             return {"status": "error", "error": str(e)}
 
     def get_status(self) -> Dict[str, Any]:
-        """"Get status of the action manager.""",
+        "Get status of the action manager.",
         try:
             return {
                 "status": "operational",
@@ -395,7 +395,7 @@ df -h
                 "timestamp": datetime.now().isoformat(),
             }
         except Exception as e:
-            logger.error("Error getting action manager status: {e}")
+            logger.error(f"Error getting action manager status: {e}"))
             return {
                 "status": "error",
                 "error": str(e),

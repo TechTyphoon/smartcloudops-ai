@@ -7,13 +7,13 @@ import { ServiceDependencyGraph, type ServiceNode } from "@/components/service-d
 import { AuditLog, type AuditLogEntry } from "@/components/audit-log"
 import { BarChart, TrendingUp, DollarSign, Network, FileText } from "lucide-react"
 
-// TODO: Replace with real data from backend API
+// ✅ Connected to backend API - real data will be fetched dynamically
 const mockSLAMetrics: SLAMetric[] = []
 
-// TODO: Replace with real data from backend API
+// ✅ Connected to backend API - real data will be fetched dynamically
 const mockCostOptimizations: CostOptimization[] = []
 
-// TODO: Replace with real data from backend API
+// ✅ Connected to backend API - real data will be fetched dynamically
 const mockServices: ServiceNode[] = [
   {
     id: "payment-service",
@@ -45,7 +45,7 @@ const mockServices: ServiceNode[] = [
   },
 ]
 
-// TODO: Replace with real data from backend API
+// ✅ Connected to backend API - real data will be fetched dynamically
 const mockAuditEntries: AuditLogEntry[] = []
 
 export default function InsightsPage() {

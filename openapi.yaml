@@ -1,0 +1,418 @@
+openapi: 3.0.3
+info:
+  title: SmartCloudOps AI API
+  description: Enterprise AI-powered cloud operations platform with real-time monitoring,
+    anomaly detection, and automated remediation
+  version: 5.0.0
+  contact:
+    name: SmartCloudOps Team
+    email: support@smartcloudops.ai
+    url: https://smartcloudops.ai
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+- url: http://localhost:5000
+  description: Development server
+- url: https://api.smartcloudops.ai
+  description: Production server
+security:
+- bearerAuth: []
+tags:
+- name: Authentication
+  description: User authentication and authorization
+- name: Metrics
+  description: System metrics and monitoring data
+- name: Anomaly Detection
+  description: ML-based anomaly detection
+- name: ChatOps
+  description: Natural language operations interface
+- name: Remediation
+  description: Automated incident remediation
+- name: Performance
+  description: Performance monitoring and optimization
+- name: SLO
+  description: Service Level Objectives monitoring
+paths:
+  /api/health:
+    get:
+      summary: Health check
+      description: Check if the API is running and healthy
+      tags:
+      - System
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  version:
+                    type: string
+                    example: 5.0.0
+                  timestamp:
+                    type: string
+                    format: date-time
+        '503':
+          description: Service unavailable
+  /api/auth/login:
+    post:
+      summary: User login
+      description: Authenticate user and receive JWT token
+      tags:
+      - Authentication
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Invalid credentials
+  /api/metrics:
+    get:
+      summary: Get system metrics
+      description: Retrieve current system metrics
+      tags:
+      - Metrics
+      parameters:
+      - name: start_time
+        in: query
+        description: Start time for metrics range
+        schema:
+          type: string
+          format: date-time
+      - name: end_time
+        in: query
+        description: End time for metrics range
+        schema:
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: Metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Metrics'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /api/performance/anomaly/detect:
+    post:
+      summary: Detect anomalies
+      description: Detect anomalies in system metrics using ML
+      tags:
+      - Anomaly Detection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnomalyDetectionRequest'
+      responses:
+        '200':
+          description: Anomaly detection completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnomalyDetectionResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /api/chat/query:
+    post:
+      summary: ChatOps query
+      description: Process natural language operations query
+      tags:
+      - ChatOps
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatOpsQuery'
+      responses:
+        '200':
+          description: Query processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatOpsResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /slos/status:
+    get:
+      summary: Get SLO status
+      description: Retrieve current Service Level Objectives status
+      tags:
+      - SLO
+      responses:
+        '200':
+          description: SLO status retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SLOStatus'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+  /api/performance/cache/stats:
+    get:
+      summary: Get cache statistics
+      description: Retrieve Redis cache performance statistics
+      tags:
+      - Performance
+      responses:
+        '200':
+          description: Cache statistics retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      hit_rate:
+                        type: number
+                        format: float
+                      total_requests:
+                        type: integer
+                      hits:
+                        type: integer
+                      misses:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        message:
+          type: string
+          example: An error occurred
+        code:
+          type: string
+          example: ERR_001
+      required:
+      - status
+      - message
+    ValidationError:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        message:
+          type: string
+          example: Validation failed
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+    LoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          example: admin
+        password:
+          type: string
+          format: password
+          example: password123
+      required:
+      - username
+      - password
+    LoginResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+            username:
+              type: string
+            email:
+              type: string
+            role:
+              type: string
+    Metrics:
+      type: object
+      properties:
+        cpu_usage_percent:
+          type: number
+          format: float
+          example: 45.5
+        memory_usage_percent:
+          type: number
+          format: float
+          example: 62.3
+        disk_usage_percent:
+          type: number
+          format: float
+          example: 38.7
+        load_avg_1min:
+          type: number
+          format: float
+          example: 2.1
+        network_bytes_sent_rate:
+          type: number
+          format: float
+          example: 1024.5
+        network_bytes_recv_rate:
+          type: number
+          format: float
+          example: 2048.3
+    AnomalyDetectionRequest:
+      type: object
+      properties:
+        metrics:
+          $ref: '#/components/schemas/Metrics'
+        use_cache:
+          type: boolean
+          default: true
+      required:
+      - metrics
+    AnomalyDetectionResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            is_anomaly:
+              type: boolean
+            anomaly_score:
+              type: number
+              format: float
+            confidence:
+              type: number
+              format: float
+            timestamp:
+              type: string
+              format: date-time
+    ChatOpsQuery:
+      type: object
+      properties:
+        query:
+          type: string
+          example: What is the current system status?
+        context:
+          type: object
+          additionalProperties: true
+      required:
+      - query
+    ChatOpsResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        response:
+          type: string
+        suggestions:
+          type: array
+          items:
+            type: string
+        metadata:
+          type: object
+          additionalProperties: true
+    SLOStatus:
+      type: object
+      properties:
+        name:
+          type: string
+          example: api_availability
+        target:
+          type: number
+          format: float
+          example: 99.9
+        current:
+          type: number
+          format: float
+          example: 99.95
+        is_meeting:
+          type: boolean
+        error_budget_remaining:
+          type: number
+          format: float
+          example: 85.5
+  responses:
+    UnauthorizedError:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ForbiddenError:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'

@@ -1,0 +1,346 @@
+groups:
+  - name: smartcloudops-slo-alerts
+    rules:
+      # ================================
+      # API AVAILABILITY SLO ALERTS
+      # ================================
+      
+      - alert: APIAvailabilityWarning
+        expr: |
+          (
+            sum(rate(http_requests_total{status_code!~"5.."}[5m])) 
+            / 
+            sum(rate(http_requests_total[5m]))
+          ) * 100 < 99.5
+        for: 5m
+        labels:
+          severity: warning
+          slo: api_availability
+          type: availability
+        annotations:
+          summary: "API Availability Warning - {{ $value }}%"
+          description: "API availability is below warning threshold (99.5%). Current availability: {{ $value }}%"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#api-availability-slo"
+
+      - alert: APIAvailabilityCritical
+        expr: |
+          (
+            sum(rate(http_requests_total{status_code!~"5.."}[5m])) 
+            / 
+            sum(rate(http_requests_total[5m]))
+          ) * 100 < 99.0
+        for: 5m
+        labels:
+          severity: critical
+          slo: api_availability
+          type: availability
+        annotations:
+          summary: "API Availability Critical - {{ $value }}%"
+          description: "API availability is below critical threshold (99.0%). Current availability: {{ $value }}%"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#api-availability-slo"
+
+      # ================================
+      # API LATENCY SLO ALERTS
+      # ================================
+      
+      - alert: APILatencyWarning
+        expr: |
+          histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          slo: api_latency
+          type: latency
+        annotations:
+          summary: "API Latency Warning - P95: {{ $value }}s"
+          description: "API response time P95 is above warning threshold (0.5s). Current P95: {{ $value }}s"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#performance-troubleshooting"
+
+      - alert: APILatencyCritical
+        expr: |
+          histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 1.0
+        for: 5m
+        labels:
+          severity: critical
+          slo: api_latency
+          type: latency
+        annotations:
+          summary: "API Latency Critical - P95: {{ $value }}s"
+          description: "API response time P95 is above critical threshold (1.0s). Current P95: {{ $value }}s"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#performance-troubleshooting"
+
+      # ================================
+      # API ERROR RATE SLO ALERTS
+      # ================================
+      
+      - alert: APIErrorRateWarning
+        expr: |
+          (
+            sum(rate(http_requests_total{status_code=~"5.."}[5m])) 
+            / 
+            sum(rate(http_requests_total[5m]))
+          ) * 100 > 1.0
+        for: 5m
+        labels:
+          severity: warning
+          slo: api_error_rate
+          type: error_rate
+        annotations:
+          summary: "API Error Rate Warning - {{ $value }}%"
+          description: "API error rate is above warning threshold (1.0%). Current error rate: {{ $value }}%"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#high-error-rate-alert"
+
+      - alert: APIErrorRateCritical
+        expr: |
+          (
+            sum(rate(http_requests_total{status_code=~"5.."}[5m])) 
+            / 
+            sum(rate(http_requests_total[5m]))
+          ) * 100 > 2.0
+        for: 5m
+        labels:
+          severity: critical
+          slo: api_error_rate
+          type: error_rate
+        annotations:
+          summary: "API Error Rate Critical - {{ $value }}%"
+          description: "API error rate is above critical threshold (2.0%). Current error rate: {{ $value }}%"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#high-error-rate-alert"
+
+      # ================================
+      # DATABASE AVAILABILITY SLO ALERTS
+      # ================================
+      
+      - alert: DatabaseAvailabilityWarning
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: warning
+          slo: database_availability
+          type: availability
+        annotations:
+          summary: "Database Availability Warning"
+          description: "Database is not responding to health checks"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#database-recovery"
+
+      - alert: DatabaseAvailabilityCritical
+        expr: pg_up == 0
+        for: 5m
+        labels:
+          severity: critical
+          slo: database_availability
+          type: availability
+        annotations:
+          summary: "Database Availability Critical"
+          description: "Database has been down for more than 5 minutes"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#database-recovery"
+
+      # ================================
+      # DATABASE CONNECTION SLO ALERTS
+      # ================================
+      
+      - alert: DatabaseConnectionsWarning
+        expr: pg_stat_database_numbackends > 80
+        for: 5m
+        labels:
+          severity: warning
+          slo: database_connections
+          type: saturation
+        annotations:
+          summary: "Database Connections Warning - {{ $value }}"
+          description: "Database connection count is high. Current connections: {{ $value }}"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#database-recovery"
+
+      - alert: DatabaseConnectionsCritical
+        expr: pg_stat_database_numbackends > 90
+        for: 5m
+        labels:
+          severity: critical
+          slo: database_connections
+          type: saturation
+        annotations:
+          summary: "Database Connections Critical - {{ $value }}"
+          description: "Database connection count is critical. Current connections: {{ $value }}"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#database-recovery"
+
+      # ================================
+      # RESOURCE SATURATION SLO ALERTS
+      # ================================
+      
+      - alert: CPUUtilizationWarning
+        expr: |
+          (
+            1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))
+          ) * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          slo: resource_saturation
+          type: saturation
+        annotations:
+          summary: "CPU Utilization Warning - {{ $value }}%"
+          description: "CPU utilization is above warning threshold (80%). Current utilization: {{ $value }}%"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#performance-troubleshooting"
+
+      - alert: CPUUtilizationCritical
+        expr: |
+          (
+            1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))
+          ) * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+          slo: resource_saturation
+          type: saturation
+        annotations:
+          summary: "CPU Utilization Critical - {{ $value }}%"
+          description: "CPU utilization is above critical threshold (90%). Current utilization: {{ $value }}%"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#performance-troubleshooting"
+
+      - alert: MemoryUtilizationWarning
+        expr: |
+          (
+            node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes
+          ) / node_memory_MemTotal_bytes * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          slo: resource_saturation
+          type: saturation
+        annotations:
+          summary: "Memory Utilization Warning - {{ $value }}%"
+          description: "Memory utilization is above warning threshold (80%). Current utilization: {{ $value }}%"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#performance-troubleshooting"
+
+      - alert: MemoryUtilizationCritical
+        expr: |
+          (
+            node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes
+          ) / node_memory_MemTotal_bytes * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+          slo: resource_saturation
+          type: saturation
+        annotations:
+          summary: "Memory Utilization Critical - {{ $value }}%"
+          description: "Memory utilization is above critical threshold (90%). Current utilization: {{ $value }}%"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#performance-troubleshooting"
+
+      # ================================
+      # DISK SPACE SLO ALERTS
+      # ================================
+      
+      - alert: DiskSpaceWarning
+        expr: |
+          (
+            node_filesystem_size_bytes - node_filesystem_avail_bytes
+          ) / node_filesystem_size_bytes * 100 > 80
+        for: 5m
+        labels:
+          severity: warning
+          slo: disk_saturation
+          type: saturation
+        annotations:
+          summary: "Disk Space Warning - {{ $value }}%"
+          description: "Disk space usage is above warning threshold (80%). Current usage: {{ $value }}%"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#maintenance-procedures"
+
+      - alert: DiskSpaceCritical
+        expr: |
+          (
+            node_filesystem_size_bytes - node_filesystem_avail_bytes
+          ) / node_filesystem_size_bytes * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+          slo: disk_saturation
+          type: saturation
+        annotations:
+          summary: "Disk Space Critical - {{ $value }}%"
+          description: "Disk space usage is above critical threshold (90%). Current usage: {{ $value }}%"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#maintenance-procedures"
+
+      # ================================
+      # APPLICATION HEALTH SLO ALERTS
+      # ================================
+      
+      - alert: ApplicationHealthWarning
+        expr: up{job="smartcloudops-backend"} == 0
+        for: 1m
+        labels:
+          severity: warning
+          slo: application_health
+          type: availability
+        annotations:
+          summary: "Application Health Warning"
+          description: "Application is not responding to health checks"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#incident-response-procedures"
+
+      - alert: ApplicationHealthCritical
+        expr: up{job="smartcloudops-backend"} == 0
+        for: 5m
+        labels:
+          severity: critical
+          slo: application_health
+          type: availability
+        annotations:
+          summary: "Application Health Critical"
+          description: "Application has been down for more than 5 minutes"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#incident-response-procedures"
+
+      # ================================
+      # SLO COMPLIANCE ALERTS
+      # ================================
+      
+      - alert: SLOComplianceWarning
+        expr: slo_compliance < 99.5
+        for: 5m
+        labels:
+          severity: warning
+          slo: slo_compliance
+          type: compliance
+        annotations:
+          summary: "SLO Compliance Warning - {{ $value }}%"
+          description: "SLO compliance is below warning threshold (99.5%). Current compliance: {{ $value }}%"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#monitoring--alerting"
+
+      - alert: SLOComplianceCritical
+        expr: slo_compliance < 99.0
+        for: 5m
+        labels:
+          severity: critical
+          slo: slo_compliance
+          type: compliance
+        annotations:
+          summary: "SLO Compliance Critical - {{ $value }}%"
+          description: "SLO compliance is below critical threshold (99.0%). Current compliance: {{ $value }}%"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#monitoring--alerting"
+
+      # ================================
+      # ERROR BUDGET ALERTS
+      # ================================
+      
+      - alert: ErrorBudgetWarning
+        expr: slo_error_budget < 0.1
+        for: 5m
+        labels:
+          severity: warning
+          slo: error_budget
+          type: budget
+        annotations:
+          summary: "Error Budget Warning - {{ $value }}%"
+          description: "Error budget is below warning threshold (0.1%). Current budget: {{ $value }}%"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#monitoring--alerting"
+
+      - alert: ErrorBudgetCritical
+        expr: slo_error_budget < 0.05
+        for: 5m
+        labels:
+          severity: critical
+          slo: error_budget
+          type: budget
+        annotations:
+          summary: "Error Budget Critical - {{ $value }}%"
+          description: "Error budget is below critical threshold (0.05%). Current budget: {{ $value }}%"
+          runbook_url: "https://smartcloudops.ai/docs/runbooks/phase4-operational-runbooks.md#monitoring--alerting"

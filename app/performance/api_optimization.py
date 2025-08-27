@@ -17,7 +17,7 @@ import psutil
 from flask import Flask, g, jsonify, request
 
 from .caching import cache_manager, cache_performance_monitor, cached
-from .database_optimization import get_database
+from .database_optimization import get_optimized_database
 
 logger = logging.getLogger(__name__)
 

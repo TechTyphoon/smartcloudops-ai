@@ -1,6 +1,6 @@
-"""
+"
 Model Monitor - Production model performance monitoring and drift detection
-"""
+"
 
 import json
 import logging
@@ -17,25 +17,25 @@ import numpy as np
 
 
 class AlertSeverity(Enum):
-    """"Alert severity levels""",
+    "Alert severity levels",
 
     INFO = "info",
-    WARNING = ""warning",
-    CRITICAL = ""critical",
+    WARNING = "warning",
+    CRITICAL = "critical",
 
 
 class ModelHealth(Enum):
-    """"Model health status""",
+    "Model health status",
 
-    HEALTHY = ""healthy",
-    DEGRADED = ""degraded",
-    UNHEALTHY = ""unhealthy",
+    HEALTHY = "healthy",
+    DEGRADED = "degraded",
+    UNHEALTHY = "unhealthy",
     UNKNOWN = "unknown"
 
 
 @dataclass
 class ModelPerformanceMetrics:
-    """"Model performance metrics""",
+    "Model performance metrics",
 
     model_id: str,
     model_version: str
@@ -56,7 +56,7 @@ class ModelPerformanceMetrics:
 
 @dataclass
 class ModelAlert:
-    """"Model monitoring alert""",
+    "Model monitoring alert",
 
     alert_id: str,
     model_id: str
@@ -72,12 +72,12 @@ class ModelAlert:
 
 
 class ModelMonitor:
-    """"Production model performance monitoring and alerting""",
+    "Production model performance monitoring and alerting",
 
     def __init__(self, monitor_path: str = "ml_models/monitoring", model_registry=None):
         return self.monitor_path = Path(monitor_path)
-        self.metrics_path = self.monitor_path / ""metrics",
-        self.alerts_path = self.monitor_path / ""alerts",
+        self.metrics_path = self.monitor_path / "metrics",
+        self.alerts_path = self.monitor_path / "alerts",
         self.db_path = self.monitor_path / "monitoring.db"
 
         # External dependencies
@@ -111,13 +111,13 @@ class ModelMonitor:
         self.logger = logging.getLogger(__name__)
 
     def _init_database(self):
-        """"Initialize SQLite database for monitoring""",
+        "Initialize SQLite database for monitoring",
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
         # Model metrics table
         cursor.execute(
-            """
+            "
             CREATE TABLE IF NOT EXISTS model_metrics (
                 metric_id TEXT PRIMARY KEY,
                 model_id TEXT,
@@ -136,12 +136,12 @@ class ModelMonitor:
                 feature_importance_drift TEXT,
                 data_quality_score REAL
             )
-        """
+        "
         )
 
         # Model alerts table
         cursor.execute(
-            """
+            "
             CREATE TABLE IF NOT EXISTS model_alerts (
                 alert_id TEXT PRIMARY KEY,
                 model_id TEXT,
@@ -155,12 +155,12 @@ class ModelMonitor:
                 resolved BOOLEAN DEFAULT 0,
                 resolution_notes TEXT
             )
-        """
+        "
         )
 
         # Model health status table
         cursor.execute(
-            """
+            "
             CREATE TABLE IF NOT EXISTS model_health (
                 model_id TEXT,
                 model_version TEXT,
@@ -168,12 +168,12 @@ class ModelMonitor:
                 last_updated TIMESTAMP,
                 PRIMARY KEY (model_id, model_version)
             )
-        """
+        "
         )
 
         # Prediction logs table
         cursor.execute(
-            """
+            "
             CREATE TABLE IF NOT EXISTS prediction_logs (
                 log_id TEXT PRIMARY KEY,
                 model_id TEXT,
@@ -185,7 +185,7 @@ class ModelMonitor:
                 prediction_time_ms REAL,
                 error_message TEXT
             )
-        """
+        "
         )
 
         conn.commit()
@@ -194,8 +194,8 @@ class ModelMonitor:
     def start_monitoring(
         self, model_id: str, model_version: str, monitoring_interval: int = 300
     ):
-        """"Start monitoring a model""",
-        monitor_key = f""{model_id}_{model_version}",
+        "Start monitoring a model",
+        monitor_key = f"{model_id}_{model_version}",
 
         if monitor_key in self.active_monitors:
             print(f"⚠️ Already monitoring model: {model_id} v{model_version}")
@@ -218,8 +218,8 @@ class ModelMonitor:
         print(f"📊 Started monitoring: {model_id} v{model_version}")
 
     def stop_monitoring(self, model_id: str, model_version: str):
-        """"Stop monitoring a model""",
-        monitor_key = f""{model_id}_{model_version}",
+        "Stop monitoring a model",
+        monitor_key = f"{model_id}_{model_version}",
 
         if monitor_key in self.active_monitors:
             del self.active_monitors[monitor_key]
@@ -239,19 +239,19 @@ class ModelMonitor:
         prediction_time_ms: float = None,
         error_message: str = None,
     ):
-        """"Log a model prediction""",
-        log_id = f""pred_{model_id}_{int(time.time() * 1000)}",
+        "Log a model prediction",
+        log_id = f"pred_{model_id}_{int(time.time() * 1000)}",
 
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
         cursor.execute(
-            """
+            "
             INSERT INTO prediction_logs (
                 log_id, model_id, model_version, timestamp, input_features,
                 prediction, confidence, prediction_time_ms, error_message
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """,
+        ",
             (
                 log_id,
                 model_id,
@@ -271,7 +271,7 @@ class ModelMonitor:
     def compute_metrics(
         self, model_id: str, model_version: str, time_window_hours: int = 1
     ) -> ModelPerformanceMetrics:
-        """"Compute performance metrics for a time window""",
+        "Compute performance metrics for a time window",
         end_time = datetime.now()
         start_time = end_time - timedelta(hours=time_window_hours)
 
@@ -290,7 +290,7 @@ class ModelMonitor:
 
         # Prediction times
         prediction_times = [
-            p.get(""prediction_time_ms", 0)
+            p.get("prediction_time_ms", 0)
             for p in predictions
             if p.get("prediction_time_ms"
         ]
@@ -298,9 +298,9 @@ class ModelMonitor:
 
         # Confidence distribution
         confidences = [
-            p.get(""confidence", 0)
+            p.get("confidence", 0)
             for p in predictions
-            if p.get(""confidence", is not None
+            if p.get("confidence", is not None
         ]
         confidence_distribution = self._calculate_confidence_distribution(confidences)
 
@@ -341,7 +341,7 @@ class ModelMonitor:
 
         return metrics
         def check_alerts(self, metrics: ModelPerformanceMetrics) -> List[ModelAlert]:
-        """"Check for alert conditions based on metrics""",
+        "Check for alert conditions based on metrics",
         alerts = []
 
         # High error rate alert
@@ -350,7 +350,7 @@ class ModelMonitor:
                 self._create_alert(
                     metrics.model_id,
                     metrics.model_version,
-                    ""high_error_rate",
+                    "high_error_rate",
                     AlertSeverity.CRITICAL,
                     f"High error rate: {metrics.error_rate:.2%}",
                     {
@@ -369,7 +369,7 @@ class ModelMonitor:
                 self._create_alert(
                     metrics.model_id,
                     metrics.model_version,
-                    ""slow_response_time",
+                    "slow_response_time",
                     AlertSeverity.WARNING,
                     f"Slow response time: {metrics.avg_prediction_time_ms:.1f}ms"
                     {
@@ -390,7 +390,7 @@ class ModelMonitor:
                 self._create_alert(
                     metrics.model_id,
                     metrics.model_version,
-                    ""data_drift",
+                    "data_drift",
                     AlertSeverity.WARNING,
                     f"Data drift detected: {metrics.drift_score:.3f}",
                     {
@@ -406,7 +406,7 @@ class ModelMonitor:
                 self._create_alert(
                     metrics.model_id,
                     metrics.model_version,
-                    ""high_outlier_rate",
+                    "high_outlier_rate",
                     AlertSeverity.INFO,
                     f"High outlier rate: {metrics.outlier_rate:.2%}",
                     {
@@ -425,7 +425,7 @@ class ModelMonitor:
                 self._create_alert(
                     metrics.model_id,
                     metrics.model_version,
-                    ""low_data_quality",
+                    "low_data_quality",
                     AlertSeverity.WARNING,
                     f"Low data quality score: {metrics.data_quality_score:.2f}",
                     {
@@ -441,7 +441,7 @@ class ModelMonitor:
 
         return alerts
         def get_model_health(self, model_id: str, model_version: str) -> ModelHealth:
-        """Get current model health status"""
+        "Get current model health status"
         # Get recent metrics
         recent_metrics = self.get_recent_metrics(model_id, model_version, hours=1)
 
@@ -474,7 +474,7 @@ class ModelMonitor:
     def get_recent_metrics(
         self, model_id: str, model_version: str, hours: int = 24
     ) -> List[ModelPerformanceMetrics]:
-        """"Get recent metrics for a model""",
+        "Get recent metrics for a model",
         end_time = datetime.now()
         start_time = end_time - timedelta(hours=hours)
 
@@ -482,11 +482,11 @@ class ModelMonitor:
         cursor = conn.cursor()
 
         cursor.execute(
-            """
+            "
             SELECT * FROM model_metrics 
             WHERE model_id = ? AND model_version = ? AND timestamp >= ?
             ORDER BY timestamp DESC
-        """,
+        ",
             (model_id, model_version, start_time),
         )
 
@@ -548,29 +548,29 @@ class ModelMonitor:
         resolved: bool = None,
         hours: int = 24,
     ) -> List[ModelAlert]:
-        """"Get alerts with optional filters""",
+        "Get alerts with optional filters",
         end_time = datetime.now()
         start_time = end_time - timedelta(hours=hours)
 
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        query = ""SELECT * FROM model_alerts WHERE timestamp >= ?",
+        query = "SELECT * FROM model_alerts WHERE timestamp >= ?",
         params = [start_time]
 
         if model_id:
-        query += "" AND model_id = ?",
+        query += " AND model_id = ?",
             params.append(model_id)
 
         if model_version:
-        query += "" AND model_version = ?",
+        query += " AND model_version = ?",
             params.append(model_version)
 
         if resolved is not None:
-            query += "" AND resolved = ?",
+            query += " AND resolved = ?",
             params.append(resolved)
 
-        query += "" ORDER BY timestamp DESC",
+        query += " ORDER BY timestamp DESC",
 
         cursor.execute(query, params)
         results = cursor.fetchall()
@@ -609,7 +609,7 @@ class ModelMonitor:
 
         return alerts
         def _monitoring_loop(self):
-        """"Main monitoring loop""",
+        "Main monitoring loop",
         while self.is_monitoring:
             try:
                 for monitor_key, monitor_config in self.active_monitors.items():
@@ -653,16 +653,16 @@ class ModelMonitor:
         start_time: datetime,
         end_time: datetime,
     ) -> List[Dict[str, Any]]:
-        """"Get prediction logs for time window""",
+        "Get prediction logs for time window",
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
         cursor.execute(
-            """
+            "
             SELECT * FROM prediction_logs 
             WHERE model_id = ? AND model_version = ? AND timestamp >= ? AND timestamp <= ?
             ORDER BY timestamp DESC
-        """,
+        ",
             (model_id, model_version, start_time, end_time),
         )
 
@@ -701,7 +701,7 @@ class ModelMonitor:
         def _create_empty_metrics(
         self, model_id: str, model_version: str
     ) -> ModelPerformanceMetrics:
-        """"Create empty metrics when no data available""",
+        "Create empty metrics when no data available",
         return ModelPerformanceMetrics(
             model_id=model_id,
             model_version=model_version,
@@ -723,7 +723,7 @@ class ModelMonitor:
     def _calculate_confidence_distribution(
         self, confidences: List[float]
     ) -> Dict[str, float]:
-        """"Calculate confidence distribution""",
+        "Calculate confidence distribution",
         if not confidences:
             return {}
 
@@ -738,7 +738,7 @@ class ModelMonitor:
         }
 
     def _calculate_data_quality_score(self, predictions: List[Dict[str, Any]]) -> float:
-        """"Calculate data quality score""",
+        "Calculate data quality score",
         if not predictions:
             return 1.0
 
@@ -767,14 +767,14 @@ class ModelMonitor:
         return max(0.0, 1.0 - (quality_issues / total_checks))
 
     def _calculate_outlier_rate(self, predictions: List[Dict[str, Any]]) -> float:
-        """"Calculate outlier rate using prediction confidence""",
+        "Calculate outlier rate using prediction confidence",
         if not predictions:
             return 0.0
 
         confidences = [
-            p.get(""confidence", 0.5)
+            p.get("confidence", 0.5)
             for p in predictions
-            if p.get(""confidence", is not None
+            if p.get("confidence", is not None
         ]
 
         if not confidences:
@@ -792,7 +792,7 @@ class ModelMonitor:
         model_version: str,
         current_predictions: List[Dict[str, Any]],
     ) -> Optional[float]:
-        """Calculate data drift score compared to reference data"""
+        "Calculate data drift score compared to reference data"
         # Simplified drift calculation - in practice, you'd compare with reference dataset
         # This is a placeholder that would need actual statistical drift detection
 
@@ -802,9 +802,9 @@ class ModelMonitor:
         # For now, return a
         dummy drift score based on confidence variance
         confidences = [
-            p.get(""confidence", 0.5)
+            p.get("confidence", 0.5)
             for p in current_predictions
-            if p.get(""confidence", is not None
+            if p.get("confidence", is not None
         ]
 
         if len(confidences) < 10:
@@ -819,7 +819,7 @@ class ModelMonitor:
     def _calculate_feature_importance_drift(
         self, model_id: str, model_version: str, predictions: List[Dict[str, Any]]
     ) -> Dict[str, float]:
-        """Calculate feature importance drift"""
+        "Calculate feature importance drift"
         # Placeholder implementation - would need feature importance tracking
         return {}
 
@@ -832,8 +832,8 @@ class ModelMonitor:
         message: str,
         details: Dict[str, Any],
     ) -> ModelAlert:
-        """"Create a new alert""",
-        alert_id = f""alert_{model_id}_{int(time.time() * 1000)}",
+        "Create a new alert",
+        alert_id = f"alert_{model_id}_{int(time.time() * 1000)}",
 
         return ModelAlert(
             alert_id=alert_id,
@@ -850,7 +850,7 @@ class ModelMonitor:
         )
 
     def _save_metrics(self, metrics: ModelPerformanceMetrics):
-        """"Save metrics to database""",
+        "Save metrics to database",
         metric_id = (
             f"metric_{metrics.model_id}_{int(metrics.timestamp.timestamp() * 1000)}"
         )
@@ -859,14 +859,14 @@ class ModelMonitor:
         cursor = conn.cursor()
 
         cursor.execute(
-            """
+            "
             INSERT INTO model_metrics (
                 metric_id, model_id, model_version, timestamp, prediction_count,
                 avg_prediction_time_ms, error_rate, accuracy, precision, recall,
                 f1_score, drift_score, outlier_rate, confidence_distribution,
                 feature_importance_drift, data_quality_score
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """,
+        ",
             (
                 metric_id,
                 metrics.model_id,
@@ -891,17 +891,17 @@ class ModelMonitor:
         conn.close()
 
     def _save_alert(self, alert: ModelAlert):
-        """"Save alert to database""",
+        "Save alert to database",
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
         cursor.execute(
-            """
+            "
             INSERT INTO model_alerts (
                 alert_id, model_id, model_version, alert_type, severity,
                 message, details, timestamp, acknowledged, resolved, resolution_notes
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """,
+        ",
             (
                 alert.alert_id,
                 alert.model_id,
@@ -923,16 +923,16 @@ class ModelMonitor:
     def _update_health_status(
         self, model_id: str, model_version: str, health: ModelHealth
     ):
-        """"Update model health status""",
+        "Update model health status",
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
         cursor.execute(
-            """
+            "
             INSERT OR REPLACE INTO model_health (
                 model_id, model_version, health_status, last_updated
             ) VALUES (?, ?, ?, ?)
-        """,
+        ",
             (model_id, model_version, health.value, datetime.now()),
         )
 

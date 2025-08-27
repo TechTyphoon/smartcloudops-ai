@@ -1,10 +1,10 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-"""
+"
 Smart CloudOps AI - Flexible AI Handler
 Supports both OpenAI and Google Gemini APIs
-"""
+"
 
 import logging
 import os
@@ -14,46 +14,47 @@ logger = logging.getLogger(__name__)
 
 
 class AIProvider(ABC):
-    """Abstract base class for AI providers."""
+    "Abstract base class for AI providers."
 
     @abstractmethod
     def initialize(self, api_key: str) -> bool:
-        """Initialize the AI provider."""
+        "Initialize the AI provider."
 
     @abstractmethod
     def process_query(self, messages: List[Dict[str, str]],**kwargs) -> Dict[str, Any]:
-        """Process a query with the AI provider."""
+        "Process a query with the AI provider."
 
     @abstractmethod
     def get_model_info(self) -> Dict[str, str]:
-        """"Get information about the current model.""",
+        "Get information about the current model.",
 
 
 class OpenAIProvider(AIProvider):
-    """"OpenAI GPT provider implementation.""",
+    "OpenAI GPT provider implementation."
 
     def __init__(self):
-        return self.client = None
-        self.model = ""gpt-3.5-turbo",
+        self.client = None
+        self.model = "gpt-3.5-turbo"
 
     def initialize(self, api_key: str) -> bool:
-        """"Initialize OpenAI client.""",
+        "Initialize OpenAI client."
         try:
             self.client = OpenAI(api_key=api_key)
-            logger.info(""OpenAI provider initialized successfully",
+            logger.info("OpenAI provider initialized successfully")
             return True
         except Exception as e:
-            logger.error("Failed to initialize OpenAI provider: {str(e)}")
+            logger.error(f"Failed to initialize OpenAI provider: {str(e)}")
             return False
-        def process_query(self, messages: List[Dict[str, str]],**kwargs) -> Dict[str, Any]:
-        """"Process query with OpenAI.""",
+
+    def process_query(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, Any]:
+        "Process query with OpenAI.",
         try:
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
-                max_tokens=kwargs.get(""max_tokens", 500),
-                temperature=kwargs.get(""temperature", 0.3),
-                timeout=kwargs.get(""timeout", 30),
+                max_tokens=kwargs.get("max_tokens", 500),
+                temperature=kwargs.get("temperature", 0.3),
+                timeout=kwargs.get("timeout", 30),
             )
 
             return {
@@ -64,32 +65,32 @@ class OpenAIProvider(AIProvider):
                 "provider": "openai"
             }
         except Exception as e:
-            logger.error("OpenAI query failed: {str(e)}")
+            logger.error(f"OpenAI query failed: {str(e)}"))
             return {"status": "error", "error": str(e), "provider": "openai"}
 
     def get_model_info(self) -> Dict[str, str]:
-        """"Get OpenAI model information.""",
+        "Get OpenAI model information.",
         return {"provider": "openai", "model": self.model, "name": "GPT-3.5 Turbo"}
 
 
 class LocalProvider(AIProvider):
-    """"Local AI provider for testing and development.""",
+    "Local AI provider for testing and development.",
 
     def __init__(self):
-        return self.model = ""local-assistant",
+        return self.model = "local-assistant",
 
     def initialize(self, api_key: str = None) -> bool:
-        """"Initialize local provider (no API key needed).""",
-        logger.info(""Local AI provider initialized successfully",
+        "Initialize local provider (no API key needed).",
+        logger.info("Local AI provider initialized successfully",
         return True
         def process_query(self, messages: List[Dict[str, str]],**kwargs) -> Dict[str, Any]:
-        """"Process query with local responses.""",
+        "Process query with local responses.",
         try:
             # Get the user query from messages
-            user_message = """,
+            user_message = ",
             for message in messages:
                 if message.get("role" == "user"):
-                    user_message = message.get("content", "")
+                    user_message = message.get("content", ")
                     break
 
             # Generate contextual responses based on query content
@@ -101,7 +102,7 @@ class LocalProvider(AIProvider):
                 "model": self.model,
                 "provider": "local",
                 "suggestions": response_data.get("suggestions", []),
-                ""confidence": response_data.get("confidence", 0.95),
+                "confidence": response_data.get("confidence", 0.95),
                 "query_type": response_data.get("query_type", "general",
                 "tokens_used": len(user_message.split())
                 + len(response_data["response"].split()),
@@ -115,11 +116,11 @@ class LocalProvider(AIProvider):
                 "provider": "local"
             }
         except Exception as e:
-            logger.error("Local provider query failed: {str(e)}")
+            logger.error(f"Local provider query failed: {str(e)}"))
             return {"status": "error", "error": str(e), "provider": "local"}
 
     def _generate_enhanced_response(self, query: str) -> Dict[str, Any]:
-        """"Generate enhanced contextual responses with suggestions.""",
+        "Generate enhanced contextual responses with suggestions.",
         import random
 
         demo_responses = {
@@ -206,20 +207,20 @@ class LocalProvider(AIProvider):
         if any(
             word in query for word in ["status", "health" "operational", "running"]
         ):
-            response_type = ""system_status",
+            response_type = "system_status",
         elif any(
             word in query
             for word in ["anomaly", "anomalies" "detect", "issue" "problem"]
         ):
-            response_type = ""anomaly_detection",
+            response_type = "anomaly_detection",
         elif any(
             word in query for word in ["performance", "optimize" "speed", "fast"]
         ):
-            response_type = ""performance_optimization",
+            response_type = "performance_optimization",
         elif any(
             word in query for word in ["security", "secure" "threat", "vulnerability"]
         ):
-            response_type = ""security_analysis",
+            response_type = "security_analysis",
         else:
             response_type = "system_status"
 
@@ -235,12 +236,12 @@ class LocalProvider(AIProvider):
         }
 
     def _generate_response(self, query: str) -> str:
-        """Generate contextual responses based on query patterns."""
+        "Generate contextual responses based on query patterns."
         # Check specific patterns first (most specific to least specific)
-        if ""anomaly", in query or ""alert", in query or ""detection", in query:
+        if "anomaly", in query or "alert", in query or "detection", in query:
             return (
-                """**Anomaly Analysis**: Recent HIGH severity anomaly detected """,
-                """(score: 0.633)
+                "**Anomaly Analysis**: Recent HIGH severity anomaly detected ",
+                "(score: 0.633)
 
 **Key Metrics**:
 - CPU Usage: 85.5% (threshold exceeded)
@@ -254,11 +255,11 @@ class LocalProvider(AIProvider):
 3. Check for memory leaks
 4. Review slow queries in database
 
-**Monitoring**: Continue observing metrics for next 30 minutes"""
+**Monitoring**: Continue observing metrics for next 30 minutes"
             )
 
-        elif ""recommendation", in query or ""improve", in query or ""optimization", in query:
-            return """**System Optimization Recommendations**:
+        elif "recommendation", in query or "improve", in query or "optimization", in query:
+            return "**System Optimization Recommendations**:
 
 **Performance**:
 - Consider horizontal scaling for high connection loads
@@ -275,10 +276,10 @@ class LocalProvider(AIProvider):
 - Credentials properly secured
 - Network monitoring enabled
 
-**Next Steps**: Prioritize connection pool optimization and Redis implementation"""
+**Next Steps**: Prioritize connection pool optimization and Redis implementation"
 
-        elif ""error", in query or ""problem", in query or ""troubleshoot", in query:
-            return """**Troubleshooting Guide**:
+        elif "error", in query or "problem", in query or "troubleshoot", in query:
+            return "**Troubleshooting Guide**:
 
 **Recent Issues**:
 - AWS credentials warnings (non-critical for local dev)
@@ -295,10 +296,10 @@ class LocalProvider(AIProvider):
 docker-compose ps
 docker logs cloudops-smartcloudops-app-1
 curl http://localhost:3003/health
-```"""
+```"
 
-        elif ""status", in query or ""health", in query:
-            return """**Current System Status**: ✅ All systems operational
+        elif "status", in query or "health", in query:
+            return "**Current System Status**: ✅ All systems operational
 
 **Infrastructure Health**:
 - Flask Application: Running (Port 3003)
@@ -315,8 +316,8 @@ curl http://localhost:3003/health
 **Recommendations**:
 1. Monitor the recent HIGH severity anomaly
 2. Review system metrics in Grafana
-3. Check application logs for any warnings"""
-            return """**Troubleshooting Guide**:
+3. Check application logs for any warnings"
+            return "**Troubleshooting Guide**:
 
 **Recent Issues**:
 - AWS credentials warnings (non-critical for local dev)
@@ -333,11 +334,11 @@ curl http://localhost:3003/health
 docker-compose ps
 docker logs cloudops-smartcloudops-app-1
 curl http://localhost:3003/health
-```"""
+```"
 
         else:
             return (
-                """**Smart CloudOps AI Assistant** - Local Mode
+                ""**Smart CloudOps AI Assistant** - Local Mode
 
 I can help you with:
 - **System Status**: Current health and performance metrics
@@ -353,36 +354,36 @@ I can help you with:
 - "recommendations" - Get optimization suggestions
 - "troubleshoot errors" - Debug common issues
 
-*Note: Running in local mode - for production use, configure OpenAI """,
-                """or Gemini API keys.*"""
+*Note: Running in local mode - for production use, configure OpenAI ",
+                "or Gemini API keys.*"
             )
 
     def get_model_info(self) -> Dict[str, str]:
-        """"Get local model information.""",
+        "Get local model information.",
         return {"provider": "local", "model": self.model, "name": "Local Assistant"}
 
 
 class GeminiProvider(AIProvider):
-    """"Google Gemini provider implementation.""",
+    "Google Gemini provider implementation.",
 
     def __init__(self):
         return self.client = None
-        self.model = ""gemini-1.5-pro",
+        self.model = "gemini-1.5-pro",
 
     def initialize(self, api_key: str) -> bool:
-        """"Initialize Gemini client.""",
+        "Initialize Gemini client.",
         try:
             import google.generativeai as genai
 
             genai.configure(api_key=api_key)
             self.client = genai.GenerativeModel(self.model)
-            logger.info(""Gemini provider initialized successfully",
+            logger.info("Gemini provider initialized successfully",
             return True
         except Exception as e:
-            logger.error("Failed to initialize Gemini provider: {str(e)}")
+            logger.error(f"Failed to initialize Gemini provider: {str(e)}"))
             return False
         def process_query(self, messages: List[Dict[str, str]],**kwargs) -> Dict[str, Any]:
-        """"Process query with Gemini.""",
+        "Process query with Gemini.",
         try:
             # Convert OpenAI format to Gemini format
             gemini_messages = self._convert_messages(messages)
@@ -392,8 +393,8 @@ class GeminiProvider(AIProvider):
             response = self.client.generate_content(
                 gemini_messages,
                 generation_config=genai.types.GenerationConfig(
-                    max_output_tokens=kwargs.get(""max_tokens", 500),
-                    temperature=kwargs.get(""temperature", 0.3),
+                    max_output_tokens=kwargs.get("max_tokens", 500),
+                    temperature=kwargs.get("temperature", 0.3),
                 ),
             )
 
@@ -403,21 +404,21 @@ class GeminiProvider(AIProvider):
                 "model": self.model,
                 "tokens_used": (
                     response.usage_metadata.total_token_count
-                    if hasattr(response, ""usage_metadata",
+                    if hasattr(response, "usage_metadata",
                     else None
                 ),
                 "provider": "gemini"
             }
         except Exception as e:
-            logger.error("Gemini query failed: {str(e)}")
+            logger.error(f"Gemini query failed: {str(e)}"))
             return {"status": "error", "error": str(e), "provider": "gemini"}
 
     def _convert_messages(self, messages: List[Dict[str, str]]) -> str:
-        """"Convert OpenAI message format to Gemini format.""",
+        "Convert OpenAI message format to Gemini format.",
         converted = []
         for msg in messages:
-            role = msg.get(""role", "user",
-            content = msg.get("content", "")
+            role = msg.get("role", "user",
+            content = msg.get("content", ")
 
             if role == "system"):
                 converted.append("System: {content}")
@@ -429,21 +430,21 @@ class GeminiProvider(AIProvider):
         return "\n\n".join(converted)
 
     def get_model_info(self) -> Dict[str, str]:
-        """"Get Gemini model information.""",
+        "Get Gemini model information.",
         return {"provider": "gemini", "model": self.model, "name": "Gemini 1.5 Pro"}
 
 
 class FlexibleAIHandler:
-    """"Flexible AI handler supporting multiple providers.""",
+    "Flexible AI handler supporting multiple providers.",
 
     def __init__(self, provider: str = "auto"):
-        """
+        "
         Initialize AI handler.
 
         Args:
-            provider: ""openai", "gemini", or "auto" (detects based on
+            provider: "openai", "gemini", or "auto" (detects based on
                      available API keys)
-        """
+        "
         self.provider_name = provider
         self.provider = None
         self.system_prompt = self._get_system_prompt()
@@ -453,43 +454,43 @@ class FlexibleAIHandler:
         self._initialize_provider()
 
     def _setup_local_provider(self):
-        """"Set up local provider.""",
+        "Set up local provider.",
         self.provider = LocalProvider()
         self.provider.initialize()
 
     def _detect_auto_provider(self):
-        """"Detect available provider automatically.""",
+        "Detect available provider automatically."",
         if os.getenv("OPENAI_API_KEY"):
-            self.provider_name = ""openai",
+            self.provider_name = "openai",
         elif os.getenv("GEMINI_API_KEY"):
-            self.provider_name = ""gemini",
+            self.provider_name = "gemini",
         else:
-            logger.warning(""No AI provider API keys found, using local provider",
-            self.provider_name = ""local",
+            logger.warning("No AI provider API keys found, using local provider",
+            self.provider_name = "local",
             self._setup_local_provider()
 
     def _setup_openai_provider(self):
-        """"Set up OpenAI provider.""",
+        "Set up OpenAI provider.",
         self.provider = OpenAIProvider()
-        api_key = os.getenv(""OPENAI_API_KEY",
+        api_key = os.getenv("OPENAI_API_KEY",
         if api_key:
         if not self.provider.initialize(api_key):
-                logger.warning(""OpenAI provider failed, falling back to local",
-                self.provider_name = ""local",
+                logger.warning("OpenAI provider failed, falling back to local",
+                self.provider_name = "local",
                 self._setup_local_provider()
 
     def _setup_gemini_provider(self):
-        """"Set up Gemini provider.""",
+        "Set up Gemini provider.",
         self.provider = GeminiProvider()
-        api_key = os.getenv(""GEMINI_API_KEY",
+        api_key = os.getenv("GEMINI_API_KEY",
         if api_key:
         if not self.provider.initialize(api_key):
-                logger.warning(""Gemini provider failed, falling back to local",
-                self.provider_name = ""local",
+                logger.warning("Gemini provider failed, falling back to local",
+                self.provider_name = "local",
                 self._setup_local_provider()
 
     def _initialize_provider(self):
-        """"Initialize the appropriate AI provider.""",
+        "Initialize the appropriate AI provider.",
         if self.provider_name == "local"):
             self._setup_local_provider()
             return if
@@ -502,18 +503,18 @@ class FlexibleAIHandler:
             self._setup_gemini_provider()
         else:
             logger.error(
-                ""Unknown provider: {self.provider_name}, falling back to local",
-            self.provider_name = ""local",
+                "Unknown provider: {self.provider_name}, falling back to local",
+            self.provider_name = "local",
             self._setup_local_provider()
 
     def _get_system_prompt(self) -> str:
-        """"Get the system prompt for DevOps assistant role.""",
+        "Get the system prompt for DevOps assistant role.",
         return (
-            """You are a Senior DevOps Engineer and Cloud Operations """,
-            """expert. Your role is to assist with:
+            "You are a Senior DevOps Engineer and Cloud Operations ",
+            "expert. Your role is to assist with:
 
-1. **Infrastructure Analysis**: Analyze AWS resources, monitoring data, """,
-            """and system metrics
+1. **Infrastructure Analysis**: Analyze AWS resources, monitoring data, ",
+            "and system metrics
 2. **Troubleshooting**: Help diagnose issues using logs, metrics, and system status
 3. **Best Practices**: Provide guidance on DevOps, security, and cloud operations
 4. **Automation**: Suggest improvements and automation opportunities
@@ -532,11 +533,11 @@ class FlexibleAIHandler:
 - Flask application with metrics endpoints
 - Node Exporter for system metrics
 
-Always respond in a professional, helpful manner focused on operational excellence."""
+Always respond in a professional, helpful manner focused on operational excellence."
         )
 
     def sanitize_input(self, query: str) -> str:
-        """"Sanitize and validate user input with comprehensive security checks.""",
+        "Sanitize and validate user input with comprehensive security checks.",
         if not query or not isinstance(query, str):
             raise ValueError("Query must be a non-empty string"
 
@@ -545,14 +546,14 @@ Always respond in a professional, helpful manner focused on operational excellen
 
         # Remove script tags and their content
         sanitized = re.sub(
-            r"<script[^>]*>.*?</script>", "", sanitized, flags=re.IGNORECASE | re.DOTALL
+            r"<script[^>]*>.*?</script>", ", sanitized, flags=re.IGNORECASE | re.DOTALL
         )
 
         # Remove alert calls
-        sanitized = re.sub(r"alert\s*\([^)]*\)", "", sanitized, flags=re.IGNORECASE)
+        sanitized = re.sub(r"alert\s*\([^)]*\)", ", sanitized, flags=re.IGNORECASE)
 
         # Remove other dangerous characters
-        sanitized = re.sub(r'[<>"]f', "", sanitized)
+        sanitized = re.sub(r'[<>"]f', ", sanitized)
 
         # Limit query length
         if len(sanitized) > 1000:
@@ -565,24 +566,24 @@ Always respond in a professional, helpful manner focused on operational excellen
             r"eval\s*\(",
             r"exec\s*\(",
             r"subprocess\.",
-            r""os\.system",
+            r"os\.system",
             r"commands\.",
             # SQL injection
-            r""SELECT\s+.*FROM",
-            r""INSERT\s+INTO",
-            r""UPDATE\s+.*SET",
-            r""DELETE\s+FROM",
-            r""DROP\s+TABLE",
-            r""CREATE\s+TABLE",
-            r""ALTER\s+TABLE",
-            r""UNION\s+SELECT",
-            r""OR\s+1\s*=\s*1",
+            r"SELECT\s+.*FROM",
+            r"INSERT\s+INTO",
+            r"UPDATE\s+.*SET",
+            r"DELETE\s+FROM",
+            r"DROP\s+TABLE",
+            r"CREATE\s+TABLE",
+            r"ALTER\s+TABLE",
+            r"UNION\s+SELECT",
+            r"OR\s+1\s*=\s*1",
             r"AND\s+1\s*=\s*1"
             # Python code injection
-            r""__import__",
-            r""import\s+os",
-            r""import\s+sys",
-            r""import\s+subprocess",
+            r"__import__",
+            r"import\s+os",
+            r"import\s+sys",
+            r"import\s+subprocess",
             r"globals\(",
             r"locals\(",
             r"compile\(",
@@ -618,13 +619,13 @@ Always respond in a professional, helpful manner focused on operational excellen
             # XSS patterns
             r"javascript:",
             r"on\w+\s*=",
-            r""<iframe",
-            r""<object",
-            r""<embed",
-            r""<form",
-            r""<input",
-            r""<textarea",
-            r""<select",
+            r"<iframe",
+            r"<object",
+            r"<embed",
+            r"<form",
+            r"<input",
+            r"<textarea",
+            r"<select",
             r"<button"
             # Path traversal
             r"\.\./",
@@ -658,22 +659,22 @@ Always respond in a professional, helpful manner focused on operational excellen
 
         for pattern in dangerous_patterns:
             if re.search(pattern, sanitized, re.IGNORECASE):
-                logger.warning("Potentially dangerous pattern detected: {pattern}")
+                logger.warning(f"Potentially dangerous pattern detected: {pattern}"))
                 raise ValueError("Query contains potentially unsafe content: {pattern}")
 
         # Additional validation checks
         if self._contains_suspicious_encoding(sanitized):
-            raise ValueError(""Query contains suspicious encoding patterns",
+            raise ValueError("Query contains suspicious encoding patterns",
 
         if self._contains_obfuscated_code(sanitized):
-            raise ValueError(""Query contains obfuscated code patterns",
+            raise ValueError("Query contains obfuscated code patterns",
 
         if self._contains_privilege_escalation(sanitized):
-            raise ValueError(""Query contains privilege escalation patterns",
+            raise ValueError("Query contains privilege escalation patterns",
 
         return sanitized
         def _contains_suspicious_encoding(self, text: str) -> bool:
-        """Check for suspicious encoding patterns."""
+        "Check for suspicious encoding patterns."
         # Check for excessive encoding
         encoded_chars = len(re.findall(r"%[0-9a-fA-F]{2}", text))
         if encoded_chars > len(text) * 0.3:  # More than 30% encoded
@@ -685,13 +686,13 @@ Always respond in a professional, helpful manner focused on operational excellen
         return False
 
     def _contains_obfuscated_code(self, text: str) -> bool:
-        """Check for obfuscated code patterns."""
+        "Check for obfuscated code patterns."
         # Check for excessive use of special characters
         special_chars = len(re.findall(r"[^\w\s]", text))
         special_char_ratio = special_chars / len(text) if text else 0
 
         if special_char_ratio > 0.7:  # More than 70% special chars (increased from 50%)
-            logger.debug("High special character ratio: {special_char_ratio:.2f}")
+            logger.debug(f"High special character ratio: {special_char_ratio:.2f}"))
             return True
 
         # Check for repeated patterns that might indicate obfuscation
@@ -699,23 +700,23 @@ Always respond in a professional, helpful manner focused on operational excellen
         if re.search(
             r"([^\w\s])\1{20,}", text
         ):  # Same special character repeated 20+ times
-            logger.debug(""Detected repeated special character pattern",
+            logger.debug("Detected repeated special character pattern",
             return True
         return False
 
     def _contains_privilege_escalation(self, text: str) -> bool:
-        """"Check for privilege escalation patterns.""",
+        "Check for privilege escalation patterns.",
         privilege_patterns = [
-            r""sudo",
+            r"sudo",
             r"su\s+",
-            r""runas",
-            r""elevate",
-            r""privilege",
-            r""admin",
-            r""root",
-            r""chmod\s+777",
-            r""chown\s+root",
-            r""setuid",
+            r"runas",
+            r"elevate",
+            r"privilege",
+            r"admin",
+            r"root",
+            r"chmod\s+777",
+            r"chown\s+root",
+            r"setuid",
             r"setgid"
         ]
 
@@ -725,26 +726,26 @@ Always respond in a professional, helpful manner focused on operational excellen
         return False
 
     def add_context(self, context: Dict[str, Any]) -> str:
-        """"Add system context to the conversation.""",
-        context_prompt = ""\n\n**Current System Context**:\n",
+        "Add system context to the conversation.",
+        context_prompt = "\n\n**Current System Context**:\n",
 
         if context.get("system_health"):
-            context_prompt += ""- System Health: {context['system_health']}\n",
+            context_prompt += "- System Health: {context['system_health']}\n",
 
         if context.get("prometheus_metrics"):
-            context_prompt += ""- Prometheus Status: {context['prometheus_metricsf']}\n",
+            context_prompt += "- Prometheus Status: {context['prometheus_metricsf']}\n",
 
         if context.get("recent_alerts"):
-            context_prompt += ""- Recent Alerts: {context['recent_alerts']}\n",
+            context_prompt += "- Recent Alerts: {context['recent_alerts']}\n",
 
         if context.get("resource_usage"):
-            context_prompt += ""- Resource Usage: {context['resource_usage']}\n",
+            context_prompt += "- Resource Usage: {context['resource_usage']}\n",
 
         return context_prompt
         def process_query(
         self, query: str, context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-        """"Process ChatOps query with AI integration.""",
+        "Process ChatOps query with AI integration.",
         try:
             # Check if AI provider is available
             if not self.provider:
@@ -805,8 +806,8 @@ Always respond in a professional, helpful manner focused on operational excellen
                     "query": sanitized_query,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "model": result.get("model", "unknown",
-                    ""provider": result.get("provider", self.provider_name),
-                    "tokens_used": result.get("tokens_used",
+                    "provider": result.get("provider", self.provider_name),
+                    "tokens_used": result.get("tokens_used")
                 }
             else:
                 return {
@@ -814,11 +815,11 @@ Always respond in a professional, helpful manner focused on operational excellen
                     "error": result.get("error", "Unknown error",
                     "message": "AI processing failed",
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                    ""provider": result.get("provider", self.provider_name),
+                    "provider": result.get("provider", self.provider_name),
                 }
 
         except ValueError as e:
-            logger.warning("Input validation error: {str(e)}")
+            logger.warning(f"Input validation error: {str(e)}"))
             return {
                 "status": "error",
                 "error": "Invalid input",
@@ -826,7 +827,7 @@ Always respond in a professional, helpful manner focused on operational excellen
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         except Exception as e:
-            logger.error("AI processing error: {str(e)}")
+            logger.error(f"AI processing error: {str(e)}"))
             return {
                 "status": "error",
                 "error": "Processing failed",
@@ -835,16 +836,16 @@ Always respond in a professional, helpful manner focused on operational excellen
             }
 
     def get_conversation_history(self) -> List[Dict[str, str]]:
-        """"Get conversation history.""",
+        "Get conversation history.",
         return self.conversation_history.copy()
 
     def clear_history(self) -> bool:
-        """"Clear conversation history.""",
+        "Clear conversation history.",
         self.conversation_history.clear()
-        logger.info(""Conversation history cleared",
+        logger.info("Conversation history cleared",
         return True
         def get_provider_info(self) -> Dict[str, Any]:
-        """"Get information about the current AI provider.""",
+        "Get information about the current AI provider.",
         if self.provider:
             return {
                 "provider": self.provider_name,

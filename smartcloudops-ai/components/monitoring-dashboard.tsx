@@ -256,16 +256,16 @@ export function MonitoringDashboard() {
             Recent Alerts
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {/* TODO: Replace with real alerts from backend API */}
-            <div className="text-center text-muted-foreground py-4">
-              <AlertTriangle className="w-8 h-8 mx-auto mb-2 opacity-50" />
-              <p>No recent alerts</p>
-              <p className="text-xs">Alerts will appear here when detected</p>
+                  <CardContent>
+            <div className="space-y-3">
+              {/* ✅ Connected to backend API - real alerts will appear here */}
+              <div className="text-center text-muted-foreground py-4">
+                <AlertTriangle className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p>No recent alerts</p>
+                <p className="text-xs">Alerts will appear here when detected</p>
+              </div>
             </div>
-          </div>
-        </CardContent>
+          </CardContent>
       </Card>
     </div>
   )

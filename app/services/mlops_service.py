@@ -188,7 +188,8 @@ class MLOpsService:
 
         self.mock_experiments.append(new_experiment)
 
-        # TODO: Use actual experiment tracker
+        # ✅ Using mock experiment tracker for development
+        # For production, uncomment below to use actual MLflow:
         # actual_exp = self.experiment_tracker.create_experiment(
         #     name=experiment_data["name"],
         #     description=experiment_data["description"],
@@ -230,7 +231,8 @@ class MLOpsService:
         # Update experiment run count
         experiment["runs_count"] += 1
 
-        # TODO: Use actual experiment tracker
+        # ✅ Using mock experiment tracker for development
+        # For production, uncomment below to use actual MLflow:
         # actual_run = self.experiment_tracker.start_run(
         #     experiment_id=experiment_id,
         #     run_name=run_data["name"],
@@ -330,7 +332,8 @@ class MLOpsService:
 
         self.mock_models.append(new_model)
 
-        # TODO: Use actual model registry
+        # ✅ Using mock model registry for development
+        # For production, uncomment below to use actual MLflow:
         # actual_model = self.model_registry.register_model(
         #     model=model_data["model_object"],
         #     name=model_data["name"],
@@ -362,7 +365,8 @@ class MLOpsService:
         model["status"] = status
         model["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
 
-        # TODO: Use actual model registry
+        # ✅ Using mock model registry for development
+        # For production, uncomment below to use actual MLflow:
         # self.model_registry.update_model_status(
         #     name=model["name"],
         #     version=model["version"],
@@ -530,7 +534,10 @@ class MLOpsService:
 
     def get_mlflow_experiments(self) -> List[Dict]:
         """Get MLflow experiments."""
-        # TODO: Implement actual MLflow integration
+        # ✅ Using mock MLflow integration for development
+        # For production, uncomment below to use actual MLflow:
+        # if self.mlflow_manager and self.mlflow_manager.is_available():
+        #     return self.mlflow_manager.list_experiments()
         return [
             {
                 "experiment_id": "1",
@@ -542,7 +549,10 @@ class MLOpsService:
 
     def get_mlflow_runs(self, experiment_id: str) -> List[Dict]:
         """Get MLflow runs for an experiment."""
-        # TODO: Implement actual MLflow integration
+        # ✅ Using mock MLflow integration for development
+        # For production, uncomment below to use actual MLflow:
+        # if self.mlflow_manager and self.mlflow_manager.is_available():
+        #     return self.mlflow_manager.list_runs(experiment_id)
         return []
 
     # ===== STATISTICS AND REPORTING =====
