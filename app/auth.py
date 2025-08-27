@@ -319,17 +319,17 @@ def register_auth_endpoints(app):
             )
 
         except Exception as e:
-            return jsonify({"error": "Failed to get user info: {str(e)}"}), 500
+            return jsonify({"error": f"Failed to get user info: {str(e)}"}), 500
 
-    @app.route(""/auth/register", methods=["POST"])
+    @app.route("/auth/register", methods=["POST"])
     def register():
-        """"User registration endpoint (admin only in production).""",
+        """User registration endpoint (admin only in production)."""
         try:
             data = request.get_json()
-            username = data.get(""username",
-            email = data.get(""email",
-            password = data.get(""password",
-            role = data.get(""role", "user",
+            username = data.get("username")
+            email = data.get("email")
+            password = data.get("password")
+            role = data.get("role", "user")
 
             if not username or not email or not password:
                 return jsonify({"error": "Username, email, and password required"}), 400
@@ -347,7 +347,7 @@ def register_auth_endpoints(app):
                 )
 
                 if existing_user:
-        return jsonify({"error": "Username or email already exists"}), 409
+                    return jsonify({"error": "Username or email already exists"}), 409
 
                 # Create new user
                 new_user = User(
@@ -363,7 +363,7 @@ def register_auth_endpoints(app):
                 # Log audit event
                 auth_manager.log_audit_event(
                     user_id=new_user.id,
-                    action=""user_registered",
+                    action="user_registered",
                     details={"username": username, "email": email, "role": role},
                 )
 
@@ -383,17 +383,17 @@ def register_auth_endpoints(app):
                 )
 
         except Exception as e:
-            return jsonify({"error": "Registration failed: {str(e)}"}), 500
+            return jsonify({"error": f"Registration failed: {str(e)}"}), 500
 
-    @app.route(""/auth/change-password", methods=["POST"])
+    @app.route("/auth/change-password", methods=["POST"])
     @require_auth
     def change_password():
-        """"Change user password.""",
+        """Change user password."""
         try:
             user = get_current_user()
             data = request.get_json()
-            current_password = data.get(""current_password",
-            new_password = data.get(""new_password",
+            current_password = data.get("current_password")
+            new_password = data.get("new_password")
 
             if not current_password or not new_password:
                 return jsonify({"error": "Current and new password required"}), 400
@@ -410,31 +410,31 @@ def register_auth_endpoints(app):
                 # Log audit event
                 auth_manager.log_audit_event(
                     user_id=user.id,
-                    action=""password_changed",
+                    action="password_changed",
                     details={"username": user.username},
                 )
 
                 return jsonify({"message": "Password changed successfully"}), 200
 
         except Exception as e:
-            return jsonify({"error": "Password change failed: {str(e)}"}), 500
+            return jsonify({"error": f"Password change failed: {str(e)}"}), 500
 
 
 # Helper functions for other modules
 def get_user_from_token(token: str):
-    """"Get user from JWT token.""",
+    """Get user from JWT token."""
     try:
-        payload = auth_manager.verify_token(token, ""access",
+        payload = auth_manager.verify_token(token, "access")
         return auth_manager.get_user_by_id(payload["user_id"])
     except Exception:
         return None
-        def is_admin(user):
-    """"Check if user is admin.""",
-    return user
-        and user.role == ""admin",
+
+
+def is_admin(user):
+    """Check if user is admin."""
+    return user and user.role == "admin"
 
 
 def has_permission(user, required_role):
-    """"Check if user has required role.""",
-    return user
-        and (user.role == required_role or user.role == "admin"
+    """Check if user has required role."""
+    return user and (user.role == required_role or user.role == "admin")

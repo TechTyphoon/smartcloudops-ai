@@ -77,7 +77,7 @@ show_missing = True
 precision = 2
 
 # Sort by filename
-sort = filename
+sort = name
 
 [html]
 # HTML report directory

@@ -54,45 +54,45 @@ class InputValidator:
 
     # SQL injection patterns
     SQL_INJECTION_PATTERNS = [
-        r""union\s+select",
-        r""union\s+all\s+select",
-        r""drop\s+table",
-        r""delete\s+from",
-        r""insert\s+into",
-        r""update\s+set",
+        r"union\s+select",
+        r"union\s+all\s+select",
+        r"drop\s+table",
+        r"delete\s+from",
+        r"insert\s+into",
+        r"update\s+set",
         r"exec\s*\(",
         r"execute\s*\(",
-        r""sp_executesql",
-        r""xp_cmdshell",
-        r"xp_"  # Extended stored procedures
-        r"sp_"  # System stored procedures
+        r"sp_executesql",
+        r"xp_cmdshell",
+        r"xp_",  # Extended stored procedures
+        r"sp_",  # System stored procedures
         r"--\s*$",  # SQL comments
         r"/\*.*\*/",  # SQL block comments
-        r"waitfor\s+delay"  # Time-based attacks
+        r"waitfor\s+delay",  # Time-based attacks
         r"benchmark\s*\(",  # MySQL benchmark
         r"sleep\s*\(",  # MySQL sleep
         r"pg_sleep\s*\(",  # PostgreSQL sleep
-        r"dbms_pipe"  # Oracle
+        r"dbms_pipe",  # Oracle
         r"utl_http"  # Oracle
     ]
 
     # NoSQL injection patterns
     NOSQL_INJECTION_PATTERNS = [
-        r""\$where",
-        r""\$ne",
-        r""\$gt",
-        r""\$lt",
-        r""\$regex",
-        r""\$exists",
-        r""\$in",
-        r""\$nin",
-        r""\$or",
-        r""\$and",
-        r""\$not",
-        r""\$nor",
-        r""\$all",
-        r""\$elemMatch",
-        r""\$size",
+        r"\$where",
+        r"\$ne",
+        r"\$gt",
+        r"\$lt",
+        r"\$regex",
+        r"\$exists",
+        r"\$in",
+        r"\$nin",
+        r"\$or",
+        r"\$and",
+        r"\$not",
+        r"\$nor",
+        r"\$all",
+        r"\$elemMatch",
+        r"\$size",
         r"\$type"
     ]
 
@@ -105,8 +105,8 @@ class InputValidator:
         r"\$\(.*\)",  # Command substitution
         r"&&\s*$",  # Logical AND
         r"\|\|\s*$",  # Logical OR
-        r">\s*/dev/null"  # Output redirection
-        r"<\s*/dev/null"  # Input redirection
+        r">\s*/dev/null",  # Output redirection
+        r"<\s*/dev/null",  # Input redirection
         r"2>&1"  # Error redirection
     ]
 
@@ -114,24 +114,24 @@ class InputValidator:
     PATH_TRAVERSAL_PATTERNS = [
         r"\.\./",
         r"\.\.\\",
-        r""\.\.%2",
-        r""\.\.%5c",
-        r""%2e%2e%2",
-        r""%2e%2e%5c",
-        r""\.\.%c0%a",
-        r""\.\.%c1%9c",
-        r""\.\.%c0%9v",
-        r""\.\.%c0%q",
-        r""\.\.%c1%8s",
-        r""\.\.%c1%1c",
-        r""\.\.%c1%9c",
-        r""\.\.%c1%a",
-        r""\.\.%c0%2",
+        r"\.\.%2",
+        r"\.\.%5c",
+        r"%2e%2e%2",
+        r"%2e%2e%5c",
+        r"\.\.%c0%a",
+        r"\.\.%c1%9c",
+        r"\.\.%c0%9v",
+        r"\.\.%c0%q",
+        r"\.\.%c1%8s",
+        r"\.\.%c1%1c",
+        r"\.\.%c1%9c",
+        r"\.\.%c1%a",
+        r"\.\.%c0%2",
         r"\.\.%c0%5c"
     ]
 
     def __init__(self):
-        """"Initialize the input validator with compiled patterns.""",
+        """Initialize the input validator with compiled patterns."""
         self.xss_patterns = [
             re.compile(pattern, re.IGNORECASE) for pattern in self.XSS_PATTERNS
         ]
