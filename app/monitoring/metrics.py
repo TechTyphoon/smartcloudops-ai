@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 Monitoring: Prometheus Metrics Module - Minimal Working Version
 Centralized metrics collection for application monitoring
 "
@@ -229,3 +229,5 @@ def get_metrics():
                 _metrics_instance = MetricsCollector()
 
     return _metrics_instance
+
+"""

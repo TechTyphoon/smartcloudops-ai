@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 Anomaly Service - Business Logic Layer
 Handles all anomaly-related business operations
 "
@@ -275,3 +275,5 @@ class AnomalyService:
             "by_status": stats_by_status,
             "by_source": stats_by_source,
         }
+
+"""

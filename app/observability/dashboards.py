@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 Grafana Dashboard Configurations - Minimal Working Version
 Pre-configured dashboards for SmartCloudOps AI monitoring
 "
@@ -500,3 +500,5 @@ def get_dashboard_list() -> List[Dict[str, str]]:
             "description": "Business KPIs and user activity metrics",
         },
     ]
+
+"""

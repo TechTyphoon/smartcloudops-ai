@@ -1,4 +1,4 @@
-"
+"""
 Security validation service for input sanitization and threat detection
 "
 
@@ -92,3 +92,5 @@ class SecurityValidation:
             return max_depth
         else:
             return current_depth
+
+"""

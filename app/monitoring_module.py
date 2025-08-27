@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
 
-"
+"""
 Monitoring Module for Smart CloudOps AI
 Extracted from main.py for modularity
 "
@@ -228,3 +228,5 @@ def alerts():
         except Exception as e:
             logger.error(f"Alert creation error: {e}")
             return jsonify({"error": "Failed to create alert"}), 500
+
+"""

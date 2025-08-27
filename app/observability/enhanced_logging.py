@@ -1,4 +1,4 @@
-"
+"""
 Enhanced Structured Logging with OpenTelemetry Integration
 Phase 4: Observability & Operability - Production-ready logging
 "
@@ -395,3 +395,4 @@ def log_business_event()
                 span.set_attribute(key, value)
 
         get_logger().info(f"Business Event: {event_type}", **business_data)
+"""

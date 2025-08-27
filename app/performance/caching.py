@@ -1,4 +1,4 @@
-"
+"""
 Advanced Caching Strategy Implementation
 Phase 2C Week 1: Performance & Scaling - Caching System
 "
@@ -447,3 +447,4 @@ def monitor_cache_performance(cache_name: str, operation: str):
         return wrapper
 
     return decorator
+"""

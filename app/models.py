@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 SQLAlchemy Models for Smart CloudOps AI - Minimal Working Version
 "
 
@@ -189,3 +189,5 @@ def model_to_dict(model_instance):
 def models_to_list(model_instances):
     "Convert list of SQLAlchemy model instances to list of dictionaries."
     return [model_to_dict(instance) for instance in model_instances]
+
+"""

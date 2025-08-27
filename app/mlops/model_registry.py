@@ -1,4 +1,4 @@
-"
+"""
 Model Registry - Centralized ML model versioning and lifecycle management
 Minimal working version for Phase 2 MLOps integration
 "
@@ -310,3 +310,4 @@ model_registry = ModelRegistry()
 def get_model_registry() -> ModelRegistry:
     "Get the global model registry instance.""
     return model_registry
+"""

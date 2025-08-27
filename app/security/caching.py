@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from typing import Any, Callable, Dict, List, Optional
 
-"
+"""
 Caching System for Smart CloudOps AI
 Enterprise-grade caching with Redis backend, multiple strategies, and cache invalidation
 ""
@@ -537,3 +537,5 @@ class CacheMonitor:
 lru_cache = LRUCacheStrategy(cache_manager)
 tiered_cache = TieredCacheStrategy(cache_manager)
 cache_monitor = CacheMonitor(cache_manager)
+
+"""

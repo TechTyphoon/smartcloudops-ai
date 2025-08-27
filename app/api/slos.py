@@ -1,4 +1,4 @@
-"
+"""
 SLO API Endpoints
 Phase 4: Observability & Operability - SLO monitoring and reporting
 "
@@ -355,3 +355,4 @@ def slo_health_check():
             "data": None,
             "error": str(e),
         }), 500
+"""

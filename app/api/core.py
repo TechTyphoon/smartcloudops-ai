@@ -1,4 +1,4 @@
-"
+"""
 SmartCloudOps AI - Core API Blueprint
 Phase 2C Week 1: Performance & Scaling - Modular Blueprint Structure
 "
@@ -207,3 +207,4 @@ def _calculate_cache_hit_rate(perf_summary):
         cache_stats.get("hit_rate", 0) for cache_stats in cache_stats.values()
     )
     return total_hit_rate / max(len(cache_stats), 1)
+"""

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from datetime import datetime
 
-"
+"""
 Smart CloudOps AI - Notification Management
 ""
 
@@ -433,3 +433,5 @@ This is an automated message from SmartCloudOps AI. Please do not reply to this 
     def send_info(self, title: str, message: str) -> Dict[str, bool]:
         "Send info alert",
         return self.send_alert(title, message, "info"
+
+"""

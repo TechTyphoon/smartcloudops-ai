@@ -1,4 +1,4 @@
-"
+"""
 SmartCloudOps AI - ChatOps API Endpoint
 AI-powered chat interface for operational assistance
 "
@@ -122,3 +122,4 @@ def chat_health():
                 }
             ),
             500)
+"""

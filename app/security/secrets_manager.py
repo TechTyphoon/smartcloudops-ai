@@ -1,6 +1,6 @@
 from typing import Dict, Optional
 
-"
+"""
 Secrets Management Utility for SmartCloudOps AI
 Handles secure retrieval of secrets from AWS Secrets Manager,
     environment variables,
@@ -161,3 +161,5 @@ def validate_environment() -> bool:
     "Validate that the environment is properly configured",
     validation_results = secrets_manager.validate_secrets()
     return all(validation_results.values()
+
+"""

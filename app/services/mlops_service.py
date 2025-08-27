@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 MLOpsService - Business logic for MLOps operations
 Phase 2A: MLOps integration with service layer pattern
 "
@@ -62,8 +62,8 @@ class MLOpsService:
             self.mlflow_manager = get_mlflow_manager()
 
         # Mock data for development (will be replaced with actual MLOps data)
-        self.mock_experiments = []
-            {}
+        self.mock_experiments = [
+            {
                 "id": "exp_1",
                 "name": "anomaly_detection_v1",
                 "description": "Initial anomaly detection model training",
@@ -74,7 +74,7 @@ class MLOpsService:
                 "objective": "minimize",
                 "tags": ["anomaly-detection", "production"],
             },
-            {}
+            {
                 "id": "exp_2",
                 "name": "anomaly_detection_v2",
                 "description": "Improved anomaly detection with feature engineering",
@@ -87,8 +87,8 @@ class MLOpsService:
             },
         ]
 
-        self.mock_models = []
-            {}
+        self.mock_models = [
+            {
                 "id": "model_1",
                 "name": "anomaly_detector",
                 "version": "1.0.0",
@@ -101,7 +101,7 @@ class MLOpsService:
                 "created_by": "mlops_pipeline",
                 "size_mb": 2.5,
             },
-            {}
+            {
                 "id": "model_2",
                 "name": "anomaly_detector",
                 "version": "1.1.0",
@@ -699,3 +699,5 @@ class MLOpsService:
                 "description": "Neural network for various tasks",
             },
         ]
+
+"""

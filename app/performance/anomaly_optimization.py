@@ -1,4 +1,4 @@
-"
+"""
 Optimized Anomaly Detection for Performance Enhancement
 Phase 5: Performance & Cost Optimization - Anomaly Detection Optimization
 "
@@ -421,3 +421,4 @@ def detect_anomaly(data: Dict[str, Any], use_cache: bool = True) -> AnomalyResul
 def cached_anomaly_detection(ttl: Optional[int] = None):
     "Decorator for caching anomaly detection results"
     return cached(ttl or 300, "anomaly_predictions")
+"""

@@ -1,4 +1,4 @@
-"
+"""
 Experiment Tracker - ML experiment tracking and reproducibility
 Minimal working version for Phase 2 MLOps integration
 "
@@ -367,3 +367,4 @@ experiment_tracker = ExperimentTracker()
 def get_experiment_tracker() -> ExperimentTracker:
     "Get the global experiment tracker instance."
     return experiment_tracker
+"""

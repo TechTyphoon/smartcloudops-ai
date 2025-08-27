@@ -2,7 +2,7 @@
 from datetime import datetime, timezone
 from typing import List
 
-"
+"""
 Enterprise Authentication Endpoints
 Login, logout, token refresh, user management
 "
@@ -351,3 +351,5 @@ def get_roles():
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     )
+
+"""

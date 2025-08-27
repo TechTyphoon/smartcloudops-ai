@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 Machine Learning API Endpoints for Smart CloudOps AI - Minimal Working Version
 ML model management, training, and operations
 "
@@ -591,3 +591,5 @@ def deploy_model(model_id):
                 {"status": "error", "message": f"Failed to deploy model: {str(e)}"}
             ),
             500)
+
+"""

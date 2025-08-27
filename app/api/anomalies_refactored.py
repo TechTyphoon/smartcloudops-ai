@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 Anomaly API Endpoints for Smart CloudOps AI - Refactored with Service Layer
 Phase 7: Production Launch & Feedback - Backend Completion
 "
@@ -283,3 +283,5 @@ def get_anomaly_stats():
                 }
             ),
             500)
+
+"""

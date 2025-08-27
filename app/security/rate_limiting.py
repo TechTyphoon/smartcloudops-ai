@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 Rate Limiting System for Smart CloudOps AI - Minimal Working Version
 Enterprise-grade rate limiter with multiple strategies
 "
@@ -339,3 +339,5 @@ def ml_rate_limit(f):
 def admin_rate_limit(f):
     "Rate limit for admin endpoints."
     return rate_limit_by_user("admin")(f)
+
+"""

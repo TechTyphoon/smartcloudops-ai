@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from datetime import datetime
 
-"
+"""
 Smart CloudOps AI - Action Manager 
 Executes AWS SSM-based remediation actions
 ""
@@ -399,3 +399,5 @@ df -h
                 "error": str(e),
                 "timestamp": datetime.now().isoformat(),
             }
+
+"""

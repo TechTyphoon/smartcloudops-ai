@@ -1,4 +1,4 @@
-"
+"""
 Enhanced OpenTelemetry Configuration
 Phase 4: Observability & Operability - Distributed tracing and metrics
 "
@@ -319,3 +319,4 @@ def trace_function(name: str = None):
                     raise
         return wrapper
     return decorator
+"""

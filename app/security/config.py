@@ -1,6 +1,6 @@
 from datetime import datetime
 
-"
+"""
 Security Configuration for SmartCloudOps AI
 Comprehensive security settings and validation rules
 ""
@@ -390,3 +390,5 @@ def validate_environment_security() -> Dict[str, Any]:
             "Use different secrets for different environments"
         ],
     }
+
+"""

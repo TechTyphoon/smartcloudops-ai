@@ -1,4 +1,4 @@
-"
+"""
 Enhanced Prometheus Metrics Collection
 "
 
@@ -414,3 +414,4 @@ def performance_metrics():
         / max(http_request_duration_seconds._count._value, 1),
         "uptime_seconds": time.time() - metrics_collector.start_time,
     }
+"""

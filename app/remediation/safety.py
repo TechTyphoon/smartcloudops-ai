@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import Optional
 
-"
+"""
 Smart CloudOps AI - Safety Manager 
 Implements safety mechanisms for auto-remediation actions
 ""
@@ -271,3 +271,5 @@ class SafetyManager:
                 "error": str(e),
                 "timestamp": datetime.now().isoformat(),
             }
+
+"""
