@@ -25,7 +25,7 @@ class AnomalyService:
                 "created_at": "2024-01-15T10:30:00Z",
                 "updated_at": "2024-01-15T10:30:00Z",
             },
-            {}
+            {
                 "id": 2,
                 "title": "Memory Spike",
                 "description": "Memory usage spike detected",
@@ -39,16 +39,17 @@ class AnomalyService:
             },
         ]
 
-    def get_anomalies()
+    def get_anomalies(
         self,
         page: int = 1,
         per_page: int = 20,
         status: Optional[str] = None,
         severity: Optional[str] = None,
-        source: Optional[str] = None) -> Tuple[List[Dict], Dict]:
-    """
+        source: Optional[str] = None
+    ) -> Tuple[List[Dict], Dict]:
+        """
         Get anomalies with pagination and filtering.
-:
+
         Returns:
             Tuple of (anomalies_list, pagination_info)
         """
@@ -56,22 +57,22 @@ class AnomalyService:
         filtered_anomalies = self.mock_data.copy()
 
         if status:
-            filtered_anomalies = []
-                a for a in filtered_anomalies if a["status"] == status:
-            ]:
+            filtered_anomalies = [
+                a for a in filtered_anomalies if a["status"] == status
+            ]
         if severity:
-            filtered_anomalies = []
-                a for a in filtered_anomalies if a["severity"] == severity:
-            ]:
+            filtered_anomalies = [
+                a for a in filtered_anomalies if a["severity"] == severity
+            ]
         if source:
-            filtered_anomalies = []
+            filtered_anomalies = [
                 a for a in filtered_anomalies if a["source"] == source
             ]
 
         # Calculate pagination
         total = len(filtered_anomalies)
-        start = (page - 1) * per_page:
-        end = start + per_page:
+        start = (page - 1) * per_page
+        end = start + per_page
         anomalies_page = filtered_anomalies[start:end]
 
         pagination_info = {
@@ -84,11 +85,11 @@ class AnomalyService:
         return anomalies_page, pagination_info
 
     def get_anomaly_by_id(self, anomaly_id: int) -> Optional[Dict]:
-    """Get a specific anomaly by ID."""
-        return next((a for a in self.mock_data if a["id"] == anomaly_id), None):
+        """Get a specific anomaly by ID."""
+        return next((a for a in self.mock_data if a["id"] == anomaly_id), None)
 :
     def create_anomaly(self, anomaly_data: Dict) -> Dict:
-    """
+        """
         Create a new anomaly.
 
         Args:
@@ -101,7 +102,7 @@ class AnomalyService:
             ValueError: If required fields are missing or invalid
         """
         # Validate required fields
-        required_fields = []
+        required_fields = [
             "title",
             "description",
             "severity",
@@ -115,12 +116,12 @@ class AnomalyService:
         # Validate severity
         valid_severities = ["low", "medium", "high", "critical"]
         if anomaly_data["severity"] not in valid_severities:
-            raise ValueError()
+            raise ValueError(
                 f"Invalid severity. Must be one of: {', '.join(valid_severities)}"
             )
 
         # Validate scores
-        if not (0 <= anomaly_data["anomaly_score"] <= 1:
+        if not (0 <= anomaly_data["anomaly_score"] <= 1):
             raise ValueError("anomaly_score must be between 0 and 1")
         if not (0 <= anomaly_data["confidence"] <= 1:
             raise ValueError("confidence must be between 0 and 1")
