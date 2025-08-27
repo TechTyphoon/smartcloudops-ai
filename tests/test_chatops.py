@@ -1,12 +1,15 @@
 """
+import pytest
 Tests for ChatOps functionality.
 """
 
 import os
+import sys
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+from app.chatops.gpt_handler import (
     SystemContextGatherer,
     format_response,
     validate_query_params,
@@ -25,19 +28,19 @@ class TestGPTHandler:
 
     @pytest.fixture
     def gpt_handler(self, mock_openai_client):
-        """Create GPT handler with mocked client.""f"
+        """Create GPT handler with mocked client."""
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}):
             return GPTHandler()
 
     def test_gpt_handler_initialization(self, mock_openai_client):
-        """Test GPT handler initialization.""f"
+        """Test GPT handler initialization."""
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}):
             handler = GPTHandler()
             assert handler.api_key == "test-key"
             assert handler.conversation_history == []
 
     def test_gpt_handler_missing_api_key(self):
-        """Test GPT handler initialization without API key.""f"
+        """Test GPT handler initialization without API key."""
         with patch.dict(os.environ, {}, clear=True):
             with pytest.raises(ValueError, match="OpenAI API key is required"):
                 GPTHandler()
@@ -108,7 +111,7 @@ class TestGPTHandler:
         assert result["error"] == "Invalid input"
 
     def test_get_conversation_history(self, gpt_handler):
-        """Test conversation history retrieval.""f"
+        """Test conversation history retrieval."""
         # Add some history
         gpt_handler.conversation_history = [
             {"role": "user", "content": "test query"},
@@ -121,7 +124,7 @@ class TestGPTHandler:
         assert history[1]["role"] == "assistant"
 
     def test_clear_history(self, gpt_handler):
-        """Test conversation history clearing.""f"
+        """Test conversation history clearing."""
         gpt_handler.conversation_history = [{"role": "user", "content": "test"}]
         result = gpt_handler.clear_history()
 
@@ -250,7 +253,7 @@ class TestChatOpsIntegration:
 
     @pytest.fixture
     def mock_ai_handler(self):
-        """Mock AI handler for testing.""f"
+        """Mock AI handler for testing."""
         handler = Mock(spec=FlexibleAIHandler)
         handler.process_query.return_value = {
             "status": "success",

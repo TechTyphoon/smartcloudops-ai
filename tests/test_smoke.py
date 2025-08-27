@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import pytest
 """
 Simple smoke test for SmartCloudOps.AI
 Tests basic imports and app creation without external dependencies

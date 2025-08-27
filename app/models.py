@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"
+"""
 SQLAlchemy Models for Smart CloudOps AI - Minimal Working Version
-"
+"""
 
 from datetime import datetime
 
-from sqlalchemy import 
+from sqlalchemy import (
     JSON,
     Boolean,
     Column,
@@ -19,7 +19,7 @@ from sqlalchemy import
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-Base = declarative_base
+Base = declarative_base()
 
 
 class User(Base):
@@ -33,12 +33,12 @@ class User(Base):
     password_hash = Column(String(255), nullable=False)
     role = Column(String(20), default="user")  # 'admin' or 'user'
     is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=func.now()
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now()
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
     # Relationships
     feedback = relationship("Feedback", back_populates="user")
-    remediation_actions = relationship()
+    remediation_actions = relationship(
         "RemediationAction", back_populates="executed_by_user"
     )
 
@@ -52,13 +52,13 @@ class Anomaly(Base):
     title = Column(String(200), nullable=False)
     description = Column(Text, nullable=True)
     severity = Column(String(20), nullable=False)  # 'low', 'medium', 'high', 'critical'
-    status = Column()
+    status = Column(
         String(20), default="open"
     )  # 'open', 'acknowledged', 'resolved', 'dismissed'
     anomaly_score = Column(Float, nullable=False)
     confidence = Column(Float, nullable=False)
     source = Column(String(100), nullable=False)  # 'ml_model', 'manual', 'rule_based'
-    metrics_data = Column()
+    metrics_data = Column(
         JSON, nullable=True
     )  # Store the metrics that triggered the anomaly
     explanation = Column(Text, nullable=True)  # ML model explanation
@@ -68,8 +68,8 @@ class Anomaly(Base):
     resolved_at = Column(DateTime, nullable=True)
     dismissed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     dismissed_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=func.now()
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now()
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
     # Relationships
     remediation_actions = relationship("RemediationAction", back_populates="anomaly")
@@ -82,15 +82,15 @@ class RemediationAction(Base):
 
     id = Column(Integer, primary_key=True)
     anomaly_id = Column(Integer, ForeignKey("anomalies.id"), nullable=True)
-    action_type = Column()
+    action_type = Column(
         String(50), nullable=False
     )  # 'scale_up', 'scale_down', 'restart_service', 'cleanup_disk', 'custom'
     action_name = Column(String(100), nullable=False)
     description = Column(Text, nullable=True)
-    status = Column()
+    status = Column(
         String(20), default="pending"
     )  # 'pending', 'approved', 'executed', 'failed', 'cancelled'
-    priority = Column()
+    priority = Column(
         String(20), default="medium"
     )  # 'low', 'medium', 'high', 'critical'
     parameters = Column(JSON, nullable=True)  # Action-specific parameters
@@ -100,8 +100,8 @@ class RemediationAction(Base):
     approved_at = Column(DateTime, nullable=True)
     executed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     executed_at = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=func.now()
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now()
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
     # Relationships
     anomaly = relationship("Anomaly", back_populates="remediation_actions")
@@ -115,21 +115,21 @@ class Feedback(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    feedback_type = Column()
+    feedback_type = Column(
         String(50), nullable=False
     )  # 'bug_report', 'feature_request', 'general'
     title = Column(String(200), nullable=False)
     description = Column(Text, nullable=False)
     rating = Column(Integer, nullable=True)  # 1-5 rating
-    status = Column()
+    status = Column(
         String(20), default="open"
     )  # 'open', 'in_progress', 'resolved', 'closed'
-    priority = Column()
+    priority = Column(
         String(20), default="medium"
     )  # 'low', 'medium', 'high', 'critical'
     tags = Column(JSON, nullable=True)  # Array of tags
-    created_at = Column(DateTime, default=func.now()
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now()
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
     # Relationships
     user = relationship("User", back_populates="feedback")
@@ -146,7 +146,7 @@ class SystemMetrics(Base):
     memory_usage = Column(Float, nullable=True)
     disk_usage = Column(Float, nullable=True)
     network_io = Column(JSON, nullable=True)
-    created_at = Column(DateTime, default=func.now()
+    created_at = Column(DateTime, default=func.now())
 
 
 class AuditLog(Base):
@@ -156,17 +156,17 @@ class AuditLog(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    action = Column()
+    action = Column(
         String(100), nullable=False
     )  # 'login', 'logout', 'create_anomaly', etc.
-    resource_type = Column()
+    resource_type = Column(
         String(50), nullable=True
     )  # 'anomaly', 'remediation', 'user'
     resource_id = Column(Integer, nullable=True)
     details = Column(JSON, nullable=True)
     ip_address = Column(String(45), nullable=True)
     user_agent = Column(String(500), nullable=True)
-    created_at = Column(DateTime, default=func.now()
+    created_at = Column(DateTime, default=func.now())
 
 
 # Model serialization helpers
@@ -178,7 +178,7 @@ def model_to_dict(model_instance):
     result = {}
     for column in model_instance.__table__.columns:
         value = getattr(model_instance, column.name)
-        if isinstance(value, datetime:
+        if isinstance(value, datetime):
             result[column.name] = value.isoformat()
         else:
             result[column.name] = value
