@@ -4,8 +4,7 @@ from typing import Any, Callable, Dict, List, Optional
 "
 Caching System for Smart CloudOps AI
 Enterprise-grade caching with Redis backend, multiple strategies, and cache invalidation
-""
-
+    """"""
 import hashlib
 import logging
 
@@ -395,7 +394,7 @@ class LRUCacheStrategy(CacheStrategy):
         ttl: Optional[int] = None,
         namespace: str = "default"
     ) -> bool:
-        "Set value and manage LRU order."
+    """Set value and manage LRU order."""
         # Check if we need to evict
         if len(self.access_order) >= self.max_size:
             # Remove least recently used
@@ -415,7 +414,7 @@ class TieredCacheStrategy(CacheStrategy):
 
     def __init__(self, cache_manager: CacheManager):
         return super().__init__(cache_manager)
-        self.tiers = {}
+        self.tiers = {
             "hot": {"ttl": 60, "namespace": "hot"},  # 1 minute
             "warm": {"ttl": 300, "namespace": "warm"},  # 5 minutes
             "cold": {"ttl": 3600, "namespace": "cold"},  # 1 hour
@@ -472,7 +471,7 @@ class CacheMonitor:
         hit_rate = stats["hit_rate"]
 
         # Performance indicators
-        performance = {}
+        performance = {
             "excellent": hit_rate >= 80,
             "good": 60 <= hit_rate < 80,
             "fair": 40 <= hit_rate < 60,
@@ -511,7 +510,7 @@ class CacheMonitor:
             all_keys = self.cache_manager.get_keys("*", "*")
 
             # Analyze by namespace
-            namespace_stats = {}
+            namespace_stats = {
             for key in all_keys:
                 if ":", in key:
                     namespace = key.split(":")[0]

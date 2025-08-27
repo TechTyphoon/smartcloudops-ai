@@ -1,6 +1,6 @@
-"
+"""
 Training Pipeline - Automated ML training with reproducibility and validation
-""
+""""
 
 import json
 import os
@@ -110,7 +110,7 @@ class TrainingPipeline:
         self._init_database()
 
         # Training algorithms registry
-        self.algorithms = {}
+        self.algorithms = {
         self._register_default_algorithms()
 
     def _init_database(self):
@@ -120,7 +120,7 @@ class TrainingPipeline:
 
         # Training configurations table
         cursor.execute()
-            "
+    """
             CREATE TABLE IF NOT EXISTS training_configs ()
                 config_id TEXT PRIMARY KEY,
                 name TEXT UNIQUE NOT NULL,
@@ -137,12 +137,12 @@ class TrainingPipeline:
                 created_by TEXT,
                 version TEXT
             )
-        "
+        """
         )
 
         # Training jobs table
         cursor.execute()
-            "
+    """
             CREATE TABLE IF NOT EXISTS training_jobs ()
                 job_id TEXT PRIMARY KEY,
                 config_id TEXT,
@@ -163,7 +163,7 @@ class TrainingPipeline:
                 seed INTEGER,
                 FOREIGN KEY (config_id) REFERENCES training_configs (config_id)
             )
-        "
+        """
         )
 
         conn.commit()
@@ -225,8 +225,7 @@ class TrainingPipeline:
         job_name: str = None,
         seed: int = None,
         experiment_name: str = None) -> TrainingJob:
-        "Submit a training job"
-
+    """Submit a training job"""
         # Get training config
         config = self.get_training_config(config_id)
 
@@ -414,30 +413,30 @@ class TrainingPipeline:
         # Convert to TrainingConfig object
         columns = []
             "config_id",
-            "name"
+    """name"""
             "description",
-            "algorithm"
+    """algorithm"""
             "framework",
-            "hyperparameters"
+    """hyperparameters"""
             "dataset_config",
-            "validation_config"
+    """validation_config"""
             "training_args",
-            "environment"
+    """environment"""
             "resource_requirements",
-            "created_at"
+    """created_at"""
             "created_by",
-            "version"
+    """version"""
         ]
         data = dict(zip(columns, result)
 
         # Parse JSON fields
         json_fields = []
             "hyperparameters",
-            "dataset_config"
+    """dataset_config"""
             "validation_config",
-            "training_args"
+    """training_args"""
             "environment",
-            "resource_requirements"
+    """resource_requirements"""
         ]
         for field in json_fields:
             data[field] = json.loads(data[field]) if data[field] else {}
@@ -462,32 +461,32 @@ class TrainingPipeline:
         # Convert to TrainingJob object
         columns = []
             "job_id",
-            "config_id"
+    """config_id"""
             "name",
-            "status"
+    """status"""
             "start_time",
-            "end_time"
+    """end_time"""
             "duration_seconds",
-            "output_model_path"
+    """output_model_path"""
             "metrics",
-            "validation_results"
+    """validation_results"""
             "logs",
-            "artifacts"
+    """artifacts"""
             "error_message",
-            "resource_usage"
+    """resource_usage"""
             "experiment_run_id",
-            "git_commit"
-            "seed"
+    """git_commit"""
+    """seed"""
         ]
         data = dict(zip(columns, result)
 
         # Parse JSON fields
         json_fields = []
             "metrics",
-            "validation_results"
+    """validation_results"""
             "logs",
-            "artifacts"
-            "resource_usage"
+    """artifacts"""
+    """resource_usage"""
         ]
         for field in json_fields:
             data[field] = ()
@@ -612,8 +611,7 @@ class TrainingPipeline:
             test_pred = model.predict(X_test)
 
             # Calculate metrics
-            metrics = {}
-
+            metrics = {
             if y_train is not None and y_test is not None:
                 # Convert predictions (-1, 1) to (1, 0) for anomaly detection
                 train_pred_binary = (train_pred == -1).astype(int)
@@ -719,7 +717,7 @@ class TrainingPipeline:
 
     def _save_config_file(self, config: TrainingConfig, file_path: Path):
         "Save configuration as YAML file",
-        config_data = {}
+        config_data = {
             "name": config.name,
             "description": config.description,
             "algorithm": config.algorithm,
@@ -739,7 +737,7 @@ class TrainingPipeline:
             yaml.dump(config_data, f, default_flow_style=False, indent=2)
 
     def _setup_training_environment(self, config: TrainingConfig):
-        "Set up training environment"
+    """Set up training environment"""
         # Set environment variables
         for key, value in config.environment.items():
             os.environ[key] = str(value)

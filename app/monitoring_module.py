@@ -112,7 +112,7 @@ def health_check():
 
 @monitoring_bp.route("/status", methods=["GET"])
 def system_status():
-    "System status endpoint."
+    """System status endpoint."""
     try:
         # Update system metrics
         update_system_metrics()
@@ -148,7 +148,7 @@ def system_status():
 
 @monitoring_bp.route("/logs", methods=["GET"])
 def get_logs():
-    "Get application logs endpoint."
+    """Get application logs endpoint."""
     try:
         # This is a simplified log retrieval
         # In production, you'd want to integrate with a proper logging system
@@ -171,7 +171,7 @@ def get_logs():
 
 @monitoring_bp.route("/alerts", methods=["GET", "POST"])
 def alerts():
-    "Alerts endpoint."
+    """Alerts endpoint."""
     if request.method == "GET":
         return jsonify({"status": "success", "message": "Alerts endpoint", "endpoints": {"get_alerts": "GET /monitoring/alerts", "create_alert": "POST /monitoring/alerts"}})
     else:

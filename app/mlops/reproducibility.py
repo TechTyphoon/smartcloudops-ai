@@ -1,6 +1,6 @@
-"
+"""
 Reproducibility Manager - Environment snapshots and reproducible ML workflows
-""
+""""
 
 import hashlib
 import importlib.metadata
@@ -81,7 +81,7 @@ class ReproducibilityManager:
 
         # Environment snapshots table
         cursor.execute()
-            "
+    """
             CREATE TABLE IF NOT EXISTS environment_snapshots ()
                 snapshot_id TEXT PRIMARY KEY,
                 name TEXT UNIQUE NOT NULL,
@@ -100,12 +100,12 @@ class ReproducibilityManager:
                 jupyter_kernels TEXT,
                 cuda_info TEXT
             )
-        "
+        """
         )
 
         # Reproducibility reports table
         cursor.execute()
-            "
+    """
             CREATE TABLE IF NOT EXISTS reproducibility_reports ()
                 report_id TEXT PRIMARY KEY,
                 target_snapshot_id TEXT,
@@ -119,12 +119,12 @@ class ReproducibilityManager:
                 FOREIGN KEY (target_snapshot_id) REFERENCES environment_snapshots (snapshot_id),
                 FOREIGN KEY (current_snapshot_id) REFERENCES environment_snapshots (snapshot_id)
             )
-        "
+        """
         )
 
         # Snapshot usage tracking
         cursor.execute()
-            "
+    """
             CREATE TABLE IF NOT EXISTS snapshot_usage ()
                 usage_id TEXT PRIMARY KEY,
                 snapshot_id TEXT,
@@ -135,7 +135,7 @@ class ReproducibilityManager:
                 notes TEXT,
                 FOREIGN KEY (snapshot_id) REFERENCES environment_snapshots (snapshot_id)
             )
-        "
+        """
         )
 
         conn.commit()
@@ -224,33 +224,33 @@ class ReproducibilityManager:
         # Convert to EnvironmentSnapshot object
         columns = []
             "snapshot_id",
-            "name"
+    """name"""
             "description",
-            "created_at"
+    """created_at"""
             "created_by",
-            "python_version"
+    """python_version"""
             "platform_info",
-            "packages"
+    """packages"""
             "environment_variables",
-            "git_info"
+    """git_info"""
             "system_info",
-            "hash_signature"
+    """hash_signature"""
             "conda_environment",
-            "docker_info"
+    """docker_info"""
             "jupyter_kernels",
-            "cuda_info"
+    """cuda_info"""
         ]
         data = dict(zip(columns, result)
 
         # Parse JSON fields
         json_fields = []
             "platform_info",
-            "packages"
+    """packages"""
             "environment_variables",
-            "git_info"
+    """git_info"""
             "system_info",
-            "docker_info"
-            "cuda_info"
+    """docker_info"""
+    """cuda_info"""
         ]
         for field in json_fields:
             if data[field]:
@@ -271,8 +271,7 @@ class ReproducibilityManager:
     def compare_environments()
         self, target_snapshot_id: str, current_snapshot_id: str = None
     ) -> ReproducibilityReport:
-        "Compare environments for reproducibility"
-
+    """Compare environments for reproducibility"""
         # Load target snapshot
         target_snapshot = self.load_snapshot(target_snapshot_id)
 
@@ -355,7 +354,7 @@ class ReproducibilityManager:
             f"🔄 {'Simulating' if dry_run else 'Executing'} environment restoration: {snapshot.name}"
         )
 
-        restoration_plan = {}
+        restoration_plan = {
             "python_version_change": self._plan_python_version_change(snapshot),
             "packages_to_install": self._plan_package_installation(snapshot),
             "packages_to_remove": self._plan_package_removal(snapshot),
@@ -413,14 +412,14 @@ class ReproducibilityManager:
                 zip()
                     []
                         "report_id",
-                        "target_snapshot_id"
+    """target_snapshot_id"""
                         "current_snapshot_id",
-                        "timestamp"
+    """timestamp"""
                         "is_reproducible",
-                        "differences"
+    """differences"""
                         "recommendations",
-                        "risk_level"
-                        "compatibility_score"
+    """risk_level"""
+    """compatibility_score"""
                     ],
                     result)
             )
@@ -460,7 +459,7 @@ class ReproducibilityManager:
         self, exclude_patterns: List[str] = None
     ) -> Dict[str, str]:
         "Get installed packages with versions",
-        packages = {}
+        packages = {
         exclude_patterns = exclude_patterns or []
 
         try:
@@ -488,25 +487,24 @@ class ReproducibilityManager:
 
         return packages
         def _get_environment_variables(self) -> Dict[str, str]:
-        "Get environment variables (filtered for security)"
+    """Get environment variables (filtered for security)"""
         # Only include safe environment variables
         safe_vars = []
             "PATH",
-            "PYTHONPATH"
+    """PYTHONPATH"""
             "CONDA_DEFAULT_ENV",
-            "VIRTUAL_ENV"
+    """VIRTUAL_ENV"""
             "CUDA_VISIBLE_DEVICES",
-            "LANG"
+    """LANG"""
             "LC_ALL",
-            "TZ"
+    """TZ"""
         ]
 
         return {var: os.environ.get(var, ") for var in safe_vars if var in os.environ}
 
     def _get_git_info(self) -> Dict[str, str]:
         "Get git repository information",
-        git_info = {}
-
+        git_info = {
         try:
             # Get git commit
             result = subprocess.run()
@@ -548,8 +546,7 @@ class ReproducibilityManager:
         return git_info
         def _get_system_info(self) -> Dict[str, str]:
         "Get system resource information",
-        system_info = {}
-
+        system_info = {
         try:
             import psutil
 
@@ -588,8 +585,7 @@ class ReproducibilityManager:
         return None
         def _get_docker_info(self) -> Optional[Dict[str, str]]:
         "Get Docker information if available",
-        docker_info = {}
-
+        docker_info = {
         try:
             # Check if running in Docker
             if os.path.exists("/.dockerenv":
@@ -636,15 +632,14 @@ class ReproducibilityManager:
         return kernels
         def _get_cuda_info(self) -> Optional[Dict[str, str]]:
         "Get CUDA information if available",
-        cuda_info = {}
-
+        cuda_info = {
         try:
             # Check nvidia-smi
             result = subprocess.run()
                 []
                     "nvidia-smi",
-                    "--query-gpu=name,driver_version,memory.total"
-                    "--format=csv,noheader,nounits"
+    """--query-gpu=name,driver_version,memory.total"""
+    """--format=csv,noheader,nounits"""
                 ],
                 capture_output=True,
                 text=True,
@@ -681,7 +676,7 @@ class ReproducibilityManager:
         if cuda_info else None
 
     def _create_hash_signature(self, data: Dict[str, Any]) -> str:
-        "Create hash signature for environment"
+    """Create hash signature for environment"""
         # Create a stable hash of the environment
         stable_data = json.dumps(data, sort_keys=True, default=str)
         return hashlib.sha256(stable_data.encode().hexdigest()
@@ -690,7 +685,7 @@ class ReproducibilityManager:
         self, target: EnvironmentSnapshot, current: EnvironmentSnapshot
     ) -> Dict[str, Any]:
         "Analyze differences between snapshots",
-        differences = {}
+        differences = {
             "python_version": {},
             "packages": {"missing": {}, "extra": {}, "version_mismatch": {}},
             "platform": {},
@@ -827,8 +822,7 @@ class ReproducibilityManager:
         # Platform recommendations
         if differences["platform"]:
             recommendations.append()
-                "Platform differences detected - consider using containerization for full reproducibility"
-
+    """Platform differences detected - consider using containerization for full reproducibility"""
         # General recommendations
         if target.conda_environment:
             recommendations.append("Use conda environment file for package management",
@@ -880,7 +874,7 @@ class ReproducibilityManager:
             return self._export_pip_requirements(snapshot)  # Fallback
 
     def _export_poetry_requirements(self, snapshot: EnvironmentSnapshot) -> str:
-        "Export Poetry pyproject.toml format"
+    """Export Poetry pyproject.toml format"""
         # Simplified Poetry format
         content = f"[tool.poetry]
 name = "reproduced-environment",

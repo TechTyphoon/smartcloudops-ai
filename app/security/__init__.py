@@ -1,7 +1,7 @@
-"
+"""
 Security module for SmartCloudOps.AI
 Centralized security utilities and validation functions
-"
+"""
 
 from .input_validation import ()
     sanitize_log_message,

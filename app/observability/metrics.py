@@ -1,6 +1,6 @@
-"
+"""
 Enhanced Prometheus Metrics Collection
-"
+"""
 
 import time
 from functools import wraps
@@ -188,8 +188,7 @@ cpu_usage_percent = Gauge()
 
 
 class MetricsCollector:
-    "Central metrics collection and management"
-
+    """Central metrics collection and management"""
     def __init__(self):
         self.custom_metrics: Dict[str, Any] = {}
         self.start_time = time.time()
@@ -214,7 +213,7 @@ class MetricsCollector:
         duration: float,
         request_size: int = 0,
         response_size: int = 0):
-        "Record HTTP request metrics"
+    """Record HTTP request metrics"""
         http_requests_total.labels()
             method=method, endpoint=endpoint, status_code=status_code
         ).inc()
@@ -234,18 +233,18 @@ class MetricsCollector:
             )
 
     def record_auth_attempt(self, auth_type: str, success: bool):
-        "Record authentication attempt"
+    """Record authentication attempt"""
         status = "success" if success else "failure"
         auth_attempts_total.labels(type=auth_type, status=status).inc()
 
     def update_active_users(self, count: int):
-        "Update active users count"
+    """Update active users count"""
         active_users.set(count)
 
     def record_anomaly_detection()
         self, severity: str, metric_type: str, source: str, detection_duration: float
     ):
-        "Record anomaly detection"
+    """Record anomaly detection"""
         anomalies_detected_total.labels()
             severity=severity, metric_type=metric_type, source=source
         ).inc()
@@ -257,7 +256,7 @@ class MetricsCollector:
     def record_remediation_action()
         self, action_type: str, status: str, approval_required: bool, duration: float
     ):
-        "Record remediation action"
+    """Record remediation action"""
         remediation_actions_total.labels()
             action_type=action_type,
             status=status,
@@ -293,17 +292,17 @@ class MetricsCollector:
 
     def record_cache_operation()
         self, operation: str, hit: bool, cache_type: str = "default"):
-        "Record cache operation"
+    """Record cache operation"""
         status = "hit" if hit else "miss"
         cache_operations_total.labels(operation=operation, status=status).inc()
 
     def update_health_status(self, status: str):
-        "Update application health status"
+    """Update application health status"""
         if status in ["healthy", "degraded", "unhealthy"]:
             app_health_status.state(status)
 
     def get_metrics(self) -> str:
-        "Get all metrics in Prometheus format"
+    """Get all metrics in Prometheus format"""
         return generate_latest(registry).decode("utf-8")
 
 
@@ -317,8 +316,7 @@ metrics_collector = MetricsCollector()
 
 
 def track_performance(operation_name: str = None):
-    "Decorator to track function performance"
-
+    """Decorator to track function performance"""
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -365,8 +363,7 @@ def track_performance(operation_name: str = None):
 
 
 def track_business_event(event_type: str):
-    "Decorator to track business events"
-
+    """Decorator to track business events"""
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -396,8 +393,8 @@ def track_business_event(event_type: str):
 # ================================
 
 
-def business_metrics(:
-    "Get business metrics summary"
+def business_metrics():
+    """Get business metrics summary"""
     return {}
         "anomalies_detected_total": anomalies_detected_total._value._value,
         "remediation_actions_total": remediation_actions_total._value._value,
@@ -407,7 +404,7 @@ def business_metrics(:
 
 
 def performance_metrics():
-    "Get performance metrics summary"
+    """Get performance metrics summary"""
     return {}
         "http_requests_total": http_requests_total._value._value,
         "avg_response_time": http_request_duration_seconds._sum._value

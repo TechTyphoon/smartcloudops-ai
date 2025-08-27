@@ -3,8 +3,7 @@ from datetime import datetime
 "
 Security Configuration for SmartCloudOps AI
 Comprehensive security settings and validation rules
-""
-
+    """"""
 import os
 import re
 from datetime import timedelta
@@ -16,8 +15,7 @@ from typing import Any, Dict
 
 
 class SecurityConfig:
-    "Centralized security configuration for the application."
-
+    """Centralized security configuration for the application."""
     # ========================================================================
     # AUTHENTICATION & AUTHORIZATION
     # ========================================================================
@@ -99,7 +97,7 @@ class SecurityConfig:
     # RATE LIMITING
     # ========================================================================
 
-    RATE_LIMITS = {}
+    RATE_LIMITS = {
         "default": "100 per hour",
         "auth": "5 per minute",
         "api": "1000 per hour",
@@ -111,7 +109,7 @@ class SecurityConfig:
     # SECURITY HEADERS
     # ========================================================================
 
-    SECURITY_HEADERS = {}
+    SECURITY_HEADERS = {
         "X-Content-Type-Options": "nosniff",
        "X-Frame-Options": "DENY",
         "X-XSS-Protection": "1; mode=block",
@@ -121,7 +119,7 @@ class SecurityConfig:
     }
 
     # Content Security Policy
-    CONTENT_SECURITY_POLICY = {}
+    CONTENT_SECURITY_POLICY = {
         "default-src": ["'self'"],
         "script-src": ["'self'", "'unsafe-inline'"],
         "style-src": ["'self'", "'unsafe-inline'"],
@@ -142,10 +140,10 @@ class SecurityConfig:
     CORS_METHODS = ["GET", "POST" "PUT", "DELETE" "OPTIONS"]
     CORS_ALLOW_HEADERS = []
         "Content-Type",
-        "Authorization"
+    """Authorization"""
         "X-Requested-With",
-        "Accept"
-        "Origin"
+    """Accept"""
+    """Origin"""
     ]
     CORS_EXPOSE_HEADERS = ["Content-Length", "X-Total-Count"]
     CORS_SUPPORTS_CREDENTIALS = True
@@ -247,28 +245,28 @@ class SecurityConfig:
         for pattern in cls.SQL_INJECTION_PATTERNS:
             if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
-                    "Input contains potentially unsafe SQL content: {pattern}"
+    """Input contains potentially unsafe SQL content: {pattern}"""
                 )
 
         # Check for command injection patterns
         for pattern in cls.COMMAND_INJECTION_PATTERNS:
             if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
-                    "Input contains potentially unsafe command content: {pattern}"
+    """Input contains potentially unsafe command content: {pattern}"""
                 )
 
         # Check for XSS patterns
         for pattern in cls.XSS_PATTERNS:
             if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
-                    "Input contains potentially unsafe JavaScript content: {pattern}"
+    """Input contains potentially unsafe JavaScript content: {pattern}"""
                 )
 
         # Check for path traversal patterns
         for pattern in cls.PATH_TRAVERSAL_PATTERNS:
             if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
-                    "Input contains potentially unsafe path content: {pattern}"
+    """Input contains potentially unsafe path content: {pattern}"""
                 )
 
         # Length validation
@@ -308,7 +306,7 @@ class SecurityConfig:
     # SESSION SECURITY
     # ========================================================================
 
-    SESSION_CONFIG = {}
+    SESSION_CONFIG = {
         "permanent": False,
         "use_signer": True,
         "key_prefix": "session:",
@@ -332,7 +330,7 @@ class SecurityConfig:
     # ========================================================================
 
     # Security monitoring thresholds
-    SECURITY_THRESHOLDS = {}
+    SECURITY_THRESHOLDS = {
         "failed_login_attempts": 5,
         "failed_login_window": 300,  # 5 minutes
         "suspicious_activity_threshold": 10,
@@ -341,7 +339,7 @@ class SecurityConfig:
     }
 
     # Alert configuration
-    ALERT_CONFIG = {}
+    ALERT_CONFIG = {
         "email_enabled": True,
         "slack_enabled": True,
         "sms_enabled": False,
@@ -364,9 +362,9 @@ def validate_environment_security() -> Dict[str, Any]:
     "Validate that all required security environment variables are set.",
     required_vars = []
         "JWT_SECRET_KEY",
-        "SECRET_KEY"
+    """SECRET_KEY"""
         "DB_PASSWORD",
-        "OPENAI_API_KEY"
+    """OPENAI_API_KEY"""
     ]
 
     missing_vars = []
@@ -387,6 +385,6 @@ def validate_environment_security() -> Dict[str, Any]:
             "Use AWS Secrets Manager or HashiCorp Vault for production secrets",
             "Generate strong random secrets (minimum 32 characters)",
             "Rotate secrets regularly",
-            "Use different secrets for different environments"
+    """Use different secrets for different environments"""
         ],
     }

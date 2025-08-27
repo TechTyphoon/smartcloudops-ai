@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-"
+    """
 Feedback API Endpoints for Smart CloudOps AI - Minimal Working Version
 User feedback collection and management system
-"
-
+"""
 from datetime import datetime, timezone
 
 from flask import Blueprint, jsonify, request
 
 # Create blueprint
-feedback_bp = Blueprint
-
+feedback_bp = Blueprint("feedback_bp = Blueprint", __name__)
 # Mock data for testing
 MOCK_FEEDBACK = []
     {}
@@ -44,7 +42,7 @@ MOCK_FEEDBACK = []
 
 @feedback_bp.route("/", methods=["GET"])
 def get_feedback():
-    "Get all feedback with pagination and filtering."
+    """Get all feedback with pagination and filtering."""
     try:
         # Get query parameters
         page = request.args.get("page", 1, type=int)
@@ -105,7 +103,7 @@ def get_feedback():
 
 @feedback_bp.route("/<int:feedback_id>", methods=["GET"])
 def get_feedback_item(feedback_id):
-    "Get a specific feedback item by ID."
+    """Get a specific feedback item by ID."""
     try:
         # Find feedback by ID
         feedback_item = next((f for f in MOCK_FEEDBACK if f["id"] == feedback_id), None)
@@ -132,7 +130,7 @@ def get_feedback_item(feedback_id):
 
 @feedback_bp.route("/", methods=["POST"])
 def create_feedback():
-    "Create a new feedback item."
+    """Create a new feedback item."""
     try:
         data = request.get_json()
 
@@ -165,7 +163,7 @@ def create_feedback():
                 400)
 
         # Create new feedback item (mock implementation)
-        new_feedback = {}
+        new_feedback = {
             "id": len(MOCK_FEEDBACK) + 1,
             "user_id": data.get("user_id", 1),  # Default user for testing
             "feedback_type": data["feedback_type"],
@@ -215,7 +213,7 @@ def create_feedback():
 
 @feedback_bp.route("/<int:feedback_id>", methods=["PUT"])
 def update_feedback(feedback_id):
-    "Update an existing feedback item."
+    """Update an existing feedback item."""
     try:
         data = request.get_json()
 
@@ -282,7 +280,7 @@ def update_feedback(feedback_id):
 
 @feedback_bp.route("/<int:feedback_id>", methods=["DELETE"])
 def delete_feedback(feedback_id):
-    "Delete a feedback item."
+    """Delete a feedback item."""
     try:
         # Find feedback by ID
         feedback_index = next()
@@ -322,15 +320,15 @@ def delete_feedback(feedback_id):
 
 @feedback_bp.route("/stats", methods=["GET"])
 def get_feedback_stats():
-    "Get feedback statistics."
+    """Get feedback statistics."""
     try:
         # Calculate statistics from mock data
         total_feedback = len(MOCK_FEEDBACK)
 
-        stats_by_type = {}
-        stats_by_status = {}
-        stats_by_priority = {}
-        rating_stats = {}
+        stats_by_type = {
+        stats_by_status = {
+        stats_by_priority = {
+        rating_stats = {
             "total_ratings": 0,
             "average_rating": 0,
             "rating_distribution": {},
@@ -396,7 +394,7 @@ def get_feedback_stats():
 
 @feedback_bp.route("/types", methods=["GET"])
 def get_feedback_types():
-    "Get available feedback types."
+    """Get available feedback types."""
     try:
         feedback_types = []
             {}

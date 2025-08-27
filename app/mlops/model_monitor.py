@@ -101,7 +101,7 @@ class ModelMonitor:
         }
 
         # Active monitors
-        self.active_monitors = {}
+        self.active_monitors = {
         self.monitoring_thread = None
         self.is_monitoring = False
 
@@ -403,7 +403,7 @@ class ModelMonitor:
 
         return alerts
         def get_model_health(self, model_id: str, model_version: str) -> ModelHealth:
-        "Get current model health status"
+    """Get current model health status"""
         # Get recent metrics
         recent_metrics = self.get_recent_metrics(model_id, model_version, hours=1)
 
@@ -448,21 +448,21 @@ class ModelMonitor:
                 zip()
                     []
                         "metric_id",
-                        "model_id"
+    """model_id"""
                         "model_version",
-                        "timestamp"
+    """timestamp"""
                         "prediction_count",
-                        "avg_prediction_time_ms"
+    """avg_prediction_time_ms"""
                         "error_rate",
-                        "accuracy"
+    """accuracy"""
                         "precision",
-                        "recall"
+    """recall"""
                         "f1_score",
-                        "drift_score"
+    """drift_score"""
                         "outlier_rate",
-                        "confidence_distribution"
+    """confidence_distribution"""
                         "feature_importance_drift",
-                        "data_quality_score"
+    """data_quality_score"""
                     ],
                     result)
             )
@@ -528,16 +528,16 @@ class ModelMonitor:
                 zip()
                     []
                         "alert_id",
-                        "model_id"
+    """model_id"""
                         "model_version",
-                        "alert_type"
+    """alert_type"""
                         "severity",
-                        "message"
+    """message"""
                         "details",
-                        "timestamp"
+    """timestamp"""
                         "acknowledged",
-                        "resolved"
-                        "resolution_notes"
+    """resolved"""
+    """resolution_notes"""
                     ],
                     result)
             )
@@ -615,14 +615,14 @@ class ModelMonitor:
                 zip()
                     []
                         "log_id",
-                        "model_id"
+    """model_id"""
                         "model_version",
-                        "timestamp"
+    """timestamp"""
                         "input_features",
-                        "prediction"
+    """prediction"""
                         "confidence",
-                        "prediction_time_ms"
-                        "error_message"
+    """prediction_time_ms"""
+    """error_message"""
                     ],
                     result)
             )
@@ -721,7 +721,7 @@ class ModelMonitor:
         model_id: str,
         model_version: str,
         current_predictions: List[Dict[str, Any]]) -> Optional[float]:
-        "Calculate data drift score compared to reference data"
+    """Calculate data drift score compared to reference data"""
         # Simplified drift calculation - in practice, you'd compare with reference dataset
         # This is a placeholder that would need actual statistical drift detection
 
@@ -746,7 +746,7 @@ class ModelMonitor:
         return float(drift_score)
 
     def _calculate_feature_importance_drift(self, model_id: str, model_version: str, predictions: List[Dict[str, Any]]) -> Dict[str, float]:
-        "Calculate feature importance drift"
+    """Calculate feature importance drift"""
         # Placeholder implementation - would need feature importance tracking
         return {}
 

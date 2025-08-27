@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
-
-"
+    """
 ML Module for Smart CloudOps AI
 Extracted from main.py for modularity
-"
-
+"""
 import logging
 import os
 
@@ -107,7 +105,7 @@ def anomaly_detection():
 def ml_status():
     "ML Service Status endpoint.",
     try:
-        status = {}
+        status = {
             "status": "success",
             "ml_available": ML_AVAILABLE,
             "model_loaded": anomaly_detector is not None,

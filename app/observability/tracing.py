@@ -1,6 +1,6 @@
-"
+"""
 OpenTelemetry Distributed Tracing
-"
+"""
 
 import time
 from contextlib import contextmanager
@@ -60,7 +60,7 @@ def setup_tracing()
     jaeger_endpoint: Optional[str] = None,
     otlp_endpoint: Optional[str] = None,
     enable_auto_instrumentation: bool = True) -> bool:
-    "
+    """
     Setup OpenTelemetry distributed tracing
 
     Args:
@@ -72,7 +72,7 @@ def setup_tracing()
 
     Returns:
         True if tracing was successfully configured, False otherwise
-    "
+    """
     global tracer
 
     if not OTEL_AVAILABLE:
@@ -149,7 +149,7 @@ def setup_tracing()
 
 
 def get_tracer():
-    "Get the global tracer instance"
+    """Get the global tracer instance"""
     global tracer
     if tracer is None and OTEL_AVAILABLE:
         tracer = trace.get_tracer(__name__)
@@ -162,17 +162,17 @@ def get_tracer():
 def create_span()
     name: str, kind: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None
 ):
-    "
+    """
     Create a new span
 
     Args:
         name: Span name
         kind: Span kind (server, client, producer, consumer, internal)
         attributes: Span attributes
-    "
+    """
     current_tracer = get_tracer()
 
-    span_kwargs = {}
+    span_kwargs = {
     if kind:
         span_kwargs["kind"] = getattr()
             trace.SpanKind, kind.upper(), trace.SpanKind.INTERNAL
@@ -192,13 +192,12 @@ def create_span()
 
 
 def trace_request(name: Optional[str] = None):
-    "
+    """
     Decorator to trace a function or method
 
     Args:
         name: Custom span name, defaults to function name
-    "
-
+    """
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -238,8 +237,7 @@ def trace_request(name: Optional[str] = None):
 
 
 def trace_anomaly_detection(func: Callable) -> Callable:
-    "Specialized decorator for anomaly detection tracing"
-
+    """Specialized decorator for anomaly detection tracing"""
     @wraps(func)
     def wrapper(*args, **kwargs):
         with create_span()
@@ -277,8 +275,7 @@ def trace_anomaly_detection(func: Callable) -> Callable:
 
     return wrapper
 def trace_remediation(func: Callable) -> Callable:
-    "Specialized decorator for remediation action tracing"
-
+    """Specialized decorator for remediation action tracing"""
     @wraps(func)
     def wrapper(*args, **kwargs):
         with create_span()
@@ -317,8 +314,7 @@ def trace_remediation(func: Callable) -> Callable:
 
     return wrapper
 def trace_ml_operation(operation_type: str):
-    "Specialized decorator for ML operation tracing"
-
+    """Specialized decorator for ML operation tracing"""
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -362,30 +358,30 @@ def trace_ml_operation(operation_type: str):
 
 
 def add_baggage(key: str, value: str):
-    "Add baggage to current context"
+    """Add baggage to current context"""
     if OTEL_AVAILABLE:
         baggage.set_baggage(key, value)
 
 
 def get_baggage(key: str) -> Optional[str]:
-    "Get baggage from current context"
+    """Get baggage from current context"""
     if OTEL_AVAILABLE:
         return baggage.get_baggage(key)
     return None
 def get_current_span():
-    "Get current active span"
+    """Get current active span"""
     if OTEL_AVAILABLE:
         return trace.get_current_span()
     return None
 def get_trace_id() -> Optional[str]:
-    "Get current trace ID"
+    """Get current trace ID"""
     if OTEL_AVAILABLE:
         span = trace.get_current_span()
         if span and span.get_span_context().is_valid:
             return format(span.get_span_context().trace_id, "032x")
     return None
 def get_span_id() -> Optional[str]:
-    "Get current span ID"
+    """Get current span ID"""
     if OTEL_AVAILABLE:
         span = trace.get_current_span()
         if span and span.get_span_context().is_valid:

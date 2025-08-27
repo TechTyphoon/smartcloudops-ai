@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-"
+    """
 Remediation Actions API Endpoints for Smart CloudOps AI - Minimal Working Version
 Phase 7: Production Launch & Feedback - Backend Completion
-"
-
+"""
 from datetime import datetime, timezone
 
 from flask import Blueprint, jsonify, request
 
 # Create blueprint
-remediation_bp = Blueprint
-
+remediation_bp = Blueprint("remediation_bp = Blueprint", __name__)
 # Mock data for testing
 MOCK_REMEDIATIONS = []
     {}
@@ -46,7 +44,7 @@ MOCK_REMEDIATIONS = []
 
 @remediation_bp.route("/actions", methods=["GET"])
 def get_remediation_actions():
-    "Get all remediation actions with pagination and filtering."
+    """Get all remediation actions with pagination and filtering."""
     try:
         # Get query parameters
         page = request.args.get("page", 1, type=int)
@@ -112,7 +110,7 @@ def get_remediation_actions():
 
 @remediation_bp.route("/actions/<int:action_id>", methods=["GET"])
 def get_remediation_action(action_id):
-    "Get a specific remediation action by ID."
+    """Get a specific remediation action by ID."""
     try:
         # Find remediation action by ID
         action = next((r for r in MOCK_REMEDIATIONS if r["id"] == action_id), None)
@@ -144,7 +142,7 @@ def get_remediation_action(action_id):
 
 @remediation_bp.route("/actions", methods=["POST"])
 def create_remediation_action():
-    "Create a new remediation action."
+    """Create a new remediation action."""
     try:
         data = request.get_json()
 
@@ -165,7 +163,7 @@ def create_remediation_action():
                     400)
 
         # Create new remediation action (mock implementation)
-        new_action = {}
+        new_action = {
             "id": len(MOCK_REMEDIATIONS) + 1,
             "anomaly_id": data["anomaly_id"],
             "action_type": data["action_type"],
@@ -205,7 +203,7 @@ def create_remediation_action():
 
 @remediation_bp.route("/actions/<int:action_id>", methods=["PUT"])
 def update_remediation_action(action_id):
-    "Update an existing remediation action."
+    """Update an existing remediation action."""
     try:
         data = request.get_json()
 
@@ -264,7 +262,7 @@ def update_remediation_action(action_id):
 
 @remediation_bp.route("/actions/<int:action_id>/execute", methods=["POST"])
 def execute_remediation_action(action_id):
-    "Execute a remediation action."
+    """Execute a remediation action."""
     try:
         # Find remediation action by ID
         action = next((r for r in MOCK_REMEDIATIONS if r["id"] == action_id), None)
@@ -336,7 +334,7 @@ def execute_remediation_action(action_id):
 
 @remediation_bp.route("/actions/<int:action_id>/approve", methods=["POST"])
 def approve_remediation_action(action_id):
-    "Approve a remediation action for execution."
+    """Approve a remediation action for execution."""
     try:
         # Find remediation action by ID
         action = next((r for r in MOCK_REMEDIATIONS if r["id"] == action_id), None)
@@ -388,15 +386,14 @@ def approve_remediation_action(action_id):
 
 @remediation_bp.route("/actions/stats", methods=["GET"])
 def get_remediation_stats():
-    "Get remediation action statistics."
+    """Get remediation action statistics."""
     try:
         # Calculate statistics from mock data
         total_actions = len(MOCK_REMEDIATIONS)
 
-        stats_by_status = {}
-        stats_by_type = {}
-        stats_by_priority = {}
-
+        stats_by_status = {
+        stats_by_type = {
+        stats_by_priority = {
         for action in MOCK_REMEDIATIONS:
             # Count by status
             status = action["status"]

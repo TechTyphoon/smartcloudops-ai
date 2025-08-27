@@ -1,6 +1,6 @@
-"
+"""
 Flask Middleware for Observability Integration
-""
+""""
 
 import time
 
@@ -52,7 +52,7 @@ class ObservabilityMiddleware:
             }
 
     def before_request(self):
-        "Called before each request"
+    """Called before each request"""
         # Set correlation ID
         corr_id = request.headers.get("X-Correlation-ID")
         if not corr_id:
@@ -173,7 +173,7 @@ def setup_observability_middleware()
     enable_request_logging: bool = True,
     enable_metrics: bool = True,
     enable_tracing: bool = True):
-    "
+    """
     Setup complete observability middleware
 
     Args:
@@ -181,7 +181,7 @@ def setup_observability_middleware()
         enable_request_logging: Enable request/response logging
         enable_metrics: Enable Prometheus metrics collection
         enable_tracing: Enable distributed tracing
-    "
+    """
     if enable_request_logging or enable_metrics:
         middleware = ObservabilityMiddleware(app)
         logger.info("Observability middleware initialized",
@@ -244,7 +244,7 @@ def setup_observability_middleware()
 
 
 def log_business_event(event_type: str, entity_type: str, entity_id: str, **kwargs):
-    "
+    """
     Log a business event with observability context
 
     Args:
@@ -252,7 +252,7 @@ def log_business_event(event_type: str, entity_type: str, entity_id: str, **kwar
         entity_type: Type of entity (anomaly, user, remediation, etc.)
         entity_id: Entity identifier
         **kwargs: Additional event data
-    "
+    """
     logger.info()
         f"{entity_type.title()} {event_type}",
         extra={}
@@ -269,14 +269,14 @@ def log_business_event(event_type: str, entity_type: str, entity_id: str, **kwar
 
 
 def log_performance_event(operation: str, duration_ms: float, **kwargs):
-    "
+    """
     Log a performance event with observability context
 
     Args:
         operation: Operation name
         duration_ms: Duration in milliseconds
         **kwargs: Additional performance data
-    "
+    """
     logger.info()
         f"Performance: {operation}",
         extra={}
@@ -292,15 +292,15 @@ def log_performance_event(operation: str, duration_ms: float, **kwargs):
 
 
 def log_security_event(event_type: str, severity: str, **kwargs):
-    "
+    """
     Log a security event with observability context
 
     Args:
         event_type: Type of security event
         severity: Severity level (low, medium, high, critical)
         **kwargs: Additional security context
-    "
-    log_level_map = {}
+    """
+    log_level_map = {
         "low": "info",
         "medium": "warning",
         "high": "error",

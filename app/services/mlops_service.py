@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"
+    """
 MLOpsService - Business logic for MLOps operations
 Phase 2A: MLOps integration with service layer pattern
-"
-
+"""
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -39,10 +38,9 @@ except ImportError:
 
 
 class MLOpsService:
-    "Business logic for MLOps operations including experiment tracking, model management, and MLflow integration."
-
+    """Business logic for MLOps operations including experiment tracking, model management, and MLflow integration."""
     def __init__:
-        "Initialize MLOps service with components."
+    """Initialize MLOps service with components."""
         # Initialize available components
         self.experiment_tracker = None
         self.model_registry = None
@@ -124,7 +122,7 @@ class MLOpsService:
         per_page: int = 20,
         status: Optional[str] = None,
         tags: Optional[List[str]] = None) -> Tuple[List[Dict], Dict]:
-        "Get experiments with pagination and filtering."
+    """Get experiments with pagination and filtering."""
         # Apply filters
         filtered_data = self.mock_experiments.copy()
 
@@ -141,7 +139,7 @@ class MLOpsService:
         end = start + per_page
         page_data = filtered_data[start:end]
 
-        pagination = {}
+        pagination = {
             "page": page,
             "per_page": per_page,
             "total": total,
@@ -151,14 +149,14 @@ class MLOpsService:
         return page_data, pagination
 
     def get_experiment_by_id(self, experiment_id: str) -> Optional[Dict]:
-        "Get a specific experiment by ID."
+    """Get a specific experiment by ID."""
         for experiment in self.mock_experiments:
             if experiment["id"] == experiment_id:
                 return experiment
         return None
 
     def create_experiment(self, experiment_data: Dict) -> Dict:
-        "Create a new experiment with validation."
+    """Create a new experiment with validation."""
         # Validate required fields
         required_fields = ["name", "description"]
         for field in required_fields:
@@ -173,7 +171,7 @@ class MLOpsService:
 
         # Create new experiment
         new_id = f"exp_{len(self.mock_experiments) + 1}"
-        new_experiment = {}
+        new_experiment = {
             "id": new_id,
             "name": experiment_data["name"],
             "description": experiment_data["description"],
@@ -199,7 +197,7 @@ class MLOpsService:
         return new_experiment
 
     def start_experiment_run(self, experiment_id: str, run_data: Dict) -> Dict:
-        "Start a new experiment run."
+    """Start a new experiment run."""
         # Validate experiment exists
         experiment = self.get_experiment_by_id(experiment_id)
         if not experiment:
@@ -213,7 +211,7 @@ class MLOpsService:
 
         # Create new run
         run_id = f"run_{experiment_id}_{int(datetime.now(timezone.utc).timestamp()}"
-        new_run = {}
+        new_run = {
             "id": run_id,
             "experiment_id": experiment_id,
             "name": run_data["name"],
@@ -249,7 +247,7 @@ class MLOpsService:
         per_page: int = 20,
         status: Optional[str] = None,
         name: Optional[str] = None) -> Tuple[List[Dict], Dict]:
-        "Get models with pagination and filtering."
+    """Get models with pagination and filtering."""
         # Apply filters
         filtered_data = self.mock_models.copy()
 
@@ -266,7 +264,7 @@ class MLOpsService:
         end = start + per_page
         page_data = filtered_data[start:end]
 
-        pagination = {}
+        pagination = {
             "page": page,
             "per_page": per_page,
             "total": total,
@@ -276,14 +274,14 @@ class MLOpsService:
         return page_data, pagination
 
     def get_model_by_id(self, model_id: str) -> Optional[Dict]:
-        "Get a specific model by ID."
+    """Get a specific model by ID."""
         for model in self.mock_models:
             if model["id"] == model_id:
                 return model
         return None
 
     def register_model(self, model_data: Dict) -> Dict:
-        "Register a new model with validation."
+    """Register a new model with validation."""
         # Validate required fields
         required_fields = ["name", "version", "algorithm", "framework"]
         for field in required_fields:
@@ -314,7 +312,7 @@ class MLOpsService:
 
         # Create new model
         new_id = f"model_{len(self.mock_models) + 1}"
-        new_model = {}
+        new_model = {
             "id": new_id,
             "name": model_data["name"],
             "version": model_data["version"],
@@ -345,7 +343,7 @@ class MLOpsService:
         return new_model
 
     def update_model_status(self, model_id: str, status: str) -> Optional[Dict]:
-        "Update model status with validation."
+    """Update model status with validation."""
         valid_statuses = []
             "development",
             "staging",
@@ -378,7 +376,7 @@ class MLOpsService:
     def get_data_versions()
         self, dataset_name: Optional[str] = None, page: int = 1, per_page: int = 20
     ) -> Tuple[List[Dict], Dict]:
-        "Get data versions with pagination and filtering."
+    """Get data versions with pagination and filtering."""
         if not self.data_pipeline:
             return [], {"page": page, "per_page": per_page, "total": 0, "pages": 0}
 
@@ -394,7 +392,7 @@ class MLOpsService:
             # Convert to dictionaries
             version_dicts = []
             for version in page_versions:
-                version_dict = {}
+                version_dict = {
                     "version_id": version.version_id,
                     "dataset_name": version.dataset_name,
                     "created_at": version.created_at.isoformat(),
@@ -407,7 +405,7 @@ class MLOpsService:
                 }
                 version_dicts.append(version_dict)
 
-            pagination = {}
+            pagination = {
                 "page": page,
                 "per_page": per_page,
                 "total": total,
@@ -433,7 +431,7 @@ class MLOpsService:
             ]
 
             total = len(mock_versions)
-            pagination = {}
+            pagination = {
                 "page": page,
                 "per_page": per_page,
                 "total": total,
@@ -443,7 +441,7 @@ class MLOpsService:
             return mock_versions, pagination
 
     def get_data_quality_report(self, version_id: str) -> Optional[Dict]:
-        "Get quality report for a data version."
+    """Get quality report for a data version."""
         if not self.data_pipeline:
             return {}
                 "version_id": version_id,
@@ -499,7 +497,7 @@ class MLOpsService:
         source_version_id: str,
         transformations: List[Dict[str, Any]],
         target_dataset_name: Optional[str] = None) -> Dict[str, Any]:
-        "Create a data transformation pipeline."
+    """Create a data transformation pipeline."""
         if not self.data_pipeline:
             return {}
                 "success": False,
@@ -530,7 +528,7 @@ class MLOpsService:
     # ===== MLFLOW INTEGRATION =====
 
     def get_mlflow_experiments(self) -> List[Dict]:
-        "Get MLflow experiments."
+    """Get MLflow experiments."""
         # ✅ Using mock MLflow integration for development
         # For production, uncomment below to use actual MLflow:
         # if self.mlflow_manager and self.mlflow_manager.is_available(:
@@ -545,7 +543,7 @@ class MLOpsService:
         ]
 
     def get_mlflow_runs(self, experiment_id: str) -> List[Dict]:
-        "Get MLflow runs for an experiment."
+    """Get MLflow runs for an experiment."""
         # ✅ Using mock MLflow integration for development
         # For production, uncomment below to use actual MLflow:
         # if self.mlflow_manager and self.mlflow_manager.is_available(:
@@ -555,9 +553,9 @@ class MLOpsService:
     # ===== STATISTICS AND REPORTING =====
 
     def get_mlops_statistics(self) -> Dict:
-        "Get comprehensive MLOps statistics."
+    """Get comprehensive MLOps statistics."""
         # Experiment statistics
-        experiment_stats = {}
+        experiment_stats = {
             "total_experiments": len(self.mock_experiments),
             "by_status": {},
             "total_runs": sum(exp["runs_count"] for exp in self.mock_experiments),
@@ -570,7 +568,7 @@ class MLOpsService:
             )
 
         # Model statistics
-        model_stats = {}
+        model_stats = {
             "total_models": len(self.mock_models),
             "by_status": {},
             "by_framework": {},
@@ -587,20 +585,20 @@ class MLOpsService:
                 model_stats["by_framework"].get(framework, 0) + 1
             )
 
-        mlflow_stats = {}
+        mlflow_stats = {
         if self.mlflow_manager:
-            mlflow_stats = {}
+            mlflow_stats = {
                 "tracking_uri": self.mlflow_manager.tracking_uri,
                 "experiment_name": self.mlflow_manager.experiment_name,
             }
         else:
-            mlflow_stats = {}
+            mlflow_stats = {
                 "tracking_uri": "not_configured",
                 "experiment_name": "not_configured",
             }
 
         # Data pipeline statistics
-        data_pipeline_stats = {}
+        data_pipeline_stats = {
             "total_datasets": 0,
             "total_versions": 0,
             "average_quality_score": 0.0,
@@ -632,7 +630,7 @@ class MLOpsService:
 
             except Exception:
                 # Use mock stats if data pipeline not available
-                data_pipeline_stats = {}
+                data_pipeline_stats = {
                     "total_datasets": 3,
                     "total_versions": 8,
                     "average_quality_score": 0.87,
@@ -653,7 +651,7 @@ class MLOpsService:
         }
 
     def get_available_frameworks(self) -> List[Dict]:
-        "Get available ML frameworks."
+    """Get available ML frameworks."""
         return []
             {}
                 "name": "scikit-learn",
@@ -666,7 +664,7 @@ class MLOpsService:
         ]
 
     def get_available_algorithms(self) -> List[Dict]:
-        "Get available ML algorithms."
+    """Get available ML algorithms."""
         return []
             {}
                 "name": "isolation_forest",

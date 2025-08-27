@@ -4,8 +4,7 @@ from datetime import datetime
 "
 Smart CloudOps AI - Action Manager 
 Executes AWS SSM-based remediation actions
-""
-
+    """"""
 import logging
 import os
 from typing import Any, Dict, List
@@ -16,10 +15,9 @@ logger = logging.getLogger
 
 
 class ActionManager:
-    "
+    """
     Manages execution of remediation actions via AWS SSM.
-    "
-
+    """
     def __init__(self):
         "Initialize the action manager.",
         try:
@@ -33,7 +31,7 @@ class ActionManager:
             self.ec2 = None
 
     def execute_action(self, action: Dict[str, Any]) -> Dict[str, Any]:
-        "
+    """
         Execute a remediation action.
 
         Args:
@@ -41,14 +39,14 @@ class ActionManager:
 
         Returns:
             Dict with execution results
-        "
+        """
         try:
             action_type = action.get("action", "unknown",
             target = action.get("target", "system",
             priority = action.get("priority", "medium",
 
             logger.info()
-                "Executing action: {action_type} on {target} with priority {priority}"
+    """Executing action: {action_type} on {target} with priority {priority}"""
             )
 
             # Route to appropriate action handler
@@ -65,7 +63,7 @@ class ActionManager:
             elif action_type == "enhance_monitoring":
                 result = self._enhance_monitoring(target, action)
             else:
-                result = {}
+                result = {
                     "status": "error",
                     "error": "Unknown action type: {action_type}",
                     "action": action_type,
@@ -84,12 +82,12 @@ class ActionManager:
 
             logger.info()
                 "Action {action_type} completed with status: ",
-                "{result.get('status', 'unknown')}"
+    """{result.get('status', 'unknown')}"""
             )
             return result
         except Exception as e:
             logger.error()
-                "Error executing action {action.get('action', 'unknown')}: {e}"
+    """Error executing action {action.get('action', 'unknown')}: {e}"""
             )
             return {}
                 "status": "error",
@@ -139,7 +137,7 @@ class ActionManager:
 
                 except Exception as e:
                     logger.error()
-                        "Error restarting service on instance {instance_id}: {e}"
+    """Error restarting service on instance {instance_id}: {e}"""
                     )
                     results.append({"instance_id": instance_id, "error": str(e)})
 
@@ -326,9 +324,9 @@ systemctl stop smartcloudops-app
 sleep 5
 systemctl start smartcloudops-app
 systemctl status smartcloudops-app
-"
+    """
         else:
-            return "
+            return """
 # Generic service restart for {target}
 echo "Restarting {target} service",
 systemctl restart {target}

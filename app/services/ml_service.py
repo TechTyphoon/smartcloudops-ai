@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
-"
+    """
 ML Service - Business Logic Layer
 Handles all machine learning model management, training, and operations
-"
-
+"""
 import random
 from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional
 
 
 class MLService:
-    "Service class for ML-related business logic."
-
+    """Service class for ML-related business logic."""
     def __init__:
-        "Initialize the ML service."
+    """Initialize the ML service."""
         self.mock_training_jobs = []
             {}
                 "id": 1,
@@ -63,12 +61,12 @@ class MLService:
         ]
 
     def get_ml_models(self) -> Dict:
-        "
+    """
         Get all ML models with their status and performance metrics.
 
         Returns:
             Dictionary containing model information
-        "
+        """
         models = []
             {}
                 "id": "anomaly_detector_v1",
@@ -125,7 +123,7 @@ class MLService:
         }
 
     def get_ml_model_by_id(self, model_id: str) -> Optional[Dict]:
-        "
+    """
         Get detailed information about a specific ML model.
 
         Args:
@@ -133,7 +131,7 @@ class MLService:
 
         Returns:
             Dictionary containing model details or None if not found
-        "
+        """
         # Mock model details based on ID
         if model_id == "anomaly_detector_v1":
             return {}
@@ -206,7 +204,7 @@ class MLService:
             return None
 
     def train_model(self, training_config: Dict) -> Dict:
-        "
+    """
         Start training a new ML model.
 
         Args:
@@ -217,7 +215,7 @@ class MLService:
 
         Raises:
             ValueError: If training configuration is invalid
-        "
+        """
         # Validate required fields
         required_fields = ["model_name", "algorithm", "dataset_id"]
         for field in required_fields:
@@ -237,7 +235,7 @@ class MLService:
             )
 
         # Create new training job
-        new_job = {}
+        new_job = {
             "id": len(self.mock_training_jobs) + 1,
             "model_name": training_config["model_name"],
             "status": "started",
@@ -260,12 +258,12 @@ class MLService:
         return new_job
 
     def get_training_jobs(self) -> Dict:
-        "
+    """
         Get all training jobs with their status.
 
         Returns:
             Dictionary containing training job information
-        "
+        """
         # Simulate some jobs completing over time
         for job in self.mock_training_jobs:
             if ()
@@ -293,7 +291,7 @@ class MLService:
         }
 
     def get_training_job_by_id(self, job_id: int) -> Optional[Dict]:
-        "
+    """
         Get detailed information about a specific training job.
 
         Args:
@@ -301,16 +299,16 @@ class MLService:
 
         Returns:
             Dictionary containing training job details or None if not found
-        "
+        """
         return next((j for j in self.mock_training_jobs if j["id"] == job_id), None)
 
     def get_datasets(self) -> Dict:
-        "
+    """
         Get all available datasets for ML training.
 
         Returns:
             Dictionary containing dataset information
-        "
+        """
         return {}
             "datasets": self.mock_datasets,
             "total_datasets": len(self.mock_datasets),
@@ -318,7 +316,7 @@ class MLService:
         }
 
     def get_dataset_by_id(self, dataset_id: int) -> Optional[Dict]:
-        "
+    """
         Get detailed information about a specific dataset.
 
         Args:
@@ -326,13 +324,13 @@ class MLService:
 
         Returns:
             Dictionary containing dataset details or None if not found
-        "
+        """
         dataset = next((d for d in self.mock_datasets if d["id"] == dataset_id), None)
         if not dataset:
             return None
 
         # Add additional details
-        dataset_details = {}
+        dataset_details = {
             **dataset,
             "feature_names": [f"feature_{i+1}" for i in range(dataset["features"])],
             "statistics": {}
@@ -346,7 +344,7 @@ class MLService:
         return dataset_details
 
     def make_prediction(self, model_id: str, features: List) -> Dict:
-        "
+    """
         Make a prediction using the specified model.
 
         Args:
@@ -358,7 +356,7 @@ class MLService:
 
         Raises:
             ValueError: If model not found or invalid input
-        "
+        """
         if not model_id:
             raise ValueError("model_id is required")
 
@@ -380,12 +378,12 @@ class MLService:
             # Anomaly detection prediction
             anomaly_score = round(random.uniform(0.1, 0.9), 3)
             is_anomaly = anomaly_score > 0.7
-            prediction = {}
+            prediction = {
                 "anomaly_score": anomaly_score,
                 "is_anomaly": is_anomaly,
                 "confidence": round(random.uniform(0.8, 0.95), 3),
                 "severity": ()
-                    "high"
+    """high"""
                     if anomaly_score > 0.8
                     else "medium" if anomaly_score > 0.5 else "low"
                 ),
@@ -393,7 +391,7 @@ class MLService:
         elif model["type"] == "recommendation":
             # Remediation recommendation prediction
             actions = ["scale_up", "restart_service", "cleanup_logs", "update_config"]
-            prediction = {}
+            prediction = {
                 "recommended_action": random.choice(actions),
                 "confidence": round(random.uniform(0.6, 0.9), 3),
                 "alternatives": random.sample(actions, 2),
@@ -414,7 +412,7 @@ class MLService:
     def deploy_model()
         self, model_id: str, deployment_config: Optional[Dict] = None
     ) -> Dict:
-        "
+    """
         Deploy a trained model to production.
 
         Args:
@@ -426,7 +424,7 @@ class MLService:
 
         Raises:
             ValueError: If model not found
-        "
+        """
         if not model_id:
             raise ValueError("model_id is required")
 
@@ -440,7 +438,7 @@ class MLService:
             raise ValueError(f"Model with ID {model_id} not found")
 
         # Mock deployment process
-        deployment_result = {}
+        deployment_result = {
             "model_id": model_id,
             "deployment_status": "success",
             "endpoint_url": f"/api/ml/models/{model_id}/predict",

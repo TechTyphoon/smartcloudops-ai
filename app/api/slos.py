@@ -106,8 +106,7 @@ def get_error_budget():
     """Get error budget for all SLOs"""
     try:
         slo_manager = get_slo_manager()
-        error_budgets = {}
-        
+        error_budgets = {
         for slo_name in slo_manager.slos:
             # Use placeholder value for demonstration
             current_value = 99.5

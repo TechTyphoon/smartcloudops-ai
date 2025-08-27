@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"
+    """
 SQLAlchemy Models for Smart CloudOps AI - Minimal Working Version
-"
-
+"""
 from datetime import datetime
 
 from sqlalchemy import 
@@ -23,8 +22,7 @@ Base = declarative_base
 
 
 class User(Base):
-    "User model for authentication and authorization."
-
+    """User model for authentication and authorization."""
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
@@ -44,8 +42,7 @@ class User(Base):
 
 
 class Anomaly(Base):
-    "Anomaly model for storing detected anomalies."
-
+    """Anomaly model for storing detected anomalies."""
     __tablename__ = "anomalies"
 
     id = Column(Integer, primary_key=True)
@@ -76,8 +73,7 @@ class Anomaly(Base):
 
 
 class RemediationAction(Base):
-    "Remediation action model for storing automated and manual actions."
-
+    """Remediation action model for storing automated and manual actions."""
     __tablename__ = "remediation_actions"
 
     id = Column(Integer, primary_key=True)
@@ -109,8 +105,7 @@ class RemediationAction(Base):
 
 
 class Feedback(Base):
-    "Feedback model for storing user feedback."
-
+    """Feedback model for storing user feedback."""
     __tablename__ = "feedback"
 
     id = Column(Integer, primary_key=True)
@@ -136,8 +131,7 @@ class Feedback(Base):
 
 
 class SystemMetrics(Base):
-    "System metrics model for storing historical metrics data."
-
+    """System metrics model for storing historical metrics data."""
     __tablename__ = "system_metrics"
 
     id = Column(Integer, primary_key=True)
@@ -150,8 +144,7 @@ class SystemMetrics(Base):
 
 
 class AuditLog(Base):
-    "Audit log model for tracking system activities."
-
+    """Audit log model for tracking system activities."""
     __tablename__ = "audit_logs"
 
     id = Column(Integer, primary_key=True)
@@ -171,11 +164,11 @@ class AuditLog(Base):
 
 # Model serialization helpers
 def model_to_dict(model_instance):
-    "Convert SQLAlchemy model instance to dictionary."
+    """Convert SQLAlchemy model instance to dictionary."""
     if model_instance is None:
         return None
 
-    result = {}
+    result = {
     for column in model_instance.__table__.columns:
         value = getattr(model_instance, column.name)
         if isinstance(value, datetime:
@@ -187,5 +180,5 @@ def model_to_dict(model_instance):
 
 
 def models_to_list(model_instances):
-    "Convert list of SQLAlchemy model instances to list of dictionaries."
+    """Convert list of SQLAlchemy model instances to list of dictionaries."""
     return [model_to_dict(instance) for instance in model_instances]

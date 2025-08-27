@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
-"
+    """
 AI Service - Business Logic Layer
 Handles all AI/ML analysis, recommendations, and chat operations
-"
-
+"""
 import random
 from datetime import datetime
 from typing import Dict, List, Optional
 
 
 class AIService:
-    "Service class for AI-related business logic."
-
+    """Service class for AI-related business logic."""
     def __init__:
-        "Initialize the AI service."
+    """Initialize the AI service."""
         self.mock_models = []
             {}
                 "id": "anomaly_detector_v1",
@@ -60,7 +58,7 @@ class AIService:
         ]
 
     def get_recommendations(self, anomaly_data: Dict, limit: int = 3) -> Dict:
-        "
+    """
         Get AI-powered remediation recommendations for an anomaly.
 
         Args:
@@ -72,7 +70,7 @@ class AIService:
 
         Raises:
             ValueError: If anomaly_data is invalid
-        "
+        """
         if not anomaly_data:
             raise ValueError("anomaly_data is required")
 
@@ -128,7 +126,7 @@ class AIService:
         }
 
     def analyze_metrics(self, metrics: Dict) -> Dict:
-        "
+    """
         Analyze metrics data using AI/ML models.
 
         Args:
@@ -139,12 +137,12 @@ class AIService:
 
         Raises:
             ValueError: If metrics data is invalid
-        "
+        """
         if not metrics:
             raise ValueError("metrics data is required")
 
         # Initialize analysis result
-        analysis_result = {}
+        analysis_result = {
             "anomaly_detected": False,
             "anomaly_score": 0.0,
             "confidence": 0.0,
@@ -237,7 +235,7 @@ class AIService:
         }
 
     def process_chat_query(self, query: str, session_id: str = "default") -> Dict:
-        "
+    """
         Process natural language queries about the system.
 
         Args:
@@ -249,7 +247,7 @@ class AIService:
 
         Raises:
             ValueError: If query is empty
-        "
+        """
         if not query or not query.strip(:
             raise ValueError("Query cannot be empty")
 
@@ -257,7 +255,7 @@ class AIService:
 
         # Mock chatbot responses based on query content
         if "anomaly" in query_lower or "alert" in query_lower:
-            response = {}
+            response = {
                 "message": "I found 2 active anomalies: High CPU usage (89%) and increased error rate (8%). Would you like me to recommend remediation actions?",
                 "intent": "anomaly_inquiry",
                 "confidence": 0.92,
@@ -268,7 +266,7 @@ class AIService:
                 ],
             }
         elif "status" in query_lower or "health" in query_lower:
-            response = {}
+            response = {
                 "message": "System health is currently GOOD. All critical services are running normally. CPU: 45%, Memory: 67%, Response time: 120ms.",
                 "intent": "status_inquiry",
                 "confidence": 0.88,
@@ -279,7 +277,7 @@ class AIService:
                 ],
             }
         elif "performance" in query_lower:
-            response = {}
+            response = {
                 "message": "Performance metrics show normal operation. Average response time is 120ms, with 99.8% uptime over the last 24 hours.",
                 "intent": "performance_inquiry",
                 "confidence": 0.85,
@@ -290,7 +288,7 @@ class AIService:
                 ],
             }
         elif "help" in query_lower or "?" in query_lower:
-            response = {}
+            response = {
                 "message": "I can help you with: monitoring system health, investigating anomalies, recommending remediation actions, and answering questions about your infrastructure. What would you like to know?",
                 "intent": "help_request",
                 "confidence": 0.95,
@@ -301,7 +299,7 @@ class AIService:
                 ],
             }
         else:
-            response = {}
+            response = {
                 "message": "I understand you're asking about your infrastructure. Could you be more specific? I can help with system status, anomalies, performance metrics, and remediation actions.",
                 "intent": "general_inquiry",
                 "confidence": 0.60,
@@ -323,12 +321,12 @@ class AIService:
         }
 
     def get_models(self) -> Dict:
-        "
+    """
         Get information about available AI/ML models.
 
         Returns:
             Dictionary containing model information
-        "
+        """
         return {}
             "models": self.mock_models,
             "total_models": len(self.mock_models),
@@ -338,7 +336,7 @@ class AIService:
         }
 
     def predict_with_model(self, model_id: str, input_data: Dict) -> Dict:
-        "
+    """
         Make predictions using a specific model.
 
         Args:
@@ -350,7 +348,7 @@ class AIService:
 
         Raises:
             ValueError: If model not found or invalid input
-        "
+        """
         if not model_id:
             raise ValueError("model_id is required")
 
@@ -367,13 +365,13 @@ class AIService:
 
         # Mock prediction based on model type
         if model["type"] == "anomaly_detection":
-            prediction = {}
+            prediction = {
                 "anomaly_probability": round(random.uniform(0.1, 0.9), 3),
                 "is_anomaly": random.choice([True, False]),
                 "confidence": round(random.uniform(0.7, 0.95), 3),
             }
         elif model["type"] == "recommendation":
-            prediction = {}
+            prediction = {
                 "recommended_action": random.choice()
                     ["scale_up", "restart_service", "cleanup_logs"]
                 ),

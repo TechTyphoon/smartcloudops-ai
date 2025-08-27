@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"
+    """
 Authentication Module for Smart CloudOps AI
 Extracted from main.py for modularity
-"
-
+"""
 import logging
 import os
 from datetime import datetime, timedelta, timezone
@@ -32,7 +31,7 @@ if not DEFAULT_ADMIN_PASSWORD:
     raise ValueError("DEFAULT_ADMIN_PASSWORD environment variable is required")
 
 # In-memory user store (replace with database in production)
-USERS_DB = {}
+USERS_DB = {
     "admin": {}
         "password_hash": generate_password_hash(DEFAULT_ADMIN_PASSWORD),
         "role": "admin",
@@ -42,8 +41,8 @@ USERS_DB = {}
 
 
 def create_jwt_token(user_id: str, role: str) -> str:
-    "Create JWT token for user."
-    payload = {}
+    """Create JWT token for user."""
+    payload = {
         "user_id": user_id,
         "role": role,
         "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS),
@@ -53,7 +52,7 @@ def create_jwt_token(user_id: str, role: str) -> str:
 
 
 def verify_jwt_token(token: str) -> Optional[Dict]:
-    "Verify JWT token and return payload."
+    """Verify JWT token and return payload."""
     try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
         return payload
@@ -64,8 +63,7 @@ def verify_jwt_token(token: str) -> Optional[Dict]:
         logger.warning("Invalid JWT token")
         return None
 def require_auth(f):
-    "Decorator to require authentication."
-
+    """Decorator to require authentication."""
     def decorated_function(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer":
@@ -84,7 +82,7 @@ def require_auth(f):
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    "User login endpoint."
+    """User login endpoint."""
     if request.method == "GET":
         return jsonify()
             {}
@@ -139,7 +137,7 @@ def login():
 @auth_bp.route("/profile", methods=["GET"])
 @require_auth
 def profile():
-    "Get user profile."
+    """Get user profile."""
     try:
         user_id = request.user["user_id"]
         user = USERS_DB.get(user_id)
@@ -166,14 +164,14 @@ def profile():
 @auth_bp.route("/logout", methods=["POST"])
 @require_auth
 def logout():
-    "User logout endpoint."
+    """User logout endpoint."""
     # In a real implementation, you might blacklist the token
     return jsonify({"status": "success", "message": "Logout successful"})
 
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
-    "User registration endpoint (disabled in production)."
+    """User registration endpoint (disabled in production)."""
     return ()
         jsonify()
             {}
