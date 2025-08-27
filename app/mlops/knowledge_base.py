@@ -21,7 +21,7 @@ logger = logging.getLogger
 
 @dataclass
 class KnowledgeNode:
-    "Node in the knowledge graph."
+    """Node in the knowledge graph."""
 
     node_id: str
     node_type: str  # 'anomaly', 'root_cause', 'remediation', 'metric_pattern'
@@ -32,7 +32,7 @@ class KnowledgeNode:
 
 @dataclass
 class KnowledgeEdge:
-    "Edge in the knowledge graph."
+    """Edge in the knowledge graph."""
 
     source_id: str
     target_id: str
@@ -43,7 +43,7 @@ class KnowledgeEdge:
 
 
 class KnowledgeGraph:
-    "Knowledge graph for linking anomalies, causes, and remediations."
+    """Knowledge graph for linking anomalies, causes, and remediations."""
 
     def __init__(self):
         self.nodes = {}
@@ -53,12 +53,12 @@ class KnowledgeGraph:
         self.similarity_matrix = None
 
     def add_node(self, node_type: str, properties: Dict[str, Any]) -> str:
-        "Add a node to the knowledge graph."
+        """Add a node to the knowledge graph."""
         node_id = f"{node_type}_{self.node_counter}"
         self.node_counter += 1
 
-        node = KnowledgeNode()
-            node_id=node_id,
+        node = KnowledgeNode(
+    node_id=node_id,
             node_type=node_type,
             properties=properties,
             created_at=datetime.now(),
@@ -76,12 +76,12 @@ class KnowledgeGraph:
         relationship_type: str,
         weight: float = 1.0,
         confidence: float = 1.0):
-        "Add an edge to the knowledge graph."
+        """Add an edge to the knowledge graph."""
         if source_id not in self.nodes or target_id not in self.nodes:
             raise ValueError("Source or target node not found")
 
-        edge = KnowledgeEdge()
-            source_id=source_id,
+        edge = KnowledgeEdge(
+    source_id=source_id,
             target_id=target_id,
             relationship_type=relationship_type,
             weight=weight,
@@ -94,7 +94,7 @@ class KnowledgeGraph:
     def get_related_nodes()
         self, node_id: str, relationship_type: str = None
     ) -> List[KnowledgeNode]:
-        "Get nodes related to a given node."
+        """Get nodes related to a given node."""
         if node_id not in self.edges:
             return []
 
@@ -109,7 +109,7 @@ class KnowledgeGraph:
     def find_similar_nodes()
         self, node_id: str, similarity_threshold: float = 0.7
     ) -> List[Tuple[KnowledgeNode, float]]:
-        "Find similar nodes based on properties."
+        """Find similar nodes based on properties."""
         if node_id not in self.nodes:
             return []
 
@@ -129,7 +129,7 @@ class KnowledgeGraph:
     def _calculate_node_similarity()
         self, node1: KnowledgeNode, node2: KnowledgeNode
     ) -> float:
-        "Calculate similarity between two nodes."
+        """Calculate similarity between two nodes."""
         # Simple similarity based on text properties
         text1 = f"{node1.properties.get('description', '')} {node1.properties.get('source', '')}"
         text2 = f"{node2.properties.get('description', '')} {node2.properties.get('source', '')}"
@@ -145,8 +145,9 @@ class KnowledgeGraph:
             return 0.0
 
     def save_knowledge_base(self):
-        "Save knowledge base to disk."
-        knowledge_data = {}
+        """Save knowledge base to disk."""
+        knowledge_data = {
+
             "nodes": {node_id: asdict(node) for node_id, node in self.nodes.items()},
             "edges": {}
                 source_id: [asdict(edge) for edge in edges]
@@ -164,7 +165,7 @@ class KnowledgeGraph:
             logger.error(f"Failed to save knowledge base: {e}")
 
     def load_knowledge_base(self):
-        "Load knowledge base from disk."
+        """Load knowledge base from disk."""
         try:
             with open("mlops/knowledge_base.json", "r") as f:
                 knowledge_data = json.load(f)
@@ -198,21 +199,22 @@ class KnowledgeGraph:
 
 
 class RecommendationEngine:
-    "Recommendation engine for remediation actions."
+    """Recommendation engine for remediation actions."""
 
     def __init__(self, knowledge_graph: KnowledgeGraph):
         self.knowledge_graph = knowledge_graph
-        self.recommendation_model = RandomForestRegressor()
-            n_estimators=100, random_state=42
+        self.recommendation_model = RandomForestRegressor(
+    n_estimators=100, random_state=42
         )
         self.is_trained = False
         self.feature_names = []
 
     def build_knowledge_from_data(self):
-        "Build knowledge graph from historical data."
+        """Build knowledge graph from historical data."""
         try:
             # Mock implementation - in real system would load from database
-            mock_data = []
+            mock_data = [
+
                 {}
                     "anomaly": {}
                         "severity": "high",
@@ -258,7 +260,7 @@ class RecommendationEngine:
             logger.error(f"Error building knowledge from data: {e}")
 
     def _infer_root_cause(self, anomaly: Dict[str, Any], remediation: Dict[str, Any]):
-        "Infer root cause from anomaly and successful remediation."
+        """Infer root cause from anomaly and successful remediation."""
         metrics = anomaly.get("metrics", {})
 
         if metrics.get("cpu_usage", 0) > 80:
@@ -285,11 +287,12 @@ class RecommendationEngine:
     def get_recommendations()
         self, anomaly_info: Dict[str, Any], limit: int = 5
     ) -> List[Dict[str, Any]]:
-        "Get remediation recommendations for an anomaly."
+        """Get remediation recommendations for an anomaly."""
         recommendations = []
 
         # Find similar anomalies in knowledge graph
-        anomaly_props = {}
+        anomaly_props = {
+
             "severity": anomaly_info.get("severity", "medium"),
             "source": anomaly_info.get("source", "unknown"),
             "description": anomaly_info.get("description", "),
@@ -313,7 +316,8 @@ class RecommendationEngine:
 
                 for remediation in remediations:
                     if remediation.properties.get("success", False:
-                        recommendation = {}
+                        recommendation = {
+
                             "action_type": remediation.properties["action_type"],
                             "confidence": similarity
                             * remediation.properties.get("success", 1.0),
@@ -345,7 +349,7 @@ class RecommendationEngine:
                 del self.knowledge_graph.nodes[temp_node_id]
 
     def train_recommendation_model(self):
-        "Train ML model for recommendations."
+        """Train ML model for recommendations."""
         X, y = [], []
 
         # Extract features and targets from knowledge graph
@@ -369,7 +373,8 @@ class RecommendationEngine:
                         key=lambda r: r.properties.get("success", 1.0))
 
                     # Encode action type as numeric target
-                    action_encoding = {}
+                    action_encoding = {
+
                         "scale_up": 1,
                         "scale_down": 2,
                         "restart_service": 3,
@@ -395,7 +400,7 @@ class RecommendationEngine:
         logger.info(f"Trained recommendation model with {len(X)} samples")
 
     def _extract_anomaly_features(self, anomaly_node: KnowledgeNode) -> List[float]:
-        "Extract features from anomaly node for ML model."
+        """Extract features from anomaly node for ML model."""
         features = []
 
         # Severity encoding
@@ -423,13 +428,13 @@ class RecommendationEngine:
         return features
 
     def predict_remediation(self, anomaly_info: Dict[str, Any]) -> str:
-        "Predict remediation action using ML model."
+        """Predict remediation action using ML model."""
         if not self.is_trained:
             return "unknown"
 
         # Create temporary node for feature extraction
-        temp_node = KnowledgeNode()
-            node_id="temp",
+        temp_node = KnowledgeNode(
+    node_id="temp",
             node_type="anomaly",
             properties=anomaly_info,
             created_at=datetime.now(),
@@ -451,14 +456,14 @@ class RecommendationEngine:
 
 
 class KnowledgeBaseManager:
-    "Manages knowledge base operations."
+    """Manages knowledge base operations."""
 
     def __init__(self):
         self.knowledge_graph = KnowledgeGraph()
         self.recommendation_engine = RecommendationEngine(self.knowledge_graph)
 
     def initialize(self):
-        "Initialize knowledge base."
+        """Initialize knowledge base."""
         self.knowledge_graph.load_knowledge_base()
         self.recommendation_engine.build_knowledge_from_data()
         self.recommendation_engine.train_recommendation_model()
@@ -466,22 +471,23 @@ class KnowledgeBaseManager:
     def get_recommendations()
         self, anomaly_info: Dict[str, Any], limit: int = 5
     ) -> List[Dict[str, Any]]:
-        "Get remediation recommendations."
+        """Get remediation recommendations."""
         return self.recommendation_engine.get_recommendations(anomaly_info, limit)
 
     def predict_remediation(self, anomaly_info: Dict[str, Any]) -> str:
-        "Predict remediation action."
+        """Predict remediation action."""
         return self.recommendation_engine.predict_remediation(anomaly_info)
 
     def add_experience()
         self, anomaly_info: Dict[str, Any], remediation_action: str, success: bool
     ):
-        "Add new experience to knowledge base."
+        """Add new experience to knowledge base."""
         # Create anomaly node
         anomaly_node_id = self.knowledge_graph.add_node("anomaly", anomaly_info)
 
         # Create remediation node
-        remediation_props = {}
+        remediation_props = {
+
             "action_type": remediation_action,
             "success": success,
             "timestamp": datetime.now().isoformat(),
@@ -505,7 +511,7 @@ class KnowledgeBaseManager:
         )
 
     def get_knowledge_stats(self) -> Dict[str, Any]:
-        "Get knowledge base statistics."
+        """Get knowledge base statistics."""
         node_types = defaultdict(int)
         edge_types = defaultdict(int)
 

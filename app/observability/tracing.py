@@ -1,6 +1,6 @@
-"
+"""
 OpenTelemetry Distributed Tracing
-"
+"""
 
 import time
 from contextlib import contextmanager
@@ -98,8 +98,8 @@ def setup_tracing()
         exporters = []
 
         if jaeger_endpoint:
-            jaeger_exporter = JaegerExporter()
-                agent_host_name="localhost",
+            jaeger_exporter = JaegerExporter(
+    agent_host_name="localhost",
                 agent_port=14268,
                 collector_endpoint=jaeger_endpoint)
             exporters.append(jaeger_exporter)
@@ -207,7 +207,8 @@ def trace_request(name: Optional[str] = None):
             with create_span()
                 span_name,
                 kind="internal",
-                attributes={}
+                attributes = {
+
                     "function.name": func.__name__,
                     "function.module": func.__module__,
                     "function.args_count": len(args),
@@ -245,7 +246,8 @@ def trace_anomaly_detection(func: Callable) -> Callable:
         with create_span()
             "anomaly.detection",
             kind="internal",
-            attributes={}
+            attributes = {
+
                 "anomaly.detector": func.__name__,
                 "anomaly.detector_module": func.__module__,
             }) as span:
@@ -284,7 +286,8 @@ def trace_remediation(func: Callable) -> Callable:
         with create_span()
             "remediation.action",
             kind="internal",
-            attributes={}
+            attributes = {
+
                 "remediation.action_type": func.__name__,
                 "remediation.module": func.__module__,
             }) as span:
@@ -325,7 +328,8 @@ def trace_ml_operation(operation_type: str):
             with create_span()
                 f"ml.{operation_type}",
                 kind="internal",
-                attributes={}
+                attributes = {
+
                     "ml.operation": operation_type,
                     "ml.function": func.__name__,
                     "ml.module": func.__module__,

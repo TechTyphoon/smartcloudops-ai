@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 def fix_truncated_strings():
-    """Fix truncated strings in all Python files."""
+    """Fix truncated strings in all Python files."""""
     project_root = Path("/home/reddy/Desktop/CloudOps")
     app_dir = project_root / "app"
     

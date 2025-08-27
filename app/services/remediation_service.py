@@ -10,10 +10,10 @@ from typing import Dict, List, Optional, Tuple
 
 
 class RemediationService:
-    "Service class for remediation action-related business logic."
+    """Service class for remediation action-related business logic."""
 
     def __init__:
-        "Initialize the remediation service."
+        """Initialize the remediation service."""
         self.mock_data = []
             {}
                 "id": 1,
@@ -83,7 +83,9 @@ class RemediationService:
         end = start + per_page
         actions_page = filtered_actions[start:end]
 
-        pagination_info = {}
+        pagination_info = {
+
+
             "page": page,
             "per_page": per_page,
             "total": total,
@@ -93,7 +95,7 @@ class RemediationService:
         return actions_page, pagination_info
 
     def get_remediation_action_by_id(self, action_id: int) -> Optional[Dict]:
-        "Get a specific remediation action by ID."
+        """Get a specific remediation action by ID."""
         return next((r for r in self.mock_data if r["id"] == action_id), None)
 
     def create_remediation_action(self, action_data: Dict) -> Dict:
@@ -137,7 +139,8 @@ class RemediationService:
             )
 
         # Create new remediation action
-        new_action = {}
+        new_action = {
+
             "id": len(self.mock_data) + 1,
             "anomaly_id": action_data["anomaly_id"],
             "action_type": action_data["action_type"],

@@ -1,7 +1,7 @@
-"
+"""
 Enhanced OpenTelemetry Configuration
 Phase 4: Observability & Operability - Distributed tracing and metrics
-"
+"""
 
 import os
 from typing import Optional
@@ -110,8 +110,8 @@ class OpenTelemetryConfig:
 
         # Jaeger exporter
         if jaeger_endpoint:
-            jaeger_exporter = JaegerExporter()
-                agent_host_name=jaeger_endpoint.split(":")[0],
+            jaeger_exporter = JaegerExporter(
+    agent_host_name=jaeger_endpoint.split(":")[0],
                 agent_port=int(jaeger_endpoint.split(":")[1]) if ":" in jaeger_endpoint else 6831)
             jaeger_processor = BatchSpanProcessor(jaeger_exporter)
             processors.append(jaeger_processor)
@@ -228,7 +228,7 @@ class OpenTelemetryConfig:
 otel_config = OpenTelemetryConfig()
 
 
-def setup_opentelemetry()
+def setup_opentelemetry(
     app=None,
     service_name: str = "smartcloudops-ai",
     service_version: str = "4.0.0",
@@ -256,8 +256,8 @@ def setup_opentelemetry()
     console_export = os.getenv("OTEL_CONSOLE_EXPORT", "false").lower() == "true"
 
     # Setup OpenTelemetry
-    otel_config.setup()
-        service_name=service_name,
+    otel_config.setup(
+    service_name=service_name,
         service_version=service_version,
         environment=environment,
         jaeger_endpoint=jaeger_endpoint,

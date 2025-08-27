@@ -1,7 +1,7 @@
-"
+"""
 Model Registry - Centralized ML model versioning and lifecycle management
 Minimal working version for Phase 2 MLOps integration
-"
+"""
 
 import hashlib
 import json
@@ -53,7 +53,7 @@ class ModelRegistry:
     "Centralized model registry for versioning and lifecycle management"
 
     def __init__(self, registry_path: str = "ml_models/registry"):
-        "Initialize model registry."
+        """Initialize model registry."""
         self.registry_path = Path(registry_path)
         self.registry_path.mkdir(parents=True, exist_ok=True)
 
@@ -129,8 +129,8 @@ class ModelRegistry:
         checksum = self._calculate_checksum(model_file_path)
         size_bytes = model_file_path.stat().st_size
 
-        metadata = ModelMetadata()
-            model_id=model_id,
+        metadata = ModelMetadata(
+    model_id=model_id,
             name=name,
             version=version,
             description=description,
@@ -274,8 +274,8 @@ class ModelRegistry:
 
     def _row_to_metadata(self, row) -> ModelMetadata:
         "Convert database row to ModelMetadata"
-        return ModelMetadata()
-            model_id=row[0],
+        return ModelMetadata(
+    model_id=row[0],
             name=row[1],
             version=row[2],
             description=row[3],

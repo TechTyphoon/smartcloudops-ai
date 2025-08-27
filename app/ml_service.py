@@ -15,13 +15,13 @@ logger = logging.getLogger(__name__)
 
 @app.route("/health")
 def health():
-    "Health check endpoint for ML service."
+    """Health check endpoint for ML service."""
     return jsonify({"status": "healthy", "service": "ml-processor"})
 
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    "ML prediction endpoint."
+    """ML prediction endpoint."""
     try:
         data = request.get_json()
         if not data:
@@ -29,7 +29,8 @@ def predict():
         
         # ML processing logic here
         # This is a placeholder - in production you'd load your model and make predictions
-        prediction = {}
+        prediction = {
+
             "result": "processed",
             "confidence": 0.95,
             "model_version": "1.0.0"
@@ -47,7 +48,7 @@ def predict():
 
 @app.route("/train", methods=["POST"])
 def train():
-    "ML training endpoint."
+    """ML training endpoint."""
     try:
         data = request.get_json()
         if not data:
@@ -55,7 +56,8 @@ def train():
         
         # Training logic here
         # This is a placeholder - in production you'd implement actual training
-        training_status = {}
+        training_status = {
+
             "status": "training_started",
             "model_id": f"model_{os.getpid()}",
             "timestamp": "2024-01-01T00:00:00Z"

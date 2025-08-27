@@ -10,10 +10,10 @@ from typing import Dict, List, Optional
 
 
 class AIService:
-    """Service class for AI-related business logic."""
+    """Service class for AI-related business logic."""""
 
     def __init__(self):
-        """Initialize the AI service."""
+        """Initialize the AI service."""""
         self.mock_models = [
             {
                 "id": "anomaly_detector_v1",
@@ -161,8 +161,8 @@ class AIService:
         anomaly_indicators = []
 
         if cpu_usage > 80:
-            anomaly_indicators.append()
-                {
+            anomaly_indicators.append(
+            {
                     "metric": "cpu_usage",
                     "value": cpu_usage,
                     "threshold": 80,
@@ -171,8 +171,8 @@ class AIService:
             )
 
         if memory_usage > 85:
-            anomaly_indicators.append()
-                {
+            anomaly_indicators.append(
+            {
                     "metric": "memory_usage",
                     "value": memory_usage,
                     "threshold": 85,
@@ -181,8 +181,8 @@ class AIService:
             )
 
         if error_rate > 5:
-            anomaly_indicators.append()
-                {
+            anomaly_indicators.append(
+            {
                     "metric": "error_rate",
                     "value": error_rate,
                     "threshold": 5,

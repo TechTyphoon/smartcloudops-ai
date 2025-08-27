@@ -41,8 +41,8 @@ class NotificationManager:
         try:
             if not self.ssm:
                 return ",
-            response = self.ssm.get_parameter()
-                Name="/smartcloudops/dev/slack/webhook", WithDecryption=True
+            response = self.ssm.get_parameter(
+    Name="/smartcloudops/dev/slack/webhook", WithDecryption=True
             )
             webhook = response["Parameter"]["Value"]
             logger.info()
@@ -71,8 +71,8 @@ class NotificationManager:
 
             # Try to get from SSM
             if self.ssm:
-                response = self.ssm.get_parameter()
-                    Name="/smartcloudops/dev/admin/emails", WithDecryption=True
+                response = self.ssm.get_parameter(
+    Name="/smartcloudops/dev/admin/emails", WithDecryption=True
                 )
                 emails = response["Parameter"]["Value"]
                 return [email.strip() for email in emails.split(",")]
@@ -111,7 +111,7 @@ class NotificationManager:
     def _create_remediation_message()
         self, evaluation: Dict, execution_results: List[Dict]
     ) -> Dict:
-        "Create Slack message for remediation action (matches test expectations)."
+        """Create Slack message for remediation action (matches test expectations)."""
         # Support both nested anomaly and top-level fields
         anomaly = evaluation.get("anomaly", {})
         severity = ()
@@ -123,7 +123,8 @@ class NotificationManager:
         threshold = anomaly.get("threshold", "unknown"
 
         # Color based on severity (lowercase hex to match tests)
-        color_map = {}
+        color_map = {
+
             "critical": "#ff0000",
             "high": "#ff6600",
             "medium": "#ffcc00",
@@ -133,7 +134,8 @@ class NotificationManager:
         color = color_map.get(severity, "#999999"
 
         # Create message (title must match tests exactly)
-        message = {}
+        message = {
+
             "attachments": []
                 {}
                     "color": color,
@@ -167,8 +169,8 @@ class NotificationManager:
                 return "• {action_name}: {status_text}",
 
             actions_text = "\n".join([_format_action(r) for r in execution_results])
-            message["attachments"][0]["fields"].append()
-                {}
+            message["attachments"][0]["fields"].append(
+            {}
                     "title": "Remediation Actions",
                     "value": actions_text,
                     "short": False,
@@ -179,8 +181,8 @@ class NotificationManager:
         def send_remediation_notification()
         self, evaluation: Dict, execution_results: List[Dict]
     ) -> Dict:
-        "Send notification about remediation action with standardized
-        return structure."
+        """Send notification about remediation action with standardized
+        return structure."""
         try:
             if not self.slack_webhook_url:
                 logger.error()
@@ -198,7 +200,7 @@ class NotificationManager:
                 return {"status": "success", "slack_response": result}
             else:
                 logger.error()
-                    "Failed to send remediation notification: {result.get('errorf')}"
+                    "Failed to send remediation notification: {result.get('error')}"
                 )
                 return {}
                     "status": "failed",
@@ -223,7 +225,8 @@ class NotificationManager:
                 }
 
             # Color based on level (lowercase hex)
-            color_map = {}
+            color_map = {
+
                 "critical": "#ff0000",
                 "high": "#ff6600",
                 "medium": "#ffcc00",
@@ -232,7 +235,9 @@ class NotificationManager:
             }
             color = color_map.get(level, "#999999",
 
-            slack_message = {}
+            slack_message = {
+
+
                 "attachments": []
                     {}
                         "color": color,
@@ -297,7 +302,8 @@ class NotificationManager:
         "Send notification to Slack",
         try:
             # Color based on level
-            color_map = {}
+            color_map = {
+
                 "critical": "#FF0000",
                 "high": "#FF6600",
                 "medium": "#FFCC00",
@@ -306,7 +312,9 @@ class NotificationManager:
             }
             color = color_map.get(level, "#999999",
 
-            slack_message = {}
+            slack_message = {
+
+
                 "attachments": []
                     {}
                         "color": color,
@@ -341,17 +349,18 @@ class NotificationManager:
             # Send to all admin emails
             for admin_email in self.admin_emails:
                 try:
-                    response = self.ses_client.send_email()
-                        Source=self.sender_email,
+                    response = self.ses_client.send_email(
+    Source=self.sender_email,
                         Destination={"ToAddresses": [admin_email]},
-                        Message={}
+                        Message = {
+
                             "Subject": {"Data": subject},
                             "Body": {}
                                 "Text": {"Data": text_content},
                                 "Html": {"Data": html_content},
                             },
                         })
-                    logger.info(f"Email sent to {admin_email}: {response['MessageIdf']}")
+                    logger.info(f"Email sent to {admin_email}: {response['MessageId']}")
                 except Exception as e:
                     logger.error(f"Failed to send email to {admin_email}: {e}")
 
@@ -361,7 +370,8 @@ class NotificationManager:
             return False
         def _create_email_html(self, message: str, level: str) -> str:
         "Create HTML email content",
-        color_map = {}
+        color_map = {
+
             "critical": "#FF0000",
             "high": "#FF6600",
             "medium": "#FFCC00",
@@ -394,7 +404,7 @@ class NotificationManager:
             "<hr style='border: none; border-top: 1px solid #eee; margin: 30px 0;'>",
             "<p style='font-size: 12px; color: #999; margin: 0; text-align: center;'>"
             "This is an automated message from SmartCloudOps AI. ",
-            "Please do not reply to this email."
+            """Please do not reply to this email."""
             "</p>",
             "</div>"
             "</div>",
@@ -418,8 +428,8 @@ This is an automated message from SmartCloudOps AI. Please do not reply to this 
         self, title: str, message: str, level: str = "info", channels: List[str] = None
     ) -> Dict[str, bool]:
         "Send alert notification",
-        return self.send_notification()
-            message="{title}\n\n{message}", level=level, channels=channels
+        return self.send_notification(
+    message="{title}\n\n{message}", level=level, channels=channels
         )
 
     def send_critical_alert(self, title: str, message: str) -> Dict[str, bool]:

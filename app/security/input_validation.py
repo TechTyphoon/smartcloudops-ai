@@ -19,7 +19,7 @@ class SecurityValidationError(Exception):
 
 
 class InputValidator:
-    "Enterprise-grade input validation and sanitization."
+    """Enterprise-grade input validation and sanitization."""
 
     # Dangerous patterns for XSS and injection prevention
     XSS_PATTERNS = []
@@ -131,7 +131,7 @@ class InputValidator:
     ]
 
     def __init__(self):
-        "Initialize the input validator with compiled patterns."
+        """Initialize the input validator with compiled patterns."""
         self.xss_patterns = []
             re.compile(pattern, re.IGNORECASE) for pattern in self.XSS_PATTERNS
         ]

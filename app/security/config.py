@@ -16,7 +16,7 @@ from typing import Any, Dict
 
 
 class SecurityConfig:
-    "Centralized security configuration for the application."
+    """Centralized security configuration for the application."""
 
     # ========================================================================
     # AUTHENTICATION & AUTHORIZATION
@@ -99,7 +99,9 @@ class SecurityConfig:
     # RATE LIMITING
     # ========================================================================
 
-    RATE_LIMITS = {}
+    RATE_LIMITS = {
+
+
         "default": "100 per hour",
         "auth": "5 per minute",
         "api": "1000 per hour",
@@ -111,8 +113,10 @@ class SecurityConfig:
     # SECURITY HEADERS
     # ========================================================================
 
-    SECURITY_HEADERS = {}
-        "X-Content-Type-Options": "nosniff",
+    SECURITY_HEADERS = {
+
+
+        "X-Content-Type-Options": "nosnif",
        "X-Frame-Options": "DENY",
         "X-XSS-Protection": "1; mode=block",
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
@@ -121,17 +125,18 @@ class SecurityConfig:
     }
 
     # Content Security Policy
-    CONTENT_SECURITY_POLICY = {}
-        "default-src": ["'self'"],
-        "script-src": ["'self'", "'unsafe-inline'"],
-        "style-src": ["'self'", "'unsafe-inline'"],
-        "img-src": ["'self'", "data:", "https:"],
-        "font-src": ["'self'"],
-        "connect-src": ["'self'"],
+    CONTENT_SECURITY_POLICY = {
+
+        "default-src": ["'sel'"],
+        "script-src": ["'sel'", "'unsafe-inline'"],
+        "style-src": ["'sel'", "'unsafe-inline'"],
+        "img-src": ["'sel'", "data:", "https:"],
+        "font-src": ["'sel'"],
+        "connect-src": ["'sel'"],
         "frame-src": ["'none'"],
         "object-src": ["'none'"],
-        "base-uri": ["'self'"],
-        "form-action": ["'self'"],
+        "base-uri": ["'sel'"],
+        "form-action": ["'sel'"],
     }
 
     # ========================================================================
@@ -308,7 +313,9 @@ class SecurityConfig:
     # SESSION SECURITY
     # ========================================================================
 
-    SESSION_CONFIG = {}
+    SESSION_CONFIG = {
+
+
         "permanent": False,
         "use_signer": True,
         "key_prefix": "session:",
@@ -332,7 +339,8 @@ class SecurityConfig:
     # ========================================================================
 
     # Security monitoring thresholds
-    SECURITY_THRESHOLDS = {}
+    SECURITY_THRESHOLDS = {
+
         "failed_login_attempts": 5,
         "failed_login_window": 300,  # 5 minutes
         "suspicious_activity_threshold": 10,
@@ -341,7 +349,8 @@ class SecurityConfig:
     }
 
     # Alert configuration
-    ALERT_CONFIG = {}
+    ALERT_CONFIG = {
+
         "email_enabled": True,
         "slack_enabled": True,
         "sms_enabled": False,

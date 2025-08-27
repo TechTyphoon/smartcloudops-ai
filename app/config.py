@@ -12,12 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 def get_secret(key: str, default: str = "") -> str:
-    """Get secret from environment variables with validation."""
+    """Get secret from environment variables with validation."""""
     return os.getenv(key, default)
 
 
 def load_dotenv():
-    """Load environment variables from .env file with security validation."""
+    """Load environment variables from .env file with security validation."""""
     env_path = Path(__file__).parent.parent / ".env"
     if env_path.exists():
         try:
@@ -52,11 +52,11 @@ load_dotenv()
 
 
 class ConfigValidationError(Exception):
-    """Custom exception for configuration validation errors."""
+    """Custom exception for configuration validation errors."""""
 
 
 class Config:
-    """Base configuration class with comprehensive validation."""
+    """Base configuration class with comprehensive validation."""""
 
     # Basic app configuration
     APP_NAME: str = "Smart CloudOps AI"
@@ -112,11 +112,11 @@ class Config:
     REQUEST_TIMEOUT: int = int(get_secret("REQUEST_TIMEOUT", "30"))
 
     def __init__(self):
-        """Initialize configuration with validation."""
+        """Initialize configuration with validation."""""
         self.validate_config()
 
     def validate_config(self):
-        """Validate critical configuration values."""
+        """Validate critical configuration values."""""
         errors = []
 
         # Validate required secrets
@@ -139,7 +139,7 @@ class Config:
             raise ConfigValidationError(f"Configuration validation failed: {', '.join(errors)}")
 
     def get_database_config(self) -> Dict[str, Any]:
-        """Get database configuration as dictionary."""
+        """Get database configuration as dictionary."""""
         return {
             "url": self.DATABASE_URL,
             "pool_size": self.DATABASE_POOL_SIZE,
@@ -149,7 +149,7 @@ class Config:
         }
 
     def get_redis_config(self) -> Dict[str, Any]:
-        """Get Redis configuration as dictionary."""
+        """Get Redis configuration as dictionary."""""
         return {
             "host": self.REDIS_HOST,
             "port": self.REDIS_PORT,
@@ -158,7 +158,7 @@ class Config:
         }
 
     def get_ai_config(self) -> Dict[str, Any]:
-        """Get AI configuration as dictionary."""
+        """Get AI configuration as dictionary."""""
         return {
             "provider": self.AI_PROVIDER,
             "openai_api_key": self.OPENAI_API_KEY,
@@ -170,19 +170,19 @@ class Config:
 
 
 def get_config() -> Config:
-    """Get application configuration instance."""
+    """Get application configuration instance."""""
     return Config()
 
 
 # Environment-specific configurations
 class DevelopmentConfig(Config):
-    """Development configuration."""
+    """Development configuration."""""
     DEBUG = True
     LOG_LEVEL = "DEBUG"
 
 
 class TestingConfig(Config):
-    """Testing configuration."""
+    """Testing configuration."""""
     DEBUG = True
     TESTING = True
     DATABASE_URL = "sqlite:///:memory:"
@@ -191,14 +191,14 @@ class TestingConfig(Config):
 
 
 class ProductionConfig(Config):
-    """Production configuration."""
+    """Production configuration."""""
     DEBUG = False
     LOG_LEVEL = "WARNING"
 
 
 # Configuration factory
 def get_config_by_env(env: str = None) -> Config:
-    """Get configuration based on environment."""
+    """Get configuration based on environment."""""
     if env is None:
         env = os.getenv("FLASK_ENV", "development")
 

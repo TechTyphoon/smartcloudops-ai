@@ -5,14 +5,23 @@ Tests anomaly detection, model training, and prediction functionality
 """
 
 import os
+import sys
+import pytest
+import numpy as np
+from unittest.mock import Mock, patch, MagicMock
+
+# Add the project root to Python path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+
+from ml_models.anomaly_detector import AnomalyDetector
 
 
 class TestAnomalyDetector:
-    """Test suite for AnomalyDetector functionality."""
+    """Test suite for AnomalyDetector functionality."""""
 
     @pytest.fixture
     def sample_data(self):
-        """Create sample data for testing."""
+        """Create sample data for testing."""""
         np.random.seed(42)
         n_samples = 1000
 
@@ -36,7 +45,7 @@ class TestAnomalyDetector:
 
     @pytest.fixture
     def mock_config(self):
-        """Create mock configuration for testing.""f"
+        """Create mock configuration for testing."""""
         return {
             "MODEL_PATH": "/tmp/test_model.pkl",
             "ANOMALY_THRESHOLD": 0.7,
@@ -46,7 +55,7 @@ class TestAnomalyDetector:
 
     @patch("ml_models.anomaly_detector.IsolationForest")
     def test_anomaly_detector_initialization(self, mock_isolation_forest, mock_config):
-        """Test anomaly detector initialization."""
+        """Test anomaly detector initialization."""""
         detector = AnomalyDetector(mock_config)
 
         assert detector is not None
@@ -56,7 +65,7 @@ class TestAnomalyDetector:
 
     @patch("ml_models.anomaly_detector.IsolationForest")
     def test_model_training(self, mock_isolation_forest, sample_data, mock_config):
-        """Test model training functionality."""
+        """Test model training functionality."""""
         # Setup mock
         mock_model = Mock()
         mock_model.fit.return_value = mock_model
@@ -74,7 +83,7 @@ class TestAnomalyDetector:
 
     @patch("ml_models.anomaly_detector.IsolationForest")
     def test_anomaly_prediction(self, mock_isolation_forest, sample_data, mock_config):
-        """Test anomaly prediction functionality."""
+        """Test anomaly prediction functionality."""""
         # Setup mock
         mock_model = Mock()
         mock_model.fit.return_value = mock_model
@@ -103,7 +112,7 @@ class TestAnomalyDetector:
 
     @patch("ml_models.anomaly_detector.IsolationForest")
     def test_model_save_and_load(self, mock_isolation_forest, sample_data, mock_config):
-        """Test model save and load functionality."""
+        """Test model save and load functionality."""""
         # Setup mock
         mock_model = Mock()
         mock_model.fit.return_value = mock_model
@@ -128,7 +137,7 @@ class TestAnomalyDetector:
             os.unlink(tmp_file.name)
 
     def test_data_preprocessing(self, sample_data, mock_config):
-        """Test data preprocessing functionality."""
+        """Test data preprocessing functionality."""""
         detector = AnomalyDetector(mock_config)
 
         # Test preprocessing
@@ -140,7 +149,7 @@ class TestAnomalyDetector:
         assert processed_data.shape[1] > 0
 
     def test_feature_engineering(self, sample_data, mock_config):
-        """Test feature engineering functionality."""
+        """Test feature engineering functionality."""""
         detector = AnomalyDetector(mock_config)
 
         # Test feature engineering
@@ -154,7 +163,7 @@ class TestAnomalyDetector:
 
     @patch("ml_models.anomaly_detector.IsolationForest")
     def test_model_evaluation(self, mock_isolation_forest, sample_data, mock_config):
-        """Test model evaluation functionality."""
+        """Test model evaluation functionality."""""
         # Setup mock
         mock_model = Mock()
         mock_model.fit.return_value = mock_model
@@ -174,7 +183,7 @@ class TestAnomalyDetector:
         assert "confusion_matrix" in evaluation_result
 
     def test_anomaly_threshold_validation(self, mock_config):
-        """Test anomaly threshold validation."""
+        """Test anomaly threshold validation."""""
         # Test valid threshold
         valid_config = mock_config.copy()
         valid_config["ANOMALY_THRESHOLD"] = 0.5
@@ -188,7 +197,7 @@ class TestAnomalyDetector:
         assert detector.config["ANOMALY_THRESHOLD"] <= 1.0
 
     def test_data_validation(self, mock_config):
-        """Test data validation functionality.""f"
+        """Test data validation functionality."""""
         detector = AnomalyDetector(mock_config)
 
         # Test valid data
@@ -209,11 +218,11 @@ class TestAnomalyDetector:
 
 
 class TestModelVersioning:
-    """Test suite for model versioning functionality."""
+    """Test suite for model versioning functionality."""""
 
     @pytest.fixture
     def mock_config(self):
-        """Create mock configuration for versioning tests.""f"
+        """Create mock configuration for versioning tests."""""
         return {
             "MODEL_REGISTRY_PATH": "/tmp/model_registry",
             "VERSION_FORMAT": "v{major}.{minor}.{patch}",
@@ -221,7 +230,7 @@ class TestModelVersioning:
         }
 
     def test_version_creation(self, mock_config):
-        """Test model version creation."""
+        """Test model version creation."""""
         versioning = ModelVersioning(mock_config)
 
         # Test version creation
@@ -230,7 +239,7 @@ class TestModelVersioning:
         assert "1.0.0" in version
 
     def test_version_comparison(self, mock_config):
-        """Test version comparison functionality."""
+        """Test version comparison functionality."""""
         versioning = ModelVersioning(mock_config)
 
         # Test version comparison
@@ -239,7 +248,7 @@ class TestModelVersioning:
         assert versioning.compare_versions("1.0.0", "1.0.0") == 0
 
     def test_version_cleanup(self, mock_config):
-        """Test version cleanup functionality."""
+        """Test version cleanup functionality."""""
         versioning = ModelVersioning(mock_config)
 
         # Test cleanup
@@ -250,11 +259,11 @@ class TestModelVersioning:
 
 
 class TestMLModelsIntegration:
-    """Integration tests for ML models with external dependencies."""
+    """Integration tests for ML models with external dependencies."""""
 
     @pytest.fixture
     def sample_data(self):
-        """Create sample data for integration testing.""f"
+        """Create sample data for integration testing."""""
         np.random.seed(42)
         return pd.DataFrame(
             {
@@ -266,7 +275,7 @@ class TestMLModelsIntegration:
 
     @patch("ml_models.anomaly_detector.joblib")
     def test_full_ml_pipeline(self, mock_joblib, sample_data):
-        """Test complete ML pipeline from training to prediction.""f"
+        """Test complete ML pipeline from training to prediction."""""
         config = {
             "MODEL_PATH": "/tmp/test_model.pkl",
             "ANOMALY_THRESHOLD": 0.7,
@@ -291,7 +300,7 @@ class TestMLModelsIntegration:
         assert eval_result["success"] is True
 
     def test_model_persistence(self, sample_data):
-        """Test model persistence across sessions.""f"
+        """Test model persistence across sessions."""""
         config = {
             "MODEL_PATH": "/tmp/persistent_model.pkl",
             "ANOMALY_THRESHOLD": 0.7,
@@ -326,10 +335,10 @@ class TestMLModelsIntegration:
 
 
 class TestMLModelsErrorHandling:
-    """Test error handling in ML models."""
+    """Test error handling in ML models."""""
 
     def test_invalid_data_handling(self):
-        """Test handling of invalid data.""f"
+        """Test handling of invalid data."""""
         config = {
             "MODEL_PATH": "/tmp/test_model.pkl",
             "ANOMALY_THRESHOLD": 0.7,
@@ -350,7 +359,7 @@ class TestMLModelsErrorHandling:
         assert "error" in result
 
     def test_model_file_errors(self):
-        """Test handling of model file errors.""f"
+        """Test handling of model file errors."""""
         config = {
             "MODEL_PATH": "/tmp/test_model.pkl",
             "ANOMALY_THRESHOLD": 0.7,
@@ -366,7 +375,7 @@ class TestMLModelsErrorHandling:
         assert "error" in result
 
     def test_configuration_errors(self):
-        """Test handling of configuration errors.""f"
+        """Test handling of configuration errors."""""
         # Test with missing required config
         try:
             detector = AnomalyDetector({})
@@ -378,11 +387,11 @@ class TestMLModelsErrorHandling:
 
 
 class TestMLModelsPerformance:
-    """Performance tests for ML models."""
+    """Performance tests for ML models."""""
 
     @pytest.fixture
     def large_sample_data(self):
-        """Create large sample data for performance testing.""f"
+        """Create large sample data for performance testing."""""
         np.random.seed(42)
         n_samples = 10000
         return pd.DataFrame(
@@ -397,7 +406,7 @@ class TestMLModelsPerformance:
 
     @patch("ml_models.anomaly_detector.IsolationForest")
     def test_training_performance(self, mock_isolation_forest, large_sample_data):
-        """Test model training performance.""f"
+        """Test model training performance."""""
 
         config = {
             "MODEL_PATH": "/tmp/test_model.pkl",
@@ -422,7 +431,7 @@ class TestMLModelsPerformance:
 
     @patch("ml_models.anomaly_detector.IsolationForest")
     def test_prediction_performance(self, mock_isolation_forest, large_sample_data):
-        """Test prediction performance.""f"
+        """Test prediction performance."""""
 
         config = {
             "MODEL_PATH": "/tmp/test_model.pkl",

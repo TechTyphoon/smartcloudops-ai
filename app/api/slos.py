@@ -1,7 +1,7 @@
-"
+"""
 SLO API Endpoints
 Phase 4: Observability & Operability - SLO monitoring and reporting
-"
+"""
 
 import time
 from datetime import datetime, timedelta
@@ -28,7 +28,7 @@ def get_slo_status_endpoint():
         slo_status = get_all_slo_status()
         
         # Log business event
-        log_business_event()
+        log_business_event(
             event_type="slo_status_check",
             business_value=len(slo_status),
             slo_count=len(slo_status),
@@ -79,7 +79,7 @@ def get_specific_slo_status(slo_name: str):
             }), 404
         
         # Log business event
-        log_business_event()
+        log_business_event(
             event_type="slo_status_check",
             business_value=current_value,
             slo_name=slo_name,
@@ -192,7 +192,8 @@ def get_slo_trends():
         days = request.args.get("days", 30, type=int)
         
         # Generate mock trend data
-        trends = {}
+        trends = {
+
             "api_availability": {}
                 "trend": "stable",
                 "average": 99.8,
@@ -287,7 +288,8 @@ def get_slo_metrics():
                 metrics.append(f'slo_error_budget{{slo="{slo_name}"}} {status.get("error_budget", 0)} {timestamp}')
                 
                 # SLO status metric (0=meeting, 1=warning, 2=alert, 3=critical)
-                status_value = {}
+                status_value = {
+
                     "meeting": 0,
                     "warning": 1,
                     "alert": 2,

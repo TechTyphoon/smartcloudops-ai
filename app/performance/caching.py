@@ -1,7 +1,7 @@
-"
+"""
 Advanced Caching Strategy Implementation
 Phase 2C Week 1: Performance & Scaling - Caching System
-"
+"""
 
 import hashlib
 import json

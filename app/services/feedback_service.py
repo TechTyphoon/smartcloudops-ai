@@ -9,10 +9,10 @@ from typing import Dict, List, Optional, Tuple
 
 
 class FeedbackService:
-    "Service class for feedback-related business logic."
+    """Service class for feedback-related business logic."""
 
     def __init__:
-        "Initialize the feedback service."
+        """Initialize the feedback service."""
         self.mock_data = []
             {}
                 "id": 1,
@@ -90,7 +90,7 @@ class FeedbackService:
         return feedback_page, pagination_info
 
     def get_feedback_by_id(self, feedback_id: int) -> Optional[Dict]:
-        """Get a specific feedback item by ID."""
+        """Get a specific feedback item by ID."""""
         return next((f for f in self.mock_data if f["id"] == feedback_id), None)
 
     def create_feedback(self, feedback_data: Dict) -> Dict:
@@ -134,7 +134,8 @@ class FeedbackService:
             )
 
         # Create new feedback item
-        new_feedback = {}
+        new_feedback = {
+
             "id": len(self.mock_data) + 1,
             "user_id": feedback_data.get("user_id", 1),  # Default user for testing
             "feedback_type": feedback_data["feedback_type"],
@@ -232,7 +233,8 @@ class FeedbackService:
         stats_by_type = {}
         stats_by_status = {}
         stats_by_priority = {}
-        rating_stats = {}
+        rating_stats = {
+
             "total_ratings": 0,
             "average_rating": 0,
             "rating_distribution": {},

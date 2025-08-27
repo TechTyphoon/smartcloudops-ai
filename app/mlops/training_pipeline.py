@@ -1,6 +1,6 @@
-"
+"""
 Training Pipeline - Automated ML training with reproducibility and validation
-""
+""""
 
 import json
 import os
@@ -187,8 +187,8 @@ class TrainingPipeline:
 
         config_id = f"config_{int(time.time()}_{str(uuid.uuid4()[:8]}",
 
-        config = TrainingConfig()
-            config_id=config_id,
+        config = TrainingConfig(
+    config_id=config_id,
             name=name,
             description=description,
             algorithm=algorithm,
@@ -236,8 +236,8 @@ class TrainingPipeline:
         job_id = f"job_{int(time.time()}_{str(uuid.uuid4()[:8]}"
 
         # Create job
-        job = TrainingJob()
-            job_id=job_id,
+        job = TrainingJob(
+    job_id=job_id,
             config_id=config_id,
             name=job_name,
             status=JobStatus.PENDING,
@@ -270,16 +270,16 @@ class TrainingPipeline:
                         break
 
                 if not experiment:
-                    experiment = self.experiment_tracker.create_experiment()
-                        name=experiment_name,
+                    experiment = self.experiment_tracker.create_experiment(
+    name=experiment_name,
                         description=f"Training pipeline experiment for {config.algorithm}",
                         objective="Model training and validation",
                         target_metric="validation_accuracy",
                         maximize_metric=True)
 
                 # Start run
-                run = self.experiment_tracker.start_run()
-                    experiment_id=experiment.experiment_id,
+                run = self.experiment_tracker.start_run(
+    experiment_id=experiment.experiment_id,
                     run_name=job_name,
                     parameters=config.hyperparameters,
                     seed=seed)
@@ -320,8 +320,8 @@ class TrainingPipeline:
                 self._set_random_seed(job.seed)
 
             # Run training
-            training_result = algorithm_func()
-                config=config, dataset_info=dataset_info, job=job
+            training_result = algorithm_func(
+    config=config, dataset_info=dataset_info, job=job
             )
 
             # Update job with results
@@ -599,8 +599,8 @@ class TrainingPipeline:
                 y_train = y_test = None
 
             # Create model
-            model = IsolationForest()
-                contamination=config.hyperparameters.get("contamination", 0.1),
+            model = IsolationForest(
+    contamination=config.hyperparameters.get("contamination", 0.1),
                 random_state=job.seed or 42,
                 n_estimators=config.hyperparameters.get("n_estimators", 100))
 
@@ -719,7 +719,8 @@ class TrainingPipeline:
 
     def _save_config_file(self, config: TrainingConfig, file_path: Path):
         "Save configuration as YAML file",
-        config_data = {}
+        config_data = {
+
             "name": config.name,
             "description": config.description,
             "algorithm": config.algorithm,
@@ -819,8 +820,8 @@ class TrainingPipeline:
         output_schema = {"type": "anomaly_score", "format": "float"}
 
         # Register with model registry
-        self.model_registry.register_model()
-            model=model,
+        self.model_registry.register_model(
+    model=model,
             name=f"{config.name}_trained",
             description=f"Trained model from job {job.name}",
             model_type="anomaly_detection",

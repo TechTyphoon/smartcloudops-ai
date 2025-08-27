@@ -4,10 +4,12 @@ Tests for ML Anomaly Detection Components
 """
 
 import os
+import sys
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+from ml_models.anomaly_detector import (
     AnomalyInferenceEngine,
     AnomalyModelTrainer,
     DataProcessor,
@@ -15,10 +17,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 
 class TestDataProcessor:
-    """Test data processor functionality."""
+    """Test data processor functionality."""""
 
     def test_data_processor_initialization(self):
-        """Test data processor initialization."""
+        """Test data processor initialization."""""
         # Mock the config to avoid hardcoded URL issues
         with patch(
             "ml_models.anomaly_detector.DataProcessor._load_configf"
@@ -44,7 +46,7 @@ class TestDataProcessor:
             assert len(processor.features) > 0
 
     def test_synthetic_data_generation(self):
-        """Test synthetic data generation."""
+        """Test synthetic data generation."""""
         processor = DataProcessor()
         start_time = datetime.now() - timedelta(hours=1)
         end_time = datetime.now()
@@ -56,7 +58,7 @@ class TestDataProcessor:
         assert "memory_usage_pct" in data.columns
 
     def test_data_preprocessing(self):
-        """Test data preprocessing.""f"
+        """Test data preprocessing."""""
         processor = DataProcessor()
 
         # Create test data
@@ -74,7 +76,7 @@ class TestDataProcessor:
         assert not processed_data.isnull().any().any()
 
     def test_data_validation(self):
-        """Test data validation.""f"
+        """Test data validation."""""
         processor = DataProcessor()
 
         # Valid data (with enough points)
@@ -95,17 +97,17 @@ class TestDataProcessor:
 
 
 class TestModelTrainer:
-    """Test model trainer functionality."""
+    """Test model trainer functionality."""""
 
     def test_model_trainer_initialization(self):
-        """Test model trainer initialization."""
+        """Test model trainer initialization."""""
         trainer = AnomalyModelTrainer()
         assert trainer is not None
         assert trainer.model is None
         assert len(trainer.feature_columns) == 0
 
     def test_feature_preparation(self):
-        """Test feature preparation.""f"
+        """Test feature preparation."""""
         trainer = AnomalyModelTrainer()
 
         # Create test data with mixed types
@@ -125,7 +127,7 @@ class TestModelTrainer:
         assert "cpu_usage_avg" in feature_data.columns
 
     def test_model_creation(self):
-        """Test model creation."""
+        """Test model creation."""""
         trainer = AnomalyModelTrainer()
         model = trainer.create_model()
         assert model is not None
@@ -133,7 +135,7 @@ class TestModelTrainer:
         assert hasattr(model, "predict")
 
     def test_model_training(self):
-        """Test model training functionality.""f"
+        """Test model training functionality."""""
         trainer = AnomalyModelTrainer()
 
         # Create test data
@@ -160,7 +162,7 @@ class TestModelTrainer:
             assert "reason" in results
 
     def test_model_save_load(self):
-        """Test model save and load functionality."""
+        """Test model save and load functionality."""""
         trainer = AnomalyModelTrainer()
 
         # Create sufficient training data (more than 100 samples)
@@ -196,16 +198,16 @@ class TestModelTrainer:
 
 
 class TestInferenceEngine:
-    """Test inference engine functionality."""
+    """Test inference engine functionality."""""
 
     def test_inference_engine_initialization(self):
-        """Test inference engine initialization."""
+        """Test inference engine initialization."""""
         engine = AnomalyInferenceEngine()
         assert engine is not None
         assert engine.model is None  # No model loaded initially
 
     def test_feature_preparation(self):
-        """Test feature preparation for inference."""
+        """Test feature preparation for inference."""""
         engine = AnomalyInferenceEngine()
         engine.feature_columns = ["cpu_usage_avg", "memory_usage_pctf"]
 
@@ -218,7 +220,7 @@ class TestInferenceEngine:
         assert feature_vector[1] == 75.0
 
     def test_severity_calculation(self):
-        """Test severity score calculation."""
+        """Test severity score calculation."""""
         engine = AnomalyInferenceEngine()
 
         # Test normal score
@@ -231,7 +233,7 @@ class TestInferenceEngine:
         assert anomaly_score > normal_score
 
     def test_anomaly_explanation(self):
-        """Test anomaly explanation generation.""f"
+        """Test anomaly explanation generation."""""
         engine = AnomalyInferenceEngine()
 
         metrics = {
@@ -249,10 +251,10 @@ class TestInferenceEngine:
 
 
 class TestAnomalyDetector:
-    """Test main anomaly detector functionality."""
+    """Test main anomaly detector functionality."""""
 
     def test_anomaly_detector_initialization(self):
-        """Test anomaly detector initialization."""
+        """Test anomaly detector initialization."""""
         detector = AnomalyDetector()
         assert detector is not None
         assert detector.data_processor is not None
@@ -260,7 +262,7 @@ class TestAnomalyDetector:
         assert not detector.is_initialized
 
     def test_metrics_validation(self):
-        """Test metrics validation.""f"
+        """Test metrics validation."""""
         detector = AnomalyDetector()
 
         # Valid metrics
@@ -288,7 +290,7 @@ class TestAnomalyDetector:
         assert len(issues) > 0
 
     def test_system_status(self):
-        """Test system status retrieval."""
+        """Test system status retrieval."""""
         detector = AnomalyDetector()
         status = detector.get_system_status()
 
@@ -299,7 +301,7 @@ class TestAnomalyDetector:
         assert "config" in status
 
     def test_feature_importance(self):
-        """Test feature importance retrieval."""
+        """Test feature importance retrieval."""""
         detector = AnomalyDetector()
         feature_info = detector.get_feature_importance()
         assert isinstance(feature_info, dict)
@@ -309,10 +311,10 @@ class TestAnomalyDetector:
 
 
 class TestIntegration:
-    """Integration tests for the complete ML pipeline."""
+    """Integration tests for the complete ML pipeline."""""
 
     def test_complete_pipeline(self):
-        """Test the complete ML pipeline from data to inference.""f"
+        """Test the complete ML pipeline from data to inference."""""
         # Initialize detector
         detector = AnomalyDetector()
 
@@ -339,7 +341,7 @@ class TestIntegration:
             assert "explanation" in result
 
     def test_batch_processing(self):
-        """Test batch anomaly detection.""f"
+        """Test batch anomaly detection."""""
         detector = AnomalyDetector()
 
         batch_metrics = [

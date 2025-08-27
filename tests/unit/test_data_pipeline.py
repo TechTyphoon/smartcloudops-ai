@@ -20,23 +20,23 @@ from app.mlops.data_pipeline import (
 
 @pytest.mark.unit 
 class TestDataPipelineManager:
-    """Test cases for DataPipelineManager core functionality."""
+    """Test cases for DataPipelineManager core functionality."""""
     
     def setup_method(self):
-        """Set up test fixtures before each test method."""
+        """Set up test fixtures before each test method."""""
         # Create temporary directory for testing
         self.temp_dir = tempfile.mkdtemp()
         self.pipeline_manager = DataPipelineManager(storage_path=self.temp_dir)
     
     def teardown_method(self):
-        """Clean up test fixtures after each test method."""
+        """Clean up test fixtures after each test method."""""
         if Path(self.temp_dir).exists():
             shutil.rmtree(self.temp_dir)
     
     # ===== INITIALIZATION TESTS =====
     
     def test_initialization_success(self):
-        """Test DataPipelineManager initializes successfully."""
+        """Test DataPipelineManager initializes successfully."""""
         assert self.pipeline_manager is not None
         assert self.pipeline_manager.storage_path == Path(self.temp_dir)
         assert self.pipeline_manager.data_path.exists()
@@ -46,7 +46,7 @@ class TestDataPipelineManager:
         assert self.pipeline_manager.db_path.exists()
     
     def test_database_initialization(self):
-        """Test database tables are created correctly."""
+        """Test database tables are created correctly."""""
         import sqlite3
         
         conn = sqlite3.connect(self.pipeline_manager.db_path)
@@ -63,7 +63,7 @@ class TestDataPipelineManager:
         conn.close()
     
     def test_global_instance(self):
-        """Test global instance management."""
+        """Test global instance management."""""
         manager1 = get_data_pipeline_manager()
         manager2 = get_data_pipeline_manager()
         
@@ -74,7 +74,7 @@ class TestDataPipelineManager:
     # ===== DATA INGESTION TESTS =====
     
     def test_ingest_simple_data(self):
-        """Test ingesting simple dictionary data."""
+        """Test ingesting simple dictionary data."""""
         # Create mock data
         data_dict = {
             'id': [1, 2, 3, 4, 5],
@@ -100,7 +100,7 @@ class TestDataPipelineManager:
         assert isinstance(version.quality_status, DataQualityStatus)
     
     def test_ingest_data_with_metadata(self):
-        """Test ingesting data with source metadata."""
+        """Test ingesting data with source metadata."""""
         try:
             import pandas as pd
             df = pd.DataFrame({'col1': [1, 2, 3], 'col2': ['a', 'b', 'c']})
@@ -126,7 +126,7 @@ class TestDataPipelineManager:
             pytest.skip("Pandas not available for DataFrame testing")
     
     def test_ingest_empty_data(self):
-        """Test ingesting empty data."""
+        """Test ingesting empty data."""""
         try:
             import pandas as pd
             empty_df = pd.DataFrame()
@@ -144,7 +144,7 @@ class TestDataPipelineManager:
     # ===== DATA VERSION MANAGEMENT TESTS =====
     
     def test_get_data_version_existing(self):
-        """Test retrieving existing data version."""
+        """Test retrieving existing data version."""""
         try:
             import pandas as pd
             df = pd.DataFrame({'test_col': [1, 2, 3]})
@@ -163,12 +163,12 @@ class TestDataPipelineManager:
             pytest.skip("Pandas not available for DataFrame testing")
     
     def test_get_data_version_nonexistent(self):
-        """Test retrieving non-existent data version."""
+        """Test retrieving non-existent data version."""""
         with pytest.raises(ValueError, match="Data version not found"):
             self.pipeline_manager.get_data_version("nonexistent_version_id")
     
     def test_get_latest_version(self):
-        """Test getting latest version of a dataset."""
+        """Test getting latest version of a dataset."""""
         try:
             import pandas as pd
             
@@ -189,12 +189,12 @@ class TestDataPipelineManager:
             pytest.skip("Pandas not available for DataFrame testing")
     
     def test_get_latest_version_nonexistent(self):
-        """Test getting latest version of non-existent dataset."""
+        """Test getting latest version of non-existent dataset."""""
         latest = self.pipeline_manager.get_latest_version('nonexistent_dataset')
         assert latest is None
     
     def test_list_versions(self):
-        """Test listing all versions."""
+        """Test listing all versions."""""
         try:
             import pandas as pd
             
@@ -223,7 +223,7 @@ class TestDataPipelineManager:
     # ===== DATA QUALITY TESTS =====
     
     def test_quality_assessment_good_data(self):
-        """Test quality assessment for good quality data."""
+        """Test quality assessment for good quality data."""""
         try:
             import pandas as pd
             import numpy as np
@@ -245,7 +245,7 @@ class TestDataPipelineManager:
             pytest.skip("Pandas not available for DataFrame testing")
     
     def test_quality_assessment_poor_data(self):
-        """Test quality assessment for poor quality data."""
+        """Test quality assessment for poor quality data."""""
         try:
             import pandas as pd
             import numpy as np
@@ -265,7 +265,7 @@ class TestDataPipelineManager:
             pytest.skip("Pandas not available for DataFrame testing")
     
     def test_get_quality_report(self):
-        """Test retrieving quality reports."""
+        """Test retrieving quality reports."""""
         try:
             import pandas as pd
             
@@ -291,14 +291,14 @@ class TestDataPipelineManager:
             pytest.skip("Pandas not available for DataFrame testing")
     
     def test_quality_report_nonexistent(self):
-        """Test retrieving quality report for non-existent version."""
+        """Test retrieving quality report for non-existent version."""""
         with pytest.raises(ValueError, match="Quality report not found"):
             self.pipeline_manager.get_quality_report("nonexistent_version")
     
     # ===== DATA TRANSFORMATION TESTS =====
     
     def test_transform_data_filter(self):
-        """Test data transformation with filtering."""
+        """Test data transformation with filtering."""""
         try:
             import pandas as pd
             
@@ -334,7 +334,7 @@ class TestDataPipelineManager:
             pytest.skip("Pandas not available for DataFrame testing")
     
     def test_transform_data_invalid_type(self):
-        """Test transformation with invalid transformation type."""
+        """Test transformation with invalid transformation type."""""
         try:
             import pandas as pd
             
@@ -356,7 +356,7 @@ class TestDataPipelineManager:
             pytest.skip("Pandas not available for DataFrame testing")
     
     def test_transform_nonexistent_version(self):
-        """Test transformation with non-existent source version."""
+        """Test transformation with non-existent source version."""""
         transformations = [{'type': 'filter', 'params': {}}]
         
         with pytest.raises(ValueError, match="Data version not found"):
@@ -368,7 +368,7 @@ class TestDataPipelineManager:
     # ===== UTILITY TESTS =====
     
     def test_hash_calculation(self):
-        """Test hash calculation methods."""
+        """Test hash calculation methods."""""
         try:
             import pandas as pd
             
@@ -389,7 +389,7 @@ class TestDataPipelineManager:
             pytest.skip("Pandas not available for DataFrame testing")
     
     def test_file_hash_calculation(self):
-        """Test file hash calculation."""
+        """Test file hash calculation."""""
         # Create temporary test file
         test_file = Path(self.temp_dir) / "test_file.txt"
         test_file.write_text("test content")
@@ -408,10 +408,10 @@ class TestDataPipelineManager:
 
 @pytest.mark.unit
 class TestDataPipelineEnums:
-    """Test enum classes used in data pipeline."""
+    """Test enum classes used in data pipeline."""""
     
     def test_data_quality_status_values(self):
-        """Test DataQualityStatus enum values."""
+        """Test DataQualityStatus enum values."""""
         assert DataQualityStatus.EXCELLENT.value == "excellent"
         assert DataQualityStatus.GOOD.value == "good"
         assert DataQualityStatus.WARNING.value == "warning"
@@ -419,7 +419,7 @@ class TestDataPipelineEnums:
         assert DataQualityStatus.FAILED.value == "failed"
     
     def test_pipeline_stage_values(self):
-        """Test PipelineStage enum values."""
+        """Test PipelineStage enum values."""""
         assert PipelineStage.INGESTION.value == "ingestion"
         assert PipelineStage.VALIDATION.value == "validation"
         assert PipelineStage.TRANSFORMATION.value == "transformation"
@@ -431,20 +431,20 @@ class TestDataPipelineEnums:
 
 @pytest.mark.unit
 class TestDataPipelineEdgeCases:
-    """Test edge cases and error conditions for DataPipelineManager."""
+    """Test edge cases and error conditions for DataPipelineManager."""""
     
     def setup_method(self):
-        """Set up test fixtures."""
+        """Set up test fixtures."""""
         self.temp_dir = tempfile.mkdtemp()
         self.pipeline_manager = DataPipelineManager(storage_path=self.temp_dir)
     
     def teardown_method(self):
-        """Clean up test fixtures."""
+        """Clean up test fixtures."""""
         if Path(self.temp_dir).exists():
             shutil.rmtree(self.temp_dir)
     
     def test_fallback_without_pandas(self):
-        """Test pipeline functionality when pandas is not available."""
+        """Test pipeline functionality when pandas is not available."""""
         # This test verifies the fallback behavior works
         # In actual implementation, mock classes should handle basic operations
         
@@ -453,7 +453,7 @@ class TestDataPipelineEdgeCases:
         assert self.pipeline_manager.storage_path.exists()
     
     def test_pipeline_run_tracking(self):
-        """Test pipeline run tracking functionality."""
+        """Test pipeline run tracking functionality."""""
         try:
             import pandas as pd
             
@@ -477,7 +477,7 @@ class TestDataPipelineEdgeCases:
             pytest.skip("Pandas not available for DataFrame testing")
     
     def test_storage_paths_creation(self):
-        """Test that all required storage paths are created."""
+        """Test that all required storage paths are created."""""
         paths_to_check = [
             self.pipeline_manager.data_path,
             self.pipeline_manager.versions_path,
@@ -490,7 +490,7 @@ class TestDataPipelineEdgeCases:
             assert path.is_dir()
     
     def test_version_id_uniqueness(self):
-        """Test that version IDs are unique."""
+        """Test that version IDs are unique."""""
         try:
             import pandas as pd
             

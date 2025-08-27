@@ -57,7 +57,7 @@ ENV_VAR_REQUIRED_FILES = [
 ]
 
 class SecurityValidator:
-    """Security validation for the codebase."""
+    """Security validation for the codebase."""""
     
     def __init__(self, project_root: Path):
         self.project_root = project_root
@@ -66,7 +66,7 @@ class SecurityValidator:
         self.passed_checks = []
     
     def scan_file(self, filepath: Path) -> List[Dict]:
-        """Scan a single file for security issues."""
+        """Scan a single file for security issues."""""
         issues = []
         
         try:
@@ -103,7 +103,7 @@ class SecurityValidator:
         return issues
     
     def check_docker_security(self) -> List[Dict]:
-        """Check Docker files for security issues."""
+        """Check Docker files for security issues."""""
         issues = []
         dockerfiles = list(self.project_root.glob("**/Dockerfile*"))
         
@@ -147,7 +147,7 @@ class SecurityValidator:
         return issues
     
     def check_env_files(self) -> List[Dict]:
-        """Check environment configuration files."""
+        """Check environment configuration files."""""
         issues = []
         
         # Check if .env.example exists
@@ -191,7 +191,7 @@ class SecurityValidator:
         return issues
     
     def check_dependencies(self) -> List[Dict]:
-        """Check dependency security."""
+        """Check dependency security."""""
         issues = []
         
         requirements = self.project_root / "requirements.txt"
@@ -229,7 +229,7 @@ class SecurityValidator:
         return issues
     
     def run_validation(self) -> Tuple[bool, Dict]:
-        """Run all security validations."""
+        """Run all security validations."""""
         
         print("🔍 Starting security validation...")
         
@@ -279,7 +279,7 @@ class SecurityValidator:
         return len(self.issues) == 0, report
 
 def main():
-    """Main entry point."""
+    """Main entry point."""""
     
     project_root = Path(__file__).parent.parent.parent
     validator = SecurityValidator(project_root)

@@ -2,7 +2,7 @@
 """
 Smart CloudOps AI - 30-Day Uptime Monitor
 Tracks uptime and logs to S3 every 5 minutes
-""f"
+"""
 
 import boto3
 import requests
@@ -18,7 +18,7 @@ S3_BUCKET = "smartcloudops-uptime-logs-20250814"
 
 
 def check_service(name, url):
-    """Check if a service is up""f"
+    """Check if a service is up"""
     try:
         response = requests.get(url, timeout=10)
         return {

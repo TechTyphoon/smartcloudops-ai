@@ -17,20 +17,20 @@ from app.services.anomaly_service import AnomalyService
 
 
 class TestAnomalyService:
-    """Test suite for AnomalyService business logic."""
+    """Test suite for AnomalyService business logic."""""
     
     def setup_method(self):
-        """Set up test fixtures before each test method."""
+        """Set up test fixtures before each test method."""""
         self.service = AnomalyService()
     
     def test_service_initialization(self):
-        """Test that AnomalyService initializes correctly."""
+        """Test that AnomalyService initializes correctly."""""
         assert self.service is not None
         assert len(self.service.mock_data) == 2  # Default mock data
         assert all(isinstance(anomaly, dict) for anomaly in self.service.mock_data)
     
     def test_get_anomalies_default_pagination(self):
-        """Test getting anomalies with default pagination."""
+        """Test getting anomalies with default pagination."""""
         anomalies, pagination = self.service.get_anomalies()
         
         assert isinstance(anomalies, list)
@@ -42,7 +42,7 @@ class TestAnomalyService:
         assert pagination["pages"] == 1
     
     def test_get_anomalies_custom_pagination(self):
-        """Test getting anomalies with custom pagination."""
+        """Test getting anomalies with custom pagination."""""
         anomalies, pagination = self.service.get_anomalies(page=1, per_page=1)
         
         assert len(anomalies) == 1  # Only one per page
@@ -52,28 +52,28 @@ class TestAnomalyService:
         assert pagination["pages"] == 2
     
     def test_get_anomalies_status_filter(self):
-        """Test filtering anomalies by status."""
+        """Test filtering anomalies by status."""""
         anomalies, pagination = self.service.get_anomalies(status="open")
         
         assert len(anomalies) == 1
         assert all(anomaly["status"] == "open" for anomaly in anomalies)
     
     def test_get_anomalies_severity_filter(self):
-        """Test filtering anomalies by severity."""
+        """Test filtering anomalies by severity."""""
         anomalies, pagination = self.service.get_anomalies(severity="high")
         
         assert len(anomalies) == 1
         assert all(anomaly["severity"] == "high" for anomaly in anomalies)
     
     def test_get_anomalies_source_filter(self):
-        """Test filtering anomalies by source."""
+        """Test filtering anomalies by source."""""
         anomalies, pagination = self.service.get_anomalies(source="ml_model")
         
         assert len(anomalies) == 1
         assert all(anomaly["source"] == "ml_model" for anomaly in anomalies)
     
     def test_get_anomalies_multiple_filters(self):
-        """Test filtering anomalies with multiple filters."""
+        """Test filtering anomalies with multiple filters."""""
         anomalies, pagination = self.service.get_anomalies(
             status="acknowledged", 
             severity="medium"
@@ -84,7 +84,7 @@ class TestAnomalyService:
         assert anomalies[0]["severity"] == "medium"
     
     def test_get_anomaly_by_id_existing(self):
-        """Test getting an existing anomaly by ID."""
+        """Test getting an existing anomaly by ID."""""
         anomaly = self.service.get_anomaly_by_id(1)
         
         assert anomaly is not None
@@ -93,13 +93,13 @@ class TestAnomalyService:
         assert "description" in anomaly
     
     def test_get_anomaly_by_id_nonexistent(self):
-        """Test getting a non-existent anomaly by ID."""
+        """Test getting a non-existent anomaly by ID."""""
         anomaly = self.service.get_anomaly_by_id(999)
         
         assert anomaly is None
     
     def test_create_anomaly_valid_data(self):
-        """Test creating an anomaly with valid data."""
+        """Test creating an anomaly with valid data."""""
         anomaly_data = {
             "title": "Test Anomaly",
             "description": "Test description",
@@ -122,7 +122,7 @@ class TestAnomalyService:
         assert "updated_at" in new_anomaly
     
     def test_create_anomaly_missing_required_field(self):
-        """Test creating an anomaly with missing required fields."""
+        """Test creating an anomaly with missing required fields."""""
         anomaly_data = {
             "title": "Test Anomaly",
             # Missing description, severity, anomaly_score, confidence
@@ -132,7 +132,7 @@ class TestAnomalyService:
             self.service.create_anomaly(anomaly_data)
     
     def test_create_anomaly_invalid_severity(self):
-        """Test creating an anomaly with invalid severity."""
+        """Test creating an anomaly with invalid severity."""""
         anomaly_data = {
             "title": "Test Anomaly",
             "description": "Test description",
@@ -145,7 +145,7 @@ class TestAnomalyService:
             self.service.create_anomaly(anomaly_data)
     
     def test_create_anomaly_invalid_anomaly_score(self):
-        """Test creating an anomaly with invalid anomaly score."""
+        """Test creating an anomaly with invalid anomaly score."""""
         anomaly_data = {
             "title": "Test Anomaly",
             "description": "Test description",
@@ -158,7 +158,7 @@ class TestAnomalyService:
             self.service.create_anomaly(anomaly_data)
     
     def test_create_anomaly_invalid_confidence(self):
-        """Test creating an anomaly with invalid confidence."""
+        """Test creating an anomaly with invalid confidence."""""
         anomaly_data = {
             "title": "Test Anomaly",
             "description": "Test description",
@@ -171,7 +171,7 @@ class TestAnomalyService:
             self.service.create_anomaly(anomaly_data)
     
     def test_update_anomaly_existing(self):
-        """Test updating an existing anomaly."""
+        """Test updating an existing anomaly."""""
         update_data = {
             "title": "Updated Title",
             "severity": "critical"
@@ -186,7 +186,7 @@ class TestAnomalyService:
         assert "updated_at" in updated_anomaly
     
     def test_update_anomaly_nonexistent(self):
-        """Test updating a non-existent anomaly."""
+        """Test updating a non-existent anomaly."""""
         update_data = {"title": "Updated Title"}
         
         updated_anomaly = self.service.update_anomaly(999, update_data)
@@ -194,14 +194,14 @@ class TestAnomalyService:
         assert updated_anomaly is None
     
     def test_update_anomaly_invalid_severity(self):
-        """Test updating an anomaly with invalid severity."""
+        """Test updating an anomaly with invalid severity."""""
         update_data = {"severity": "invalid"}
         
         with pytest.raises(ValueError, match="Invalid severity"):
             self.service.update_anomaly(1, update_data)
     
     def test_delete_anomaly_existing(self):
-        """Test deleting an existing anomaly."""
+        """Test deleting an existing anomaly."""""
         original_count = len(self.service.mock_data)
         deleted_anomaly = self.service.delete_anomaly(1)
         
@@ -213,7 +213,7 @@ class TestAnomalyService:
         assert self.service.get_anomaly_by_id(1) is None
     
     def test_delete_anomaly_nonexistent(self):
-        """Test deleting a non-existent anomaly."""
+        """Test deleting a non-existent anomaly."""""
         original_count = len(self.service.mock_data)
         deleted_anomaly = self.service.delete_anomaly(999)
         
@@ -221,7 +221,7 @@ class TestAnomalyService:
         assert len(self.service.mock_data) == original_count
     
     def test_acknowledge_anomaly_existing(self):
-        """Test acknowledging an existing anomaly."""
+        """Test acknowledging an existing anomaly."""""
         acknowledged_anomaly = self.service.acknowledge_anomaly(1)
         
         assert acknowledged_anomaly is not None
@@ -230,13 +230,13 @@ class TestAnomalyService:
         assert "updated_at" in acknowledged_anomaly
     
     def test_acknowledge_anomaly_nonexistent(self):
-        """Test acknowledging a non-existent anomaly."""
+        """Test acknowledging a non-existent anomaly."""""
         acknowledged_anomaly = self.service.acknowledge_anomaly(999)
         
         assert acknowledged_anomaly is None
     
     def test_resolve_anomaly_existing(self):
-        """Test resolving an existing anomaly."""
+        """Test resolving an existing anomaly."""""
         resolved_anomaly = self.service.resolve_anomaly(1)
         
         assert resolved_anomaly is not None
@@ -245,13 +245,13 @@ class TestAnomalyService:
         assert "updated_at" in resolved_anomaly
     
     def test_resolve_anomaly_nonexistent(self):
-        """Test resolving a non-existent anomaly."""
+        """Test resolving a non-existent anomaly."""""
         resolved_anomaly = self.service.resolve_anomaly(999)
         
         assert resolved_anomaly is None
     
     def test_get_anomaly_statistics(self):
-        """Test getting anomaly statistics."""
+        """Test getting anomaly statistics."""""
         stats = self.service.get_anomaly_statistics()
         
         assert isinstance(stats, dict)
@@ -267,7 +267,7 @@ class TestAnomalyService:
     
     @patch('app.services.anomaly_service.datetime')
     def test_create_anomaly_timestamps(self, mock_datetime):
-        """Test that anomaly creation sets proper timestamps."""
+        """Test that anomaly creation sets proper timestamps."""""
         # Mock datetime.now() to return a fixed time
         fixed_time = datetime(2024, 1, 15, 12, 0, 0, tzinfo=timezone.utc)
         mock_datetime.now.return_value = fixed_time
@@ -289,14 +289,14 @@ class TestAnomalyService:
 
 @pytest.mark.unit
 class TestAnomalyServiceEdgeCases:
-    """Test edge cases and error conditions for AnomalyService."""
+    """Test edge cases and error conditions for AnomalyService."""""
     
     def setup_method(self):
-        """Set up test fixtures before each test method."""
+        """Set up test fixtures before each test method."""""
         self.service = AnomalyService()
     
     def test_pagination_edge_cases(self):
-        """Test pagination edge cases."""
+        """Test pagination edge cases."""""
         # Test page beyond available data
         anomalies, pagination = self.service.get_anomalies(page=10, per_page=20)
         assert len(anomalies) == 0
@@ -304,13 +304,13 @@ class TestAnomalyServiceEdgeCases:
         assert pagination["total"] == 2
     
     def test_filter_no_matches(self):
-        """Test filtering that returns no matches."""
+        """Test filtering that returns no matches."""""
         anomalies, pagination = self.service.get_anomalies(status="nonexistent")
         assert len(anomalies) == 0
         assert pagination["total"] == 0
     
     def test_update_anomaly_no_changes(self):
-        """Test updating an anomaly with no actual changes."""
+        """Test updating an anomaly with no actual changes."""""
         original_anomaly = self.service.get_anomaly_by_id(1)
         updated_anomaly = self.service.update_anomaly(1, {})
         
@@ -320,7 +320,7 @@ class TestAnomalyServiceEdgeCases:
         assert "updated_at" in updated_anomaly
     
     def test_create_anomaly_with_optional_fields(self):
-        """Test creating an anomaly with optional fields."""
+        """Test creating an anomaly with optional fields."""""
         anomaly_data = {
             "title": "Test Anomaly",
             "description": "Test description",

@@ -1,7 +1,7 @@
-"
+"""
 Optimized Anomaly Detection for Performance Enhancement
 Phase 5: Performance & Cost Optimization - Anomaly Detection Optimization
-"
+"""
 
 import os
 import time
@@ -92,8 +92,8 @@ class BatchProcessor:
     def _start_workers(self):
         "Start worker threads"
         for i in range(self.config.max_workers):
-            thread = threading.Thread()
-                target=self._worker_loop,
+            thread = threading.Thread(
+    target=self._worker_loop,
                 daemon=True,
                 name=f"batch-worker-{i}"
             )
@@ -152,8 +152,8 @@ class BatchProcessor:
             logger.error(f"Batch processing error: {e}")
             # Put error results for all items in batch
             for request_id, _ in batch:
-                error_result = AnomalyResult()
-                    is_anomaly=False,
+                error_result = AnomalyResult(
+    is_anomaly=False,
                     confidence=0.0,
                     score=0.0,
                     features={},
@@ -175,8 +175,8 @@ class BatchProcessor:
             confidence = min(cpu_usage / 100.0, memory_usage / 100.0)
             score = (cpu_usage + memory_usage) / 200.0
             
-            result = AnomalyResult()
-                is_anomaly=is_anomaly,
+            result = AnomalyResult(
+    is_anomaly=is_anomaly,
                 confidence=confidence,
                 score=score,
                 features={'cpu_usage': cpu_usage, 'memory_usage': memory_usage},
@@ -308,8 +308,8 @@ class OptimizedAnomalyDetector:
         # Calculate confidence
         confidence = min(score, 1.0)
         
-        return AnomalyResult()
-            is_anomaly=is_anomaly,
+        return AnomalyResult(
+    is_anomaly=is_anomaly,
             confidence=confidence,
             score=score,
             features=features,
@@ -406,8 +406,8 @@ def detect_anomaly(data: Dict[str, Any], use_cache: bool = True) -> AnomalyResul
         return detector.detect_anomaly(data, use_cache)
     else:
         # Fallback implementation
-        return AnomalyResult()
-            is_anomaly=False,
+        return AnomalyResult(
+    is_anomaly=False,
             confidence=0.0,
             score=0.0,
             features={},

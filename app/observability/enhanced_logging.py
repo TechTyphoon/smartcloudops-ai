@@ -1,7 +1,7 @@
-"
+"""
 Enhanced Structured Logging with OpenTelemetry Integration
 Phase 4: Observability & Operability - Production-ready logging
-"
+"""
 
 import logging
 import os
@@ -164,8 +164,8 @@ def setup_enhanced_logging()
 
     # Configure structlog if enabled
     if enable_structlog:
-        structlog.configure()
-            processors=[]
+        structlog.configure(
+    processors=[]
                 structlog.stdlib.filter_by_level,
                 structlog.stdlib.add_logger_name,
                 structlog.stdlib.add_log_level,
@@ -183,8 +183,8 @@ def setup_enhanced_logging()
 
     # Configure standard logging
     if log_format == "json":
-        formatter = EnhancedJSONFormatter()
-            fmt="%(timestamp)s %(level)s %(name)s %(message)s"
+        formatter = EnhancedJSONFormatter(
+    fmt="%(timestamp)s %(level)s %(name)s %(message)s"
         )
     else:
         formatter = logging.Formatter()
@@ -249,8 +249,8 @@ def get_logger(name: str = None) -> Union[structlog.BoundLogger, logging.Logger]
     "Get a logger instance with current context"
     if logger and hasattr(logger, "bind":
         # Return structlog logger with context
-        return logger.bind()
-            correlation_id=correlation_id.get(),
+        return logger.bind(
+    correlation_id=correlation_id.get(),
             request_id=request_id.get(),
             user_id=user_id.get(),
             session_id=session_id.get())
@@ -310,7 +310,8 @@ def log_performance()
     success: bool = True,
     **kwargs: Any) -> None:
     "Log performance metrics with OpenTelemetry integration"
-    log_data = {}
+    log_data = {
+
         "operation": operation,
         "duration_ms": duration_ms,
         "success": success,
@@ -346,7 +347,8 @@ def log_security_event()
     ip_address: Optional[str] = None,
     **kwargs: Any) -> None:
     "Log security events with enhanced context"
-    security_data = {}
+    security_data = {
+
         "event_type": event_type,
         "security_event": True,
         "severity": severity,
@@ -371,12 +373,13 @@ def log_security_event()
         get_logger().log(severity, f"Security Event: {event_type}", **security_data)
 
 
-def log_business_event()
-    event_type: str,
+def log_business_event(
+            event_type: str,
     business_value: Optional[float] = None,
     **kwargs: Any) -> None:
     "Log business events with metrics"
-    business_data = {}
+    business_data = {
+
         "event_type": event_type,
         "business_event": True,
     }

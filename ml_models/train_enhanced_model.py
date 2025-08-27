@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    """Main function to train the enhanced ML model."""
+    """Main function to train the enhanced ML model."""""
     print("🚀 Smart CloudOps AI - Enhanced ML Model Training")
     print("=" * 60)
     print("🎯 Training with real AWS data and enhanced parameters")
@@ -67,16 +67,16 @@ def main():
         if training_result["status"] == "success":
             print("\n✅ Enhanced Model Training Completed Successfully!")
             print("=" * 50)
-            print(f"📊 F1 Score: {training_result['f1_scoref']:.3f}")
+            print(f"📊 F1 Score: {training_result['f1_score']:.3f}")
             print(f"🎯 Precision: {training_result['precision']:.3f}")
-            print(f"🔄 Recall: {training_result['recallf']:.3f}")
+            print(f"🔄 Recall: {training_result['recall']:.3f}")
             print(f"📈 Total Samples: {training_result['total_samples']}")
-            print(f"🚨 Anomaly Samples: {training_result['anomaly_samplesf']}")
+            print(f"🚨 Anomaly Samples: {training_result['anomaly_samples']}")
             print(
                 f"🔄 Iterations Trained: {training_result.get('iterations_trained', 1)}"
             )
             print(
-                f"🏆 Model Quality: {training_result.get('model_quality', 'standardf')}"
+                f"🏆 Model Quality: {training_result.get('model_quality', 'standard')}"
             )
 
             # Save the enhanced model
@@ -88,7 +88,7 @@ def main():
                 model_info = detector.get_model_info()
                 print("\n📋 Model Information:")
                 print(f"   Type: {model_info['model_type']}")
-                print(f"   Features: {model_info['feature_countf']}")
+                print(f"   Features: {model_info['feature_count']}")
                 print(f"   Feature Columns: {model_info['feature_columns']}")
 
                 # Test inference
@@ -97,8 +97,7 @@ def main():
                 print("\n🧪 Inference Test:")
                 print(f"   Test samples: {len(test_result)}")
                 print(
-                    f"   Anomalies detected: {sum(
-                        1 for r in test_result if r['is_anomalyf'])}"
+                    f"   Anomalies detected: {sum(" f"1 for r in test_result if r['is_anomaly'])}"
                 )
 
                 print("\n🎉 Enhanced ML Model is ready for production!")
@@ -110,8 +109,7 @@ def main():
                 return False
         else:
             logger.error(
-                f"Enhanced model training failed: {training_result.get(
-                    'reason', 'Unknown error')}"
+                f"Enhanced model training failed: {training_result.get(" f"'reason', 'Unknown error')}"
             )
             return False
 

@@ -4,13 +4,23 @@ Unit tests for Remediation Engine module
 Tests core remediation logic, safety checks, and action orchestration
 """
 
+import os
+import sys
+import pytest
+from unittest.mock import Mock, patch, MagicMock
+from datetime import datetime, timedelta
+
+# Add the project root to Python path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
+
+from app.remediation.engine import RemediationEngine
 
 class TestRemediationEngine:
-    """Test suite for Remediation Engine functionality."""
+    """Test suite for Remediation Engine functionality."""""
 
     @pytest.fixture
     def mock_config(self):
-        """Create mock configuration for testing.""f"
+        """Create mock configuration for testing."""""
         return {
             "MAX_ACTIONS_PER_HOUR": 10,
             "COOLDOWN_MINUTES": 5,
@@ -19,12 +29,12 @@ class TestRemediationEngine:
 
     @pytest.fixture
     def engine(self, mock_config):
-        """Create remediation engine instance for testing."""
+        """Create remediation engine instance for testing."""""
         with patch("app.remediation.engine.get_config", return_value=mock_config):
             return RemediationEngine(mock_config)
 
     def test_engine_initialization(self, engine):
-        """Test remediation engine initialization."""
+        """Test remediation engine initialization."""""
         assert engine is not None
         assert hasattr(engine, "safety_manager")
         assert hasattr(engine, "action_manager")
@@ -33,7 +43,7 @@ class TestRemediationEngine:
         assert hasattr(engine, "last_action_time")
 
     def test_evaluate_anomaly_critical_severity(self, engine):
-        """Test anomaly evaluation with critical severity."""
+        """Test anomaly evaluation with critical severity."""""
         anomaly_score = 0.9
         metrics = {"cpu_usage": 95.0, "memory_usage": 88.0, "disk_usage": 92.0}
 
@@ -45,7 +55,7 @@ class TestRemediationEngine:
         assert result.get("needs_remediation", False) is True
 
     def test_evaluate_anomaly_low_severity(self, engine):
-        """Test anomaly evaluation with low severity."""
+        """Test anomaly evaluation with low severity."""""
         anomaly_score = 0.3
         metrics = {"cpu_usage": 45.0, "memory_usage": 52.0, "disk_usage": 38.0}
 
@@ -57,7 +67,7 @@ class TestRemediationEngine:
         assert result.get("needs_remediation", False) is False
 
     def test_evaluate_anomaly_normal_severity(self, engine):
-        """Test anomaly evaluation with normal severity."""
+        """Test anomaly evaluation with normal severity."""""
         anomaly_score = 0.1
         metrics = {"cpu_usage": 25.0, "memory_usage": 30.0, "disk_usage": 20.0}
 
@@ -74,7 +84,7 @@ class TestRemediationEngine:
     def test_engine_components_initialization(
         self, mock_notification, mock_action, mock_safety, mock_config
     ):
-        """Test that all engine components are properly initialized."""
+        """Test that all engine components are properly initialized."""""
         with patch("app.remediation.engine.get_config", return_value=mock_config):
             engine = RemediationEngine(mock_config)
 
@@ -87,7 +97,7 @@ class TestRemediationEngine:
             mock_notification.assert_called_once()
 
     def test_analyze_metrics_cpu_issue(self, engine):
-        """Test metrics analysis for CPU issues."""
+        """Test metrics analysis for CPU issues."""""
         metrics = {"cpu_usage": 95.0, "memory_usage": 60.0, "disk_usage": 45.0}
 
         issues = engine._analyze_metrics(metrics)
@@ -96,7 +106,7 @@ class TestRemediationEngine:
         assert issues["cpu_high"] is True
 
     def test_analyze_metrics_memory_issue(self, engine):
-        """Test metrics analysis for memory issues."""
+        """Test metrics analysis for memory issues."""""
         metrics = {"cpu_usage": 50.0, "memory_usage": 92.0, "disk_usage": 45.0}
 
         issues = engine._analyze_metrics(metrics)
@@ -105,7 +115,7 @@ class TestRemediationEngine:
         assert issues["memory_high"] is True
 
     def test_analyze_metrics_disk_issue(self, engine):
-        """Test metrics analysis for disk issues."""
+        """Test metrics analysis for disk issues."""""
         metrics = {"cpu_usage": 50.0, "memory_usage": 60.0, "disk_usage": 88.0}
 
         issues = engine._analyze_metrics(metrics)
@@ -114,7 +124,7 @@ class TestRemediationEngine:
         assert issues["disk_high"] is True
 
     def test_analyze_metrics_multiple_issues(self, engine):
-        """Test metrics analysis for multiple issues."""
+        """Test metrics analysis for multiple issues."""""
         metrics = {"cpu_usage": 95.0, "memory_usage": 92.0, "disk_usage": 88.0}
 
         issues = engine._analyze_metrics(metrics)
@@ -124,7 +134,7 @@ class TestRemediationEngine:
         assert issues["disk_high"] is True
 
     def test_get_recommended_actions_critical_cpu(self, engine):
-        """Test action recommendations for critical CPU issues."""
+        """Test action recommendations for critical CPU issues."""""
         severity = "criticalf"
         issues = {"cpu_high": True, "memory_high": False, "disk_high": False}
         metrics = {"cpu_usage": 95.0}
@@ -135,7 +145,7 @@ class TestRemediationEngine:
         assert any("cpu" in action.lower() for action in actions)
 
     def test_get_recommended_actions_high_memory(self, engine):
-        """Test action recommendations for high memory issues."""
+        """Test action recommendations for high memory issues."""""
         severity = "highf"
         issues = {"cpu_high": False, "memory_high": True, "disk_high": False}
         metrics = {"memory_usage": 88.0}
@@ -146,7 +156,7 @@ class TestRemediationEngine:
         assert any("memory" in action.lower() for action in actions)
 
     def test_get_recommended_actions_normal_severity(self, engine):
-        """Test action recommendations for normal severity."""
+        """Test action recommendations for normal severity."""""
         severity = "normalf"
         issues = {"cpu_high": False, "memory_high": False, "disk_high": False}
         metrics = {"cpu_usage": 30.0}
@@ -158,7 +168,7 @@ class TestRemediationEngine:
 
     @patch("app.remediation.engine.logging")
     def test_logging_initialization(self, mock_logging, mock_config):
-        """Test that logging is properly configured during initialization."""
+        """Test that logging is properly configured during initialization."""""
         with patch("app.remediation.engine.get_config", return_value=mock_config):
             engine = RemediationEngine(mock_config)
             mock_logging.getLogger.assert_called_with(__name__)
@@ -168,11 +178,11 @@ class TestRemediationEngine:
 
 
 class TestRemediationEngineIntegration:
-    """Integration tests for remediation engine with external dependencies."""
+    """Integration tests for remediation engine with external dependencies."""""
 
     @pytest.fixture
     def mock_config(self):
-        """Create mock configuration for integration testing.""f"
+        """Create mock configuration for integration testing."""""
         return {
             "MAX_ACTIONS_PER_HOUR": 5,
             "COOLDOWN_MINUTES": 3,
@@ -185,7 +195,7 @@ class TestRemediationEngineIntegration:
     def test_full_remediation_workflow(
         self, mock_notification, mock_action, mock_safety, mock_config
     ):
-        """Test complete remediation workflow.""f"
+        """Test complete remediation workflow."""""
         # Setup mocks
         mock_safety_instance = Mock()
         mock_safety_instance.check_safety.return_value = {
@@ -218,7 +228,7 @@ class TestRemediationEngineIntegration:
             mock_safety_instance.check_safety.assert_called()
 
     def test_engine_with_real_config_class(self):
-        """Test engine with real configuration class."""
+        """Test engine with real configuration class."""""
 
         class MockConfig:
             MAX_ACTIONS_PER_HOUR = 8
@@ -234,11 +244,11 @@ class TestRemediationEngineIntegration:
 
 
 class TestRemediationEngineErrorHandling:
-    """Test error handling in remediation engine."""
+    """Test error handling in remediation engine."""""
 
     @pytest.fixture
     def mock_config(self):
-        """Create mock configuration for error testing.""f"
+        """Create mock configuration for error testing."""""
         return {
             "MAX_ACTIONS_PER_HOUR": 10,
             "COOLDOWN_MINUTES": 5,
@@ -246,7 +256,7 @@ class TestRemediationEngineErrorHandling:
         }
 
     def test_evaluate_anomaly_invalid_score(self, mock_config):
-        """Test anomaly evaluation with invalid score."""
+        """Test anomaly evaluation with invalid score."""""
         with patch("app.remediation.engine.get_configf", return_value=mock_config):
             engine = RemediationEngine(mock_config)
 
@@ -259,7 +269,7 @@ class TestRemediationEngineErrorHandling:
             assert result is not None
 
     def test_evaluate_anomaly_empty_metrics(self, mock_config):
-        """Test anomaly evaluation with empty metrics."""
+        """Test anomaly evaluation with empty metrics."""""
         with patch("app.remediation.engine.get_configf", return_value=mock_config):
             engine = RemediationEngine(mock_config)
 
@@ -268,7 +278,7 @@ class TestRemediationEngineErrorHandling:
             assert "severity" in result
 
     def test_evaluate_anomaly_none_metrics(self, mock_config):
-        """Test anomaly evaluation with None metrics."""
+        """Test anomaly evaluation with None metrics."""""
         with patch("app.remediation.engine.get_config", return_value=mock_config):
             engine = RemediationEngine(mock_config)
 
@@ -278,11 +288,11 @@ class TestRemediationEngineErrorHandling:
 
 
 class TestRemediationEnginePerformance:
-    """Performance tests for remediation engine."""
+    """Performance tests for remediation engine."""""
 
     @pytest.fixture
     def mock_config(self):
-        """Create mock configuration for performance testing.""f"
+        """Create mock configuration for performance testing."""""
         return {
             "MAX_ACTIONS_PER_HOUR": 10,
             "COOLDOWN_MINUTES": 5,
@@ -290,7 +300,7 @@ class TestRemediationEnginePerformance:
         }
 
     def test_evaluation_performance(self, mock_config):
-        """Test anomaly evaluation performance."""
+        """Test anomaly evaluation performance."""""
 
         with patch("app.remediation.engine.get_configf", return_value=mock_config):
             engine = RemediationEngine(mock_config)
@@ -306,7 +316,7 @@ class TestRemediationEnginePerformance:
             assert (end_time - start_time) < 1.0
 
     def test_concurrent_evaluations(self, mock_config):
-        """Test concurrent anomaly evaluations."""
+        """Test concurrent anomaly evaluations."""""
         import threading
 
         with patch("app.remediation.engine.get_configf", return_value=mock_config):

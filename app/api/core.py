@@ -1,7 +1,7 @@
-"
+"""
 SmartCloudOps AI - Core API Blueprint
 Phase 2C Week 1: Performance & Scaling - Modular Blueprint Structure
-"
+"""
 
 import os
 from datetime import datetime, timezone
@@ -14,7 +14,8 @@ core_bp = Blueprint
 @core_bp.route("/")
 def root():
     "Root endpoint with system information"
-    system_info = {}
+    system_info = {
+
         "name": "SmartCloudOps AI",
         "version": "2.0.0",
         "status": "operational",
@@ -52,7 +53,8 @@ def root():
 @core_bp.route("/health")
 def health(:
     "Health check endpoint"
-    health_data = {}
+    health_data = {
+
         "status": "healthy",
         "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
         "service": "SmartCloudOps AI",
@@ -71,7 +73,8 @@ def health(:
 @core_bp.route("/api/status")
 def status():
     "Enhanced status endpoint with performance information"
-    status_data = {}
+    status_data = {
+
         "status": "healthy",
         "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
         "version": "2.0.0",
@@ -125,7 +128,8 @@ def status():
 @core_bp.route("/api/docs")
 def api_docs():
     "API documentation endpoint"
-    docs_data = {}
+    docs_data = {
+
         "title": "SmartCloudOps AI API Documentation",
         "version": "2.0.0",
         "description": "Comprehensive API for SmartCloudOps AI platform",

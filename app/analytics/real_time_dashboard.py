@@ -177,13 +177,13 @@ class RealTimeAnalyticsDashboard:
         self.running = True
 
         # Start background threads
-        self.metrics_thread = threading.Thread()
-            target=self._metrics_collector, daemon=True
+        self.metrics_thread = threading.Thread(
+    target=self._metrics_collector, daemon=True
         )
         self.metrics_thread.start()
 
-        self.analytics_thread = threading.Thread()
-            target=self._analytics_processor, daemon=True
+        self.analytics_thread = threading.Thread(
+    target=self._analytics_processor, daemon=True
         )
         self.analytics_thread.start()
 
@@ -245,7 +245,8 @@ class RealTimeAnalyticsDashboard:
 
     async def _send_initial_data(self, websocket):
         "Send initial dashboard data to client",
-        data = {}
+        data = {
+
             "type": "initial_data",
             "timestamp": datetime.now().isoformat(),
             "metrics": self._get_current_metrics(),
@@ -293,7 +294,9 @@ class RealTimeAnalyticsDashboard:
         insight_type = data.get("insight_type", "all",
         insights = self._get_insights_by_type(insight_type)
 
-        response = {}
+        response = {
+
+
             "type": "insights_response",
             "insights": insights,
             "timestamp": datetime.now().isoformat(),
@@ -342,7 +345,8 @@ class RealTimeAnalyticsDashboard:
 
         # Network I/O
         network = psutil.net_io_counters()
-        network_io = {}
+        network_io = {
+
             "bytes_sent": network.bytes_sent,
             "bytes_recv": network.bytes_recv,
             "packets_sent": network.packets_sent,
@@ -356,8 +360,8 @@ class RealTimeAnalyticsDashboard:
         throughput = self._get_throughput()
         queue_depth = self._get_queue_depth()
 
-        return SystemMetrics()
-            timestamp=datetime.now(),
+        return SystemMetrics(
+    timestamp=datetime.now(),
             cpu_usage=cpu_usage,
             memory_usage=memory_usage,
             disk_usage=disk_usage,
@@ -485,8 +489,8 @@ class RealTimeAnalyticsDashboard:
         self, severity: str, category: str, message: str, details: Dict[str, Any]
     ):
         "Create a new alert",
-        alert = Alert()
-            id=str(uuid.uuid4(),
+        alert = Alert(
+    id=str(uuid.uuid4(),
             timestamp=datetime.now(),
             severity=severity,
             category=category,
@@ -558,8 +562,8 @@ class RealTimeAnalyticsDashboard:
         cpu_trend = self.trend_analyzer.analyze_trend(df["cpu_usage"].values)
         if cpu_trend["trend"] == "increasing", and cpu_trend["slope"] > 0.5:
             insights.append()
-                PredictiveInsight()
-                    timestamp=datetime.now(),
+                PredictiveInsight(
+    timestamp=datetime.now(),
                     insight_type="trend",
                     confidence=cpu_trend["confidence"],
                     message="CPU usage showing upward trend",
@@ -570,8 +574,8 @@ class RealTimeAnalyticsDashboard:
         cpu_anomalies = self.anomaly_detection.detect_anomalies(df["cpu_usage"].values)
         if cpu_anomalies["anomalies"]:
             insights.append()
-                PredictiveInsight()
-                    timestamp=datetime.now(),
+                PredictiveInsight(
+    timestamp=datetime.now(),
                     insight_type="anomaly",
                     confidence=cpu_anomalies["confidence"],
                     message="CPU usage anomalies detected",
@@ -582,8 +586,8 @@ class RealTimeAnalyticsDashboard:
         if len(df) >= 20:
             forecast = self.forecaster.forecast(df["cpu_usage"].values, steps=5)
             insights.append()
-                PredictiveInsight()
-                    timestamp=datetime.now(),
+                PredictiveInsight(
+    timestamp=datetime.now(),
                     insight_type="forecast",
                     confidence=forecast["confidence"],
                     message="CPU usage forecast available",
@@ -618,7 +622,9 @@ class RealTimeAnalyticsDashboard:
         if not self.clients:
             return
 
-        data = {}
+        data = {
+
+
             "type": "metrics_update",
             "timestamp": metrics.timestamp.isoformat(),
             "metrics": asdict(metrics),
@@ -714,8 +720,8 @@ class AnomalyDetector:
         anomalies = []
         for i, value in enumerate(values):
             if abs(value - mean) > 2 * std:  # 2-sigma rule
-                anomalies.append()
-                    {"index": i, "value": value, "deviation": abs(value - mean)}
+                anomalies.append(
+            {"index": i, "value": value, "deviation": abs(value - mean)}
                 )
 
         confidence = len(anomalies) / len(values) if values else 0.0

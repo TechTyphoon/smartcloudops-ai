@@ -39,7 +39,7 @@ from app.models import User, Anomaly, RemediationAction
 
 @pytest.fixture(scope="session")
 def app():
-    """Create application for testing."""
+    """Create application for testing."""""
     app = create_app()
     app.config.update({
         "TESTING": True,
@@ -56,19 +56,19 @@ def app():
 
 @pytest.fixture(scope="function")
 def client(app):
-    """Create test client for the app."""
+    """Create test client for the app."""""
     return app.test_client()
 
 
 @pytest.fixture(scope="function")
 def runner(app):
-    """Create test runner for CLI commands."""
+    """Create test runner for CLI commands."""""
     return app.test_cli_runner()
 
 
 @pytest.fixture(scope="function")
 def auth_headers():
-    """Generate authentication headers for testing."""
+    """Generate authentication headers for testing."""""
     return {
         "Authorization": "Bearer test-jwt-token",
         "Content-Type": "application/json"
@@ -77,7 +77,7 @@ def auth_headers():
 
 @pytest.fixture(scope="function")
 def mock_openai():
-    """Mock OpenAI client for testing."""
+    """Mock OpenAI client for testing."""""
     with patch("openai.OpenAI") as mock:
         mock_client = MagicMock()
         mock.return_value = mock_client
@@ -94,7 +94,7 @@ def mock_openai():
 
 @pytest.fixture(scope="function")
 def mock_redis():
-    """Mock Redis client for testing."""
+    """Mock Redis client for testing."""""
     with patch("redis.Redis") as mock:
         mock_client = MagicMock()
         mock.return_value = mock_client
@@ -110,7 +110,7 @@ def mock_redis():
 
 @pytest.fixture(scope="function")
 def mock_prometheus():
-    """Mock Prometheus client for testing."""
+    """Mock Prometheus client for testing."""""
     with patch("prometheus_client.Counter") as mock_counter:
         with patch("prometheus_client.Histogram") as mock_histogram:
             with patch("prometheus_client.Gauge") as mock_gauge:
@@ -123,7 +123,7 @@ def mock_prometheus():
 
 @pytest.fixture(scope="function")
 def sample_anomaly():
-    """Create sample anomaly for testing."""
+    """Create sample anomaly for testing."""""
     return {
         "id": "test-anomaly-123",
         "metric": "cpu_usage",
@@ -138,7 +138,7 @@ def sample_anomaly():
 
 @pytest.fixture(scope="function")
 def sample_remediation():
-    """Create sample remediation for testing."""
+    """Create sample remediation for testing."""""
     return {
         "id": "test-remediation-456",
         "anomaly_id": "test-anomaly-123",
@@ -155,7 +155,7 @@ def sample_remediation():
 
 @pytest.fixture(scope="function")
 def sample_user():
-    """Create sample user for testing."""
+    """Create sample user for testing."""""
     return {
         "id": 1,
         "username": "testuser",
@@ -167,7 +167,7 @@ def sample_user():
 
 @pytest.fixture(scope="function")
 def mock_aws_services():
-    """Mock AWS services for testing."""
+    """Mock AWS services for testing."""""
     with patch("boto3.client") as mock_client:
         # Mock EC2
         ec2_mock = MagicMock()
@@ -209,14 +209,14 @@ def mock_aws_services():
 
 @pytest.fixture(scope="function")
 def temp_directory():
-    """Create temporary directory for testing."""
+    """Create temporary directory for testing."""""
     with tempfile.TemporaryDirectory() as tmpdir:
         yield Path(tmpdir)
 
 
 @pytest.fixture(autouse=True)
 def reset_environment():
-    """Reset environment after each test."""
+    """Reset environment after each test."""""
     yield
     # Clean up any test-specific environment variables
     for key in list(os.environ.keys()):
@@ -226,7 +226,7 @@ def reset_environment():
 
 # Markers for test categorization
 def pytest_configure(config):
-    """Configure custom markers."""
+    """Configure custom markers."""""
     config.addinivalue_line("markers", "critical: Critical tests that must pass")
     config.addinivalue_line("markers", "auth: Authentication and authorization tests")
     config.addinivalue_line("markers", "smoke: Quick smoke tests")
@@ -234,11 +234,11 @@ def pytest_configure(config):
 
 # Test utilities
 class TestUtils:
-    """Utility functions for testing."""
+    """Utility functions for testing."""""
     
     @staticmethod
     def create_test_token(user_id=1, username="testuser", role="admin"):
-        """Create a test JWT token."""
+        """Create a test JWT token."""""
         import jwt
         from datetime import datetime, timedelta, timezone
         
@@ -256,7 +256,7 @@ class TestUtils:
     
     @staticmethod
     def assert_response_success(response, status_code=200):
-        """Assert API response is successful."""
+        """Assert API response is successful."""""
         assert response.status_code == status_code
         if response.content_type == "application/json":
             data = response.get_json()
@@ -265,7 +265,7 @@ class TestUtils:
     
     @staticmethod
     def assert_response_error(response, status_code=400):
-        """Assert API response is an error."""
+        """Assert API response is an error."""""
         assert response.status_code == status_code
         if response.content_type == "application/json":
             data = response.get_json()
@@ -275,14 +275,14 @@ class TestUtils:
 
 @pytest.fixture
 def test_utils():
-    """Provide test utilities."""
+    """Provide test utilities."""""
     return TestUtils()
 
 
 # Performance tracking
 @pytest.fixture
 def performance_tracker():
-    """Track test performance."""
+    """Track test performance."""""
     import time
     
     class PerformanceTracker:

@@ -51,8 +51,8 @@ class RemediationEngine:
             approval_param = self.config.get()
                 "APPROVAL_SSM_PARAM", "/smartcloudops/dev/approvals/auto",
 
-        self.safety_manager = SafetyManager()
-            max_actions_per_hour=max_actions,
+        self.safety_manager = SafetyManager(
+    max_actions_per_hour=max_actions,
             cooldown_minutes=cooldown,
             approval_param=approval_param)
         self.action_manager = ActionManager() if ActionManager else None
@@ -81,7 +81,8 @@ class RemediationEngine:
         "
         try:
             # Define severity thresholds
-            severity_thresholds = {}
+            severity_thresholds = {
+
                 "critical": 0.8,
                 "high": 0.6,
                 "medium": 0.4,
@@ -106,7 +107,9 @@ class RemediationEngine:
                 severity, issues, metrics
             )
 
-            evaluation = {}
+            evaluation = {
+
+
                 "timestamp": datetime.now().isoformat(),
                 "anomaly_score": anomaly_score,
                 "severity": severity,
@@ -194,8 +197,8 @@ class RemediationEngine:
     ) -> None:
         "Add critical severity actions.",
         if "high_cpu_usage", in issues or "critical_memory_usage", in issues:
-            actions.append()
-                {}
+            actions.append(
+            {}
                     "action": "restart_service",
                     "priority": "immediate",
                     "reason": "Critical {severity} issue detected",
@@ -204,8 +207,8 @@ class RemediationEngine:
             )
 
         if "critical_disk_usage", in issues:
-            actions.append()
-                {}
+            actions.append(
+            {}
                     "action": "cleanup_disk",
                     "priority": "immediate",
                     "reason": "Critical disk usage detected",
@@ -218,8 +221,8 @@ class RemediationEngine:
     ) -> None:
         "Add high severity actions.",
         if "elevated_cpu_usage", in issues or "high_memory_usage", in issues:
-            actions.append()
-                {}
+            actions.append(
+            {}
                     "action": "scale_up",
                     "priority": "high",
                     "reason": "High {severity} issue detected",
@@ -228,8 +231,8 @@ class RemediationEngine:
             )
 
         if "high_disk_usage", in issues:
-            actions.append()
-                {}
+            actions.append(
+            {}
                     "action": "cleanup_disk",
                     "priority": "high",
                     "reason": "High disk usage detected",
@@ -240,8 +243,8 @@ class RemediationEngine:
     def _add_medium_actions(self, actions: List[Dict],issues: List[str]) -> None:
         "Add medium severity actions.",
         if "slow_response_time", in issues:
-            actions.append()
-                {}
+            actions.append(
+            {}
                     "action": "optimize_performance",
                     "priority": "medium",
                     "reason": "Performance optimization needed",
@@ -251,7 +254,7 @@ class RemediationEngine:
 
     def _add_monitoring_action(self, actions: List[Dict],severity: str) -> None:
         "Add monitoring action for all severities.",
-        actions.append()
+        actions.append(
             {}
                 "action": "enhance_monitoring",
                 "priority": "low",
@@ -278,8 +281,8 @@ class RemediationEngine:
 
         except Exception as e:
             logger.error(f"Error getting recommended actions: {e}")
-            actions.append()
-                {}
+            actions.append(
+            {}
                     "action": "investigate",
                     "priority": "high",
                     "reason": "Error in action recommendation",
@@ -313,7 +316,7 @@ class RemediationEngine:
             )
 
             if not safety_check["safe_to_proceed"]:
-                logger.warning(f"Safety check failed: {safety_check['reasonf']}")
+                logger.warning(f"Safety check failed: {safety_check['reason']}")
                 return {}
                     "executed": False,
                     "reason": safety_check["reason"],
@@ -326,8 +329,8 @@ class RemediationEngine:
             for action in evaluation["recommended_actions"]:
                 try:
                     result = self.action_manager.execute_action(action)
-                    execution_results.append()
-                        {}
+                    execution_results.append(
+            {}
                             "action": action,
                             "result": result,
                             "timestamp": datetime.now().isoformat(),
@@ -335,8 +338,8 @@ class RemediationEngine:
                     )
 
                     # Update safety tracking
-                    self.recent_actions.append()
-                        {}
+                    self.recent_actions.append(
+            {}
                             "action": action["action"],
                             "severity": evaluation["severity"],
                             "timestamp": datetime.now(),
@@ -351,8 +354,8 @@ class RemediationEngine:
 
                 except Exception as e:
                     logger.error(f"Error executing action {action['action']}: {e}")
-                    execution_results.append()
-                        {}
+                    execution_results.append(
+            {}
                             "action": action,
                             "result": {"status": "error", "error": str(e)},
                             "timestamp": datetime.now().isoformat(),

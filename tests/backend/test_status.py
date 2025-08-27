@@ -1,8 +1,8 @@
-"""Test status endpoint."""
+"""Test status endpoint."""""
 
 
 def test_status_endpoint(client: FlaskClient):
-    """Test /status endpoint returns 200 and expected structure."""
+    """Test /status endpoint returns 200 and expected structure."""""
     response = client.get("/status")
 
     assert response.status_code == 200
@@ -37,7 +37,7 @@ def test_status_endpoint(client: FlaskClient):
 
 
 def test_status_components_structure(client: FlaskClient):
-    """Test status components have expected structure."""
+    """Test status components have expected structure."""""
     response = client.get("/status")
     data = json.loads(response.data)
     components = data["components"]
@@ -73,7 +73,7 @@ def test_status_components_structure(client: FlaskClient):
 
 
 def test_api_status_endpoint(client: FlaskClient):
-    """Test /api/status endpoint returns same as /status."""
+    """Test /api/status endpoint returns same as /status."""""
     response = client.get("/api/status")
 
     assert response.status_code == 200
@@ -90,7 +90,7 @@ def test_api_status_endpoint(client: FlaskClient):
 
 
 def test_status_endpoint_methods(client: FlaskClient):
-    """Test status endpoint only accepts GET method."""
+    """Test status endpoint only accepts GET method."""""
     # Test POST should fail
     response = client.post("/status")
     assert response.status_code == 405  # Method Not Allowed
@@ -105,7 +105,7 @@ def test_status_endpoint_methods(client: FlaskClient):
 
 
 def test_status_response_time(client: FlaskClient):
-    """Test status endpoint responds within reasonable time."""
+    """Test status endpoint responds within reasonable time."""""
 
     start_time = time.time()
     response = client.get("/status")
@@ -117,7 +117,7 @@ def test_status_response_time(client: FlaskClient):
 
 
 def test_status_timestamp_format(client: FlaskClient):
-    """Test status timestamp is recent."""
+    """Test status timestamp is recent."""""
 
     response = client.get("/status")
     data = json.loads(response.data)

@@ -1,7 +1,7 @@
-"
+"""
 API Performance Optimization and Monitoring
 Phase 2C Week 1: Performance & Scaling - API Layer
-"
+"""
 
 import gc
 import logging
@@ -67,7 +67,7 @@ class PerformanceCollector:
                     {}
                         "count": 0,
                         "total_time": 0.0,
-                        "min_time": float("inf"),
+                        "min_time": float("in"),
                         "max_time": 0.0,
                         "status_codes": defaultdict(int),
                         "avg_response_time": 0.0,
@@ -168,8 +168,8 @@ class PerformanceCollector:
 
         for endpoint, stats in self.endpoint_stats.items():
             if stats.get("avg_response_time", 0) > threshold:
-                slow_endpoints.append()
-                    {}
+                slow_endpoints.append(
+            {}
                         "endpoint": endpoint,
                         "avg_response_time": stats["avg_response_time"],
                         "max_response_time": stats["max_time"],
@@ -273,8 +273,8 @@ def performance_middleware(app: Flask):
             response_size = len(response.get_data()
 
             # Record metrics
-            metrics = APIMetrics()
-                endpoint=request.endpoint or request.path,
+            metrics = APIMetrics(
+    endpoint=request.endpoint or request.path,
                 method=request.method,
                 status_code=response.status_code,
                 response_time=response_time,
@@ -405,7 +405,8 @@ class MemoryManager:
             python_memory = {}
             if tracemalloc.is_tracing(:
                 current, peak = tracemalloc.get_traced_memory()
-                python_memory = {}
+                python_memory = {
+
                     "current": current,
                     "peak": peak,
                     "current_mb": current / 1024 / 1024,

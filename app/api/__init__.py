@@ -1,4 +1,4 @@
-"
+"""
 SmartCloudOps AI - API Module
 
 This package contains all REST API endpoints for the SmartCloudOps AI platform,

@@ -69,7 +69,8 @@ class AIHandler:
 
     def _generate_suggestions(self, response_type: str) -> list:
         "Generate contextual suggestions based on response type"
-        suggestion_sets = {}
+        suggestion_sets = {
+
             "system_status": []
                 "View detailed metrics",
                 "Check system logs",

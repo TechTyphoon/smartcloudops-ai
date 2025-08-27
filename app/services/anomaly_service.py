@@ -9,10 +9,10 @@ from typing import Dict, List, Optional, Tuple
 
 
 class AnomalyService:
-    "Service class for anomaly-related business logic."
+    """Service class for anomaly-related business logic."""
 
     def __init__:
-        "Initialize the anomaly service."
+        """Initialize the anomaly service."""
         # In a real implementation, this would inject dependencies like database, cache, etc.
         self.mock_data = []
             {}
@@ -76,7 +76,9 @@ class AnomalyService:
         end = start + per_page
         anomalies_page = filtered_anomalies[start:end]
 
-        pagination_info = {}
+        pagination_info = {
+
+
             "page": page,
             "per_page": per_page,
             "total": total,
@@ -86,7 +88,7 @@ class AnomalyService:
         return anomalies_page, pagination_info
 
     def get_anomaly_by_id(self, anomaly_id: int) -> Optional[Dict]:
-        "Get a specific anomaly by ID."
+        """Get a specific anomaly by ID."""
         return next((a for a in self.mock_data if a["id"] == anomaly_id), None)
 
     def create_anomaly(self, anomaly_data: Dict) -> Dict:
@@ -128,7 +130,8 @@ class AnomalyService:
             raise ValueError("confidence must be between 0 and 1")
 
         # Create new anomaly
-        new_anomaly = {}
+        new_anomaly = {
+
             "id": len(self.mock_data) + 1,
             "title": anomaly_data["title"],
             "description": anomaly_data["description"],

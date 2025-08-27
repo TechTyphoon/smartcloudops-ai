@@ -274,7 +274,7 @@ class AnomalyDetector:
             return [{"status": "error", "error": str(e)} for _ in metrics_list]
 
     def _generate_synthetic_data(self, n_samples: int) -> pd.DataFrame:
-        """Generate synthetic training data for testing purposes."""
+        """Generate synthetic training data for testing purposes."""""
         np.random.seed(self.random_state)
 
         # Normal operating ranges
@@ -321,7 +321,7 @@ class AnomalyDetector:
         return df
 
     def _save_model(self):
-        """Save trained model and scaler to disk."""
+        """Save trained model and scaler to disk."""""
         try:
             with open(self.model_path, "wb") as f:
                 pickle.dump(self.model, f)
@@ -332,7 +332,7 @@ class AnomalyDetector:
             logger.error(f"Failed to save model: {e}")
 
     def _load_model(self) -> bool:
-        """Load trained model and scaler from disk."""
+        """Load trained model and scaler from disk."""""
         try:
             if os.path.exists(self.model_path) and os.path.exists(self.scaler_path):
                 with open(self.model_path, "rb") as f:
@@ -348,7 +348,7 @@ class AnomalyDetector:
             return False
 
     def get_model_status(self) -> Dict[str, Any]:
-        """Get current model status and information."""
+        """Get current model status and information."""""
         return {
             "is_trained": self.is_trained,
             "model_type": "IsolationForest",
@@ -367,7 +367,7 @@ class TimeSeriesAnalyzer:
     """
 
     def __init__(self):
-        """Initialize the time series analyzer."""
+        """Initialize the time series analyzer."""""
         self.window_size = 10
         logger.info("TimeSeriesAnalyzer initialized")
 
@@ -434,7 +434,7 @@ class TimeSeriesAnalyzer:
 
 # Factory function for creating anomaly detector
 def create_anomaly_detector(**kwargs) -> AnomalyDetector:
-    """Create and return an AnomalyDetector instance."""
+    """Create and return an AnomalyDetector instance."""""
     return AnomalyDetector(**kwargs)
 
 

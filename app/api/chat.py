@@ -1,7 +1,7 @@
-"
+"""
 SmartCloudOps AI - ChatOps API Endpoint
 AI-powered chat interface for operational assistance
-"
+"""
 
 import logging
 from datetime import datetime

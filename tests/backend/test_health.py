@@ -1,8 +1,8 @@
-"""Test health endpoint."""
+"""Test health endpoint."""""
 
 
 def test_health_endpoint(client: FlaskClient):
-    """Test /health endpoint returns 200 and expected structure."""
+    """Test /health endpoint returns 200 and expected structure."""""
     response = client.get("/health")
 
     assert response.status_code == 200
@@ -37,7 +37,7 @@ def test_health_endpoint(client: FlaskClient):
 
 
 def test_api_health_endpoint(client: FlaskClient):
-    """Test /api/health endpoint returns same as /health."""
+    """Test /api/health endpoint returns same as /health."""""
     response = client.get("/api/health")
 
     assert response.status_code == 200
@@ -54,7 +54,7 @@ def test_api_health_endpoint(client: FlaskClient):
 
 
 def test_health_endpoint_methods(client: FlaskClient):
-    """Test health endpoint only accepts GET method."""
+    """Test health endpoint only accepts GET method."""""
     # Test POST should fail
     response = client.post("/health")
     assert response.status_code == 405  # Method Not Allowed
@@ -69,7 +69,7 @@ def test_health_endpoint_methods(client: FlaskClient):
 
 
 def test_health_response_time(client: FlaskClient):
-    """Test health endpoint responds quickly."""
+    """Test health endpoint responds quickly."""""
 
     start_time = time.time()
     response = client.get("/health")

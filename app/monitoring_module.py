@@ -26,7 +26,8 @@ REQUEST_COUNT = Counter()
 REQUEST_LATENCY = Histogram("http_request_duration_seconds", "HTTP request latency")
 
 # System metrics
-SYSTEM_METRICS = {}
+SYSTEM_METRICS = {
+
     "cpu_percent": 0.0,
     "memory_percent": 0.0,
     "disk_percent": 0.0,
@@ -35,7 +36,7 @@ SYSTEM_METRICS = {}
 
 
 def update_system_metrics():
-    "Update system metrics."
+    """Update system metrics."""
     try:
         SYSTEM_METRICS["cpu_percent"] = psutil.cpu_percent(interval=1)
         SYSTEM_METRICS["memory_percent"] = psutil.virtual_memory().percent
@@ -47,7 +48,7 @@ def update_system_metrics():
 
 @monitoring_bp.route("/metrics", methods=["GET"])
 def prometheus_metrics():
-    "Prometheus metrics endpoint."
+    """Prometheus metrics endpoint."""
     try:
         return generate_latest(), 200, {"Content-Type": CONTENT_TYPE_LATEST}
     except Exception as e:
@@ -57,13 +58,14 @@ def prometheus_metrics():
 
 @monitoring_bp.route("/health", methods=["GET"])
 def health_check():
-    "Health check endpoint."
+    """Health check endpoint."""
     try:
         # Update system metrics
         update_system_metrics()
 
         # Check critical services
-        health_status = {}
+        health_status = {
+
             "status": "healthy",
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "version": "1.0.0",
@@ -91,8 +93,8 @@ def health_check():
             db_password = os.getenv("POSTGRES_PASSWORD", "cloudops")
 
             # Test direct connection
-            conn = psycopg2.connect()
-                host=db_host,
+            conn = psycopg2.connect(
+    host=db_host,
                 port=db_port,
                 database=db_name,
                 user=db_user,
@@ -120,12 +122,14 @@ def health_check():
 
 @monitoring_bp.route("/status", methods=["GET"])
 def system_status():
-    "System status endpoint."
+    """System status endpoint."""
     try:
         # Update system metrics
         update_system_metrics()
 
-        status = {}
+        status = {
+
+
             "status": "success",
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "system": {}
@@ -156,7 +160,7 @@ def system_status():
 
 @monitoring_bp.route("/logs", methods=["GET"])
 def get_logs():
-    "Get application logs endpoint."
+    """Get application logs endpoint."""
     try:
         # This is a simplified log retrieval
         # In production, you'd want to integrate with a proper logging system
@@ -189,7 +193,7 @@ def get_logs():
 
 @monitoring_bp.route("/alerts", methods=["GET", "POST"])
 def alerts():
-    "Alerts endpoint."
+    """Alerts endpoint."""
     if request.method == "GET":
         return jsonify()
             {}
@@ -209,7 +213,8 @@ def alerts():
                 return jsonify({"error": "No data provided"}), 400
 
             # In a real implementation, you'd save this to a database
-            alert = {}
+            alert = {
+
                 "id": f"alert_{datetime.now().timestamp()}",
                 "severity": data.get("severity", "info"),
                 "message": data.get("message", "),

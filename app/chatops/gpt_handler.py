@@ -19,10 +19,10 @@ logger = logging.getLogger(__name__)
 
 class GPTHandler:
     """GPT handler for ChatOps queries with input sanitization and
-    context management."""
+    context management."""""
 
     def __init__(self, api_key: str = None):
-        """Initialize GPT handler."""
+        """Initialize GPT handler."""""
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.client = None
         self.conversation_history = []
@@ -30,7 +30,7 @@ class GPTHandler:
 
         if not self.api_key:
             logger.warning(
-                "OpenAI API key not provided. GPT functionality will be disabled."
+                """OpenAI API key not provided. GPT functionality will be disabled."""
             )
             raise ValueError("OpenAI API key is required")
 
@@ -42,7 +42,7 @@ class GPTHandler:
             raise ValueError(f"Failed to initialize OpenAI client: {str(e)}")
 
     def _get_system_prompt(self) -> str:
-        """Get the system prompt for DevOps assistant role."""
+        """Get the system prompt for DevOps assistant role."""""
         return (
             "You are a Senior DevOps Engineer and Cloud Operations "
             "expert. Your role is to assist with:\n\n"
@@ -63,11 +63,11 @@ class GPTHandler:
             "- Prometheus + Grafana monitoring stack\n"
             "- Flask application with metrics endpoints\n"
             "- Node Exporter for system metrics\n\n"
-            "Always respond in a professional, helpful manner focused on operational excellence."
+            """Always respond in a professional, helpful manner focused on operational excellence."""
         )
 
     def sanitize_input(self, query: str) -> str:
-        """Enhanced sanitize and validate user input with comprehensive security checks."""
+        """Enhanced sanitize and validate user input with comprehensive security checks."""""
         if not query or not isinstance(query, str):
             raise ValueError("Query must be a non-empty string")
 
@@ -147,7 +147,7 @@ class GPTHandler:
         return sanitized
 
     def add_context(self, context: Dict[str, Any]) -> str:
-        """Add system context to the conversation with input sanitization."""
+        """Add system context to the conversation with input sanitization."""""
         context_prompt = "\n\n**Current System Context**:\n"
 
         # Sanitize context data to prevent injection attacks
@@ -172,7 +172,7 @@ class GPTHandler:
     def process_query(
         self, query: str, context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-        """Process ChatOps query with GPT integration and enhanced security."""
+        """Process ChatOps query with GPT integration and enhanced security."""""
         try:
             # Check if GPT client is available
             if not self.client:
@@ -268,11 +268,11 @@ class GPTHandler:
             }
 
     def get_conversation_history(self) -> List[Dict[str, str]]:
-        """Get conversation history."""
+        """Get conversation history."""""
         return self.conversation_history.copy()
 
     def clear_history(self) -> bool:
-        """Clear conversation history."""
+        """Clear conversation history."""""
         self.conversation_history.clear()
         logger.info("Conversation history cleared")
         return True

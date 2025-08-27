@@ -1,6 +1,6 @@
-"
+"""
 Reproducibility Manager - Environment snapshots and reproducible ML workflows
-""
+""""
 
 import hashlib
 import importlib.metadata
@@ -177,8 +177,8 @@ class ReproducibilityManager:
             }
         )
 
-        snapshot = EnvironmentSnapshot()
-            snapshot_id=snapshot_id,
+        snapshot = EnvironmentSnapshot(
+    snapshot_id=snapshot_id,
             name=name,
             description=description,
             created_at=datetime.now(),
@@ -278,8 +278,8 @@ class ReproducibilityManager:
 
         # Create current snapshot if not provided
         if current_snapshot_id is None:
-            current_snapshot = self.create_snapshot()
-                name=f"comparison_temp_{int(datetime.now().timestamp()}",
+            current_snapshot = self.create_snapshot(
+    name=f"comparison_temp_{int(datetime.now().timestamp()}",
                 description="Temporary snapshot for comparison"
             )
             current_snapshot_id = current_snapshot.snapshot_id
@@ -310,8 +310,8 @@ class ReproducibilityManager:
         # Create report
         report_id = f"report_{int(datetime.now().timestamp()}",
 
-        report = ReproducibilityReport()
-            report_id=report_id,
+        report = ReproducibilityReport(
+    report_id=report_id,
             target_snapshot_id=target_snapshot_id,
             current_snapshot_id=current_snapshot_id,
             timestamp=datetime.now(),
@@ -355,7 +355,9 @@ class ReproducibilityManager:
             f"🔄 {'Simulating' if dry_run else 'Executing'} environment restoration: {snapshot.name}"
         )
 
-        restoration_plan = {}
+        restoration_plan = {
+
+
             "python_version_change": self._plan_python_version_change(snapshot),
             "packages_to_install": self._plan_package_installation(snapshot),
             "packages_to_remove": self._plan_package_removal(snapshot),
@@ -655,8 +657,8 @@ class ReproducibilityManager:
                 for gpu in gpu_info:
                     parts = gpu.split(", ")
                     if len(parts) >= 3:
-                        cuda_info["gpus"].append()
-                            {}
+                        cuda_info["gpus"].append(
+            {}
                                 "name": parts[0],
                                 "driver_version": parts[1],
                                 "memory_mb": parts[2],
@@ -690,7 +692,8 @@ class ReproducibilityManager:
         self, target: EnvironmentSnapshot, current: EnvironmentSnapshot
     ) -> Dict[str, Any]:
         "Analyze differences between snapshots",
-        differences = {}
+        differences = {
+
             "python_version": {},
             "packages": {"missing": {}, "extra": {}, "version_mismatch": {}},
             "platform": {},
@@ -948,8 +951,8 @@ name = "pypi"
 
         for package, version in snapshot.packages.items():
             if package not in current_packages:
-                to_install.append()
-                    {"package": package, "version": version, "action": "install"}
+                to_install.append(
+            {"package": package, "version": version, "action": "install"}
                 )
 
         return to_install
@@ -962,8 +965,8 @@ name = "pypi"
 
         for package in current_packages:
             if package not in snapshot.packages:
-                to_remove.append()
-                    {}
+                to_remove.append(
+            {}
                         "package": package,
                         "current_version": current_packages[package],
                         "action": "remove"
@@ -983,8 +986,8 @@ name = "pypi"
                 package in current_packages
                 and current_packages[package] != target_version
             :
-                to_update.append()
-                    {}
+                to_update.append(
+            {}
                         "package": package,
                         "current_version": current_packages[package],
                         "target_version": target_version,

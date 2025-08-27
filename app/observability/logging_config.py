@@ -1,7 +1,7 @@
-"
+"""
 Structured JSON Logging with Correlation IDs
 Production-ready logging configuration for SmartCloudOps AI
-"
+"""
 
 import logging
 import logging.config
@@ -105,7 +105,9 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
             "[%(asctime)s] %(levelname)s [%(correlation_id)s] in %(name)s: %(message)s"
         )
 
-    config = {}
+    config = {
+
+
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {}
@@ -246,7 +248,8 @@ def log_performance()
     "
     logger.info()
         "Performance metric recorded",
-        extra={}
+        extra = {
+
             "metric_type": "performance",
             "operation": operation,
             "duration_ms": duration_ms,
@@ -254,8 +257,8 @@ def log_performance()
         })
 
 
-def log_business_event()
-    logger: logging.Logger, event_type: str, entity_type: str, entity_id: str, **kwargs
+def log_business_event(
+            logger: logging.Logger, event_type: str, entity_type: str, entity_id: str, **kwargs
 ) -> None:
     "
     Log business events in structured format
@@ -269,7 +272,8 @@ def log_business_event()
     "
     logger.info()
         f"{entity_type.title()} {event_type}",
-        extra={}
+        extra = {
+
             "event_type": "business",
             "action": event_type,
             "entity": {"type": entity_type, "id": entity_id},
@@ -289,7 +293,8 @@ def log_security_event()
         severity: Severity level (low, medium, high, critical)
         **kwargs: Additional security context
     "
-    log_level = {}
+    log_level = {
+
         "low": logging.INFO,
         "medium": logging.WARNING,
         "high": logging.ERROR,
@@ -299,7 +304,8 @@ def log_security_event()
     logger.log()
         log_level,
         f"Security event: {event_type}",
-        extra={}
+        extra = {
+
             "event_type": "security",
             "security_event": event_type,
             "severity": severity,

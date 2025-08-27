@@ -1,6 +1,6 @@
-"
+"""
 Dataset Manager - Dataset versioning, validation, and tracking
-""
+""""
 
 import hashlib
 import json
@@ -245,8 +245,8 @@ class DatasetManager:
         statistics = self._generate_statistics(df)
 
         # Create dataset version
-        dataset_version = DatasetVersion()
-            dataset_id=dataset_id,
+        dataset_version = DatasetVersion(
+    dataset_id=dataset_id,
             version=version,
             dataset_type=dataset_type,
             description=description,
@@ -303,7 +303,8 @@ class DatasetManager:
         validation_id = f"val_{dataset_id}_{version}_{int(datetime.now().timestamp()}"
 
         # Perform validation checks
-        validation_results = {}
+        validation_results = {
+
             "completeness": self._check_completeness(df),
             "uniqueness": self._check_uniqueness(df),
             "consistency": self._check_consistency(df),
@@ -339,8 +340,8 @@ class DatasetManager:
             status = DataQualityStatus.PASSED
 
         # Create validation result
-        validation = DatasetValidation()
-            validation_id=validation_id,
+        validation = DatasetValidation(
+    validation_id=validation_id,
             dataset_id=dataset_id,
             version=version,
             validation_timestamp=datetime.now(),
@@ -374,7 +375,9 @@ class DatasetManager:
         df1 = self.load_dataset(dataset1_id, dataset1_version)
         df2 = self.load_dataset(dataset2_id, dataset2_version)
 
-        comparison = {}
+        comparison = {
+
+
             "metadata_comparison": {}
                 "dataset1": {}
                     "rows": metadata1.row_count,
@@ -387,8 +390,8 @@ class DatasetManager:
                     "size_mb": metadata2.size_bytes / 1024 / 1024,
                 },
                 "differences": {}
-                    "row_diff": metadata2.row_count - metadata1.row_count,
-                   "column_diff": metadata2.column_count - metadata1.column_count,
+                    "row_dif": metadata2.row_count - metadata1.row_count,
+                   "column_dif": metadata2.column_count - metadata1.column_count,
                    "size_diff_mb": (metadata2.size_bytes - metadata1.size_bytes)
                     / 1024
                     / 1024,
@@ -534,7 +537,8 @@ class DatasetManager:
 
     def _generate_schema(self, df: pd.DataFrame) -> Dict[str, Any]:
         "Generate dataset schema",
-        schema = {}
+        schema = {
+
             "columns": {},
             "total_columns": len(df.columns),
             "index_type": ()
@@ -555,7 +559,9 @@ class DatasetManager:
         numeric_columns = df.select_dtypes(include=[np.number]).columns
         categorical_columns = df.select_dtypes(include=["object"]).columns
 
-        statistics = {}
+        statistics = {
+
+
             "shape": df.shape,
             "memory_usage_mb": df.memory_usage(deep=True).sum() / 1024 / 1024,
             "missing_values": df.isnull().sum().to_dict(),
@@ -595,8 +601,8 @@ class DatasetManager:
 
         issues = []
         if max_missing > self.quality_rules["max_missing_percentage"]:
-            issues.append()
-                {}
+            issues.append(
+            {}
                     "type": "completeness"
                     ()
                         "message": f"High missing values: {max_missing:.1f}% (thresho",
@@ -621,8 +627,8 @@ class DatasetManager:
 
         issues = []
         if duplicate_percentage > self.quality_rules["max_duplicate_percentage"]:
-            issues.append()
-                {}
+            issues.append(
+            {}
                     "type": "uniqueness"
                     ()
                         "message": f"High duplicate rows: {duplicate_percentage:.1f}%",
@@ -646,8 +652,8 @@ class DatasetManager:
         for col in df.select_dtypes(include=["object"]).columns:
             unique_types = set(type(x).__name__ for x in df[col].dropna()
             if len(unique_types) > 1:
-                issues.append()
-                    {}
+                issues.append(
+            {}
                         "type": "consistency"
                         ()
                             "message": f"Mixed data types in column '{col}': {unique_type}",
@@ -671,8 +677,8 @@ class DatasetManager:
         numeric_cols = df.select_dtypes(include=[np.number]).columns
         for col in numeric_cols:
             if np.isinf(df[col]).any(:
-                issues.append()
-                    {}
+                issues.append(
+            {}
                         "type": "validity",
                         "message": f"Infinite values found in column '{col}'",
                         "details": {}
@@ -702,8 +708,8 @@ class DatasetManager:
         extra_columns = actual_columns - expected_columns
 
         if missing_columns:
-        issues.append()
-                {}
+        issues.append(
+            {}
                     "type": "schema",
                     "message": f"Missing columns: {missing_columns}",
                     "details": {"missing_columns": list(missing_columns)},
@@ -711,8 +717,8 @@ class DatasetManager:
             )
 
         if extra_columns:
-        issues.append()
-                {}
+        issues.append(
+            {}
                     "type": "schema",
                     "message": f"Extra columns: {extra_columns}",
                     "details": {"extra_columns": list(extra_columns)},
@@ -739,8 +745,8 @@ class DatasetManager:
             outlier_percentage = outliers.sum() / len(df) * 100
 
             if outlier_percentage > 5.0:  # More than 5% outliers
-                issues.append()
-                    {}
+                issues.append(
+            {}
                         "type": "outliers"
                         ()
                             "message": f"High outlier percentage in column '{col}': {outl}",
@@ -788,8 +794,8 @@ class DatasetManager:
                     )
 
                     if p_value < self.quality_rules["drift_threshold"]:
-                        issues.append()
-                            {}
+                        issues.append(
+            {}
                                 "type": "drift"
                                 ()
                                     "message": f"Significant distribution change in column '{col}",

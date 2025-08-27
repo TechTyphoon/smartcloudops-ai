@@ -8,7 +8,7 @@ import os
 
 
 def check_environment():
-    """Check if environment is properly configured."""
+    """Check if environment is properly configured."""""
     print("🔍 Checking environment configuration...")
 
     # Check if .env file exists
@@ -68,7 +68,7 @@ def check_environment():
 
 
 def create_env_example():
-    """Create example environment file."""
+    """Create example environment file."""""
     env_content = """# Smart CloudOps AI - Environment Configuration
 # Copy this file to .env and fill in your values
 
@@ -109,7 +109,7 @@ LOG_DIR=logs
 
 
 def start_application():
-    """Start the Flask application."""
+    """Start the Flask application."""""
     print("\n🚀 Starting Smart CloudOps AI Application...")
 
     # Set default environment if not set
@@ -132,7 +132,7 @@ def start_application():
 
 
 def main():
-    """Main startup function."""
+    """Main startup function."""""
     print("=" * 50)
     print("Smart CloudOps AI - Application Startup")
     print("=" * 50)

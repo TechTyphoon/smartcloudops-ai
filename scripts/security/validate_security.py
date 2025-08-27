@@ -26,7 +26,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 class SecurityValidator:
-    """Comprehensive security validation for SmartCloudOps AI."""
+    """Comprehensive security validation for SmartCloudOps AI."""""
     
     def __init__(self):
         self.project_root = Path(__file__).parent.parent.parent
@@ -39,7 +39,7 @@ class SecurityValidator:
         }
     
     def run_all_checks(self) -> Dict[str, Any]:
-        """Run all security validation checks."""
+        """Run all security validation checks."""""
         logger.info("🔒 Starting comprehensive security validation...")
         
         checks = [
@@ -68,7 +68,7 @@ class SecurityValidator:
         return self.results
     
     def check_environment_security(self) -> Dict[str, Any]:
-        """Check environment security configuration."""
+        """Check environment security configuration."""""
         result = {
             'status': 'PASS',
             'issues': [],
@@ -92,7 +92,7 @@ class SecurityValidator:
         return result
     
     def check_file_permissions(self) -> Dict[str, Any]:
-        """Check file permissions for security."""
+        """Check file permissions for security."""""
         result = {
             'status': 'PASS',
             'issues': [],
@@ -132,7 +132,7 @@ class SecurityValidator:
         return result
     
     def check_secrets_management(self) -> Dict[str, Any]:
-        """Check secrets management practices."""
+        """Check secrets management practices."""""
         result = {
             'status': 'PASS',
             'issues': [],
@@ -172,7 +172,7 @@ class SecurityValidator:
         return result
     
     def check_dependencies_security(self) -> Dict[str, Any]:
-        """Check dependencies for security vulnerabilities."""
+        """Check dependencies for security vulnerabilities."""""
         result = {
             'status': 'PASS',
             'issues': [],
@@ -209,7 +209,7 @@ class SecurityValidator:
         return result
     
     def check_code_security(self) -> Dict[str, Any]:
-        """Check code for security issues."""
+        """Check code for security issues."""""
         result = {
             'status': 'PASS',
             'issues': [],
@@ -255,7 +255,7 @@ class SecurityValidator:
         return result
     
     def check_docker_security(self) -> Dict[str, Any]:
-        """Check Docker security configuration."""
+        """Check Docker security configuration."""""
         result = {
             'status': 'PASS',
             'issues': [],
@@ -282,7 +282,7 @@ class SecurityValidator:
         return result
     
     def check_terraform_security(self) -> Dict[str, Any]:
-        """Check Terraform security configuration."""
+        """Check Terraform security configuration."""""
         result = {
             'status': 'PASS',
             'issues': [],
@@ -319,7 +319,7 @@ class SecurityValidator:
         return result
     
     def check_ci_cd_security(self) -> Dict[str, Any]:
-        """Check CI/CD security configuration."""
+        """Check CI/CD security configuration."""""
         result = {
             'status': 'PASS',
             'issues': [],
@@ -362,7 +362,7 @@ class SecurityValidator:
         return result
     
     def _find_hardcoded_secrets(self) -> List[str]:
-        """Find files with potential hardcoded secrets."""
+        """Find files with potential hardcoded secrets."""""
         issues = []
         
         # Check for files that might contain secrets
@@ -387,7 +387,7 @@ class SecurityValidator:
         return issues
     
     def _is_ignored_file(self, file_path: Path) -> bool:
-        """Check if file should be ignored in security checks."""
+        """Check if file should be ignored in security checks."""""
         ignored_patterns = [
             '.git/',
             '__pycache__/',
@@ -403,7 +403,7 @@ class SecurityValidator:
         return any(pattern in file_str for pattern in ignored_patterns)
     
     def _evaluate_overall_status(self):
-        """Evaluate overall security status."""
+        """Evaluate overall security status."""""
         critical_issues = []
         warnings = []
         
@@ -430,11 +430,11 @@ class SecurityValidator:
         
         if not critical_issues and not warnings:
             self.results['recommendations'].append(
-                "Security validation passed! Continue with deployment."
+                """Security validation passed! Continue with deployment."""
             )
 
 def main():
-    """Main function to run security validation."""
+    """Main function to run security validation."""""
     validator = SecurityValidator()
     results = validator.run_all_checks()
     

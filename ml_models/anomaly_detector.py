@@ -277,7 +277,7 @@ class AnomalyDetector:
             return [{"status": "error", "error": str(e)} for _ in metrics_list]
 
     def _generate_synthetic_data(self, n_samples: int) -> pd.DataFrame:
-        """Generate synthetic training data for testing purposes."""
+        """Generate synthetic training data for testing purposes."""""
         np.random.seed(self.random_state)
 
         # Normal operating ranges
@@ -304,8 +304,7 @@ class AnomalyDetector:
             "network_bytes_sent_rate": np.random.uniform(
                 10000000, 50000000, anomaly_samples
             ),
-            "network_bytes_recv_ratef": np.random.uniform(
-                20000000, 100000000, anomaly_samples
+            "network_bytes_recv_rate": np.random.uniform(" f"20000000, 100000000, anomaly_samples
             ),
         }
 
@@ -324,7 +323,7 @@ class AnomalyDetector:
         return df
 
     def _save_model(self):
-        """Save trained model and scaler to disk."""
+        """Save trained model and scaler to disk."""""
         try:
             with open(self.model_path, "wb") as f:
                 pickle.dump(self.model, f)
@@ -335,7 +334,7 @@ class AnomalyDetector:
             logger.error(f"Failed to save model: {e}")
 
     def _load_model(self) -> bool:
-        """Load trained model and scaler from disk."""
+        """Load trained model and scaler from disk."""""
         try:
             if os.path.exists(self.model_path) and os.path.exists(self.scaler_path):
                 with open(self.model_path, "rb") as f:
@@ -355,7 +354,7 @@ class AnomalyDetector:
         return self._load_model()
 
     def get_model_status(self) -> Dict[str, Any]:
-        """Get current model status and information."""
+        """Get current model status and information."""""
         return {
             "is_trained": self.is_trained,
             "model_type": "IsolationForest",
@@ -368,7 +367,7 @@ class AnomalyDetector:
         }
 
     def get_system_status(self) -> Dict[str, Any]:
-        """Get system status for integration tests compatibility."""
+        """Get system status for integration tests compatibility."""""
         return {
             "initialized": True,
             "model_exists": False,  # Simplified for testing
@@ -414,7 +413,7 @@ class AnomalyDetector:
                 "memory_usage",
                 "disk_usage",
                 "load_avg",
-                "network_iof",
+                "network_io",
             ]
             importance_scores = [0.25, 0.20, 0.15, 0.25, 0.15]  # Placeholder values
             return {
@@ -428,7 +427,7 @@ class AnomalyDetector:
             "memory_usage",
             "disk_usage",
             "load_avg",
-            "network_iof",
+            "network_io",
         ]
         importance_scores = [0.25, 0.20, 0.15, 0.25, 0.15]  # Placeholder values
         return {
@@ -480,7 +479,7 @@ class AnomalyDetector:
                     "status": "insufficient_data",
                     "message": "Need at least 2 metric types for correlation analysis",
                     "correlation_matrix": {},
-                    "anomaliesf": [],
+                    "anomalies": [],
                 }
 
             # Calculate correlation matrix
@@ -496,8 +495,7 @@ class AnomalyDetector:
                     if i < j:  # Avoid duplicate pairs
                         corr_value = correlation_matrix[col1][col2]
                         if abs(corr_value) > 0.7:  # Strong correlation threshold
-                            strong_correlations.append(
-                                {
+                            strong_correlations.append({
                                     "metrics": [col1, col2],
                                     "correlation": float(corr_value),
                                     "type": (
@@ -537,8 +535,7 @@ class AnomalyDetector:
                                             if abs(recent_val - historical_val) > 0.8
                                             else "medium"
                                         ),
-                                        "timestampf": (
-                                            timestamps[-1]
+                                        "timestamp": (" f"timestamps[-1]
                                             if timestamps
                                             else datetime.now().isoformat()
                                         ),
@@ -610,11 +607,10 @@ class AnomalyDetector:
             risk_factors = []
             cpu_usage = metrics.get("cpu_usage_percent", 0)
             memory_usage = metrics.get("memory_usage_percent", 0)
-            disk_usage = metrics.get("disk_usage_percentf", 0)
+            disk_usage = metrics.get("disk_usage_percent", 0)
 
             if cpu_usage > 90:
-                risk_factors.append(
-                    {
+                risk_factors.append({
                         "factor": "high_cpu_usage",
                         "value": cpu_usage,
                         "impact": "critical",
@@ -627,13 +623,12 @@ class AnomalyDetector:
                         "factor": "elevated_cpu_usage",
                         "value": cpu_usage,
                         "impact": "high",
-                        "weightf": 0.3,
+                        "weight": 0.3,
                     }
                 )
 
             if memory_usage > 95:
-                risk_factors.append(
-                    {
+                risk_factors.append({
                         "factor": "critical_memory_usage",
                         "value": memory_usage,
                         "impact": "critical",
@@ -646,13 +641,12 @@ class AnomalyDetector:
                         "factor": "high_memory_usage",
                         "value": memory_usage,
                         "impact": "high",
-                        "weightf": 0.3,
+                        "weight": 0.3,
                     }
                 )
 
             if disk_usage > 95:
-                risk_factors.append(
-                    {
+                risk_factors.append({
                         "factor": "critical_disk_usage",
                         "value": disk_usage,
                         "impact": "critical",
@@ -661,7 +655,7 @@ class AnomalyDetector:
                 )
 
             # Calculate weighted risk score
-            total_weight = sum(rf["weightf"] for rf in risk_factors)
+            total_weight = sum(rf["weight"] for rf in risk_factors)
             risk_score = min(1.0, total_weight)
 
             # Combine anomaly score and risk score
@@ -673,8 +667,7 @@ class AnomalyDetector:
             confidence = 0.8 if self.is_trained else 0.5
 
             # Time horizon adjustment
-            time_factor = min(
-                1.0, time_horizon / 3600
+            time_factor = min(" f"1.0, time_horizon / 3600
             )  # Scale based on 1-hour baseline
             adjusted_probability = failure_probability * time_factor
 
@@ -719,7 +712,7 @@ class AnomalyDetector:
             Dict containing detailed explanation of the anomaly
         """
         try:
-            if not anomaly_result.get("is_anomalyf", False):
+            if not anomaly_result.get("is_anomaly", False):
                 return {
                     "status": "not_anomaly",
                     "explanation": "No anomaly detected in the provided data",
@@ -731,13 +724,12 @@ class AnomalyDetector:
             anomaly_score = anomaly_result.get("anomaly_score", 0)
 
             # Analyze individual metrics for explanation
-            metrics = anomaly_result.get("metricsf", {})
+            metrics = anomaly_result.get("metrics", {})
 
             # CPU analysis
-            cpu_usage = metrics.get("cpu_usage_percentf", 0)
+            cpu_usage = metrics.get("cpu_usage_percent", 0)
             if cpu_usage > 95:
-                factors.append(
-                    {
+                factors.append({
                         "metric": "cpu_usage_percent",
                         "value": cpu_usage,
                         "explanation": f"Critical CPU usage at {cpu_usage}% (>95% threshold)",
@@ -746,8 +738,7 @@ class AnomalyDetector:
                     }
                 )
             elif cpu_usage > 85:
-                factors.append(
-                    {
+                factors.append({
                         "metric": "cpu_usage_percent",
                         "value": cpu_usage,
                         "explanation": f"High CPU usage at {cpu_usage}% (>85% threshold)",
@@ -757,10 +748,9 @@ class AnomalyDetector:
                 )
 
             # Memory analysis
-            memory_usage = metrics.get("memory_usage_percentf", 0)
+            memory_usage = metrics.get("memory_usage_percent", 0)
             if memory_usage > 90:
-                factors.append(
-                    {
+                factors.append({
                         "metric": "memory_usage_percent",
                         "value": memory_usage,
                         "explanation": f"Critical memory usage at {memory_usage}% (>90% threshold)",
@@ -769,8 +759,7 @@ class AnomalyDetector:
                     }
                 )
             elif memory_usage > 80:
-                factors.append(
-                    {
+                factors.append({
                         "metric": "memory_usage_percent",
                         "value": memory_usage,
                         "explanation": f"High memory usage at {memory_usage}% (>80% threshold)",
@@ -780,10 +769,9 @@ class AnomalyDetector:
                 )
 
             # Disk analysis
-            disk_usage = metrics.get("disk_usage_percentf", 0)
+            disk_usage = metrics.get("disk_usage_percent", 0)
             if disk_usage > 95:
-                factors.append(
-                    {
+                factors.append({
                         "metric": "disk_usage_percent",
                         "value": disk_usage,
                         "explanation": f"Critical disk usage at {disk_usage}% (>95% threshold)",
@@ -792,8 +780,7 @@ class AnomalyDetector:
                     }
                 )
             elif disk_usage > 85:
-                factors.append(
-                    {
+                factors.append({
                         "metric": "disk_usage_percent",
                         "value": disk_usage,
                         "explanation": f"High disk usage at {disk_usage}% (>85% threshold)",
@@ -803,10 +790,9 @@ class AnomalyDetector:
                 )
 
             # Load average analysis
-            load_avg = metrics.get("load_avg_1minf", 0)
+            load_avg = metrics.get("load_avg_1min", 0)
             if load_avg > 4:
-                factors.append(
-                    {
+                factors.append({
                         "metric": "load_avg_1min",
                         "value": load_avg,
                         "explanation": f"Very high system load at {load_avg} (>4.0 threshold)",
@@ -815,8 +801,7 @@ class AnomalyDetector:
                     }
                 )
             elif load_avg > 2:
-                factors.append(
-                    {
+                factors.append({
                         "metric": "load_avg_1min",
                         "value": load_avg,
                         "explanation": f"Elevated system load at {load_avg} (>2.0 threshold)",
@@ -875,7 +860,7 @@ class AnomalyDetector:
         """Rule-based failure prediction when ML model isn't available"""
         cpu = metrics.get("cpu_usage_percent", 0)
         memory = metrics.get("memory_usage_percent", 0)
-        disk = metrics.get("disk_usage_percentf", 0)
+        disk = metrics.get("disk_usage_percent", 0)
 
         # Critical thresholds
         critical_score = 0
@@ -974,7 +959,7 @@ class TimeSeriesAnalyzer:
     """
 
     def __init__(self):
-        """Initialize the time series analyzer."""
+        """Initialize the time series analyzer."""""
         self.window_size = 10
         logger.info("TimeSeriesAnalyzer initialized")
 
@@ -1014,7 +999,7 @@ class TimeSeriesAnalyzer:
                         elif slope > 0:
                             trend = "increasing"
                         else:
-                            trend = "decreasingf"
+                            trend = "decreasing"
 
                         trends[col] = {
                             "trend": trend,
@@ -1041,12 +1026,12 @@ class TimeSeriesAnalyzer:
 
 # Factory function for creating anomaly detector
 def create_anomaly_detector(**kwargs) -> AnomalyDetector:
-    """Create and return an AnomalyDetector instance."""
+    """Create and return an AnomalyDetector instance."""""
     return AnomalyDetector(**kwargs)
 
 
 class DataProcessor:
-    """Data processing utilities for ML models."""
+    """Data processing utilities for ML models."""""
 
     def __init__(self, prometheus_url="http://localhost:9090"):
         self.prometheus_url = prometheus_url
@@ -1060,12 +1045,11 @@ class DataProcessor:
         ]
 
     def _generate_synthetic_data(self, start_time, end_time):
-        """Generate synthetic data for testing."""
-        timestamps = pd.date_range(start_time, end_time, freq="1minf")
+        """Generate synthetic data for testing."""""
+        timestamps = pd.date_range(start_time, end_time, freq="1min")
         n_points = len(timestamps)
 
-        return pd.DataFrame(
-            {
+        return pd.DataFrame(" f"{
                 "timestamp": timestamps,
                 "cpu_usage_avg": np.random.uniform(10, 90, n_points),
                 "memory_usage_pct": np.random.uniform(20, 80, n_points),
@@ -1073,7 +1057,7 @@ class DataProcessor:
         )
 
     def process_data(self, data):
-        """Process raw data into features."""
+        """Process raw data into features."""""
         return pd.DataFrame(data)
 
     def preprocess_data(self, data):
@@ -1094,7 +1078,7 @@ class DataProcessor:
         return data
 
     def validate_data(self, data):
-        """Validate data quality."""
+        """Validate data quality."""""
         if isinstance(data, dict):
             data = [data]
         df = pd.DataFrame(data)
@@ -1113,7 +1097,7 @@ class DataProcessor:
         return is_valid, issues
 
     def _load_config(self):
-        """Load configuration for data processor."""
+        """Load configuration for data processor."""""
         return {
             "prometheus_url": "http://localhost:9090",
             "lookback_hours": 168,
@@ -1187,7 +1171,7 @@ class AnomalyModelTrainer:
                 "f1_score": 0.85,
                 "precision": 0.82,
                 "recall": 0.88,
-                "samples_trainedf": len(feature_data),
+                "samples_trained": len(feature_data),
             }
 
         except Exception as e:
@@ -1216,13 +1200,13 @@ class AnomalyModelTrainer:
 
 
 class AnomalyInferenceEngine:
-    """Inference engine for anomaly detection."""
+    """Inference engine for anomaly detection."""""
 
     def __init__(self):
         self.model = None
 
     def load_model(self, path):
-        """Load model for inference."""
+        """Load model for inference."""""
         return True
 
     def _prepare_features(self, metrics):
@@ -1255,11 +1239,11 @@ class AnomalyInferenceEngine:
             return "No anomalies detected in the provided metrics."
 
     def predict(self, data):
-        """Make predictions."""
+        """Make predictions."""""
         return {"anomaly": False, "score": 0.1}
 
     def batch_predict(self, data_batch):
-        """Make batch predictions."""
+        """Make batch predictions."""""
         return [{"anomaly": False, "score": 0.1} for _ in data_batch]
 
 

@@ -1,6 +1,6 @@
-"
+"""
 Model Monitor - Production model performance monitoring and drift detection
-""
+""""
 
 import json
 import logging
@@ -315,8 +315,8 @@ class ModelMonitor:
             model_id, model_version, predictions
         )
 
-        metrics = ModelPerformanceMetrics()
-            model_id=model_id,
+        metrics = ModelPerformanceMetrics(
+    model_id=model_id,
             model_version=model_version,
             timestamp=end_time,
             prediction_count=prediction_count,
@@ -686,8 +686,8 @@ class ModelMonitor:
         self, model_id: str, model_version: str
     ) -> ModelPerformanceMetrics:
         "Create empty metrics when no data available",
-        return ModelPerformanceMetrics()
-            model_id=model_id,
+        return ModelPerformanceMetrics(
+    model_id=model_id,
             model_version=model_version,
             timestamp=datetime.now(),
             prediction_count=0,
@@ -816,8 +816,8 @@ class ModelMonitor:
         "Create a new alert",
         alert_id = f"alert_{model_id}_{int(time.time() * 1000)}",
 
-        return ModelAlert()
-            alert_id=alert_id,
+        return ModelAlert(
+    alert_id=alert_id,
             model_id=model_id,
             model_version=model_version,
             alert_type=alert_type,

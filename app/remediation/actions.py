@@ -65,7 +65,8 @@ class ActionManager:
             elif action_type == "enhance_monitoring":
                 result = self._enhance_monitoring(target, action)
             else:
-                result = {}
+                result = {
+
                     "status": "error",
                     "error": "Unknown action type: {action_type}",
                     "action": action_type,
@@ -119,8 +120,8 @@ class ActionManager:
                     # Create SSM command to restart service
                     command = self._create_restart_service_command(target)
 
-                    response = self.ssm.send_command()
-                        InstanceIds=[instance_id],
+                    response = self.ssm.send_command(
+    InstanceIds=[instance_id],
                         DocumentName="AWS-RunShellScript",
                         Parameters={"commands": [command]},
                         TimeoutSeconds=300)
@@ -129,8 +130,8 @@ class ActionManager:
 
                     # Wait for command completion
                     result = self._wait_for_command_completion(command_id, instance_id)
-                    results.append()
-                        {}
+                    results.append(
+            {}
                             "instance_id": instance_id,
                             "command_id": command_id,
                             "result": result,
@@ -221,8 +222,8 @@ class ActionManager:
                     # Create disk cleanup command
                     command = self._create_disk_cleanup_command()
 
-                    response = self.ssm.send_command()
-                        InstanceIds=[instance_id],
+                    response = self.ssm.send_command(
+    InstanceIds=[instance_id],
                         DocumentName="AWS-RunShellScript",
                         Parameters={"commands": [command]},
                         TimeoutSeconds=600)
@@ -230,8 +231,8 @@ class ActionManager:
                     command_id = response["Command"]["CommandId"]
                     result = self._wait_for_command_completion(command_id, instance_id)
 
-                    results.append()
-                        {}
+                    results.append(
+            {}
                             "instance_id": instance_id,
                             "command_id": command_id,
                             "result": result,
@@ -302,7 +303,8 @@ class ActionManager:
                 return []
 
             response = self.ec2.describe_instances()
-                Filters=[]
+                Filters = [
+
                     {"Name": "tag:{tag_key}", "Values": [tag_value]},
                     {"Name": "instance-state-name", "Values": ["running"]},
                 ]
@@ -360,8 +362,8 @@ df -h
         try:
             start_time = time.time()
             while time.time() - start_time < timeout:
-                response = self.ssm.get_command_invocation()
-                    CommandId=command_id, InstanceId=instance_id
+                response = self.ssm.get_command_invocation(
+    CommandId=command_id, InstanceId=instance_id
                 )
 
                 status = response["Status"]

@@ -1,7 +1,7 @@
-"
+"""
 Experiment Tracker - ML experiment tracking and reproducibility
 Minimal working version for Phase 2 MLOps integration
-"
+"""
 
 import json
 import sqlite3
@@ -64,7 +64,7 @@ class ExperimentTracker:
     "ML experiment tracking and management"
 
     def __init__(self, experiments_path: str = "ml_models/experiments"):
-        "Initialize experiment tracker."
+        """Initialize experiment tracker."""
         self.experiments_path = Path(experiments_path)
         self.experiments_path.mkdir(parents=True, exist_ok=True)
 
@@ -134,8 +134,8 @@ class ExperimentTracker:
         "Create a new experiment"
         experiment_id = f"exp_{int(time.time()}_{str(uuid.uuid4()[:8]}"
 
-        experiment = Experiment()
-            experiment_id=experiment_id,
+        experiment = Experiment(
+    experiment_id=experiment_id,
             name=name,
             description=description,
             objective=objective,
@@ -161,8 +161,8 @@ class ExperimentTracker:
 
         run_id = f"run_{int(time.time()}_{str(uuid.uuid4()[:8]}"
 
-        run = ExperimentRun()
-            run_id=run_id,
+        run = ExperimentRun(
+    run_id=run_id,
             experiment_id=experiment_id,
             name=run_name,
             status=ExperimentStatus.RUNNING,
@@ -247,8 +247,8 @@ class ExperimentTracker:
         if not row:
             raise ValueError(f"Experiment {experiment_id} not found")
 
-        return Experiment()
-            experiment_id=row[0],
+        return Experiment(
+    experiment_id=row[0],
             name=row[1],
             description=row[2],
             objective=row[3],
@@ -365,5 +365,5 @@ experiment_tracker = ExperimentTracker()
 
 
 def get_experiment_tracker() -> ExperimentTracker:
-    "Get the global experiment tracker instance."
+    """Get the global experiment tracker instance."""
     return experiment_tracker

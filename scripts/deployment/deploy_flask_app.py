@@ -229,8 +229,7 @@ class FlaskAppDeployer:
 
         # Basic health check
         try:
-            response = requests.get(
-                "http://{self.instance_ip}:{self.app_port}/health", timeout=10
+            response = requests.get(" f" "http://{self.instance_ip}:{self.app_port}/health", timeout=10
             )
             health_results["basic_health"] = response.status_code == 200
             print(f"  ✅ Basic health: {response.status_code}")
@@ -306,8 +305,7 @@ class FlaskAppDeployer:
             print(f"📍 Instance: {self.instance_ip}")
             print(f"🌐 Application URL: http://{self.instance_ip}:{self.app_port}")
             print(
-                f"🏥 Health Status: {sum(
-                    health_results.values())}/{len(health_results)} endpoints healthy"
+                f"🏥 Health Status: {sum(" f"health_results.values())}/{len(health_results)} endpoints healthy"
             )
 
             if all(health_results.values()):

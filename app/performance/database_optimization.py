@@ -1,7 +1,7 @@
-"
+"""
 Database Optimization and Query Performance Enhancement
 Phase 5: Performance & Cost Optimization - Database Optimization
-"
+"""
 
 import os
 import time
@@ -157,8 +157,8 @@ class OptimizedDatabase:
         try:
             if POSTGRES_AVAILABLE and self.config.database_path.startswith('postgresql://'):
                 # PostgreSQL connection pool
-                self.connection_pool = pool.ThreadedConnectionPool()
-                    minconn=self.config.min_connections,
+                self.connection_pool = pool.ThreadedConnectionPool(
+    minconn=self.config.min_connections,
                     maxconn=self.config.max_connections,
                     dsn=self.config.database_path
                 )
@@ -332,8 +332,8 @@ def init_optimized_database(database_path: str, max_connections: int = 20) -> Op
     "Initialize optimized database"
     global _optimized_db
     
-    config = DatabaseConfig()
-        database_path=database_path,
+    config = DatabaseConfig(
+    database_path=database_path,
         max_connections=max_connections
     )
     

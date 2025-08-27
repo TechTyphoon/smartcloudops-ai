@@ -57,15 +57,15 @@ statsd_prefix = ""
 
 
 def post_fork(server, worker):
-    """Post fork hook."""
+    """Post fork hook."""""
     server.log.info("Worker spawned (pid: %s)", worker.pid)
 
 
 def pre_fork(server, worker):
-    """Pre fork hook."""
+    """Pre fork hook."""""
     pass
 
 
 def worker_exit(server, worker):
-    """Worker exit hook."""
+    """Worker exit hook."""""
     server.log.info("Worker exited (pid: %s)", worker.pid)

@@ -9,10 +9,10 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 # Create a simplified version of MLOpsService for testing
 class SimplifiedMLOpsService:
-    """Simplified MLOps service for testing without complex imports."""
+    """Simplified MLOps service for testing without complex imports."""""
     
     def __init__(self):
-        """Initialize with mock data."""
+        """Initialize with mock data."""""
         self.mock_experiments = [
             {
                 "id": "exp_1",
@@ -32,19 +32,19 @@ class SimplifiedMLOpsService:
         ]
     
     def get_experiments(self, page=1, per_page=20):
-        """Get experiments with pagination."""
+        """Get experiments with pagination."""""
         total = len(self.mock_experiments)
         pagination = {"page": page, "per_page": per_page, "total": total}
         return self.mock_experiments, pagination
     
     def get_models(self, page=1, per_page=20):
-        """Get models with pagination."""
+        """Get models with pagination."""""
         total = len(self.mock_models)
         pagination = {"page": page, "per_page": per_page, "total": total}
         return self.mock_models, pagination
     
     def get_mlops_statistics(self):
-        """Get MLOps statistics."""
+        """Get MLOps statistics."""""
         return {
             "experiments": {"total_experiments": len(self.mock_experiments)},
             "models": {"total_models": len(self.mock_models)}

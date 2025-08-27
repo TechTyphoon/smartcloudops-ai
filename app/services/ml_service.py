@@ -10,10 +10,10 @@ from typing import Dict, List, Optional
 
 
 class MLService:
-    "Service class for ML-related business logic."
+    """Service class for ML-related business logic."""
 
     def __init__:
-        "Initialize the ML service."
+        """Initialize the ML service."""
         self.mock_training_jobs = []
             {}
                 "id": 1,
@@ -69,7 +69,8 @@ class MLService:
         Returns:
             Dictionary containing model information
         "
-        models = []
+        models = [
+
             {}
                 "id": "anomaly_detector_v1",
                 "name": "Anomaly Detection Model v1",
@@ -237,7 +238,8 @@ class MLService:
             )
 
         # Create new training job
-        new_job = {}
+        new_job = {
+
             "id": len(self.mock_training_jobs) + 1,
             "model_name": training_config["model_name"],
             "status": "started",
@@ -380,7 +382,8 @@ class MLService:
             # Anomaly detection prediction
             anomaly_score = round(random.uniform(0.1, 0.9), 3)
             is_anomaly = anomaly_score > 0.7
-            prediction = {}
+            prediction = {
+
                 "anomaly_score": anomaly_score,
                 "is_anomaly": is_anomaly,
                 "confidence": round(random.uniform(0.8, 0.95), 3),
@@ -393,7 +396,8 @@ class MLService:
         elif model["type"] == "recommendation":
             # Remediation recommendation prediction
             actions = ["scale_up", "restart_service", "cleanup_logs", "update_config"]
-            prediction = {}
+            prediction = {
+
                 "recommended_action": random.choice(actions),
                 "confidence": round(random.uniform(0.6, 0.9), 3),
                 "alternatives": random.sample(actions, 2),
@@ -440,7 +444,8 @@ class MLService:
             raise ValueError(f"Model with ID {model_id} not found")
 
         # Mock deployment process
-        deployment_result = {}
+        deployment_result = {
+
             "model_id": model_id,
             "deployment_status": "success",
             "endpoint_url": f"/api/ml/models/{model_id}/predict",

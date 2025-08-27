@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 def fix_syntax_errors():
-    """Fix common syntax errors in all Python files."""
+    """Fix common syntax errors in all Python files."""""
     project_root = Path("/home/reddy/Desktop/CloudOps")
     app_dir = project_root / "app"
     

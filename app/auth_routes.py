@@ -95,8 +95,8 @@ def login():
                 401)
 
         # Generate tokens
-        tokens = auth_manager.generate_tokens()
-            user_id=user["id"],
+        tokens = auth_manager.generate_tokens(
+    user_id=user["id"],
             username=user["username"],
             role=user["role"],
             tenant_id=user.get("tenant_id")
@@ -213,8 +213,8 @@ def refresh_token():
                 401)
 
         # Generate new tokens
-        tokens = auth_manager.generate_tokens()
-            user_id=user["id"],
+        tokens = auth_manager.generate_tokens(
+    user_id=user["id"],
             username=user["username"],
             role=user["role"],
             tenant_id=user.get("tenant_id")
@@ -282,12 +282,12 @@ def get_profile():
 @auth_bp.route("/users", methods=["GET"])
 @require_admin
 def list_users():
-    "List all users (admin only)."
+    """List all users (admin only)."""
     try:
         users = []
         for user in ENTERPRISE_USERS.values():
-            users.append()
-                {}
+            users.append(
+            {}
                     "id": user["id"],
                     "username": user["username"],
                     "role": user["role"],
@@ -323,7 +323,7 @@ def list_users():
 @auth_bp.route("/validate", methods=["GET"])
 @require_auth
 def validate_token():
-    "Validate current token and return user info."
+    """Validate current token and return user info."""
     return jsonify()
         {}
             "message": "Token is valid",
@@ -338,7 +338,7 @@ def validate_token():
 @auth_bp.route("/roles", methods=["GET"])
 @require_auth
 def get_roles():
-    "Get available roles and permissions."
+    """Get available roles and permissions."""
     return jsonify()
         {}
             "message": "Roles retrieved successfully",

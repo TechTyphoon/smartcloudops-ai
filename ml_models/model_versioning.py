@@ -34,7 +34,7 @@ class ModelVersion:
     file_path: str
     file_size: int
     checksum: str
-    status: str  # 'active', 'staging', 'archived', 'deprecatedf'
+    status: str  # 'active', 'staging', 'archived', 'deprecated'
     parent_version: Optional[str] = None
     tags: List[str] = None
     deployment_config: Dict[str, Any] = None
@@ -174,7 +174,7 @@ class ModelVersioningSystem:
 
         # Save model file
         model_file = version_dir / f"{model_name}.pkl"
-        with open(model_file, "wbf") as f:
+        with open(model_file, "wb") as f:
             pickle.dump(model, f)
 
         # Calculate metadata
@@ -182,8 +182,7 @@ class ModelVersioningSystem:
         checksum = self.calculate_checksum(str(model_file))
 
         # Create model version record
-        model_version = ModelVersion(
-            version_id=version_id,
+        model_version = ModelVersion(" f"version_id=version_id,
             model_name=model_name,
             model_type=model_type,
             created_at=timestamp,
@@ -195,7 +194,7 @@ class ModelVersioningSystem:
             file_path=str(model_file),
             file_size=file_size,
             checksum=checksum,
-            status="stagingf",
+            status="staging",
             parent_version=parent_version,
             tags=tags or [],
             deployment_config=deployment_config or {},
@@ -290,7 +289,7 @@ class ModelVersioningSystem:
     def evaluate_model_performance(
         self, version_id: str, X_test: np.ndarray, y_test: np.ndarray, model: Any = None
     ) -> Dict[str, float]:
-        """Evaluate model performance and store metrics""f"
+        """Evaluate model performance and store metrics"""
 
         if model is None:
             model, _ = self.load_model_version(version_id)
@@ -370,8 +369,7 @@ class ModelVersioningSystem:
     ) -> str:
         """Deploy model version to environment"""
 
-        deployment_id = f"deploy_{version_id}_{environment}_{datetime.now(
-            ).strftime('%Y%m%d_%H%M%S')}"
+        deployment_id = f"deploy_{version_id}_{environment}_{datetime.now(" f").strftime('%Y%m%d_%H%M%S')}"
 
         with sqlite3.connect(self.db_path) as conn:
             # Create deployment record
@@ -444,8 +442,7 @@ class ModelVersioningSystem:
 
             versions = []
             for row in cursor.fetchall():
-                version = ModelVersion(
-                    version_id=row[0],
+                version = ModelVersion(" f"version_id=row[0],
                     model_name=row[1],
                     model_type=row[2],
                     created_at=datetime.fromisoformat(row[3]),
@@ -466,8 +463,7 @@ class ModelVersioningSystem:
 
         return versions
 
-    def get_performance_trends(
-        self, version_id: str, days: int = 30
+    def get_performance_trends(" f"self, version_id: str, days: int = 30
     ) -> List[ModelPerformance]:
         """Get performance trends for a model version"""
         cutoff_date = datetime.now() - timedelta(days=days)
@@ -562,7 +558,7 @@ class ModelVersioningSystem:
                 """
                 SELECT model_name, created_at FROM model_versions
                 ORDER BY created_at DESC LIMIT 5
-            ""f"
+            """
             ).fetchall()
 
         return {

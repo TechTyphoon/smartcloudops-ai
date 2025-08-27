@@ -32,7 +32,7 @@ except Exception as e:
 
 
 def validate_service_availability():
-    "Validate that MLOps service is available."
+    """Validate that MLOps service is available."""
     if not mlops_service:
         return ()
             jsonify()
@@ -43,7 +43,7 @@ def validate_service_availability():
 
 
 def validate_security(data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    "Validate input data for security threats."
+    """Validate input data for security threats."""
     if not security_validation:
         return None
 
@@ -64,7 +64,7 @@ def validate_security(data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
 
 @mlops_bp.route("/experiments", methods=["GET"])
 def get_experiments():
-    "Get all experiments with pagination and filtering."
+    """Get all experiments with pagination and filtering."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -75,8 +75,8 @@ def get_experiments():
         per_page = min(int(request.args.get("per_page", 20), 100)
         status = request.args.get("status")
 
-        experiments, pagination = mlops_service.get_experiments()
-            page=page, per_page=per_page, status=status
+        experiments, pagination = mlops_service.get_experiments(
+    page=page, per_page=per_page, status=status
         )
 
         return jsonify()
@@ -94,7 +94,7 @@ def get_experiments():
 
 @mlops_bp.route("/experiments", methods=["POST"])
 def create_experiment():
-    "Create a new experiment."
+    """Create a new experiment."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -125,8 +125,8 @@ def create_experiment():
                     ),
                     400)
 
-        experiment = mlops_service.create_experiment()
-            name=data["name"],
+        experiment = mlops_service.create_experiment(
+    name=data["name"],
             description=data["description"],
             tags=data.get("tags", []))
 
@@ -139,7 +139,7 @@ def create_experiment():
 
 @mlops_bp.route("/experiments/<experiment_id>/runs", methods=["POST"])
 def start_experiment_run(experiment_id):
-    "Start a new experiment run."
+    """Start a new experiment run."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -152,8 +152,8 @@ def start_experiment_run(experiment_id):
         if security_error:
             return jsonify(security_error), 400
 
-        run = mlops_service.start_experiment_run()
-            experiment_id=experiment_id,
+        run = mlops_service.start_experiment_run(
+    experiment_id=experiment_id,
             run_name=data.get("run_name"),
             parameters=data.get("parameters", {}),
             tags=data.get("tags", []))
@@ -167,7 +167,7 @@ def start_experiment_run(experiment_id):
 
 @mlops_bp.route("/experiments/<experiment_id>/runs/<run_id>/metrics", methods=["POST"])
 def log_metric(experiment_id, run_id):
-    "Log metrics for an experiment run."
+    """Log metrics for an experiment run."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -196,8 +196,8 @@ def log_metric(experiment_id, run_id):
                 ),
                 400)
 
-        result = mlops_service.log_metric()
-            run_id=run_id, key=data["key"], value=data["value"], step=data.get("step")
+        result = mlops_service.log_metric(
+    run_id=run_id, key=data["key"], value=data["value"], step=data.get("step")
         )
 
         return jsonify({"status": "success", "data": result, "error": None})
@@ -211,7 +211,7 @@ def log_metric(experiment_id, run_id):
     "/experiments/<experiment_id>/runs/<run_id>/parameters", methods=["POST"]
 )
 def log_parameter(experiment_id, run_id):
-    "Log parameters for an experiment run."
+    """Log parameters for an experiment run."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -240,8 +240,8 @@ def log_parameter(experiment_id, run_id):
                 ),
                 400)
 
-        result = mlops_service.log_parameter()
-            run_id=run_id, key=data["key"], value=data["value"]
+        result = mlops_service.log_parameter(
+    run_id=run_id, key=data["key"], value=data["value"]
         )
 
         return jsonify({"status": "success", "data": result, "error": None})
@@ -253,7 +253,7 @@ def log_parameter(experiment_id, run_id):
 
 @mlops_bp.route("/experiments/<experiment_id>/runs/<run_id>/end", methods=["POST"])
 def end_run(experiment_id, run_id):
-    "End an experiment run."
+    """End an experiment run."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -266,8 +266,8 @@ def end_run(experiment_id, run_id):
         if security_error:
             return jsonify(security_error), 400
 
-        result = mlops_service.end_run()
-            run_id=run_id, status=data.get("status", "FINISHED")
+        result = mlops_service.end_run(
+    run_id=run_id, status=data.get("status", "FINISHED")
         )
 
         return jsonify({"status": "success", "data": result, "error": None})
@@ -284,7 +284,7 @@ def end_run(experiment_id, run_id):
 
 @mlops_bp.route("/models", methods=["GET"])
 def get_models():
-    "Get all registered models with pagination and filtering."
+    """Get all registered models with pagination and filtering."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -295,8 +295,8 @@ def get_models():
         per_page = min(int(request.args.get("per_page", 20), 100)
         status = request.args.get("status")
 
-        models, pagination = mlops_service.get_models()
-            page=page, per_page=per_page, status=status
+        models, pagination = mlops_service.get_models(
+    page=page, per_page=per_page, status=status
         )
 
         return jsonify()
@@ -314,7 +314,7 @@ def get_models():
 
 @mlops_bp.route("/models", methods=["POST"])
 def register_model():
-    "Register a new model."
+    """Register a new model."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -345,8 +345,8 @@ def register_model():
                     ),
                     400)
 
-        model = mlops_service.register_model()
-            name=data["name"],
+        model = mlops_service.register_model(
+    name=data["name"],
             version=data["version"],
             model_path=data["model_path"],
             framework=data.get("framework", "unknown"),
@@ -362,7 +362,7 @@ def register_model():
 
 @mlops_bp.route("/models/<model_id>/status", methods=["PUT"])
 def update_model_status(model_id):
-    "Update model status (e.g., promote to production)."
+    """Update model status (e.g., promote to production)."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -385,8 +385,8 @@ def update_model_status(model_id):
         if security_error:
             return jsonify(security_error), 400
 
-        result = mlops_service.update_model_status()
-            model_id=model_id, status=data["status"]
+        result = mlops_service.update_model_status(
+    model_id=model_id, status=data["status"]
         )
 
         return jsonify({"status": "success", "data": result, "error": None})
@@ -403,7 +403,7 @@ def update_model_status(model_id):
 
 @mlops_bp.route("/data/versions", methods=["GET"])
 def get_data_versions():
-    "Get data versions with pagination and filtering."
+    """Get data versions with pagination and filtering."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -414,8 +414,8 @@ def get_data_versions():
         per_page = min(int(request.args.get("per_page", 20), 100)
         dataset_name = request.args.get("dataset_name")
 
-        versions, pagination = mlops_service.get_data_versions()
-            dataset_name=dataset_name, page=page, per_page=per_page
+        versions, pagination = mlops_service.get_data_versions(
+    dataset_name=dataset_name, page=page, per_page=per_page
         )
 
         return jsonify()
@@ -433,7 +433,7 @@ def get_data_versions():
 
 @mlops_bp.route("/data/versions/<version_id>/quality", methods=["GET"])
 def get_data_quality_report(version_id):
-    "Get data quality report for a specific version."
+    """Get data quality report for a specific version."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -461,7 +461,7 @@ def get_data_quality_report(version_id):
 
 @mlops_bp.route("/data/transformations", methods=["POST"])
 def create_data_transformation():
-    "Create a new data transformation pipeline."
+    """Create a new data transformation pipeline."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -492,8 +492,8 @@ def create_data_transformation():
                     ),
                     400)
 
-        result = mlops_service.create_data_transformation()
-            source_version_id=data["source_version_id"],
+        result = mlops_service.create_data_transformation(
+    source_version_id=data["source_version_id"],
             transformations=data["transformations"],
             target_dataset_name=data.get("target_dataset_name"))
 
@@ -511,7 +511,7 @@ def create_data_transformation():
 
 @mlops_bp.route("/mlflow/experiments", methods=["GET"])
 def get_mlflow_experiments():
-    "Get MLflow experiments."
+    """Get MLflow experiments."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -528,7 +528,7 @@ def get_mlflow_experiments():
 
 @mlops_bp.route("/mlflow/experiments/<experiment_id>/runs", methods=["GET"])
 def get_mlflow_runs(experiment_id):
-    "Get MLflow runs for an experiment."
+    """Get MLflow runs for an experiment."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -550,7 +550,7 @@ def get_mlflow_runs(experiment_id):
 
 @mlops_bp.route("/statistics", methods=["GET"])
 def get_mlops_statistics():
-    "Get comprehensive MLOps statistics."
+    """Get comprehensive MLOps statistics."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -567,7 +567,7 @@ def get_mlops_statistics():
 
 @mlops_bp.route("/frameworks", methods=["GET"])
 def get_available_frameworks():
-    "Get available ML frameworks."
+    """Get available ML frameworks."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -584,7 +584,7 @@ def get_available_frameworks():
 
 @mlops_bp.route("/algorithms", methods=["GET"])
 def get_available_algorithms():
-    "Get available ML algorithms."
+    """Get available ML algorithms."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -606,7 +606,7 @@ def get_available_algorithms():
 
 @mlops_bp.route("/health", methods=["GET"])
 def health_check():
-    "Health check endpoint for MLOps service."
+    """Health check endpoint for MLOps service."""
     try:
         if not mlops_service:
             return ()

@@ -105,7 +105,7 @@ def anomaly_detection():
 
 @ml_bp.route("/status", methods=["GET"])
 def ml_status():
-    """ML Service Status endpoint."""
+    """ML Service Status endpoint."""""
     try:
         status = {
             "status": "success",
@@ -132,7 +132,7 @@ def ml_status():
 
 @ml_bp.route("/batch", methods=["POST"])
 def batch_anomaly_detection():
-    """Batch Anomaly Detection endpoint."""
+    """Batch Anomaly Detection endpoint."""""
     try:
         if not ML_AVAILABLE or not anomaly_detector:
             return (

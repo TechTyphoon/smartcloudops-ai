@@ -395,7 +395,7 @@ class LRUCacheStrategy(CacheStrategy):
         ttl: Optional[int] = None,
         namespace: str = "default"
     ) -> bool:
-        "Set value and manage LRU order."
+        """Set value and manage LRU order."""
         # Check if we need to evict
         if len(self.access_order) >= self.max_size:
             # Remove least recently used
@@ -472,7 +472,8 @@ class CacheMonitor:
         hit_rate = stats["hit_rate"]
 
         # Performance indicators
-        performance = {}
+        performance = {
+
             "excellent": hit_rate >= 80,
             "good": 60 <= hit_rate < 80,
             "fair": 40 <= hit_rate < 60,

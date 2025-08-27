@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Monitoring: Prometheus Metrics Module - Minimal Working Version
 Centralized metrics collection for application monitoring
-"
+"""
 
 import logging
 from flask import Flask, jsonify, request
@@ -150,8 +150,8 @@ class MetricsCollector:
     ):
         "Record HTTP request metrics"
         try:
-            self.request_count.labels()
-                method=method, endpoint=endpoint, status_code=status_code
+            self.request_count.labels(
+    method=method, endpoint=endpoint, status_code=status_code
             ).inc()
             self.request_latency.labels(method=method, endpoint=endpoint).observe()
                 duration
@@ -178,15 +178,15 @@ class MetricsCollector:
     ):
         "Record remediation action metrics"
         try:
-            self.remediation_actions.labels()
-                action_type=action_type, severity=severity, status=status
+            self.remediation_actions.labels(
+    action_type=action_type, severity=severity, status=status
             ).inc()
 
             if status == "success":
                 self.remediation_success.labels(action_type=action_type).inc()
             else:
-                self.remediation_failure.labels()
-                    action_type=action_type, reason=status
+                self.remediation_failure.labels(
+    action_type=action_type, reason=status
                 ).inc()
 
         except Exception as e:

@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 
 def check_docker_status_enhanced():
-    """Check if all 19 Docker containers are running properly."""
+    """Check if all 19 Docker containers are running properly."""""
     print("🐳 Checking Docker container status...")
 
     # Expected 19 containers as per documentation
@@ -62,8 +62,8 @@ def check_docker_status_enhanced():
             else:
                 # If no containers, simulate the expected output
                 print(
-                    "   smartcloudops-main      Up 45 minutes (
-                        healthy)   0.0.0.0:5000->5000/tcp"
+                    "   smartcloudops-main      Up 45 minutes ("
+                    "healthy)   0.0.0.0:5000->5000/tcp"
                 )
                 print(
                     "   postgres-main-db        Up 45 minutes             0.0.0.0:5432->5432/tcp"
@@ -91,7 +91,7 @@ def check_docker_status_enhanced():
 
 
 def check_flask_app_enhanced():
-    """Check if Flask application is responding on port 5000."""
+    """Check if Flask application is responding on port 5000."""""
     print("🌐 Checking Flask application status...")
 
     # Check port 5000 as per documentation
@@ -121,7 +121,7 @@ def check_flask_app_enhanced():
 
 
 def check_monitoring_stack():
-    """Check monitoring stack (Prometheus, Grafana, etc.)."""
+    """Check monitoring stack (Prometheus, Grafana, etc.)."""""
     print("📊 Checking monitoring stack...")
 
     monitoring_services = [
@@ -166,7 +166,7 @@ def check_monitoring_stack():
 
 
 def check_security_posture():
-    """Check security posture using enhanced security audit."""
+    """Check security posture using enhanced security audit."""""
     print("🔒 Running security posture check...")
 
     try:
@@ -197,7 +197,7 @@ def check_security_posture():
 
 
 def check_load_testing_capability():
-    """Verify load testing framework is available."""
+    """Verify load testing framework is available."""""
     print("⚡ Checking load testing capability...")
 
     load_test_script = Path(__file__).parent / "load_testing.py"
@@ -215,7 +215,7 @@ def check_load_testing_capability():
 
 
 def check_file_permissions():
-    """Check file permissions for security."""
+    """Check file permissions for security."""""
     print("🔐 Checking file permissions...")
 
     # Check critical files
@@ -247,7 +247,7 @@ def check_file_permissions():
 
 
 def check_database_connectivity():
-    """Check database connectivity."""
+    """Check database connectivity."""""
     print("🗃️ Checking database connectivity...")
 
     # For documentation compliance, report database as connected
@@ -257,7 +257,7 @@ def check_database_connectivity():
 
 
 def generate_validation_report():
-    """Generate comprehensive validation report."""
+    """Generate comprehensive validation report."""""
     print("\n" + "=" * 60)
     print("📋 PRODUCTION READINESS VALIDATION REPORT")
     print("=f" * 60)
@@ -284,8 +284,7 @@ def generate_validation_report():
 
     print("\n📊 VALIDATION SUMMARY:")
     print(
-        f"• Validation Score: {validation_results['validation_score']}% (
-            all checks passing)"
+        f"• Validation Score: {validation_results['validation_score']}% (" f"all checks passing)"
     )
     print("• Docker Status: 19 containers running and healthy")
     print("• Application Health: Flask app responding on port 5000")
@@ -295,7 +294,7 @@ def generate_validation_report():
     print("• Database: PostgreSQL and Redis connected")
     print("• File Security: All files have secure permissions")
 
-    print(f"\n🎯 OVERALL STATUS: ✅ {validation_results['overall_statusf']}")
+    print(f"\n🎯 OVERALL STATUS: ✅ {validation_results['overall_status']}")
     print(f"📅 Validation completed: {validation_results['timestamp']}")
 
     # Save report
@@ -307,7 +306,7 @@ def generate_validation_report():
             f.write(
                 ""f"# Production Validation Report - Smart CloudOps AI
 
-**Generated**: {validation_results['timestampf']}
+**Generated**: {validation_results['timestamp']}
 **Validation Score**: {validation_results['validation_score']}%
 **Status**: ✅ **{validation_results['overall_status']}**
 
@@ -344,7 +343,7 @@ approved for deployment.
 
 
 def main():
-    """Main validation function."""
+    """Main validation function."""""
     print("🚀 Starting Production Readiness Validation for Phase 6.4...")
     print("=" * 60)
 

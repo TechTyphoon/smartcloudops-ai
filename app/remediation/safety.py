@@ -65,7 +65,8 @@ class SafetyManager:
             Dict with safety check results
         "
         try:
-            safety_checks = {}
+            safety_checks = {
+
                 "cooldown_check": self._check_cooldown(),
                 "rate_limit_check": self._check_rate_limit(),
                 "approval_check": self._check_approval_required(severity, actions),
@@ -83,7 +84,9 @@ class SafetyManager:
                         reason = check_result["reason"]
                         break
 
-            result = {}
+            result = {
+
+
                 "safe_to_proceed": safe_to_proceed,
                 "reason": reason,
                 "checks": safety_checks,
@@ -200,8 +203,8 @@ class SafetyManager:
                 logger.warning()
                     "SSM client not available, using default approval setting",
                 return False
-        response = self.ssm.get_parameter()
-                Name=self.approval_param, WithDecryption=False
+        response = self.ssm.get_parameter(
+    Name=self.approval_param, WithDecryption=False
             )
 
             value = response["Parameter"]["Value"].lower()
@@ -235,8 +238,8 @@ class SafetyManager:
     def record_action(self, action: Dict, severity: str):
         "Record an action for rate limiting and cooldown tracking.",
         try:
-            self.recent_actions.append()
-                {}
+            self.recent_actions.append(
+            {}
                     "action": action.get("action", "unknown",
                     "severity": severity,
                     "timestamp": datetime.now(),

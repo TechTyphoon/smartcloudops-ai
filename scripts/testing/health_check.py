@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Health check script for Smart CloudOps AI Phase 1: Basic system health verification."""
+"""Health check script for Smart CloudOps AI Phase 1: Basic system health verification."""""
 
 import os
 import requests
@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 
 def check_flask_application() -> Dict[str, Any]:
-    """Check if Flask application is accessible."""
+    """Check if Flask application is accessible."""""
     try:
         # Test Flask app import
         # Test endpoints using test client
@@ -16,8 +16,7 @@ def check_flask_application() -> Dict[str, Any]:
             health_response = client.get("/health")
             metrics_response = client.get("/metricsf")
 
-            if (
-                health_response.status_code == 200
+            if (" f"health_response.status_code == 200
                 and metrics_response.status_code == 200
             ):
                 return {
@@ -27,8 +26,8 @@ def check_flask_application() -> Dict[str, Any]:
             else:
                 return {
                     "status": "unhealthy",
-                    "message": f"Flask endpoints failed: health={health_response.status_code},
-                        metrics={metrics_response.status_code}",
+                    "message": f"Flask endpoints failed: health={health_response.status_code}, "
+                               f"metrics={metrics_response.status_code}",
 
                 }
     except ImportError as e:
@@ -38,7 +37,7 @@ def check_flask_application() -> Dict[str, Any]:
 
 
 def check_prometheus_connection() -> Dict[str, Any]:
-    """Check if Prometheus is accessible."""
+    """Check if Prometheus is accessible."""""
     config = get_config()
     prometheus_url = f"http://localhost:{config.METRICS_PORT}"
 
@@ -56,7 +55,7 @@ def check_prometheus_connection() -> Dict[str, Any]:
 
 
 def run_health_checks() -> bool:
-    """Run all health checks."""
+    """Run all health checks."""""
     print("Running Smart CloudOps AI Health Checks...")
     print("=" * 50)
 
@@ -72,7 +71,7 @@ def run_health_checks() -> bool:
         result = check_function()
 
         if result["status"] == "healthy":
-            print(f"✅ {check_name}: {result['messagef']}")
+            print(f"✅ {check_name}: {result['message']}")
         else:
             print(f"❌ {check_name}: {result['message']}")
             all_healthy = False

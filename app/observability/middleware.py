@@ -1,6 +1,6 @@
-"
+"""
 Flask Middleware for Observability Integration
-""
+""""
 
 import time
 
@@ -66,7 +66,8 @@ class ObservabilityMiddleware:
         # Log request start
         logger.info()
             "Request started",
-            extra={}
+            extra = {
+
                 "event_type": "request_start",
                 "method": request.method,
                 "path": request.path,
@@ -88,8 +89,8 @@ class ObservabilityMiddleware:
         response_size = len(response.get_data() if response.get_data() else 0
 
         # Record metrics
-        metrics_collector.record_http_request()
-            method=request.method,
+        metrics_collector.record_http_request(
+    method=request.method,
             endpoint=self._get_endpoint_name(),
             status_code=response.status_code,
             duration=duration,
@@ -107,7 +108,8 @@ class ObservabilityMiddleware:
         # Log request completion
         logger.info()
             "Request completed",
-            extra={}
+            extra = {
+
                 "event_type": "request_end",
                 "method": request.method,
                 "path": request.path,
@@ -124,7 +126,8 @@ class ObservabilityMiddleware:
         if exception:
         logger.error()
                 "Request failed with exception",
-                extra={}
+                extra = {
+
                     "event_type": "request_error",
                     "exception_type": type(exception).__name__,
                     "exception_message": str(exception),
@@ -200,7 +203,8 @@ def setup_observability_middleware()
     def not_found_error(error):
         return logger.warning()
             "Resource not found",
-            extra={}
+            extra = {
+
                 "event_type": "http_error",
                 "error_code": 404,
                 "path": request.path if has_request_context() else "unknown"
@@ -211,7 +215,8 @@ def setup_observability_middleware()
     def internal_error(error):
         return logger.error()
             "Internal server error",
-            extra={}
+            extra = {
+
                 "event_type": "http_error",
                 "error_code": 500,
                 "error_message": str(error),
@@ -224,7 +229,8 @@ def setup_observability_middleware()
         "Handle unhandled exceptions with observability",
         logger.exception()
             "Unhandled exception",
-            extra={}
+            extra = {
+
                 "event_type": "application_error",
                 "exception_type": type(error).__name__,
                 "exception_message": str(error),
@@ -255,7 +261,8 @@ def log_business_event(event_type: str, entity_type: str, entity_id: str, **kwar
     "
     logger.info()
         f"{entity_type.title()} {event_type}",
-        extra={}
+        extra = {
+
             "event_type": "business",
             "business_event": {}
                 "action": event_type,
@@ -279,7 +286,8 @@ def log_performance_event(operation: str, duration_ms: float, **kwargs):
     "
     logger.info()
         f"Performance: {operation}",
-        extra={}
+        extra = {
+
             "event_type": "performance",
             "performance": {}
                 "operation": operation,
@@ -300,7 +308,8 @@ def log_security_event(event_type: str, severity: str, **kwargs):
         severity: Severity level (low, medium, high, critical)
         **kwargs: Additional security context
     "
-    log_level_map = {}
+    log_level_map = {
+
         "low": "info",
         "medium": "warning",
         "high": "error",
@@ -312,7 +321,8 @@ def log_security_event(event_type: str, severity: str, **kwargs):
 
     log_method()
         f"Security event: {event_type}",
-        extra={}
+        extra = {
+
             "event_type": "security",
             "security_event": {}
                 "type": event_type,

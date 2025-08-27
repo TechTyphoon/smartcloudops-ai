@@ -24,7 +24,7 @@ Base = declarative_base()
 
 # Database URL configuration
 def get_database_url():
-    """Get database URL from environment or config."""
+    """Get database URL from environment or config."""""
     # Check for environment variable first
     database_url = os.getenv("DATABASE_URL")
 
@@ -41,7 +41,7 @@ def get_database_url():
 
 # Create database engine
 def create_db_engine():
-    """Create database engine with appropriate configuration."""
+    """Create database engine with appropriate configuration."""""
     database_url = get_database_url()
 
     # Engine configuration
@@ -84,7 +84,7 @@ db_session = scoped_session(SessionLocal)
 
 
 def init_db():
-    """Initialize database tables."""
+    """Initialize database tables."""""
     try:
         # Create all tables
         Base.metadata.create_all(bind=engine)
@@ -97,7 +97,7 @@ def init_db():
 
 @contextmanager
 def get_db_session():
-    """Context manager for database sessions."""
+    """Context manager for database sessions."""""
     session = db_session()
     try:
         yield session
@@ -110,13 +110,13 @@ def get_db_session():
 
 
 def close_db_session():
-    """Close database session."""
+    """Close database session."""""
     db_session.remove()
 
 
 # Database health check
 def check_db_health():
-    """Check database connectivity and health."""
+    """Check database connectivity and health."""""
     try:
         with get_db_session() as session:
             # Try to execute a simple query
@@ -136,7 +136,7 @@ def check_db_health():
 
 # Database migration support
 def run_migrations():
-    """Run database migrations using Alembic."""
+    """Run database migrations using Alembic."""""
     try:
         from alembic import command
         from alembic.config import Config
@@ -152,7 +152,7 @@ def run_migrations():
 
 # Database backup support
 def backup_database():
-    """Create a database backup."""
+    """Create a database backup."""""
     try:
         database_url = get_database_url()
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

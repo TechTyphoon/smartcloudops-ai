@@ -264,7 +264,8 @@ def manage_conversation():
 def chatops_status():
     "ChatOps service status endpoint.",
     try:
-        status = {}
+        status = {
+
             "status": "success",
             "chatops_available": CHATOPS_AVAILABLE,
             "ai_handler_loaded": ai_handler is not None,

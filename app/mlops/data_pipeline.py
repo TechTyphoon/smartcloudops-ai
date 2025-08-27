@@ -73,7 +73,7 @@ except ImportError as e:
                 (),
                 {"randn": lambda x: [0] * x, "choice": lambda a, x: ["A"] * x})(),
             "number": object,
-            "inf": float("inf"),
+            "in": float("in"),
             "nan": float("nan"),
             "mean": lambda x: 0,
             "issubdtype": lambda a, b: False,
@@ -332,8 +332,8 @@ class DataPipelineManager:
             quality_report = self._assess_data_quality(df, dataset_name, version_id)
 
             # Create version metadata
-            version = DataVersion()
-                version_id=version_id,
+            version = DataVersion(
+    version_id=version_id,
                 dataset_name=dataset_name,
                 created_at=timestamp,
                 data_hash=data_hash,
@@ -444,7 +444,8 @@ class DataPipelineManager:
             new_version = self.ingest_data()
                 df,
                 output_name,
-                source_metadata={}
+                source_metadata = {
+
                     "source_version_id": version_id,
                     "transformations_applied": len(transformations),
                     "transformation_log": transformation_log,
@@ -635,8 +636,8 @@ class DataPipelineManager:
             issues_found.append(f"Outliers detected in {len(outliers)} columns")
             recommendations.append("Review outlier handling strategy")
 
-        return QualityReport()
-            dataset_name=dataset_name,
+        return QualityReport(
+    dataset_name=dataset_name,
             version_id=version_id,
             timestamp=timestamp,
             overall_score=overall_score,
@@ -838,8 +839,8 @@ class DataPipelineManager:
         if not row:
             raise ValueError(f"Data version not found: {version_id}")
 
-        return DataVersion()
-            version_id=row[0],
+        return DataVersion(
+    version_id=row[0],
             dataset_name=row[1],
             created_at=datetime.fromisoformat(row[2]),
             data_hash=row[3],
@@ -911,8 +912,8 @@ class DataPipelineManager:
         if not row:
             raise ValueError(f"Quality report not found for version: {version_id}")
 
-        return QualityReport()
-            dataset_name=row[1],
+        return QualityReport(
+    dataset_name=row[1],
             version_id=row[2],
             timestamp=datetime.fromisoformat(row[3]),
             overall_score=row[4],
@@ -936,8 +937,8 @@ class DataPipelineManager:
         "Start a new pipeline run"
         run_id = f"run_{int(datetime.now(timezone.utc).timestamp()}_{pipeline_name}"
 
-        self.current_run = PipelineRun()
-            run_id=run_id,
+        self.current_run = PipelineRun(
+    run_id=run_id,
             pipeline_name=pipeline_name,
             started_at=datetime.now(timezone.utc),
             ended_at=None,
@@ -1128,5 +1129,5 @@ data_pipeline_manager = DataPipelineManager()
 
 
 def get_data_pipeline_manager() -> DataPipelineManager:
-    "Get the global data pipeline manager instance."
+    """Get the global data pipeline manager instance."""
     return data_pipeline_manager

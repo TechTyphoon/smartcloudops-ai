@@ -13,7 +13,8 @@ from flask import Blueprint, jsonify, request
 ai_bp = Blueprint
 
 # Mock data for testing
-MOCK_MODELS = []
+MOCK_MODELS = [
+
     {}
         "id": "anomaly_detector_v1",
         "name": "Anomaly Detection Model",
@@ -34,7 +35,9 @@ MOCK_MODELS = []
     },
 ]
 
-MOCK_RECOMMENDATIONS = []
+MOCK_RECOMMENDATIONS = [
+
+
     {}
         "action_type": "scale_up",
         "confidence": 0.89,
@@ -61,7 +64,7 @@ MOCK_RECOMMENDATIONS = []
 
 @ai_bp.route("/recommendations", methods=["POST"])
 def get_recommendations():
-    "Get AI-powered remediation recommendations for an anomaly."
+    """Get AI-powered remediation recommendations for an anomaly."""
     try:
         data = request.get_json()
 
@@ -104,8 +107,8 @@ def get_recommendations():
             adjusted_confidence *= random.uniform(0.95, 1.05)
             adjusted_confidence = min(adjusted_confidence, 0.99)  # Cap at 99%
 
-            filtered_recommendations.append()
-                {}
+            filtered_recommendations.append(
+            {}
                     **rec,
                     "confidence": round(adjusted_confidence, 3),
                     "reasoning": f"Recommended for {severity} severity {source} anomaly",
@@ -152,7 +155,7 @@ def get_recommendations():
 
 @ai_bp.route("/analyze", methods=["POST"])
 def analyze_metrics():
-    "Analyze metrics data using AI/ML models."
+    """Analyze metrics data using AI/ML models."""
     try:
         data = request.get_json()
 
@@ -169,7 +172,8 @@ def analyze_metrics():
         metrics = data["metrics"]
 
         # Mock AI analysis
-        analysis_result = {}
+        analysis_result = {
+
             "anomaly_detected": False,
             "anomaly_score": 0.0,
             "confidence": 0.0,
@@ -186,8 +190,8 @@ def analyze_metrics():
         anomaly_indicators = []
 
         if cpu_usage > 80:
-            anomaly_indicators.append()
-                {}
+            anomaly_indicators.append(
+            {}
                     "metric": "cpu_usage",
                     "value": cpu_usage,
                     "threshold": 80,
@@ -196,8 +200,8 @@ def analyze_metrics():
             )
 
         if memory_usage > 85:
-            anomaly_indicators.append()
-                {}
+            anomaly_indicators.append(
+            {}
                     "metric": "memory_usage",
                     "value": memory_usage,
                     "threshold": 85,
@@ -206,8 +210,8 @@ def analyze_metrics():
             )
 
         if error_rate > 5:
-            anomaly_indicators.append()
-                {}
+            anomaly_indicators.append(
+            {}
                     "metric": "error_rate",
                     "value": error_rate,
                     "threshold": 5,
@@ -278,7 +282,7 @@ def analyze_metrics():
 
 @ai_bp.route("/chat", methods=["POST"])
 def chat_query():
-    "Process natural language queries about the system."
+    """Process natural language queries about the system."""
     try:
         data = request.get_json()
 
@@ -296,7 +300,8 @@ def chat_query():
 
         # Mock chatbot responses based on query content
         if "anomaly" in query or "alert" in query:
-            response = {}
+            response = {
+
                 "message": "I found 2 active anomalies: High CPU usage (89%) and increased error rate (8%). Would you like me to recommend remediation actions?",
                 "intent": "anomaly_inquiry",
                 "confidence": 0.92,
@@ -307,7 +312,8 @@ def chat_query():
                 ],
             }
         elif "status" in query or "health" in query:
-            response = {}
+            response = {
+
                 "message": "System health is currently GOOD. All critical services are running normally. CPU: 45%, Memory: 67%, Response time: 120ms.",
                 "intent": "status_inquiry",
                 "confidence": 0.88,
@@ -318,7 +324,8 @@ def chat_query():
                 ],
             }
         elif "performance" in query:
-            response = {}
+            response = {
+
                 "message": "Performance metrics show normal operation. Average response time is 120ms, with 99.8% uptime over the last 24 hours.",
                 "intent": "performance_inquiry",
                 "confidence": 0.85,
@@ -329,7 +336,8 @@ def chat_query():
                 ],
             }
         elif "help" in query or "?" in query:
-            response = {}
+            response = {
+
                 "message": "I can help you with: monitoring system health, investigating anomalies, recommending remediation actions, and answering questions about your infrastructure. What would you like to know?",
                 "intent": "help_request",
                 "confidence": 0.95,
@@ -340,7 +348,8 @@ def chat_query():
                 ],
             }
         else:
-            response = {}
+            response = {
+
                 "message": "I understand you're asking about your infrastructure. Could you be more specific? I can help with system status, anomalies, performance metrics, and remediation actions.",
                 "intent": "general_inquiry",
                 "confidence": 0.60,
@@ -381,7 +390,7 @@ def chat_query():
 
 @ai_bp.route("/models", methods=["GET"])
 def get_models():
-    "Get information about available AI/ML models."
+    """Get information about available AI/ML models."""
     try:
         return ()
             jsonify()
@@ -408,7 +417,7 @@ def get_models():
 
 @ai_bp.route("/models/<model_id>/predict", methods=["POST"])
 def predict_with_model(model_id):
-    "Make predictions using a specific model."
+    """Make predictions using a specific model."""
     try:
         data = request.get_json()
 
@@ -436,13 +445,15 @@ def predict_with_model(model_id):
 
         # Mock prediction based on model type
         if model["type"] == "anomaly_detection":
-            prediction = {}
+            prediction = {
+
                 "anomaly_probability": round(random.uniform(0.1, 0.9), 3),
                 "is_anomaly": random.choice([True, False]),
                 "confidence": round(random.uniform(0.7, 0.95), 3),
             }
         elif model["type"] == "recommendation":
-            prediction = {}
+            prediction = {
+
                 "recommended_action": random.choice()
                     ["scale_up", "restart_service", "cleanup_logs"]
                 ),

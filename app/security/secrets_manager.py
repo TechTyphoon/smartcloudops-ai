@@ -44,7 +44,7 @@ class SecretsManager:
             logger.info("AWS Secrets Manager client initialized successfully",
         except (NoCredentialsError, ClientError) as e:
             logger.warning()
-                "AWS Secrets Manager not available: {e}. Using environment variables only."
+                """AWS Secrets Manager not available: {e}. Using environment variables only."""
             )
             self.secrets_client = None
 
@@ -132,7 +132,8 @@ class SecretsManager:
 
     def validate_secrets(self) -> Dict[str, bool]:
         "Validate that all required secrets are available",
-        required_secrets = {}
+        required_secrets = {
+
             "database_password": bool(self.get_secret("DB_PASSWORD"),
             "jwt_secret_key": bool(self.get_secret("JWT_SECRET_KEY"),
             "flask_secret_key": bool(self.get_secret("SECRET_KEY"),

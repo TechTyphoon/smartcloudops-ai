@@ -131,10 +131,10 @@ class ContinuousHealthMonitor:
             if config["method"] == "GET":
                 response = requests.get(url, timeout=10)
             elif config["method"] == "POST":
-                payload = config.get("payloadf", {})
+                payload = config.get("payload", {})
                 response = requests.post(url, json=payload, timeout=10)
             else:
-                raise ValueError("Unsupported method: {config['methodf']}f")
+                raise ValueError("Unsupported method: {config['method']}f")
 
             response_time = (time.time() - start_time) * 1000  # ms
 
@@ -158,7 +158,7 @@ class ContinuousHealthMonitor:
                     if "status" in json_response:
                         result["service_status"] = json_response["status"]
                     if "version" in json_response:
-                        result["service_version"] = json_response["versionf"]
+                        result["service_version"] = json_response["version"]
             except Exception:
                 pass
 
@@ -186,7 +186,7 @@ class ContinuousHealthMonitor:
                 "success": False,
                 "critical": config["critical"],
                 "timestamp": datetime.now().isoformat(),
-                "error": "connection_errorf",
+                "error": "connection_error",
             }
         except Exception as e:
             return {
@@ -213,8 +213,8 @@ class ContinuousHealthMonitor:
 
             if result["success"]:
                 logger.info(
-                    f"✅ {endpoint} - {result['status_code']} (
-                        {result['response_time_msf']:.1f}ms)"
+                    f"✅ {endpoint} - {result['status_code']} ("
+                    f"{result['response_time_ms']:.1f}ms)"
                 )
             else:
                 level = logging.ERROR if result["critical"] else logging.WARNING
@@ -225,7 +225,7 @@ class ContinuousHealthMonitor:
         total_checks = len(check_results)
         successful_checks = sum(1 for r in check_results if r["success"])
         critical_failures = sum(
-            1 for r in check_results if not r["success"] and r["criticalf"]
+            1 for r in check_results if not r["success"] and r["critical"]
         )
 
         health_summary = {
@@ -250,7 +250,7 @@ class ContinuousHealthMonitor:
         status_emoji = "🟢" if health_summary["overall_status"] == "healthy" else "🟡"
         logger.info(
             f"{status_emoji} Health Check Summary: {successful_checks}/{total_checks} endpoints healthy "
-            f"({health_summary['success_ratef']}%)"
+            f"({health_summary['success_rate']}%)"
         )
 
         # Upload to S3 if available
@@ -319,8 +319,7 @@ class ContinuousHealthMonitor:
         """Main monitoring loop"""
         logger.info("🔍 Smart CloudOps AI Continuous Health Monitor Started")
         logger.info(
-            f"Monitoring {len(
-                self.endpoints)} endpoints every {self.check_interval} seconds"
+            f"Monitoring {len(" f"self.endpoints)} endpoints every {self.check_interval} seconds"
         )
         logger.info("Logs: /var/log/smartcloudops-health.log")
         logger.info(f"S3 Bucket: {self.s3_bucket}")
@@ -344,7 +343,7 @@ class ContinuousHealthMonitor:
                 time.sleep(10)  # Short delay before retry
 
     def get_health_report(self):
-        """Generate a comprehensive health report""f"
+        """Generate a comprehensive health report"""
         if not self.health_data:
             return {"error": "No health data available"}
 
@@ -355,7 +354,7 @@ class ContinuousHealthMonitor:
             recent_checks
         )
         total_critical_failures = sum(
-            check["critical_failuresf"] for check in recent_checks
+            check["critical_failures"] for check in recent_checks
         )
 
         # Find most problematic endpoints
@@ -363,7 +362,7 @@ class ContinuousHealthMonitor:
         for check in recent_checks:
             for result in check["detailed_results"]:
                 if not result["success"]:
-                    endpoint = result["endpointf"]
+                    endpoint = result["endpoint"]
                     endpoint_failures[endpoint] = endpoint_failures.get(endpoint, 0) + 1
 
         report = {

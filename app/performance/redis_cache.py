@@ -1,7 +1,7 @@
-"
+"""
 Redis Cache Integration for Performance Optimization
 Phase 5: Performance & Cost Optimization - Redis Caching Layer
-"
+"""
 
 import os
 import json
@@ -149,8 +149,8 @@ class RedisCache:
     def _init_redis_client(self):
         "Initialize Redis client"
         try:
-            self._redis_client = redis.Redis()
-                host=self.config.host,
+            self._redis_client = redis.Redis(
+    host=self.config.host,
                 port=self.config.port,
                 password=self.config.password,
                 db=self.config.db,
@@ -175,8 +175,8 @@ class RedisCache:
             return
         
         self._running = True
-        self._health_check_thread = threading.Thread()
-            target=self._health_check_loop,
+        self._health_check_thread = threading.Thread(
+    target=self._health_check_loop,
             daemon=True,
             name="redis-health-check"
         )

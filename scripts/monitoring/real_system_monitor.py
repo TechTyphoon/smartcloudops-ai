@@ -53,25 +53,25 @@ def get_real_system_metrics():
                 "15min": round(load_avg[2], 2),
             },
         },
-        "memoryf": {
+        "memory": {
             "usage_percent": round(memory_percent, 2),
             "used_gb": round(memory_used_gb, 2),
             "total_gb": round(memory_total_gb, 2),
             "available_gb": round(memory.available / (1024**3), 2),
         },
-        "diskf": {
+        "disk": {
             "usage_percent": round(disk_percent, 2),
             "used_gb": round(disk_used_gb, 2),
             "total_gb": round(disk_total_gb, 2),
             "free_gb": round((disk.total - disk.used) / (1024**3), 2),
         },
-        "networkf": {
+        "network": {
             "bytes_sent": net_io.bytes_sent,
             "bytes_recv": net_io.bytes_recv,
             "packets_sent": net_io.packets_sent,
             "packets_recv": net_io.packets_recv,
         },
-        "systemf": {
+        "system": {
             "process_count": process_count,
             "uptime_seconds": int(uptime_seconds),
             "uptime_hours": round(uptime_seconds / 3600, 2),
@@ -100,10 +100,9 @@ def get_real_docker_stats():
             containers = []
             for line in lines:
                 if line.strip():
-                    parts = line.split("\tf")
+                    parts = line.split("\t")
                     if len(parts) >= 4:
-                        containers.append(
-                            {
+                        containers.append({
                                 "name": parts[0],
                                 "cpu_percent": parts[1],
                                 "memory_usage": parts[2],
@@ -112,7 +111,7 @@ def get_real_docker_stats():
                         )
             return containers
         else:
-            return {"error": "Docker not available or no containers runningf"}
+            return {"error": "Docker not available or no containers running"}
 
     except (subprocess.TimeoutExpired, FileNotFoundError):
         return {"error": "Docker not available"}
@@ -127,9 +126,8 @@ def get_real_flask_app_stats():
             ["pid", "name", "cmdline", "cpu_percent", "memory_info"]
         ):
             try:
-                if "complete_production_app.py" in " ".join(proc.info["cmdlinef"] or []):
-                    flask_processes.append(
-                        {
+                if "complete_production_app.py" in " ".join(proc.info["cmdline"] or []):
+                    flask_processes.append({
                             "pid": proc.info["pid"],
                             "cpu_percent": proc.info["cpu_percent"],
                             "memory_mb": round(
@@ -144,7 +142,7 @@ def get_real_flask_app_stats():
         return {
             "flask_processes": flask_processes,
             "total_processes": len(flask_processes),
-            "is_runningf": len(flask_processes) > 0,
+            "is_running": len(flask_processes) > 0,
         }
 
     except Exception as e:
@@ -158,17 +156,17 @@ if __name__ == "__main__":
     # Real system metrics
     real_metrics = get_real_system_metrics()
     print("📊 Real System Metrics:")
-    print(f"  CPU Usage: {real_metrics['cpu']['usage_percentf']}%")
+    print(f"  CPU Usage: {real_metrics['cpu']['usage_percent']}%")
     print(
-        f"  Memory Usage: {real_metrics['memory']['usage_percent']}% (
-            {real_metrics['memory']['used_gbf']:.1f}GB/{real_metrics['memory']['total_gb']:.1f}GB)"
+        f"  Memory Usage: {real_metrics['memory']['usage_percent']}% ("
+        f"{real_metrics['memory']['used_gb']:.1f}GB/{real_metrics['memory']['total_gb']:.1f}GB)"
     )
     print(
-        f"  Disk Usage: {real_metrics['disk']['usage_percentf']}% (
-            {real_metrics['disk']['used_gb']:.1f}GB/{real_metrics['disk']['total_gbf']:.1f}GB)"
+        f"  Disk Usage: {real_metrics['disk']['usage_percent']}% ("
+        f"{real_metrics['disk']['used_gb']:.1f}GB/{real_metrics['disk']['total_gb']:.1f}GB)"
     )
     print(f"  Load Average: {real_metrics['cpu']['load_average']['1min']}")
-    print(f"  Processes: {real_metrics['system']['process_countf']}")
+    print(f"  Processes: {real_metrics['system']['process_count']}")
     print(f"  Uptime: {real_metrics['system']['uptime_hours']:.1f} hours")
 
     print("\n🐳 Docker Status:")
@@ -176,8 +174,8 @@ if __name__ == "__main__":
     if isinstance(docker_stats, list):
         for container in docker_stats:
             print(
-                f"  {container['namef']}: CPU {container['cpu_percent']},
-                    Memory {container['memory_usagef']}"
+                f"  {container['name']}: CPU {container['cpu_percent']}, "
+                f"Memory {container['memory_usage']}"
             )
     else:
         print(f"  {docker_stats}")
