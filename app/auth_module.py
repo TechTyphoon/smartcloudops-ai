@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Authentication Module for Smart CloudOps AI
 Extracted from main.py for modularity
-"
+"""
 
 import logging
 import os
@@ -14,7 +14,7 @@ from flask import Blueprint, jsonify, request
 from werkzeug.security import check_password_hash, generate_password_hash
 
 # Configure logging
-logger = logging.getLogger
+logger = logging.getLogger(__name__)
 
 # Create blueprint
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -32,8 +32,8 @@ if not DEFAULT_ADMIN_PASSWORD:
     raise ValueError("DEFAULT_ADMIN_PASSWORD environment variable is required")
 
 # In-memory user store (replace with database in production)
-USERS_DB = {}
-    "admin": {}
+USERS_DB = {
+    "admin": {
         "password_hash": generate_password_hash(DEFAULT_ADMIN_PASSWORD),
         "role": "admin",
         "email": "admin@smartcloudops.ai"
@@ -42,8 +42,8 @@ USERS_DB = {}
 
 
 def create_jwt_token(user_id: str, role: str) -> str:
-    "Create JWT token for user."
-    payload = {}
+    """Create JWT token for user."""
+    payload = {
         "user_id": user_id,
         "role": role,
         "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS),
@@ -64,11 +64,11 @@ def verify_jwt_token(token: str) -> Optional[Dict]:
         logger.warning("Invalid JWT token")
         return None
 def require_auth(f):
-    "Decorator to require authentication."
+    """Decorator to require authentication."""
 
     def decorated_function(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
-        if not auth_header or not auth_header.startswith("Bearer":
+        if not auth_header or not auth_header.startswith("Bearer"):
             return jsonify({"error": "Missing or invalid authorization header"}), 401
 
         token = auth_header.split(" ")[1]
@@ -84,14 +84,14 @@ def require_auth(f):
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    "User login endpoint."
+    """User login endpoint."""
     if request.method == "GET":
-        return jsonify()
-            {}
+        return jsonify(
+            {
                 "message": "Login endpoint",
                 "method": "POST",
                 "required_fields": ["username", "password"],
-                "example": {}
+                "example": {
                     "username": "admin",
                     "password": "use environment variable DEFAULT_ADMIN_PASSWORD"
                 },
@@ -111,18 +111,18 @@ def login():
 
         # Validate user
         user = USERS_DB.get(username)
-        if not user or not check_password_hash(user["password_hash"], password:
+        if not user or not check_password_hash(user["password_hash"], password):
             return jsonify({"error": "Invalid credentials"}), 401
 
         # Create token
         token = create_jwt_token(username, user["role"])
 
-        return jsonify()
-            {}
+        return jsonify(
+            {
                 "status": "success",
                 "message": "Login successful",
                 "token": token,
-                "user": {}
+                "user": {
                     "username": username,
                     "role": user["role"],
                     "email": user["email"],
@@ -132,7 +132,7 @@ def login():
         )
 
     except Exception as e:
-        logger.error("Login error: {e}")
+        logger.error(f"Login error: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
 

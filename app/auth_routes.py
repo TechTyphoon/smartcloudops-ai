@@ -2,14 +2,14 @@
 from datetime import datetime, timezone
 from typing import List
 
-"
+"""
 Enterprise Authentication Endpoints
 Login, logout, token refresh, user management
-"
+"""
 
 import logging
 
-from app.auth import 
+from app.auth import (
     auth_manager,
     authenticate_user,
     get_user_by_id,
@@ -28,13 +28,13 @@ def login():
     try:
         # For GET requests, return login form info
         if request.method == "GET":
-            return jsonify()
-                {}
+            return jsonify(
+                {
                     "status": "ready",
                     "message": "Enterprise Login Service",
                     "method": "POST",
                     "required_fields": ["username", "password"],
-                    "test_users": {}
+                    "test_users": {
                         "admin": "Enterprise administrator",
                         "operator": "System operator",
                         "viewer": "Read-only access",

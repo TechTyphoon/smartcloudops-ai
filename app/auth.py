@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
-"
+"""
 Authentication System for Smart CloudOps AI
 Phase 7: Production Launch & Feedback - JWT Authentication
-"
+"""
 
 import os
 from functools import wraps
 
 import jwt
 from flask import jsonify, request
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from app.database import get_db_session
+from app.models import AuditLog, User
 
 
 class AuthManager:
@@ -21,14 +25,14 @@ class AuthManager:
         if not self.secret_key:
             raise ValueError("JWT_SECRET_KEY environment variable is required")
         self.algorithm = algorithm
-        self.token_expiry = int(os.getenv("JWT_EXPIRY_HOURS", 24)  # 24 hours default
+        self.token_expiry = int(os.getenv("JWT_EXPIRY_HOURS", 24))  # 24 hours default
 
     def generate_tokens(self, user_id: int, username: str, role: str):
-        "Generate access and refresh tokens."
+        """Generate access and refresh tokens."""
         now = datetime.now(timezone.utc)
 
         # Access token (short-lived)
-        access_token_payload = {}
+        access_token_payload = {
             "user_id": user_id,
             "username": username,
             "role": role,
@@ -38,7 +42,7 @@ class AuthManager:
         }
 
         # Refresh token (long-lived)
-        refresh_token_payload = {}
+        refresh_token_payload = {
             "user_id": user_id,
             "username": username,
             "type": "refresh",
@@ -46,14 +50,14 @@ class AuthManager:
             "exp": now + timedelta(hours=self.token_expiry),
         }
 
-        access_token = jwt.encode()
+        access_token = jwt.encode(
             access_token_payload, self.secret_key, algorithm=self.algorithm
         )
-        refresh_token = jwt.encode()
+        refresh_token = jwt.encode(
             refresh_token_payload, self.secret_key, algorithm=self.algorithm
         )
 
-        return {}
+        return {
             "access_token": access_token,
             "refresh_token": refresh_token,
             "token_type": "Bearer",
@@ -77,43 +81,43 @@ class AuthManager:
             raise jwt.InvalidTokenError(f"Invalid token: {str(e)}")
 
     def authenticate_user(self, username: str, password: str):
-        "Authenticate user with username and password."
+        """Authenticate user with username and password."""
         with get_db_session() as session:
-            user = ()
+            user = (
                 session.query(User).filter_by(username=username, is_active=True).first()
             )
 
-            if user and check_password_hash(user.password_hash, password:
+            if user and check_password_hash(user.password_hash, password):
                 return user
         return None
 
     def get_user_by_id(self, user_id: int):
-        "Get user by ID."
+        """Get user by ID."""
         with get_db_session() as session:
             return session.query(User).filter_by(id=user_id, is_active=True).first()
 
-    def log_audit_event()
+    def log_audit_event(
         self,
         user_id: int,
         action: str,
         resource_type: str = None,
         resource_id: int = None,
         details: dict = None):
-        "Log audit event."
+        """Log audit event."""
         try:
             with get_db_session() as session:
-                audit_log = AuditLog()
+                audit_log = AuditLog(
                     user_id=user_id,
                     action=action,
                     resource_type=resource_type,
                     resource_id=resource_id,
                     details=details,
                     ip_address=request.remote_addr,
-                    user_agent=request.headers.get("User-Agent", "))
+                    user_agent=request.headers.get("User-Agent", ""))
                 session.add(audit_log)
         except Exception as e:
             # Don't fail the main operation if audit logging fails
-            print("Audit logging failed: {e}")
+            print(f"Audit logging failed: {e}")
 
 
 # Global auth manager instance
@@ -182,7 +186,6 @@ def require_role(required_role):
 
             return f(*args, **kwargs)
 
-        return decorated_function
         return decorated_function
 
     return decorator
@@ -339,7 +342,7 @@ def register_auth_endpoints(app):
                 # Check if user already exists
                 existing_user = ()
                     session.query(User)
-                    .filter((User.username == username) | (User.email == email)
+                    .filter((User.username == username) | (User.email == email))
                     .first()
                 )
 
@@ -393,7 +396,7 @@ def register_auth_endpoints(app):
                 return jsonify({"error": "Current and new password required"}), 400
 
             # Verify current password
-            if not check_password_hash(user.password_hash, current_password:
+            if not check_password_hash(user.password_hash, current_password):
                 return jsonify({"error": "Current password is incorrect"}), 401
 
             with get_db_session() as session:
@@ -428,6 +431,6 @@ def is_admin(user):
     return user and user.role == "admin"
 
 
-def has_permission(user, required_role:
+def has_permission(user, required_role):
     "Check if user has required role."
     return user and (user.role == required_role or user.role == "admin")

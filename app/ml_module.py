@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
 
-"
+"""
 ML Module for Smart CloudOps AI
 Extracted from main.py for modularity
-"
+"""
 
 import logging
 import os
@@ -29,26 +29,26 @@ ML_FEATURE_COUNT = int(os.getenv("ML_FEATURE_COUNT", "18")
 # Initialize ML components
 anomaly_detector = None
 if ML_AVAILABLE:
-        try:
+    try:
         anomaly_detector = AnomalyDetector()
-        logger.info("ML Anomaly Detector initialized successfully",
+        logger.info("ML Anomaly Detector initialized successfully")
     except Exception as e:
-        logger.error("Failed to initialize ML Anomaly Detector: {e}")
+        logger.error(f"Failed to initialize ML Anomaly Detector: {e}")
         ML_AVAILABLE = False
 
 
-@ml_bp.route("//anomaly"route("//anomaly"route("//anomaly", methods=["GET", "POST"])
+@ml_bp.route("/anomaly", methods=["GET", "POST"])
 def anomaly_detection():
-    "ML Anomaly Detection endpoint.",
+    """ML Anomaly Detection endpoint."""
     if request.method == "GET":
-        return jsonify()
-            {}
+        return jsonify(
+            {
                 "status": "success",
                 "message": "ML Anomaly Detection Service",
                 "ml_available": ML_AVAILABLE,
                 "model_path": ML_MODEL_PATH,
                 "feature_count": ML_FEATURE_COUNT,
-                "endpoints": {}
+                "endpoints": {
                     "detect": "POST /ml/anomaly",
                     "status": "GET /ml/status",
                     "batch": "POST /ml/batch"
@@ -58,9 +58,9 @@ def anomaly_detection():
 
     try:
         if not ML_AVAILABLE or not anomaly_detector:
-            return ()
-                jsonify()
-                    {}
+            return (
+                jsonify(
+                    {
                         "error": "ML service not available",
                         "message": "Anomaly detection model not loaded"
                     }
@@ -135,9 +135,9 @@ def batch_anomaly_detection():
     "Batch Anomaly Detection endpoint.",
     try:
         if not ML_AVAILABLE or not anomaly_detector:
-            return ()
-                jsonify()
-                    {}
+            return (
+                jsonify(
+                    {
                         "error": "ML service not available",
                         "message": "Anomaly detection model not loaded"
                     }

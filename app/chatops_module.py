@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
 
-"
+"""
 ChatOps Module for Smart CloudOps AI
 Extracted from main.py for modularity
-"
+"""
 
 import logging
 
@@ -31,24 +31,24 @@ except ImportError as e:
 # Initialize ChatOps components
 ai_handler = None
 if CHATOPS_AVAILABLE:
-        try:
+    try:
         ai_handler = FlexibleAIHandler()
-        logger.info("ChatOps AI Handler initialized successfully",
+        logger.info("ChatOps AI Handler initialized successfully")
     except Exception as e:
-        logger.error("Failed to initialize ChatOps AI Handler: {e}")
+        logger.error(f"Failed to initialize ChatOps AI Handler: {e}")
         CHATOPS_AVAILABLE = False
 
 
-@chatops_bp.route("//query"route("//query"route("//query", methods=["GET", "POST"])
+@chatops_bp.route("/query", methods=["GET", "POST"])
 def chatops_query():
-    "ChatOps query endpoint.",
+    """ChatOps query endpoint."""
     if request.method == "GET":
-        return jsonify()
-            {}
+        return jsonify(
+            {
                 "status": "success",
                 "message": "ChatOps Query Service",
                 "chatops_available": CHATOPS_AVAILABLE,
-                "endpoints": {}
+                "endpoints": {
                     "query": "POST /chatops/query",
                     "logs": "GET /chatops/logs",
                     "context": "GET /chatops/context"
@@ -58,9 +58,9 @@ def chatops_query():
 
     try:
         if not CHATOPS_AVAILABLE or not ai_handler:
-            return ()
-                jsonify()
-                    {}
+            return (
+                jsonify(
+                    {
                         "error": "ChatOps service not available",
                         "message": "AI handler not loaded"
                     }
