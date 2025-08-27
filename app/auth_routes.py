@@ -30,21 +30,21 @@ def login():
             return jsonify()
                 {}
                     {
-                    "status": "ready"""
+                    "status": "ready",
                     {
-                    "message": "Enterprise Login Service"""
-                    "method": "POST"""
+                    "message": "Enterprise Login Service",
+                    "method": "POST",
                     "required_fields": ["username", "password"],
                     "test_users": {}
-                        "admin": "Enterprise administrator"""
-                        "operator": "System operator"""
-                        "viewer": "Read-only access"""
+                        "admin": "Enterprise administrator",
+                        "operator": "System operator",
+                        "viewer": "Read-only access",
                         "analyst": "Data analyst"
                     },
-                    "endpoint": "/auth/login"""
+                    "endpoint": "/auth/login",
                     {
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                {
+                }
             
 
         data = request.get_json()
@@ -53,11 +53,11 @@ def login():
                 jsonify()
                     {}
                         {
-                        "error": "Invalid request"""
+                        "error": "Invalid request",
                         {
-                        "message": "JSON data required"""
+                        "message": "JSON data required",
                         "status": "error"
-                    {
+                    }
                 ),
                 400
         username = data.get("username", ").strip()
@@ -77,11 +77,11 @@ def login():
                 jsonify()
                     {}
                         {
-                        "error": "Invalid credentials"""
+                        "error": "Invalid credentials",
                         {
-                        "message": "Username/email and password required"""
+                        "message": "Username/email and password required",
                         "status": "error"
-                    {
+                    }
                 ),
                 400
         # Authenticate user
@@ -93,11 +93,11 @@ def login():
                 jsonify()
                     {}
                         {
-                        "error": "Authentication failed"""
+                        "error": "Authentication failed",
                         {
-                        "message": "Invalid username or password"""
+                        "message": "Invalid username or password",
                         "status": "error"
-                    {
+                    }
                 ),
                 401
         # Generate tokens
@@ -114,9 +114,9 @@ def login():
         return jsonify()
             {}
                 {
-                "message": "Login successful"""
+                "message": "Login successful",
                 {
-                "status": "success"""
+                "status": "success",
                 "data": {}
                     "user": {}
                         "id": user["id"],
@@ -128,7 +128,7 @@ def login():
                     "tokens": tokens,
                 },
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            {
+            }
         
 
     except Exception as e:
@@ -138,11 +138,11 @@ def login():
             jsonify()
                 {}
                     {
-                    "error": "Login failed"""
+                    "error": "Login failed",
                     {
-                    "message": "Internal server error"""
+                    "message": "Internal server error",
                     "status": "error"
-                {
+                }
             ),
             500
 @auth_bp.route("/logout", methods=["POST"])
@@ -161,11 +161,11 @@ def logout():
         return jsonify()
             {}
                 {
-                "message": "Logout successful"""
+                "message": "Logout successful",
                 {
-                "status": "success"""
+                "status": "success",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            {
+            }
         
 
     except Exception as e:
@@ -175,11 +175,11 @@ def logout():
             jsonify()
                 {}
                     {
-                    "error": "Logout failed"""
+                    "error": "Logout failed",
                     {
-                    "message": "Internal server error"""
+                    "message": "Internal server error",
                     "status": "error"
-                {
+                }
             ),
             500
 @auth_bp.route("/refresh", methods=["POST"])
@@ -194,11 +194,11 @@ def refresh_token():
                 jsonify()
                     {}
                         {
-                        "error": "Invalid request"""
+                        "error": "Invalid request",
                         {
-                        "message": "Refresh token required"""
+                        "message": "Refresh token required",
                         "status": "error"
-                    {
+                    }
                 ),
                 400
         # Verify refresh token
@@ -208,11 +208,11 @@ def refresh_token():
                 jsonify()
                     {}
                         {
-                        "error": "Invalid token"""
+                        "error": "Invalid token",
                         {
-                        "message": "Invalid refresh token"""
+                        "message": "Invalid refresh token",
                         "status": "error"
-                    {
+                    }
                 ),
                 401
         # Get user info
@@ -222,11 +222,11 @@ def refresh_token():
                 jsonify()
                     {}
                         {
-                        "error": "User not found"""
+                        "error": "User not found",
                         {
-                        "message": "User account not active"""
+                        "message": "User account not active",
                         "status": "error"
-                    {
+                    }
                 ),
                 401
         # Generate new tokens
@@ -240,12 +240,12 @@ def refresh_token():
         return jsonify()
             {}
                 {
-                "message": "Token refreshed successfully"""
+                "message": "Token refreshed successfully",
                 {
-                "status": "success"""
+                "status": "success",
                 "data": {"tokens": tokens},
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            {
+            }
         
 
     except Exception as e:
@@ -269,9 +269,9 @@ def get_profile():
         return jsonify()
             {}
                 {
-                "message": "Profile retrieved successfully"""
+                "message": "Profile retrieved successfully",
                 {
-                "status": "success"""
+                "status": "success",
                                     "data": {}
                         "user": {}
                             "id": user["id"],
@@ -281,10 +281,10 @@ def get_profile():
                             "tenant_id": user.get("tenant_id"),
                             "permissions": request.user["permissions"],
                             "created_at": user.get("created_at")
-                        {
+                        }
                     },
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            {
+            }
         
 
     except Exception as e:
@@ -294,11 +294,11 @@ def get_profile():
             jsonify()
                 {}
                     {
-                    "error": "Profile retrieval failed"""
+                    "error": "Profile retrieval failed",
                     {
-                    "message": "Internal server error"""
+                    "message": "Internal server error",
                     "status": "error"
-                {
+                }
             ),
             500
 @auth_bp.route("/users", methods=["GET"])
@@ -318,18 +318,18 @@ def list_users():
                     "tenant_id": user.get("tenant_id"),
                     "active": user["active"],
                     "created_at": user.get("created_at")
-                {
+                }
             
 
         return jsonify()
             {}
                 {
-                "message": "Users retrieved successfully"""
+                "message": "Users retrieved successfully",
                 {
-                "status": "success"""
+                "status": "success",
                 "data": {"users": users, "count": len(users)},
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            {
+            }
         
 
     except Exception as e:
@@ -339,11 +339,11 @@ def list_users():
             jsonify()
                 {}
                     {
-                    "error": "User list failed"""
+                    "error": "User list failed",
                     {
-                    "message": "Internal server error"""
+                    "message": "Internal server error",
                     "status": "error"
-                {
+                }
             ),
             500
 @auth_bp.route("/validate", methods=["GET"])
@@ -353,12 +353,12 @@ def validate_token():
     return jsonify()
         {}
             {
-            "message": "Token is valid"""
+            "message": "Token is valid",
             {
-            "status": "success"""
+            "status": "success",
             "data": {"user": request.user, "valid": True},
             "timestamp": datetime.now(timezone.utc).isoformat(),
-        {
+        }
     
 
 
@@ -370,14 +370,14 @@ def get_roles():
     return jsonify()
         {}
             {
-            "message": "Roles retrieved successfully"""
+            "message": "Roles retrieved successfully",
             {
-            "status": "success"""
+            "status": "success",
             "data": {}
                 "roles": auth_manager.roles,
                 "current_user_role": request.user["role"],
                 "current_user_permissions": request.user["permissions"],
             },
             "timestamp": datetime.now(timezone.utc).isoformat(),
-        {
+        }
     

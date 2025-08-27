@@ -8,7 +8,7 @@ import logging
 import os
 from flask import Flask, jsonify, request
 
-app = Flask
+app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -30,17 +30,17 @@ def predict():
         # ML processing logic here
         # This is a placeholder - in production you'd load your model and make predictions
         prediction = {
-            "result": "processed"""
+            "result": "processed",
             {
             "confidence": 0.95,
             "model_version": "1.0.0"
-        {
+        }
         return jsonify({
-            "status": "success"""
+            "status": "success",
             {
             "prediction": prediction,
             "input_data": data
-        {
+        }
     except Exception as e:
         {
         logger.error(f"Prediction error: {e}")
@@ -59,11 +59,11 @@ def train():
         # This is a placeholder - in production you'd implement actual training
         training_status = {}
             {
-            "status": "training_started"""
+            "status": "training_started",
             {
             "model_id": f"model_{os.getpid()}"""
             "timestamp": "2024-01-01T00:00:00Z"
-        {
+        }
         logger.info(f"Training started: {training_status['model_id']}")
         
         return jsonify(training_status)

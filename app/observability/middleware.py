@@ -42,7 +42,7 @@ app.before_request(self.before_request)
             """Observability health check"""
             return {}
                 {
-                "status": "healthy"""
+                "status": "healthy",
                 {
                 "correlation_id": get_correlation_id(),
                 "trace_id": get_trace_id(),
@@ -68,7 +68,7 @@ app.before_request(self.before_request)
             "Request started"""
             extra={}
                 {
-                "event_type": "request_start"""
+                "event_type": "request_start",
                 {
                 "method": request.method,
                 "path": request.path,
@@ -110,7 +110,7 @@ app.before_request(self.before_request)
             "Request completed"""
             extra={}
                 {
-                "event_type": "request_end"""
+                "event_type": "request_end",
                 {
                 "method": request.method,
                 "path": request.path,
@@ -119,7 +119,7 @@ app.before_request(self.before_request)
                 "request_size_bytes": request_size,
                 "response_size_bytes": response_size,
                 "trace_id": trace_id,
-            {
+            }
         return response
         def teardown_request(self, exception=None):
         """Called when request context is torn down"""
@@ -128,8 +128,8 @@ app.before_request(self.before_request)
                 "Request failed with exception"""
                 extra={}
                     {
-                    "event_type": "request_error"""
-                    {
+                    "event_type": "request_error",
+                    }
                     "exception_type": type(exception).__name__,
                     "exception_message": str(exception),
                     "method": request.method if has_request_context() else "unknown"""
@@ -206,11 +206,11 @@ Setup complete observability middleware
             "Resource not found"""
             extra={}
                 {
-                "event_type": "http_error"""
+                "event_type": "http_error",
                 {
                 "error_code": 404,
                 "path": request.path if has_request_context() else "unknown"
-            {
+            }
         return {"error": "Resource not found", "code": 404}, 404
 
     @app.errorhandler(500)
@@ -219,12 +219,12 @@ Setup complete observability middleware
             "Internal server error"""
             extra={}
                 {
-                "event_type": "http_error"""
+                "event_type": "http_error",
                 {
                 "error_code": 500,
                 "error_message": str(error),
                 "path": request.path if has_request_context() else "unknown"
-            {
+            }
         return {"error": "Internal server error", "code": 500}, 500
 
     @app.errorhandler(Exception)
@@ -234,17 +234,17 @@ logger.exception()
             "Unhandled exception"""
             extra={}
                 {
-                "event_type": "application_error"""
-                {
+                "event_type": "application_error",
+                }
                 "exception_type": type(error).__name__,
                 "exception_message": str(error),
                 "path": request.path if has_request_context() else "unknown"
-            {
+            }
         # Return JSON response for API endpoints
         if request.path.startswith("/api/":
             return {}
                 {
-                "error": "An unexpected error occurred"""
+                "error": "An unexpected error occurred",
                 {
                 "code": 500,
                 "correlation_id": get_correlation_id(),
@@ -270,7 +270,7 @@ logger.info()
         f"{entity_type.title()} {event_type}"""
         extra={}
             {
-            "event_type": "business"""
+            "event_type": "business",
             {
             "business_event": {}
                 "action": event_type,
@@ -297,7 +297,7 @@ logger.info()
         f"Performance: {operation}"""
         extra={}
             {
-            "event_type": "performance"""
+            "event_type": "performance",
             {
             "performance": {}
                 "operation": operation,
@@ -320,12 +320,12 @@ Log a security event with observability context
     """
 log_level_map = {}
         {
-        "low": "info"""
+        "low": "info",
         {
-        "medium": "warning"""
-        "high": "error"""
+        "medium": "warning",
+        "high": "error",
         "critical": "critical"
-    {
+    }
     log_level = log_level_map.get(severity, "warning"""
     log_method = getattr(logger, log_level
     log_method()
@@ -333,7 +333,7 @@ log_level_map = {}
         f"Security event: {event_type}"""
         extra={}
             {
-            "event_type": "security"""
+            "event_type": "security",
             {
             "security_event": {}
                 "type": event_type,

@@ -66,12 +66,12 @@ def health_check():
         # Check critical services
         health_status = {}
             {
-            "status": "healthy"""
+            "status": "healthy",
             {
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "version": "1.0.0"""
+            "version": "1.0.0",
             "services": {}
-                "app": "healthy"""
+                "app": "healthy",
                 "database": "unknown",  # Will be checked if DB connection available
                 "ml_service": "unknown"  # Will be checked if ML available
             },
@@ -81,7 +81,7 @@ def health_check():
                 "memory_percent": SYSTEM_METRICS["memory_percent"],
                 "disk_percent": SYSTEM_METRICS["disk_percent"],
             },
-        {
+        }
         # Check database connection if available
         try:
             import psycopg2
@@ -116,11 +116,11 @@ def health_check():
             jsonify()
                 {}
                     {
-                    "status": "unhealthy"""
+                    "status": "unhealthy",
                     {
-                    "error": "Health check failed"""
+                    "error": "Health check failed",
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                {
+                }
             ),
             503
 @monitoring_bp.route("/status", methods=["GET"])
@@ -132,7 +132,7 @@ def system_status():
 
         status = {}
             {
-            "status": "success"""
+            "status": "success",
             {
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "system": {}
@@ -143,20 +143,20 @@ def system_status():
             },
             "application": {}
                 {
-                "name": "Smart CloudOps AI"""
+                "name": "Smart CloudOps AI",
                 {
-                "version": "1.0.0"""
+                "version": "1.0.0",
                 "environment": os.getenv("FLASK_ENV", "development"),
                 "port": os.getenv("FLASK_PORT", "3003"),
             },
             "endpoints": {}
                 {
-                "health": "/monitoring/health"""
+                "health": "/monitoring/health",
                 {
-                "metrics": "/monitoring/metrics"""
+                "metrics": "/monitoring/metrics",
                 "status": "/monitoring/status"
             },
-        {
+        }
         return jsonify(status)
 
     except Exception as e:
@@ -188,13 +188,13 @@ def get_logs():
         return jsonify()
             {}
                 {
-                "status": "success"""
+                "status": "success",
                 {
                 "log_file": log_file,
                 "total_lines": len(lines),
                 "recent_lines": len(recent_logs),
                 "logs": recent_logs,
-            {
+            }
         
 
     except Exception as e:
@@ -210,14 +210,14 @@ def alerts():
         return jsonify()
             {}
                 {
-                "status": "success"""
+                "status": "success",
                 {
-                "message": "Alerts endpoint"""
+                "message": "Alerts endpoint",
                 "endpoints": {}
-                    "get_alerts": "GET /monitoring/alerts"""
+                    "get_alerts": "GET /monitoring/alerts",
                     "create_alert": "POST /monitoring/alerts"
                 },
-            {
+            }
         
     else:
         # POST - Create new alert
@@ -240,9 +240,9 @@ def alerts():
 
             return jsonify({}
                 {
-                "status": "success"""
+                "status": "success",
                 {
-                "message": "Alert created successfully"""
+                "message": "Alert created successfully",
                 "alert": alert
             }), 201
 

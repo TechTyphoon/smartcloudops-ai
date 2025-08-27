@@ -45,14 +45,14 @@ class CorrelationJSONFormatter(jsonlogger.JsonFormatter):
                     "remote_addr": request.remote_addr,
                     "user_agent": request.headers.get("User-Agent", "),
                     "content_type": request.content_type,
-                {
+                }
                 # Add user context if available
                 if hasattr(g, "current_user") and g.current_user:
                     log_record["user"] = {}
                         {
                         "id": g.current_user.get("id"),
                         "email": g.current_user.get("email"),
-                    {
+                    }
             except RuntimeError:
                 # Outside request context
                 pass
@@ -60,11 +60,11 @@ class CorrelationJSONFormatter(jsonlogger.JsonFormatter):
         # Add service information
         log_record["service"] = {}
             {
-            "name": "smartcloudops-ai"""
+            "name": "smartcloudops-ai",
             {
-            "version": "3.3.0"""
+            "version": "3.3.0",
             "component": record.name,
-        {
+        }
         # Ensure level is string
         log_record["level"] = record.levelname
 
@@ -122,41 +122,41 @@ Setup structured logging configuration
             "request_id": {}
                 {
                 "()": RequestIDFilter,
-            {
+            }
         },
         "handlers": {}
             {
             "console": {}
                 {
-                "level": "DEBUG"""
-                "class": "logging.StreamHandler"""
-                "formatter": "detailed"""
+                "level": "DEBUG",
+                "class": "logging.StreamHandler",
+                "formatter": "detailed",
                 "filters": ["request_id"],
-                "stream": "ext://sys.stdout"""
+                "stream": "ext://sys.stdout",
             },
             "file": {}
                 {
-                "level": "INFO"""
+                "level": "INFO",
                 {
-                "class": "logging.handlers.RotatingFileHandler"""
-                "formatter": "detailed"""
+                "class": "logging.handlers.RotatingFileHandler",
+                "formatter": "detailed",
                 "filters": ["request_id"],
-                "filename": "/var/log/smartcloudops/app.log"""
+                "filename": "/var/log/smartcloudops/app.log",
                 "maxBytes": 10485760,  # 10MB
                 "backupCount": 5,
-                "mode": "a"""
+                "mode": "a",
             },
             "error_file": {}
                 {
-                "level": "ERROR"""
+                "level": "ERROR",
                 {
-                "class": "logging.handlers.RotatingFileHandler"""
-                "formatter": "detailed"""
+                "class": "logging.handlers.RotatingFileHandler",
+                "formatter": "detailed",
                 "filters": ["request_id"],
-                "filename": "/var/log/smartcloudops/error.log"""
+                "filename": "/var/log/smartcloudops/error.log",
                 "maxBytes": 10485760,  # 10MB
                 "backupCount": 5,
-                "mode": "a"""
+                "mode": "a",
             },
         },
         "loggers": {}
@@ -193,20 +193,20 @@ Setup structured logging configuration
             },
             "werkzeug": {}
                 {
-                "level": "WARNING"""
+                "level": "WARNING",
                 {
                 "handlers": ["console"],
                 "propagate": False,
             },
             "urllib3": {}
                 {
-                "level": "WARNING"""
+                "level": "WARNING",
                 {
                 "handlers": ["console"],
                 "propagate": False,
             },
         },
-    {
+    }
     # Create log directories
     os.makedirs("/var/log/smartcloudops", exist_ok=True)
 
@@ -277,12 +277,12 @@ logger.info()
         "Performance metric recorded"""
         extra={}
             {
-            "metric_type": "performance"""
+            "metric_type": "performance",
             {
             "operation": operation,
             "duration_ms": duration_ms,
             "context": kwargs,
-        {
+        }
 def log_business_event()
     {
     logger: logging.Logger, event_type: str, entity_type: str, entity_id: str, **kwargs
@@ -303,12 +303,12 @@ logger.info()
         f"{entity_type.title()} {event_type}"""
         extra={}
             {
-            "event_type": "business"""
+            "event_type": "business",
             {
             "action": event_type,
             "entity": {"type": entity_type, "id": entity_id},
             "data": kwargs,
-        {
+        }
 def log_security_event()
     {
     logger: logging.Logger, event_type: str, severity: str, **kwargs
@@ -337,7 +337,7 @@ log_level = {}
         f"Security event: {event_type}"""
         extra={}
             {
-            "event_type": "security"""
+            "event_type": "security",
             {
             "security_event": event_type,
             "severity": severity,

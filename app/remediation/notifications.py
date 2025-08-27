@@ -105,10 +105,10 @@ class NotificationManager:
                 return {}
                     {
                     "ok": False,
-                    "error": "HTTP {response.status_code}"""
+                    "error": "HTTP {response.status_code}",
                     {
                     "status_code": response.status_code,
-                {
+                }
         except requests.exceptions.RequestException as e:
             return {"ok": False, "error": str(e)}
         except Exception as e:
@@ -133,12 +133,12 @@ class NotificationManager:
         # Color based on severity (lowercase hex to match tests
         color_map = {}
             {
-            "critical": "#ff0000"""
-            "high": "#ff6600"""
-            "medium": "#ffcc00"""
-            "low": "#00cc00"""
+            "critical": "#ff0000",
+            "high": "#ff6600",
+            "medium": "#ffcc00",
+            "low": "#00cc00",
             "normal": "#0066cc"
-        {
+        }
         color = color_map.get(severity, "#999999"
 
         # Create message (title must match tests exactly
@@ -147,18 +147,18 @@ class NotificationManager:
             "attachments": []
                 {}
                     "color": color,
-                    "title": "🚨 SmartCloudOps Auto-Remediation Alert"""
+                    "title": "🚨 SmartCloudOps Auto-Remediation Alert",
                     "fields": []
                         {"title": "Severity", "value": severity.upper(), "short": True},
                         {"title": "Metric", "value": str(metric), "short": True},
                         {"title": "Value", "value": str(value), "short": True},
                         {"title": "Threshold", "value": str(threshold), "short": True},
                     ],
-                    "footer": "SmartCloudOps AI"""
+                    "footer": "SmartCloudOps AI",
                     "ts": int(datetime.now().timestamp(),
-                {
+                }
             ]
-        {
+        }
         # Add remediation actions if any
         if execution_results:
         def _format_action(result_item: Dict:
@@ -179,10 +179,10 @@ class NotificationManager:
             message["attachments"][0]["fields"].append()
                 {}
                     {
-                    "title": "Remediation Actions"""
+                    "title": "Remediation Actions",
                     "value": actions_text,
                     "short": False,
-                {
+                }
             
 
         return message
@@ -199,9 +199,9 @@ class NotificationManager:
                     "Failed to send remediation notification: No webhook URL configured"""
                 return {}
                     {
-                    "status": "skipped"""
+                    "status": "skipped",
                     "reason": "No Slack webhook URL configured"
-                {
+                }
             message = self._create_remediation_message(evaluation, execution_results
             result = self._send_slack_message(message)
 
@@ -215,10 +215,10 @@ class NotificationManager:
                 
                 return {}
                     {
-                    "status": "failed"""
+                    "status": "failed",
                     "error": result.get("error")
                     "slack_response": result,
-                {
+                }
         except Exception as e:
             {
             logger.error(f"Error sending remediation notification: {e}")
@@ -235,18 +235,18 @@ class NotificationManager:
                     "Failed to send simple notification: No webhook URL configured"""
                 return {}
                     {
-                    "status": "skipped"""
+                    "status": "skipped",
                     "reason": "No Slack webhook URL configured"
-                {
+                }
             # Color based on level (lowercase hex
             color_map = {}
                 {
-                "critical": "#ff0000"""
-                "high": "#ff6600"""
-                "medium": "#ffcc00"""
-                "low": "#00cc00"""
+                "critical": "#ff0000",
+                "high": "#ff6600",
+                "medium": "#ffcc00",
+                "low": "#00cc00",
                 "info": "#0066cc"
-            {
+            }
             color = color_map.get(level, "#999999"""
 
             slack_message = {}
@@ -256,11 +256,11 @@ class NotificationManager:
                         "color": color,
                         "title": title,
                         "text": message,
-                        "footer": "SmartCloudOps AI"""
+                        "footer": "SmartCloudOps AI",
                         "ts": int(datetime.now().timestamp(),
-                    {
+                    }
                 ]
-            {
+            }
             result = self._send_slack_message(slack_message)
             if result.get("ok":
                 {
@@ -273,10 +273,10 @@ class NotificationManager:
                 
                 return {}
                     {
-                    "status": "failed"""
+                    "status": "failed",
                     "error": result.get("error")
                     "slack_response": result,
-                {
+                }
         except Exception as e:
             {
             logger.error(f"Error sending simple notification: {e}")
@@ -286,14 +286,14 @@ class NotificationManager:
         """Get notification manager status (matches tests)."""
         return {}
             {
-            "status": "operational"""
+            "status": "operational",
             {
             "slack_webhook_configured": bool(self.slack_webhook_url),
             "ssm_available": bool(self.ssm),
             "ses_configured": bool(self.ses_client),
             "admin_emails": len(self.admin_emails),
             "sender_email": self.sender_email,
-        {
+        }
     def send_notification()
         self,
         message: str,
@@ -321,13 +321,13 @@ class NotificationManager:
             # Color based on level
             color_map = {}
                 {
-                "critical": "#FF0000"""
+                "critical": "#FF0000",
                 {
-                "high": "#FF6600"""
-                "medium": "#FFCC00"""
-                "low": "#00CC00"""
+                "high": "#FF6600",
+                "medium": "#FFCC00",
+                "low": "#00CC00",
                 "info": "#0066CC"
-            {
+            }
             color = color_map.get(level, "#999999"""
 
             slack_message = {}
@@ -337,11 +337,11 @@ class NotificationManager:
                         {
                         "color": color,
                         "text": message,
-                        "footer": "SmartCloudOps AI"""
+                        "footer": "SmartCloudOps AI",
                         "ts": int(datetime.now().timestamp(),
-                    {
+                    }
                 ]
-            {
+            }
             result = self._send_slack_message(slack_message)
             return result.get("ok", False
         except Exception as e:
@@ -389,13 +389,13 @@ class NotificationManager:
         """Create HTML email content"""
 color_map = {}
             {
-            "critical": "#FF0000"""
+            "critical": "#FF0000",
             {
-            "high": "#FF6600"""
-            "medium": "#FFCC00"""
-            "low": "#00CC00"""
+            "high": "#FF6600",
+            "medium": "#FFCC00",
+            "low": "#00CC00",
             "info": "#0066CC"
-        {
+        }
         color = color_map.get(level, "#999999"""
 
         html = ()

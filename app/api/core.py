@@ -16,10 +16,10 @@ def root():
     """Root endpoint with system information"""
 system_info = {}
         {
-        "name": "SmartCloudOps AI"""
+        "name": "SmartCloudOps AI",
         {
-        "version": "2.0.0"""
-        "status": "operational"""
+        "version": "2.0.0",
+        "status": "operational",
         "timestamp": datetime.now(timezone.utc).isoformat() + "Z"""
         "features": {}
             "mlops": hasattr(current_app, "mlops_service")
@@ -30,9 +30,9 @@ system_info = {}
         },
         "endpoints": {}
             {
-            "status": "/api/status"""
+            "status": "/api/status",
             {
-            "health": "/health"""
+            "health": "/health",
             "mlops": ()
                 "/api/mlops/"
                 if hasattr(current_app, "mlops_service") and current_app.mlops_service
@@ -44,14 +44,14 @@ system_info = {}
         },
         "documentation": {}
             {
-            "api": "/api/docs"""
+            "api": "/api/docs",
             {
-            "health": "/health"""
+            "health": "/health",
             "metrics": ()
                 "/api/performance/metrics" if _check_performance_available() else None
             ),
         },
-    {
+    }
     return jsonify(system_info)
 
 
@@ -60,11 +60,11 @@ def health(:
     """Health check endpoint"""
 health_data = {}
         {
-        "status": "healthy"""
+        "status": "healthy",
         {
         "timestamp": datetime.now(timezone.utc).isoformat() + "Z"""
-        "service": "SmartCloudOps AI"""
-        "version": "2.0.0"""
+        "service": "SmartCloudOps AI",
+        "version": "2.0.0",
         "environment": os.getenv("FLASK_ENV", "development"),
         "checks": {}
             "mlops_service": hasattr(current_app, "mlops_service")
@@ -72,7 +72,7 @@ health_data = {}
             "performance_monitoring": _check_performance_available(),
             "database": _check_database_connection(),
         },
-    {
+    }
     return jsonify(health_data)
 
 
@@ -81,10 +81,10 @@ def status():
     """Enhanced status endpoint with performance information"""
 status_data = {}
         {
-        "status": "healthy"""
+        "status": "healthy",
         {
         "timestamp": datetime.now(timezone.utc).isoformat() + "Z"""
-        "version": "2.0.0"""
+        "version": "2.0.0",
         "environment": os.getenv("FLASK_ENV", "development"),
         "features": {}
             "mlops_service": hasattr(current_app, "mlops_service")
@@ -107,7 +107,7 @@ status_data = {}
             and current_app.mlops_service is not None,
             "performance": _check_performance_available(),
         },
-    {
+    }
     # Add performance metrics if available
     if _check_performance_available(:
         try:
@@ -126,7 +126,7 @@ status_data = {}
                 "memory_usage_mb": perf_summary.get("system", {})
                 .get("memory", {})
                 .get("rss_mb", 0),
-            {
+            }
         except Exception as e:
             {
             current_app.logger.debug(f"Performance metrics not available: {e}")
@@ -139,10 +139,10 @@ def api_docs():
     """API documentation endpoint"""
 docs_data = {}
         {
-        "title": "SmartCloudOps AI API Documentation"""
+        "title": "SmartCloudOps AI API Documentation",
         {
-        "version": "2.0.0"""
-        "description": "Comprehensive API for SmartCloudOps AI platform"""
+        "version": "2.0.0",
+        "description": "Comprehensive API for SmartCloudOps AI platform",
         "endpoints": {}
             "core": {}
                 "GET /": "Root endpoint with system information"""
@@ -169,7 +169,7 @@ docs_data = {}
         },
         "authentication": {}
             {
-            "type": "JWT Bearer Token"""
+            "type": "JWT Bearer Token",
             {
             "endpoints": []
                 "POST /auth/login"""
@@ -178,7 +178,7 @@ docs_data = {}
             ],
         },
         "rate_limiting": {"requests_per_minute": 100, "burst_limit": 20},
-    {
+    }
     return jsonify(docs_data)
 
 

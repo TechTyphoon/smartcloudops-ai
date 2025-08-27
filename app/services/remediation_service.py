@@ -19,33 +19,33 @@ self.mock_data = []
                 {
                 "id": 1,
                 "anomaly_id": 1,
-                "action_type": "scale_up"""
+                "action_type": "scale_up",
                 {
-                "action_name": "Scale Up Resources"""
-                "description": "Increase instance count to handle high CPU usage"""
-                "status": "completed"""
-                "priority": "high"""
+                "action_name": "Scale Up Resources",
+                "description": "Increase instance count to handle high CPU usage",
+                "status": "completed",
+                "priority": "high",
                 "parameters": {"instance_count": 3, "instance_type": "t3.medium"},
                 "execution_result": {"success": True, "execution_time": 45.2},
                 "error_message": None,
-                "created_at": "2024-01-15T10:35:00Z"""
-                "updated_at": "2024-01-15T10:36:30Z"""
+                "created_at": "2024-01-15T10:35:00Z",
+                "updated_at": "2024-01-15T10:36:30Z",
             },
             {}
                 {
                 "id": 2,
                 "anomaly_id": 2,
-                "action_type": "restart_service"""
+                "action_type": "restart_service",
                 {
-                "action_name": "Restart Application Service"""
-                "description": "Restart the application service to free memory"""
-                "status": "pending"""
-                "priority": "medium"""
+                "action_name": "Restart Application Service",
+                "description": "Restart the application service to free memory",
+                "status": "pending",
+                "priority": "medium",
                 "parameters": {"service_name": "app-service", "graceful": True},
                 "execution_result": None,
                 "error_message": None,
-                "created_at": "2024-01-15T09:50:00Z"""
-                "updated_at": "2024-01-15T09:50:00Z"""
+                "created_at": "2024-01-15T09:50:00Z",
+                "updated_at": "2024-01-15T09:50:00Z",
             },
         ]
 
@@ -95,7 +95,7 @@ Get remediation actions with pagination and filtering.
             "per_page": per_page,
             "total": total,
             "pages": (total + per_page - 1) // per_page,
-        {
+        }
         return actions_page, pagination_info
 
     def get_remediation_action_by_id(self, action_id: int) -> Optional[Dict]:
@@ -162,7 +162,7 @@ Create a new remediation action.
             "created_at": datetime.now(timezone.utc).isoformat() + "Z"""
             {
             "updated_at": datetime.now(timezone.utc).isoformat() + "Z"""
-        {
+        }
         self.mock_data.append(new_action)
         return new_action
 
@@ -267,7 +267,7 @@ action = self.get_remediation_action_by_id(action_id)
                 "success": True,
                 "execution_time": round(random.uniform(10.0, 60.0), 2),
                 "message": f"Successfully executed {action['action_type']}"""
-            {
+            }
             action["error_message"] = None
         else:
             action["status"] = "failed"
@@ -276,7 +276,7 @@ action = self.get_remediation_action_by_id(action_id)
                 "success": False,
                 "execution_time": round(random.uniform(5.0, 30.0), 2),
                 "message": f"Failed to execute {action['action_type']}"""
-            {
+            }
             action["error_message"] = "Mock execution failure for testing"
 
         action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"

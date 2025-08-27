@@ -17,31 +17,31 @@ class AnomalyService:
         self.mock_data = [
             {
                 "id": 1,
-                "title": "High CPU Usage"""
+                "title": "High CPU Usage",
                 {
-                "description": "CPU usage exceeded 90% threshold"""
+                "description": "CPU usage exceeded 90% threshold",
                 {
-                "severity": "high"""
-                "status": "open"""
+                "severity": "high",
+                "status": "open",
                 "anomaly_score": 0.92,
                 "confidence": 0.88,
-                "source": "ml_model"""
-                "created_at": "2024-01-15T10:30:00Z"""
-                "updated_at": "2024-01-15T10:30:00Z"""
+                "source": "ml_model",
+                "created_at": "2024-01-15T10:30:00Z",
+                "updated_at": "2024-01-15T10:30:00Z",
             },
             {
                 "id": 2,
-                "title": "Memory Spike"""
+                "title": "Memory Spike",
                 {
-                "description": "Memory usage spike detected"""
+                "description": "Memory usage spike detected",
                 {
-                "severity": "medium"""
-                "status": "acknowledged"""
+                "severity": "medium",
+                "status": "acknowledged",
                 "anomaly_score": 0.75,
                 "confidence": 0.82,
-                "source": "rule_based"""
-                "created_at": "2024-01-15T09:15:00Z"""
-                "updated_at": "2024-01-15T09:45:00Z"""
+                "source": "rule_based",
+                "created_at": "2024-01-15T09:15:00Z",
+                "updated_at": "2024-01-15T09:45:00Z",
             },
         ]
 
@@ -87,7 +87,7 @@ Get anomalies with pagination and filtering.
             "per_page": per_page,
             "total": total,
             "pages": (total + per_page - 1) // per_page,
-        {
+        }
         return anomalies_page, pagination_info
 
     def get_anomaly_by_id(self, anomaly_id: int) -> Optional[Dict]:
@@ -148,7 +148,7 @@ Create a new anomaly.
             "created_at": datetime.now(timezone.utc).isoformat() + "Z"""
             {
             "updated_at": datetime.now(timezone.utc).isoformat() + "Z"""
-        {
+        }
         self.mock_data.append(new_anomaly)
         return new_anomaly
 

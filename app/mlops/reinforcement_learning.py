@@ -271,7 +271,7 @@ uncertainty = self.calculate_uncertainty(prediction_proba)
             "uncertainty": uncertainty,
             "timestamp": timestamp,
             "feedback_received": False,
-        {
+        }
         self.uncertain_samples.append(sample)
         self.learning_queue.append(sample_id)
 
@@ -293,7 +293,7 @@ uncertainty = self.calculate_uncertainty(prediction_proba)
             "confidence": confidence,
             "feedback_text": feedback_text,
             "timestamp": datetime.now(),
-        {
+        }
         self.user_feedback[sample_id] = feedback
 
         # Mark sample as feedback received
@@ -454,7 +454,7 @@ class ContinuousLearningOrchestrator:
                         {
                         "severity": anomaly.severity,
                         "source": anomaly.source,
-                    {
+                    }
                     state = self.rl_agent.get_state_representation()
                         metrics, anomaly_info
                     
@@ -467,7 +467,7 @@ class ContinuousLearningOrchestrator:
                         "system_improvement": 1.0 if remediation.success else -0.5,
                         "user_satisfaction": 0.8,  # Placeholder
                         "action_cost": remediation.execution_time or 0,
-                    {
+                    }
                     reward = self.rl_agent.calculate_reward(action, outcome
                     # Update Q-table
                     next_state = state  # Simplified - in practice, get next state

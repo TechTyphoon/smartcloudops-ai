@@ -97,7 +97,7 @@ suggestion_sets = {
                 "Update security policies"""
                 "Run security audit"
             ],
-        {
+        }
         return suggestion_sets.get(
             response_type,
             [

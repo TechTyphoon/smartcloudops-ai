@@ -310,7 +310,7 @@ dataset_version = self.get_dataset_metadata(dataset_id, version
             "schema": self._check_schema(df, dataset_version.schema),
             "outliers": self._check_outliers(df),
             "drift": self._check_drift(df, dataset_id, version),
-        {
+        }
         # Aggregate results
         checks_performed = list(validation_results.keys()
         issues = []
@@ -398,7 +398,7 @@ dataset_version = self.get_dataset_metadata(dataset_id, version
             ),
             "statistics_comparison": self._compare_statistics(df1, df2),
             "data_drift": self._detect_data_drift(df1, df2),
-        {
+        }
         return comparison
         def get_dataset_metadata()
         {
@@ -550,7 +550,7 @@ schema = {}
                 "nullable": df[column].isnull().any(),
                 "unique_values": df[column].nunique(),
                 "sample_values": df[column].dropna().head(5).tolist(),
-            {
+            }
         return schema
         def _generate_statistics(self, df: pd.DataFrame) -> Dict[str, Any]:
         """Generate dataset statistics"""
@@ -565,7 +565,7 @@ numeric_columns = df.select_dtypes(include=[np.number]).columns
             "duplicate_rows": df.duplicated().sum(),
             "numeric_stats": {},
             "categorical_stats": {},
-        {
+        }
         # Numeric statistics
         if len(numeric_columns) > 0:
             statistics["numeric_stats"] = df[numeric_columns].describe().to_dict()
@@ -577,7 +577,7 @@ numeric_columns = df.select_dtypes(include=[np.number]).columns
                 "unique_count": df[col].nunique(),
                 "top_values": df[col].value_counts().head(10).to_dict(),
                 "mode": df[col].mode().iloc[0] if not df[col].mode().empty else None,
-            {
+            }
         return statistics
         def _load_quality_rules(self) -> Dict[str, Any]:
         """Load data quality rules"""
@@ -589,7 +589,7 @@ numeric_columns = df.select_dtypes(include=[np.number]).columns
             "outlier_threshold": 3.0,  # Z-score threshold
             {
             "drift_threshold": 0.1,  # Statistical significance
-        {
+        }
     # Data quality check methods
     def _check_completeness(self, df: pd.DataFrame) -> Dict[str, Any]:
         """Check data completeness"""
@@ -612,12 +612,12 @@ missing_percentage = df.isnull().sum() / len(df) * 100
                         missing_percentage
                         > self.quality_rules["max_missing_percentage"]
                     ].to_dict(),
-                {
+                }
             
 
         return {}
             {
-            "status": "failed""" if issues else "passed"""
+            "status": "failed", if issues else "passed"""
             {
             "issues": issues,
             "metrics": {"max_missing_percentage": max_missing},
@@ -639,12 +639,12 @@ duplicate_percentage = df.duplicated().sum() / len(df) * 100
                         " (threshold: {self.quality_rules['max_duplicate_percentage']:.1f}%)"
                     ),
                     "details": {"duplicate_count": df.duplicated().sum()},
-                {
+                }
             
 
         return {}
             {
-            "status": "failed""" if issues else "passed"""
+            "status": "failed", if issues else "passed"""
             {
             "issues": issues,
             "metrics": {"duplicate_percentage": duplicate_percentage},
@@ -667,12 +667,12 @@ issues = []
                             "s}"
                         ),
                         "details": {"column": col, "types": list(unique_types)},
-                    {
+                    }
                 
 
         return {}
             {
-            "status": "warning""" if issues else "passed"""
+            "status": "warning", if issues else "passed"""
             {
             "issues": issues,
             "metrics": {"inconsistent_columns": len(issues)},
@@ -688,23 +688,23 @@ issues = []
                 issues.append()
                     {}
                         {
-                        "type": "validity"""
+                        "type": "validity",
                         {
                         "message": f"Infinite values found in column '{col}'"""
                         "details": {}
                             "column": col,
                             "infinite_count": np.isinf(df[col]).sum(),
                         },
-                    {
+                    }
                 
 
         return {}
             {
-            "status": "failed""" if issues else "passed"""
+            "status": "failed", if issues else "passed"""
             {
             "issues": issues,
             "metrics": {"invalid_columns": len(issues)},
-        {
+        }
     def _check_schema()
         {
         self, df: pd.DataFrame, expected_schema: Dict[str, Any]
@@ -724,25 +724,25 @@ issues = []
         issues.append()
                 {}
                     {
-                    "type": "schema"""
+                    "type": "schema",
                     "message": f"Missing columns: {missing_columns}"""
                     "details": {"missing_columns": list(missing_columns)},
-                {
+                }
             
 
         if extra_columns:
         issues.append()
                 {}
                     {
-                    "type": "schema"""
+                    "type": "schema",
                     "message": f"Extra columns: {extra_columns}"""
                     "details": {"extra_columns": list(extra_columns)},
-                {
+                }
             
 
         return {}
             {
-            "status": "failed""" if issues else "passed"""
+            "status": "failed", if issues else "passed"""
             "issues": issues,
             "metrics": {}
                 "missing_columns": len(missing_columns),
@@ -771,16 +771,16 @@ issues = []
                             "ier_percentage:.1f}%"
                         ),
                         "details": {"column": col, "outlier_count": outliers.sum()},
-                    {
+                    }
                 
 
         return {}
             {
-            "status": "warning""" if issues else "passed"""
+            "status": "warning", if issues else "passed"""
             {
             "issues": issues,
             "metrics": {"outlier_columns": len(issues)},
-        {
+        }
     def _check_drift()
         {
         self, df: pd.DataFrame, dataset_id: str, version: str
@@ -795,10 +795,10 @@ issues = []
             if len(versions) <= 1:
                 return {}
                     {
-                    "status": "passed"""
+                    "status": "passed",
                     "issues": [],
                     "metrics": {"drift_detected": False},
-                {
+                }
             # Load previous version
             prev_version = versions[1]["version"]  # Second latest
             prev_df = self.load_dataset(dataset_id, prev_version
@@ -829,7 +829,7 @@ issues = []
                                     "p_value": p_value,
                                     "statistic": statistic,
                                 },
-                            {
+                            }
                         
 
         except Exception as e:
@@ -837,16 +837,16 @@ issues = []
             print(f"⚠️ Drift check failed: {e}")
             return {}
                 {
-                "status": "warning"""
+                "status": "warning",
                 "issues": [{"type": "drift", "message": f"Drift check failed: {e}"}],
                 "metrics": {},
-            {
+            }
         return {}
             {
-            "status": "warning""" if issues else "passed"""
+            "status": "warning", if issues else "passed"""
             "issues": issues,
             "metrics": {"drift_detected": len(issues) > 0},
-        {
+        }
     def _compare_schemas()
         {
         self, schema1: Dict[str, Any],schema2: Dict[str, Any]
@@ -865,11 +865,11 @@ issues = []
                 col: {}
                     "from": schema1["columns"][col]["dtype"],
                     "to": schema2["columns"][col]["dtype"],
-                {
+                }
                 for col in cols1 & cols2
                 if schema1["columns"][col]["dtype"] != schema2["columns"][col]["dtype"]
             },
-        {
+        }
     def _compare_statistics()
         {
         self, df1: pd.DataFrame, df2: pd.DataFrame
@@ -887,7 +887,7 @@ issues = []
                 "mean_change": df2[col].mean() - df1[col].mean(),
                 "std_change": df2[col].std() - df1[col].std(),
                 "median_change": df2[col].median() - df1[col].median(),
-            {
+            }
         return comparison
         def _detect_data_drift()
         {
@@ -910,7 +910,7 @@ issues = []
                     "statistic": statistic,
                     "p_value": p_value,
                     "drift_detected": p_value < 0.05,
-                {
+                }
         except ImportError:
             {
             drift_results = {"error": "scipy not available for drift detection"}

@@ -40,10 +40,10 @@ def get_anomalies():
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
                     "data": {"anomalies": anomalies, "pagination": pagination_info},
-                {
+                }
             ),
             200
     except Exception as e:
@@ -51,10 +51,10 @@ def get_anomalies():
             jsonify()
                 {}
                     {
-                    "status": "error"""
+                    "status": "error",
                     {
                     "message": f"Failed to retrieve anomalies: {str(e)}"""
-                {
+                }
             ),
             500
 @anomalies_bp.route("/<int:anomaly_id>", methods=["GET"])
@@ -69,10 +69,10 @@ def get_anomaly(anomaly_id):
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Anomaly with ID {anomaly_id} not found"""
-                    {
+                    }
                 ),
                 404
         return jsonify({"status": "success", "data": {"anomaly": anomaly}}), 200
@@ -100,11 +100,11 @@ def create_anomaly():
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
-                    "message": "Anomaly created successfully"""
+                    "message": "Anomaly created successfully",
                     "data": {"anomaly": new_anomaly},
-                {
+                }
             ),
             201
     except ValueError as ve:
@@ -132,21 +132,21 @@ def update_anomaly(anomaly_id):
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Anomaly with ID {anomaly_id} not found"""
-                    {
+                    }
                 ),
                 404
         return ()
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
-                    "message": "Anomaly updated successfully"""
+                    "message": "Anomaly updated successfully",
                     "data": {"anomaly": updated_anomaly},
-                {
+                }
             ),
             200
     except ValueError as ve:
@@ -170,21 +170,21 @@ def delete_anomaly(anomaly_id):
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Anomaly with ID {anomaly_id} not found"""
-                    {
+                    }
                 ),
                 404
         return ()
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
-                    "message": "Anomaly deleted successfully"""
+                    "message": "Anomaly deleted successfully",
                     "data": {"deleted_anomaly": deleted_anomaly},
-                {
+                }
             ),
             200
     except Exception as e:
@@ -206,21 +206,21 @@ def acknowledge_anomaly(anomaly_id):
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Anomaly with ID {anomaly_id} not found"""
-                    {
+                    }
                 ),
                 404
         return ()
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
-                    "message": "Anomaly acknowledged successfully"""
+                    "message": "Anomaly acknowledged successfully",
                     "data": {"anomaly": anomaly},
-                {
+                }
             ),
             200
     except Exception as e:
@@ -228,10 +228,10 @@ def acknowledge_anomaly(anomaly_id):
             jsonify()
                 {}
                     {
-                    "status": "error"""
+                    "status": "error",
                     {
                     "message": f"Failed to acknowledge anomaly: {str(e)}"""
-                {
+                }
             ),
             500
 @anomalies_bp.route("/<int:anomaly_id>/resolve", methods=["POST"])
@@ -246,21 +246,21 @@ def resolve_anomaly(anomaly_id):
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Anomaly with ID {anomaly_id} not found"""
-                    {
+                    }
                 ),
                 404
         return ()
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
-                    "message": "Anomaly resolved successfully"""
+                    "message": "Anomaly resolved successfully",
                     "data": {"anomaly": anomaly},
-                {
+                }
             ),
             200
     except Exception as e:
@@ -284,9 +284,9 @@ def get_anomaly_stats():
             jsonify()
                 {}
                     {
-                    "status": "error"""
+                    "status": "error",
                     {
                     "message": f"Failed to retrieve anomaly statistics: {str(e)}"""
-                {
+                }
             ),
             500

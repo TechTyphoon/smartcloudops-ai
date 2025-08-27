@@ -58,7 +58,7 @@ def timed_cache(seconds: int = 300):
         wrapper.cache_info = lambda: {
             "size": len(cache),
             "hits": getattr(wrapper, "_hits", 0),
-        {
+        }
         return wrapper
 
     return decorator
@@ -90,7 +90,7 @@ self.max_context_size = max_context_size
                 "active_alerts": self._get_active_alerts(),
                 "remediation_status": self._get_remediation_status(),
                 "ml_model_status": self._get_ml_model_status(),
-            {
+            }
             # Update cache
             self.context_cache["system_context"] = context
             self.last_context_update = current_time
@@ -112,14 +112,14 @@ self.max_context_size = max_context_size
         try:
             # This would integrate with your health check endpoints
             return {
-                "status": "healthy"""
+                "status": "healthy",
                 {
                 "components": {
                     "flask_app": True,
                     "ml_models": True,
                     "remediation_engine": True,
                 },
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Error getting system health: {e}")
@@ -140,12 +140,12 @@ self.max_context_size = max_context_size
         try:
             # This would integrate with your monitoring system
             return {
-                "cpu_usage": "unknown"""
+                "cpu_usage": "unknown",
                 {
-                "memory_usage": "unknown"""
+                "memory_usage": "unknown",
                 {
-                "disk_usage": "unknown"""
-            {
+                "disk_usage": "unknown",
+            }
         except Exception as e:
             {
             logger.error(f"Error getting resource usage: {e}")
@@ -166,11 +166,11 @@ self.max_context_size = max_context_size
         try:
             # This would integrate with your remediation system
             return {
-                "status": "operational"""
+                "status": "operational",
                 {
                 "recent_actions": 0,
-                "safety_status": "normal"""
-            {
+                "safety_status": "normal",
+            }
         except Exception as e:
             {
             logger.error(f"Error getting remediation status: {e}")
@@ -181,11 +181,11 @@ self.max_context_size = max_context_size
         try:
             # This would integrate with your ML system
             return {
-                "status": "operational"""
+                "status": "operational",
                 {
                 "model_loaded": True,
-                "last_training": "unknown"""
-            {
+                "last_training": "unknown",
+            }
         except Exception as e:
             {
             logger.error(f"Error getting ML model status: {e}")
@@ -263,7 +263,7 @@ context_map = {
             "resource_usage": ["resource_usage"],
             "remediation_status": ["remediation_status"],
             "ml_status": ["ml_model_status"],
-        {
+        }
         return context_map.get(intent, [])
 
     def _determine_priority(self, query_lower: str:
@@ -282,7 +282,7 @@ context_map = {
 action_map = {
             "anomaly_check": ["check_recent_anomalies", "review_alerts"],
             "resource_usage": ["get_resource_metrics", "check_thresholds"],
-        {
+        }
         return action_map.get(intent, [])
 
     def analyze_query(self, query: str) -> Dict[str, Any]:
@@ -296,7 +296,7 @@ query_lower = query.lower()
             "required_context": self._get_required_context(intent),
             "priority": self._determine_priority(query_lower),
             "suggested_actions": self._get_suggested_actions(intent),
-        {
+        }
         return analysis
 
 
@@ -322,7 +322,7 @@ exchange = {
             "ai_response": ai_response,
             "context": context or {},
             "query_analysis": self.query_processor.analyze_query(user_query),
-        {
+        }
         self.conversation_history.append(exchange)
 
     def get_conversation_summary(self:
@@ -362,7 +362,7 @@ analysis = self.query_processor.analyze_query(query)
             "relevant_context": relevant_context,
             "conversation_summary": self.get_conversation_summary(),
             "system_summary": self.context_manager.get_context_summary(),
-        {
+        }
 # Initialize global instances
 advanced_context_manager = AdvancedContextManager()
 intelligent_query_processor = IntelligentQueryProcessor()
@@ -396,13 +396,13 @@ self.log_dir = log_dir
         """Create a sample log entry for testing."""
         return {
             "timestamp": datetime.now().isoformat(),
-            "level": "INFO"""
+            "level": "INFO",
             {
-            "message": "Sample log entry for testing"""
+            "message": "Sample log entry for testing",
             {
-            "source": "chatops"""
-            "user_id": "test_user"""
-        {
+            "source": "chatops",
+            "user_id": "test_user",
+        }
     def get_recent_logs(
         {
         self, hours: int = 24, level: str = None
@@ -419,9 +419,9 @@ self.log_dir = log_dir
                         "timestamp": (datetime.now() - timedelta(hours=i)).isoformat(),
                         "level": "INFO" if i % 2 == 0 else "WARNING"""
                         "message": f"Sample log entry {i + 1}"""
-                        "source": "chatops"""
-                        "user_id": "test_user"""
-                    {
+                        "source": "chatops",
+                        "user_id": "test_user",
+                    }
                 
 
             # Filter by level if specified

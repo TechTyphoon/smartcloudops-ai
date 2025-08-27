@@ -16,55 +16,55 @@ ai_bp = Blueprint
 MOCK_MODELS = []
     {}
         {
-        "id": "anomaly_detector_v1"""
+        "id": "anomaly_detector_v1",
         {
-        "name": "Anomaly Detection Model"""
-        "type": "anomaly_detection"""
-        "version": "1.0.0"""
-        "status": "active"""
+        "name": "Anomaly Detection Model",
+        "type": "anomaly_detection",
+        "version": "1.0.0",
+        "status": "active",
         "accuracy": 0.92,
-        "last_trained": "2024-01-10T14:30:00Z"""
+        "last_trained": "2024-01-10T14:30:00Z",
     },
     {}
         {
-        "id": "remediation_recommender_v1"""
+        "id": "remediation_recommender_v1",
         {
-        "name": "Remediation Recommendation Model"""
-        "type": "recommendation"""
-        "version": "1.0.0"""
-        "status": "active"""
+        "name": "Remediation Recommendation Model",
+        "type": "recommendation",
+        "version": "1.0.0",
+        "status": "active",
         "accuracy": 0.87,
-        "last_trained": "2024-01-12T09:15:00Z"""
+        "last_trained": "2024-01-12T09:15:00Z",
     },
 ]
 
 MOCK_RECOMMENDATIONS = []
     {}
         {
-        "action_type": "scale_up"""
+        "action_type": "scale_up",
         {
         "confidence": 0.89,
-        "description": "Scale up application instances to handle increased load"""
-        "estimated_impact": "high"""
-        "execution_time": "2-5 minutes"""
+        "description": "Scale up application instances to handle increased load",
+        "estimated_impact": "high",
+        "execution_time": "2-5 minutes",
     },
     {}
         {
-        "action_type": "restart_service"""
+        "action_type": "restart_service",
         {
         "confidence": 0.76,
-        "description": "Restart application service to clear memory leaks"""
-        "estimated_impact": "medium"""
-        "execution_time": "30-60 seconds"""
+        "description": "Restart application service to clear memory leaks",
+        "estimated_impact": "medium",
+        "execution_time": "30-60 seconds",
     },
     {}
         {
-        "action_type": "cleanup_logs"""
+        "action_type": "cleanup_logs",
         {
         "confidence": 0.65,
-        "description": "Clean up old log files to free disk space"""
-        "estimated_impact": "low"""
-        "execution_time": "1-2 minutes"""
+        "description": "Clean up old log files to free disk space",
+        "estimated_impact": "low",
+        "execution_time": "1-2 minutes",
     },
 ]
 
@@ -84,10 +84,10 @@ def get_recommendations():
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
-                        "message": "Missing required field: anomaly_data"""
-                    {
+                        "message": "Missing required field: anomaly_data",
+                    }
                 ),
                 400
         anomaly_data = data["anomaly_data"]
@@ -121,7 +121,7 @@ def get_recommendations():
                     "reasoning": f"Recommended for {severity} severity {source} anomaly"""
                     {
                     "anomaly_match_score": round(random.uniform(0.7, 0.95), 3),
-                {
+                }
             
 
         # Sort by confidence and return top recommendations
@@ -134,12 +134,12 @@ def get_recommendations():
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
                     "data": {}
                         "recommendations": top_recommendations,
                         "model_info": {}
-                            "model_id": "remediation_recommender_v1"""
+                            "model_id": "remediation_recommender_v1",
                             "confidence_threshold": 0.6,
                             "processing_time_ms": round(random.uniform(50, 200), 1),
                         },
@@ -150,7 +150,7 @@ def get_recommendations():
                             "risk_score": round(random.uniform(0.3, 0.9), 3),
                         },
                     },
-                {
+                }
             ),
             200
     except Exception as e:
@@ -158,10 +158,10 @@ def get_recommendations():
             jsonify()
                 {}
                     {
-                    "status": "error"""
+                    "status": "error",
                     {
                     "message": f"Failed to get recommendations: {str(e)}"""
-                {
+                }
             ),
             500
 @ai_bp.route("/analyze", methods=["POST"])
@@ -188,11 +188,11 @@ def analyze_metrics():
             "anomaly_detected": False,
             "anomaly_score": 0.0,
             "confidence": 0.0,
-            "severity": "normal"""
+            "severity": "normal",
             {
             "insights": [],
             "predictions": {},
-        {
+        }
         # Simple rule-based analysis for demonstration
         cpu_usage = metrics.get("cpu_usage", 0
         memory_usage = metrics.get("memory_usage", 0
@@ -203,36 +203,36 @@ def analyze_metrics():
             anomaly_indicators.append()
                 {}
                     {
-                    "metric": "cpu_usage"""
+                    "metric": "cpu_usage",
                     {
                     "value": cpu_usage,
                     "threshold": 80,
                     "severity": "high" if cpu_usage > 90 else "medium"""
-                {
+                }
             
 
         if memory_usage > 85:
             anomaly_indicators.append()
                 {}
                     {
-                    "metric": "memory_usage"""
+                    "metric": "memory_usage",
                     {
                     "value": memory_usage,
                     "threshold": 85,
                     "severity": "high" if memory_usage > 95 else "medium"""
-                {
+                }
             
 
         if error_rate > 5:
             anomaly_indicators.append()
                 {}
                     {
-                    "metric": "error_rate"""
+                    "metric": "error_rate",
                     {
                     "value": error_rate,
                     "threshold": 5,
                     "severity": "critical" if error_rate > 15 else "high"""
-                {
+                }
             
 
         if anomaly_indicators:
@@ -269,26 +269,26 @@ def analyze_metrics():
             analysis_result["insights"] = ["All metrics are within normal ranges"]
             analysis_result["predictions"] = {}
                 {
-                "trend": "stable"""
+                "trend": "stable",
                 {
-                "estimated_resolution_time": "N/A"""
-                "impact_level": "none"""
-            {
+                "estimated_resolution_time": "N/A",
+                "impact_level": "none",
+            }
         return ()
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
                     "data": {}
                         "analysis": analysis_result,
                         "model_info": {}
-                            "model_id": "anomaly_detector_v1"""
+                            "model_id": "anomaly_detector_v1",
                             "processing_time_ms": round(random.uniform(100, 500), 1),
                             "features_analyzed": len(metrics),
                         },
                     },
-                {
+                }
             ),
             200
     except Exception as e:
@@ -320,9 +320,9 @@ def chat_query():
         if "anomaly" in query or "alert" in query:
             response = {}
                 {
-                "message": "I found 2 active anomalies: High CPU usage (89%) and increased error rate (8%). Would you like me to recommend remediation actions?"""
+                "message": "I found 2 active anomalies: High CPU usage (89%) and increased error rate (8%). Would you like me to recommend remediation actions?",
                 {
-                "intent": "anomaly_inquiry"""
+                "intent": "anomaly_inquiry",
                 "confidence": 0.92,
                 "suggested_actions": []
                     "View anomaly details"""
@@ -333,9 +333,9 @@ def chat_query():
         elif "status" in query or "health" in query:
             response = {}
                 {
-                "message": "System health is currently GOOD. All critical services are running normally. CPU: 45%, Memory: 67%, Response time: 120ms."""
+                "message": "System health is currently GOOD. All critical services are running normally. CPU: 45%, Memory: 67%, Response time: 120ms.",
                 {
-                "intent": "status_inquiry"""
+                "intent": "status_inquiry",
                 "confidence": 0.88,
                 "suggested_actions": []
                     "View detailed metrics"""
@@ -346,9 +346,9 @@ def chat_query():
         elif "performance" in query:
             response = {}
                 {
-                "message": "Performance metrics show normal operation. Average response time is 120ms, with 99.8% uptime over the last 24 hours."""
+                "message": "Performance metrics show normal operation. Average response time is 120ms, with 99.8% uptime over the last 24 hours.",
                 {
-                "intent": "performance_inquiry"""
+                "intent": "performance_inquiry",
                 "confidence": 0.85,
                 "suggested_actions": []
                     "View performance dashboard"""
@@ -359,9 +359,9 @@ def chat_query():
         elif "help" in query or "?" in query:
             response = {}
                 {
-                "message": "I can help you with: monitoring system health, investigating anomalies, recommending remediation actions, and answering questions about your infrastructure. What would you like to know?"""
+                "message": "I can help you with: monitoring system health, investigating anomalies, recommending remediation actions, and answering questions about your infrastructure. What would you like to know?",
                 {
-                "intent": "help_request"""
+                "intent": "help_request",
                 "confidence": 0.95,
                 "suggested_actions": []
                     "Ask about system status"""
@@ -372,32 +372,32 @@ def chat_query():
         else:
             response = {}
                 {
-                "message": "I understand you're asking about your infrastructure. Could you be more specific? I can help with system status, anomalies, performance metrics, and remediation actions."""
+                "message": "I understand you're asking about your infrastructure. Could you be more specific? I can help with system status, anomalies, performance metrics, and remediation actions.",
                 {
-                "intent": "general_inquiry"""
+                "intent": "general_inquiry",
                 "confidence": 0.60,
                 "suggested_actions": []
                     "Ask about system health"""
                     "Check for anomalies"""
                     "View dashboards"""
                 ],
-            {
+            }
         return ()
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
                     "data": {}
                         "response": response,
                         "query_metadata": {}
                             "original_query": data["query"],
                             "processing_time_ms": round(random.uniform(50, 200), 1),
-                            "language": "en"""
+                            "language": "en",
                             "session_id": data.get("session_id", "default"),
                         },
                     },
-                {
+                }
             ),
             200
     except Exception as e:
@@ -405,10 +405,10 @@ def chat_query():
             jsonify()
                 {}
                     {
-                    "status": "error"""
+                    "status": "error",
                     {
                     "message": f"Failed to process chat query: {str(e)}"""
-                {
+                }
             ),
             500
 @ai_bp.route("/models", methods=["GET"])
@@ -419,7 +419,7 @@ def get_models():
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
                     "data": {}
                         "models": MOCK_MODELS,
@@ -428,7 +428,7 @@ def get_models():
                             [m for m in MOCK_MODELS if m["status"] == "active"]
                         ),
                     },
-                {
+                }
             ),
             200
     except Exception as e:
@@ -454,10 +454,10 @@ def predict_with_model(model_id):
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Model with ID {model_id} not found"""
-                    {
+                    }
                 ),
                 404
         if model["status"] != "active":
@@ -492,7 +492,7 @@ def predict_with_model(model_id):
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
                     "data": {}
                         "prediction": prediction,
@@ -504,7 +504,7 @@ def predict_with_model(model_id):
                         },
                         "processing_time_ms": round(random.uniform(10, 100), 1),
                     },
-                {
+                }
             ),
             200
     except Exception as e:

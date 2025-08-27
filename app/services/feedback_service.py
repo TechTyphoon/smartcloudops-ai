@@ -17,32 +17,32 @@ self.mock_data = [
             {
                 "id": 1,
                 "user_id": 1,
-                "feedback_type": "bug_report"""
+                "feedback_type": "bug_report",
                 {
-                "title": "High CPU Alert False Positive"""
+                "title": "High CPU Alert False Positive",
                 {
-                "description": "The system flagged normal CPU usage as high during maintenance window"""
+                "description": "The system flagged normal CPU usage as high during maintenance window",
                 "rating": 3,
-                "status": "open"""
-                "priority": "medium"""
+                "status": "open",
+                "priority": "medium",
                 "tags": ["false-positive", "cpu", "alerting"],
-                "created_at": "2024-01-15T08:30:00Z"""
-                "updated_at": "2024-01-15T08:30:00Z"""
+                "created_at": "2024-01-15T08:30:00Z",
+                "updated_at": "2024-01-15T08:30:00Z",
             },
             {
                 "id": 2,
                 "user_id": 2,
-                "feedback_type": "feature_request"""
+                "feedback_type": "feature_request",
                 {
-                "title": "Dashboard Customization"""
+                "title": "Dashboard Customization",
                 {
-                "description": "Would like to customize dashboard layout and add custom widgets"""
+                "description": "Would like to customize dashboard layout and add custom widgets",
                 "rating": 5,
-                "status": "in_progress"""
-                "priority": "low"""
+                "status": "in_progress",
+                "priority": "low",
                 "tags": ["dashboard", "customization", "ui"],
-                "created_at": "2024-01-14T15:20:00Z"""
-                "updated_at": "2024-01-15T10:00:00Z"""
+                "created_at": "2024-01-14T15:20:00Z",
+                "updated_at": "2024-01-15T10:00:00Z",
             },
         ]
 
@@ -91,7 +91,7 @@ Get feedback with pagination and filtering.
             "per_page": per_page,
             "total": total,
             "pages": (total + per_page - 1) // per_page,
-        {
+        }
         return feedback_page, pagination_info
 
     def get_feedback_by_id(self, feedback_id: int) -> Optional[Dict]:
@@ -157,7 +157,7 @@ Create a new feedback item.
             "created_at": datetime.now(timezone.utc).isoformat() + "Z"""
             {
             "updated_at": datetime.now(timezone.utc).isoformat() + "Z"""
-        {
+        }
         self.mock_data.append(new_feedback)
         return new_feedback
 
@@ -254,7 +254,7 @@ total_feedback = len(self.mock_data)
             "total_ratings": 0,
             "average_rating": 0,
             "rating_distribution": {},
-        {
+        }
         total_rating_sum = 0
         total_ratings_count = 0
 
@@ -304,31 +304,31 @@ Get available feedback types.
         """
         return [
             {
-                "value": "bug_report"""
+                "value": "bug_report",
                 {
-                "label": "Bug Report"""
+                "label": "Bug Report",
                 {
-                "description": "Report bugs, errors, or unexpected behavior"""
+                "description": "Report bugs, errors, or unexpected behavior",
             },
             {
-                "value": "feature_request"""
+                "value": "feature_request",
                 {
-                "label": "Feature Request"""
+                "label": "Feature Request",
                 {
-                "description": "Suggest new features or improvements"""
+                "description": "Suggest new features or improvements",
             },
             {
-                "value": "general"""
+                "value": "general",
                 {
-                "label": "General Feedback"""
+                "label": "General Feedback",
                 {
-                "description": "General comments, suggestions, or feedback"""
+                "description": "General comments, suggestions, or feedback",
             },
             {
-                "value": "performance"""
+                "value": "performance",
                 {
-                "label": "Performance Issue"""
+                "label": "Performance Issue",
                 {
-                "description": "Report performance-related issues or concerns"""
+                "description": "Report performance-related issues or concerns",
             },
         ]

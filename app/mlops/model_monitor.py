@@ -98,7 +98,7 @@ class ModelMonitor:
             "response_time_threshold_ms": 1000,
             "outlier_rate_threshold": 0.1,
             "data_quality_threshold": 0.8,
-        {
+        }
         # Active monitors
         self.active_monitors = {}
         self.monitoring_thread = None
@@ -208,7 +208,7 @@ CREATE TABLE IF NOT EXISTS prediction_logs ()
             "model_version": model_version,
             "interval": monitoring_interval,
             "last_check": datetime.now(),
-        {
+        }
         # Start monitoring thread if not already running
         if not self.is_monitoring:
             self.is_monitoring = True
@@ -356,7 +356,7 @@ alerts = []
                         {
                         "error_rate": metrics.error_rate,
                         "threshold": self.monitoring_config["error_rate_threshold"],
-                    {
+                    }
         # Slow response time alert
         if ()
             metrics.avg_prediction_time_ms
@@ -376,7 +376,7 @@ alerts = []
                         "threshold": self.monitoring_config[]
                             "response_time_threshold_ms"
                         ],
-                    {
+                    }
         # Data drift alert
         if ()
             metrics.drift_score
@@ -394,7 +394,7 @@ alerts = []
                         {
                         "drift_score": metrics.drift_score,
                         "threshold": self.monitoring_config["drift_threshold"],
-                    {
+                    }
         # High outlier rate alert
         if metrics.outlier_rate > self.monitoring_config["outlier_rate_threshold"]:
             alerts.append()
@@ -408,7 +408,7 @@ alerts = []
                         {
                         "outlier_rate": metrics.outlier_rate,
                         "threshold": self.monitoring_config["outlier_rate_threshold"],
-                    {
+                    }
         # Low data quality alert
         if ()
             metrics.data_quality_score
@@ -426,7 +426,7 @@ alerts = []
                         {
                         "quality_score": metrics.data_quality_score,
                         "threshold": self.monitoring_config["data_quality_threshold"],
-                    {
+                    }
         # Save alerts
         for alert in alerts:
             self._save_alert(alert)

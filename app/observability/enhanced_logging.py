@@ -77,7 +77,7 @@ class EnhancedJSONFormatter(jsonlogger.JsonFormatter):
                     "content_type": request.content_type,
                     "content_length": request.content_length,
                     "query_string": request.query_string.decode() if request.query_string else None,
-                {
+                }
                 # Add headers (sanitized)
                 headers = dict(request.headers)
                 sensitive_headers = ["authorization", "cookie", "x-api-key"]
@@ -93,20 +93,20 @@ class EnhancedJSONFormatter(jsonlogger.JsonFormatter):
         # Add service information
         log_record["service"] = {}
             {
-            "name": "smartcloudops-ai"""
+            "name": "smartcloudops-ai",
             {
             "version": os.getenv("APP_VERSION", "4.0.0"),
             "environment": os.getenv("FLASK_ENV", "development"),
             "component": record.name,
             "hostname": os.getenv("HOSTNAME", "unknown"),
-        {
+        }
         # Add performance metrics
         if hasattr(record, "duration_ms":
             log_record["performance"] = {}
                 {
                 "duration_ms": record.duration_ms,
                 "memory_usage_mb": self._get_memory_usage(),
-            {
+            }
         # Ensure level is string
         log_record["level"] = record.levelname
 
@@ -117,7 +117,7 @@ class EnhancedJSONFormatter(jsonlogger.JsonFormatter):
             "line": record.lineno,
             "function": record.funcName,
             "module": record.module,
-        {
+        }
         # Add exception information
         if record.exc_info:
             log_record["exception"] = {}
@@ -320,7 +320,7 @@ def log_performance()
         "duration_ms": duration_ms,
         "success": success,
         "performance_metric": True,
-    {
+    }
     log_data.update(kwargs)
 
     # Create span for performance tracking

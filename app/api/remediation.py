@@ -17,33 +17,33 @@ MOCK_REMEDIATIONS = []
         {
         "id": 1,
         "anomaly_id": 1,
-        "action_type": "scale_up"""
+        "action_type": "scale_up",
         {
-        "action_name": "Scale Up Resources"""
-        "description": "Increase instance count to handle high CPU usage"""
-        "status": "completed"""
-        "priority": "high"""
+        "action_name": "Scale Up Resources",
+        "description": "Increase instance count to handle high CPU usage",
+        "status": "completed",
+        "priority": "high",
         "parameters": {"instance_count": 3, "instance_type": "t3.medium"},
         "execution_result": {"success": True, "execution_time": 45.2},
         "error_message": None,
-        "created_at": "2024-01-15T10:35:00Z"""
-        "updated_at": "2024-01-15T10:36:30Z"""
+        "created_at": "2024-01-15T10:35:00Z",
+        "updated_at": "2024-01-15T10:36:30Z",
     },
     {}
         {
         "id": 2,
         "anomaly_id": 2,
-        "action_type": "restart_service"""
+        "action_type": "restart_service",
         {
-        "action_name": "Restart Application Service"""
-        "description": "Restart the application service to free memory"""
-        "status": "pending"""
-        "priority": "medium"""
+        "action_name": "Restart Application Service",
+        "description": "Restart the application service to free memory",
+        "status": "pending",
+        "priority": "medium",
         "parameters": {"service_name": "app-service", "graceful": True},
         "execution_result": None,
         "error_message": None,
-        "created_at": "2024-01-15T09:50:00Z"""
-        "updated_at": "2024-01-15T09:50:00Z"""
+        "created_at": "2024-01-15T09:50:00Z",
+        "updated_at": "2024-01-15T09:50:00Z",
     },
 ]
 
@@ -91,7 +91,7 @@ def get_remediation_actions():
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
                     "data": {}
                         "remediation_actions": remediations_page,
@@ -102,7 +102,7 @@ def get_remediation_actions():
                             "pages": (total + per_page - 1) // per_page,
                         },
                     },
-                {
+                }
             ),
             200
     except Exception as e:
@@ -110,10 +110,10 @@ def get_remediation_actions():
             jsonify()
                 {}
                     {
-                    "status": "error"""
+                    "status": "error",
                     {
                     "message": f"Failed to retrieve remediation actions: {str(e)}"""
-                {
+                }
             ),
             500
 @remediation_bp.route("/actions/<int:action_id>", methods=["GET"])
@@ -127,10 +127,10 @@ def get_remediation_action(action_id):
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Remediation action with ID {action_id} not found"""
-                    {
+                    }
                 ),
                 404
         return ()
@@ -142,10 +142,10 @@ def get_remediation_action(action_id):
             jsonify()
                 {}
                     {
-                    "status": "error"""
+                    "status": "error",
                     {
                     "message": f"Failed to retrieve remediation action: {str(e)}"""
-                {
+                }
             ),
             500
 @remediation_bp.route("/actions", methods=["POST"])
@@ -165,10 +165,10 @@ def create_remediation_action():
                     jsonify()
                         {}
                             {
-                            "status": "error"""
+                            "status": "error",
                             {
                             "message": f"Missing required field: {field}"""
-                        {
+                        }
                     ),
                     400
         # Create new remediation action (mock implementation
@@ -187,18 +187,18 @@ def create_remediation_action():
             "created_at": datetime.now(timezone.utc).isoformat() + "Z"""
             {
             "updated_at": datetime.now(timezone.utc).isoformat() + "Z"""
-        {
+        }
         MOCK_REMEDIATIONS.append(new_action)
 
         return ()
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
-                    "message": "Remediation action created successfully"""
+                    "message": "Remediation action created successfully",
                     "data": {"remediation_action": new_action},
-                {
+                }
             ),
             201
     except Exception as e:
@@ -206,10 +206,10 @@ def create_remediation_action():
             jsonify()
                 {}
                     {
-                    "status": "error"""
+                    "status": "error",
                     {
                     "message": f"Failed to create remediation action: {str(e)}"""
-                {
+                }
             ),
             500
 @remediation_bp.route("/actions/<int:action_id>", methods=["PUT"])
@@ -228,10 +228,10 @@ def update_remediation_action(action_id):
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Remediation action with ID {action_id} not found"""
-                    {
+                    }
                 ),
                 404
         # Update action fields
@@ -254,11 +254,11 @@ def update_remediation_action(action_id):
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
-                    "message": "Remediation action updated successfully"""
+                    "message": "Remediation action updated successfully",
                     "data": {"remediation_action": action},
-                {
+                }
             ),
             200
     except Exception as e:
@@ -266,10 +266,10 @@ def update_remediation_action(action_id):
             jsonify()
                 {}
                     {
-                    "status": "error"""
+                    "status": "error",
                     {
                     "message": f"Failed to update remediation action: {str(e)}"""
-                {
+                }
             ),
             500
 @remediation_bp.route("/actions/<int:action_id>/execute", methods=["POST"])
@@ -283,10 +283,10 @@ def execute_remediation_action(action_id):
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Remediation action with ID {action_id} not found"""
-                    {
+                    }
                 ),
                 404
         if action["status"] != "pending":
@@ -294,10 +294,10 @@ def execute_remediation_action(action_id):
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Cannot execute action with status: {action['status']}"""
-                    {
+                    }
                 ),
                 400
         # Mock execution (in real implementation, would execute actual remediation
@@ -312,7 +312,7 @@ def execute_remediation_action(action_id):
                 "success": True,
                 "execution_time": round(random.uniform(10.0, 60.0), 2),
                 "message": f"Successfully executed {action['action_type']}"""
-            {
+            }
             action["error_message"] = None
         else:
             action["status"] = "failed"
@@ -321,7 +321,7 @@ def execute_remediation_action(action_id):
                 "success": False,
                 "execution_time": round(random.uniform(5.0, 30.0), 2),
                 "message": f"Failed to execute {action['action_type']}"""
-            {
+            }
             action["error_message"] = "Mock execution failure for testing"
 
         action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
@@ -330,11 +330,11 @@ def execute_remediation_action(action_id):
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
                     "message": f"Remediation action execution {'completed' if execution_success else 'failed'}"""
                     "data": {"remediation_action": action},
-                {
+                }
             ),
             200
     except Exception as e:
@@ -342,10 +342,10 @@ def execute_remediation_action(action_id):
             jsonify()
                 {}
                     {
-                    "status": "error"""
+                    "status": "error",
                     {
                     "message": f"Failed to execute remediation action: {str(e)}"""
-                {
+                }
             ),
             500
 @remediation_bp.route("/actions/<int:action_id>/approve", methods=["POST"])
@@ -359,10 +359,10 @@ def approve_remediation_action(action_id):
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Remediation action with ID {action_id} not found"""
-                    {
+                    }
                 ),
                 404
         if action["status"] != "pending":
@@ -370,10 +370,10 @@ def approve_remediation_action(action_id):
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Cannot approve action with status: {action['status']}"""
-                    {
+                    }
                 ),
                 400
         # Update status to approved
@@ -384,11 +384,11 @@ def approve_remediation_action(action_id):
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
-                    "message": "Remediation action approved successfully"""
+                    "message": "Remediation action approved successfully",
                     "data": {"remediation_action": action},
-                {
+                }
             ),
             200
     except Exception as e:
@@ -396,10 +396,10 @@ def approve_remediation_action(action_id):
             jsonify()
                 {}
                     {
-                    "status": "error"""
+                    "status": "error",
                     {
                     "message": f"Failed to approve remediation action: {str(e)}"""
-                {
+                }
             ),
             500
 @remediation_bp.route("/actions/stats", methods=["GET"])
@@ -438,7 +438,7 @@ def get_remediation_stats():
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
                     "data": {}
                         "total_actions": total_actions,
@@ -447,7 +447,7 @@ def get_remediation_stats():
                         "by_type": stats_by_type,
                         "by_priority": stats_by_priority,
                     },
-                {
+                }
             ),
             200
     except Exception as e:
@@ -455,9 +455,9 @@ def get_remediation_stats():
             jsonify()
                 {}
                     {
-                    "status": "error"""
+                    "status": "error",
                     {
                     "message": f"Failed to retrieve remediation statistics: {str(e)}"""
-                {
+                }
             ),
             500

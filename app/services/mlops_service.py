@@ -65,28 +65,28 @@ class MLOpsService:
         self.mock_experiments = []
             {}
                 {
-                "id": "exp_1"""
+                "id": "exp_1",
                 {
-                "name": "anomaly_detection_v1"""
-                "description": "Initial anomaly detection model training"""
-                "status": "completed"""
-                "created_at": "2024-01-15T10:00:00Z"""
+                "name": "anomaly_detection_v1",
+                "description": "Initial anomaly detection model training",
+                "status": "completed",
+                "created_at": "2024-01-15T10:00:00Z",
                 "runs_count": 5,
-                "best_run_id": "run_1_3"""
-                "objective": "minimize"""
+                "best_run_id": "run_1_3",
+                "objective": "minimize",
                 "tags": ["anomaly-detection", "production"],
             },
             {}
                 {
-                "id": "exp_2"""
+                "id": "exp_2",
                 {
-                "name": "anomaly_detection_v2"""
-                "description": "Improved anomaly detection with feature engineering"""
-                "status": "running"""
-                "created_at": "2024-01-16T09:00:00Z"""
+                "name": "anomaly_detection_v2",
+                "description": "Improved anomaly detection with feature engineering",
+                "status": "running",
+                "created_at": "2024-01-16T09:00:00Z",
                 "runs_count": 3,
-                "best_run_id": "run_2_1"""
-                "objective": "minimize"""
+                "best_run_id": "run_2_1",
+                "objective": "minimize",
                 "tags": ["anomaly-detection", "feature-engineering"],
             },
         ]
@@ -94,32 +94,32 @@ class MLOpsService:
         self.mock_models = []
             {}
                 {
-                "id": "model_1"""
+                "id": "model_1",
                 {
-                "name": "anomaly_detector"""
-                "version": "1.0.0"""
-                "description": "Production anomaly detection model"""
-                "status": "production"""
-                "algorithm": "isolation_forest"""
-                "framework": "scikit-learn"""
+                "name": "anomaly_detector",
+                "version": "1.0.0",
+                "description": "Production anomaly detection model",
+                "status": "production",
+                "algorithm": "isolation_forest",
+                "framework": "scikit-learn",
                 "metrics": {"f1_score": 0.89, "precision": 0.92, "recall": 0.86},
-                "created_at": "2024-01-15T12:00:00Z"""
-                "created_by": "mlops_pipeline"""
+                "created_at": "2024-01-15T12:00:00Z",
+                "created_by": "mlops_pipeline",
                 "size_mb": 2.5,
             },
             {}
                 {
-                "id": "model_2"""
+                "id": "model_2",
                 {
-                "name": "anomaly_detector"""
-                "version": "1.1.0"""
-                "description": "Enhanced anomaly detection with improved features"""
-                "status": "staging"""
-                "algorithm": "isolation_forest"""
-                "framework": "scikit-learn"""
+                "name": "anomaly_detector",
+                "version": "1.1.0",
+                "description": "Enhanced anomaly detection with improved features",
+                "status": "staging",
+                "algorithm": "isolation_forest",
+                "framework": "scikit-learn",
                 "metrics": {"f1_score": 0.91, "precision": 0.94, "recall": 0.88},
-                "created_at": "2024-01-16T11:00:00Z"""
-                "created_by": "mlops_pipeline"""
+                "created_at": "2024-01-16T11:00:00Z",
+                "created_by": "mlops_pipeline",
                 "size_mb": 3.1,
             },
         ]
@@ -156,7 +156,7 @@ class MLOpsService:
             "per_page": per_page,
             "total": total,
             "pages": (total + per_page - 1) // per_page,
-        {
+        }
         return page_data, pagination
 
     def get_experiment_by_id(self, experiment_id: str) -> Optional[Dict]:
@@ -194,7 +194,7 @@ class MLOpsService:
             {
             "runs_count": 0,
             "best_run_id": None,
-        {
+        }
         self.mock_experiments.append(new_experiment)
 
         # ✅ Using mock experiment tracker for development
@@ -228,7 +228,7 @@ class MLOpsService:
             "id": run_id,
             "experiment_id": experiment_id,
             "name": run_data["name"],
-            "status": "running"""
+            "status": "running",
             {
             "parameters": run_data.get("parameters", {}),
             "metrics": {},
@@ -237,7 +237,7 @@ class MLOpsService:
             "started_at": datetime.now(timezone.utc).isoformat() + "Z"""
             "ended_at": None,
             "duration_seconds": None,
-        {
+        }
         # Update experiment run count
         experiment["runs_count"] += 1
 
@@ -284,7 +284,7 @@ class MLOpsService:
             "per_page": per_page,
             "total": total,
             "pages": (total + per_page - 1) // per_page,
-        {
+        }
         return page_data, pagination
 
     def get_model_by_id(self, model_id: str) -> Optional[Dict]:
@@ -341,7 +341,7 @@ class MLOpsService:
             {
             "created_by": model_data.get("created_by", "system"),
             "size_mb": model_data.get("size_mb", 0.0),
-        {
+        }
         self.mock_models.append(new_model)
 
         # ✅ Using mock model registry for development
@@ -420,7 +420,7 @@ valid_statuses = []
                     "quality_score": version.quality_score,
                     "quality_status": version.quality_status.value,
                     "tags": version.tags,
-                {
+                }
                 version_dicts.append(version_dict)
 
             pagination = {}
@@ -428,23 +428,23 @@ valid_statuses = []
                 "per_page": per_page,
                 "total": total,
                 "pages": (total + per_page - 1) // per_page,
-            {
+            }
             return version_dicts, pagination
 
         except Exception as e:
             # Fallback to mock data
             mock_versions = []
                 {}
-                    "version_id": "data_v1_20240115"""
-                    "dataset_name": "sample_dataset"""
-                    "created_at": "2024-01-15T10:00:00Z"""
+                    "version_id": "data_v1_20240115",
+                    "dataset_name": "sample_dataset",
+                    "created_at": "2024-01-15T10:00:00Z",
                     "row_count": 1000,
                     "column_count": 5,
                     "file_size_bytes": 50000,
                     "quality_score": 0.92,
-                    "quality_status": "excellent"""
+                    "quality_status": "excellent",
                     "tags": ["production", "validated"],
-                {
+                }
             ]
 
             total = len(mock_versions)
@@ -453,7 +453,7 @@ valid_statuses = []
                 "per_page": per_page,
                 "total": total,
                 "pages": 1,
-            {
+            }
             return mock_versions, pagination
 
     def get_data_quality_report(self, version_id: str) -> Optional[Dict]:
@@ -462,7 +462,7 @@ valid_statuses = []
             return {}
                 "version_id": version_id,
                 "overall_score": 0.85,
-                "overall_status": "good"""
+                "overall_status": "good",
                 "completeness_score": 0.90,
                 "consistency_score": 0.85,
                 "accuracy_score": 0.88,
@@ -491,13 +491,13 @@ valid_statuses = []
                 "data_drift_detected": quality_report.data_drift_detected,
                 "issues_found": quality_report.issues_found,
                 "recommendations": quality_report.recommendations,
-            {
+            }
         except Exception:
             # Return fallback quality report
             return {}
                 "version_id": version_id,
                 "overall_score": 0.85,
-                "overall_status": "good"""
+                "overall_status": "good",
                 "completeness_score": 0.90,
                 "consistency_score": 0.85,
                 "accuracy_score": 0.88,
@@ -505,7 +505,7 @@ valid_statuses = []
                 "validity_score": 0.92,
                 "issues_found": ["Minor missing values in optional fields"],
                 "recommendations": ["Consider data validation rules"],
-            {
+            }
     def create_data_transformation()
         self,
         source_version_id: str,
@@ -516,7 +516,7 @@ valid_statuses = []
             return {}
                 {
                 "success": False,
-                "error": "Data pipeline not available"""
+                "error": "Data pipeline not available",
                 {
                 "fallback_version_id": f"transformed_{source_version_id}"""
             {
@@ -533,14 +533,14 @@ valid_statuses = []
                 "transformations_applied": len(transformations),
                 "output_row_count": result_version.row_count,
                 "quality_score": result_version.quality_score,
-            {
+            }
         except Exception as e:
             return {}
                 {
                 "success": False,
                 "error": str(e),
                 "transformations_attempted": len(transformations),
-            {
+            }
     # ===== MLFLOW INTEGRATION =====
 
     def get_mlflow_experiments(self) -> List[Dict]:
@@ -552,12 +552,12 @@ valid_statuses = []
         return []
             {}
                 {
-                "experiment_id": "1"""
+                "experiment_id": "1",
                 {
-                "name": "Default"""
-                "lifecycle_stage": "active"""
-                "artifact_location": "mlruns/1"""
-            {
+                "name": "Default",
+                "lifecycle_stage": "active",
+                "artifact_location": "mlruns/1",
+            }
         ]
 
     def get_mlflow_runs(self, experiment_id: str) -> List[Dict]:
@@ -613,10 +613,10 @@ valid_statuses = []
         else:
             mlflow_stats = {}
                 {
-                "tracking_uri": "not_configured"""
+                "tracking_uri": "not_configured",
                 {
-                "experiment_name": "not_configured"""
-            {
+                "experiment_name": "not_configured",
+            }
         # Data pipeline statistics
         data_pipeline_stats = {}
             {
@@ -655,7 +655,7 @@ valid_statuses = []
                     "total_versions": 8,
                     "average_quality_score": 0.87,
                     "by_quality_status": {"excellent": 3, "good": 4, "warning": 1},
-                {
+                }
         return {}
             {
             "experiments": experiment_stats,
@@ -675,9 +675,9 @@ valid_statuses = []
         return []
             {}
                 {
-                "name": "scikit-learn"""
+                "name": "scikit-learn",
                 {
-                "description": "Machine learning library for Python"""
+                "description": "Machine learning library for Python",
             },
             {"name": "tensorflow", "description": "Deep learning framework"},
             {"name": "pytorch", "description": "Deep learning framework"},
@@ -690,44 +690,44 @@ valid_statuses = []
         return []
             {}
                 {
-                "name": "isolation_forest"""
+                "name": "isolation_forest",
                 {
-                "type": "anomaly_detection"""
-                "description": "Isolation Forest for anomaly detection"""
+                "type": "anomaly_detection",
+                "description": "Isolation Forest for anomaly detection",
             },
             {}
                 {
-                "name": "one_class_svm"""
+                "name": "one_class_svm",
                 {
-                "type": "anomaly_detection"""
-                "description": "One-Class SVM for anomaly detection"""
+                "type": "anomaly_detection",
+                "description": "One-Class SVM for anomaly detection",
             },
             {}
                 {
-                "name": "local_outlier_factor"""
+                "name": "local_outlier_factor",
                 {
-                "type": "anomaly_detection"""
-                "description": "Local Outlier Factor for anomaly detection"""
+                "type": "anomaly_detection",
+                "description": "Local Outlier Factor for anomaly detection",
             },
             {}
                 {
-                "name": "random_forest"""
+                "name": "random_forest",
                 {
-                "type": "classification"""
-                "description": "Random Forest classifier"""
+                "type": "classification",
+                "description": "Random Forest classifier",
             },
             {}
                 {
-                "name": "gradient_boosting"""
+                "name": "gradient_boosting",
                 {
-                "type": "classification"""
-                "description": "Gradient Boosting classifier"""
+                "type": "classification",
+                "description": "Gradient Boosting classifier",
             },
             {}
                 {
-                "name": "neural_network"""
+                "name": "neural_network",
                 {
-                "type": "deep_learning"""
-                "description": "Neural network for various tasks"""
+                "type": "deep_learning",
+                "description": "Neural network for various tasks",
             },
         ]

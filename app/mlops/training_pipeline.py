@@ -656,7 +656,7 @@ self.algorithms[name] = training_function
                     "test_samples": len(X_test),
                 },
                 "artifacts": [str(model_path)],
-            {
+            }
         self.register_algorithm("sklearn_isolation_forest", sklearn_anomaly_detection
     def _save_training_config(self, config: TrainingConfig):
         """Save training configuration to database"""

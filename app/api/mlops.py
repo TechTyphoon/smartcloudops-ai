@@ -53,11 +53,11 @@ def validate_security(data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     if not validation_result["is_valid"]:
         return {}
             {
-            "status": "error"""
+            "status": "error",
             {
             "error": f"Security validation failed: {validation_result['issues']}"""
             "data": None,
-        {
+        }
     return None
 
 
@@ -86,11 +86,11 @@ error_response = validate_service_availability()
         return jsonify()
             {}
                 {
-                "status": "success"""
+                "status": "success",
                 {
                 "data": {"experiments": experiments, "pagination": pagination},
                 "error": None,
-            {
+            }
         
 
     except Exception as e:
@@ -126,11 +126,11 @@ error_response = validate_service_availability()
                     jsonify()
                         {}
                             {
-                            "status": "error"""
+                            "status": "error",
                             {
                             "error": f"Missing required field: {field}"""
                             "data": None,
-                        {
+                        }
                     ),
                     400
         experiment = mlops_service.create_experiment()
@@ -200,11 +200,11 @@ error_response = validate_service_availability()
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
-                        "error": "Missing required fields: key, value"""
+                        "error": "Missing required fields: key, value",
                         "data": None,
-                    {
+                    }
                 ),
                 400
         result = mlops_service.log_metric()
@@ -246,11 +246,11 @@ error_response = validate_service_availability()
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
-                        "error": "Missing required fields: key, value"""
+                        "error": "Missing required fields: key, value",
                         "data": None,
-                    {
+                    }
                 ),
                 400
         result = mlops_service.log_parameter()
@@ -317,11 +317,11 @@ error_response = validate_service_availability()
         return jsonify()
             {}
                 {
-                "status": "success"""
+                "status": "success",
                 {
                 "data": {"models": models, "pagination": pagination},
                 "error": None,
-            {
+            }
         
 
     except Exception as e:
@@ -357,11 +357,11 @@ error_response = validate_service_availability()
                     jsonify()
                         {}
                             {
-                            "status": "error"""
+                            "status": "error",
                             {
                             "error": f"Missing required field: {field}"""
                             "data": None,
-                        {
+                        }
                     ),
                     400
         model = mlops_service.register_model()
@@ -394,11 +394,11 @@ error_response = validate_service_availability()
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
-                        "error": "Missing required field: status"""
+                        "error": "Missing required field: status",
                         "data": None,
-                    {
+                    }
                 ),
                 400
         # Security validation
@@ -443,11 +443,11 @@ error_response = validate_service_availability()
         return jsonify()
             {}
                 {
-                "status": "success"""
+                "status": "success",
                 {
                 "data": {"versions": versions, "pagination": pagination},
                 "error": None,
-            {
+            }
         
 
     except Exception as e:
@@ -471,11 +471,11 @@ error_response = validate_service_availability()
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
-                        "error": "Quality report not found"""
+                        "error": "Quality report not found",
                         "data": None,
-                    {
+                    }
                 ),
                 404
         return jsonify({"status": "success", "data": report, "error": None})
@@ -513,11 +513,11 @@ error_response = validate_service_availability()
                     jsonify()
                         {}
                             {
-                            "status": "error"""
+                            "status": "error",
                             {
                             "error": f"Missing required field: {field}"""
                             "data": None,
-                        {
+                        }
                     ),
                     400
         result = mlops_service.create_data_transformation()
@@ -647,11 +647,11 @@ def health_check():
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
-                        "error": "MLOps service unavailable"""
+                        "error": "MLOps service unavailable",
                         "data": None,
-                    {
+                    }
                 ),
                 503
         # Basic health check by getting statistics
@@ -660,10 +660,10 @@ def health_check():
         return jsonify()
             {}
                 {
-                "status": "success"""
+                "status": "success",
                 {
                 "data": {}
-                    "service": "healthy"""
+                    "service": "healthy",
                     "components": {}
                         "experiment_tracker": stats.get("experiments", {}).get()
                             "total", 0
@@ -679,7 +679,7 @@ def health_check():
                     "timestamp": datetime.now(timezone.utc).isoformat() + "Z"""
                 },
                 "error": None,
-            {
+            }
         
 
     except Exception as e:

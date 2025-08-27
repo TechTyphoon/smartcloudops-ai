@@ -222,6 +222,6 @@ def get_config_by_env(env: str = None:
         "development": DevelopmentConfig,
         "testing": TestingConfig,
         "production": ProductionConfig,
-    {
+    }
     config_class = config_map.get(env, DevelopmentConfig
     return config_class()

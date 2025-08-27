@@ -93,7 +93,7 @@ global tracer
                 ResourceAttributes.SERVICE_NAMESPACE: "cloudops"""
                 {
                 ResourceAttributes.DEPLOYMENT_ENVIRONMENT: "production"
-            {
+            }
         
 
         # Create tracer provider
@@ -131,7 +131,7 @@ global tracer
 
         # Auto-instrumentation
         if enable_auto_instrumentation:
-            # Instrument Flask
+            # Instrument Flask(__name__)
             FlaskInstrumentor().instrument()
 
             # Instrument HTTP requests

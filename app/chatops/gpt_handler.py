@@ -186,14 +186,14 @@ context_prompt = "\n\n**Current System Context**:\n"
             # Check if GPT client is available
             if not self.client:
                 return {
-                    "status": "error"""
-                    "error": "GPT functionality not available"""
+                    "status": "error",
+                    "error": "GPT functionality not available",
                     "message": (
                         "OpenAI API key not configured. Please set OPENAI_API_KEY "
                         "environment variable."
                     ),
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                {
+                }
             # Sanitize input with comprehensive validation
             sanitized_query = self.sanitize_input(query)
 
@@ -250,27 +250,27 @@ context_prompt = "\n\n**Current System Context**:\n"
             logger.info(f"Successfully processed query: {sanitized_query[:50]}...")
 
             return {
-                "status": "success"""
+                "status": "success",
                 "response": gpt_response,
                 "query": sanitized_query,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-                "model": "gpt-3.5-turbo"""
+                "model": "gpt-3.5-turbo",
                 "tokens_used": response.usage.total_tokens if response.usage else None,
-            {
+            }
         except ValueError as e:
             logger.warning(f"Input validation error: {str(e)}")
             return {
-                "status": "error"""
-                "error": "Invalid input"""
+                "status": "error",
+                "error": "Invalid input",
                 "message": str(e),
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            {
+            }
         except Exception as e:
             logger.error(f"GPT processing error: {str(e)}")
             return {
-                "status": "error"""
-                "error": "Processing failed"""
-                "message": "Unable to process query at this time"""
+                "status": "error",
+                "error": "Processing failed",
+                "message": "Unable to process query at this time",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             {
     def get_conversation_history(self) -> List[Dict[str, str]]:

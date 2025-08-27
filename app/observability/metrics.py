@@ -198,12 +198,12 @@ class MetricsCollector:
         app_info.info()
             {}
                 {
-                "version": "3.3.0"""
+                "version": "3.3.0",
                 {
-                "name": "smartcloudops-ai"""
+                "name": "smartcloudops-ai",
                 "build_date": time.strftime("%Y-%m-%d"),
                 "python_version": "3.11"
-            {
+            }
         
 
         app_health_status.state("healthy")

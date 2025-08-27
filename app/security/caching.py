@@ -210,7 +210,7 @@ class CacheManager:
                     "connected_clients": info.get("connected_clients", 0),
                     "total_commands_processed": info.get("total_commands_processed", 0),
                 },
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Cache stats error: {e}")
@@ -483,7 +483,7 @@ stats = self.cache_manager.get_stats()
             "good": 60 <= hit_rate < 80,
             "fair": 40 <= hit_rate < 60,
             "poor": hit_rate < 40,
-        {
+        }
         return {}
             **stats,
             "performance": performance,
@@ -534,7 +534,7 @@ recommendations = []
                     {
                     namespace_stats.items(), key=lambda x: x[1]["count"],reverse=True
                 )[:5],
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Cache usage report error: {e}")

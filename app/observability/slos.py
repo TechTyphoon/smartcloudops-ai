@@ -336,7 +336,7 @@ alerts = []
                 "expr": self._generate_alert_expression(slo, "warning"),
                 "for": f"{slo.measurement_period}s"""
                 "labels": {}
-                    "severity": "warning"""
+                    "severity": "warning",
                     "slo": slo.name,
                     "type": slo.slo_type.value,
                 },
@@ -346,7 +346,7 @@ alerts = []
                     {
                     "description": f"{slo.description} is below warning threshold ({slo.alert_threshold}%)"""
                 },
-            {
+            }
             alerts.append(warning_alert)
 
             # Critical alert
@@ -357,7 +357,7 @@ alerts = []
                 "expr": self._generate_alert_expression(slo, "critical"),
                 "for": f"{slo.measurement_period}s"""
                 "labels": {}
-                    "severity": "critical"""
+                    "severity": "critical",
                     "slo": slo.name,
                     "type": slo.slo_type.value,
                 },
@@ -367,7 +367,7 @@ alerts = []
                     {
                     "description": f"{slo.description} is below critical threshold ({slo.critical_threshold}%)"""
                 },
-            {
+            }
             alerts.append(critical_alert)
 
         return alerts

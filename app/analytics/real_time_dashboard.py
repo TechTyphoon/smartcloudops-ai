@@ -255,13 +255,13 @@ CREATE TABLE IF NOT EXISTS insights ()
     async def _send_initial_data(self, websocket):
         "Send initial dashboard data to client"""
         data = {}
-            "type": "initial_data"""
+            "type": "initial_data",
             "timestamp": datetime.now().isoformat(),
             "metrics": self._get_current_metrics(),
             "alerts": self._get_recent_alerts(),
             "insights": self._get_recent_insights(),
             "system_status": self._get_system_status(),
-        {
+        }
         await websocket.send(json.dumps(data)
 
     async def _handle_client_message(self, websocket, message: str, client_id: str):
@@ -302,10 +302,10 @@ CREATE TABLE IF NOT EXISTS insights ()
         insights = self._get_insights_by_type(insight_type)
 
         response = {}
-            "type": "insights_response"""
+            "type": "insights_response",
             "insights": insights,
             "timestamp": datetime.now().isoformat(),
-        {
+        }
         await websocket.send(json.dumps(response)
 
     def _metrics_collector(self):
@@ -354,7 +354,7 @@ CREATE TABLE IF NOT EXISTS insights ()
             "bytes_recv": network.bytes_recv,
             "packets_sent": network.packets_sent,
             "packets_recv": network.packets_recv,
-        {
+        }
         # Application-specific metrics
         active_connections = len(self.clients)
         response_time_avg = self._get_avg_response_time()
@@ -651,10 +651,10 @@ INSERT INTO insights (id, timestamp, insight_type,
 
         data = {}
             {
-            "type": "metrics_update"""
+            "type": "metrics_update",
             "timestamp": metrics.timestamp.isoformat(),
             "metrics": asdict(metrics),
-        {
+        }
         message = json.dumps(data)
         disconnected_clients = set()
 
@@ -813,6 +813,6 @@ class TimeSeriesForecaster:
             "confidence": confidence,
             "slope": slope,
             "steps": steps,
-        {
+        }
 # Global instance
 analytics_dashboard = RealTimeAnalyticsDashboard()

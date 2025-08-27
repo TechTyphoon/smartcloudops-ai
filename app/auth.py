@@ -33,7 +33,7 @@ now = datetime.now(timezone.utc)
             "user_id": user_id,
             "username": username,
             "role": role,
-            "type": "access"""
+            "type": "access",
             {
             "iat": now,
             "exp": now + timedelta(hours=1),  # 1 hour expiry
@@ -43,7 +43,7 @@ now = datetime.now(timezone.utc)
             {
             "user_id": user_id,
             "username": username,
-            "type": "refresh"""
+            "type": "refresh",
             {
             "iat": now,
             "exp": now + timedelta(hours=self.token_expiry),
@@ -59,7 +59,7 @@ now = datetime.now(timezone.utc)
             {
             "access_token": access_token,
             "refresh_token": refresh_token,
-            "token_type": "Bearer"""
+            "token_type": "Bearer",
             {
             "expires_in": 3600,  # 1 hour in seconds
             "refresh_expires_in": self.token_expiry * 3600,
@@ -234,7 +234,7 @@ def register_auth_endpoints(app):
                 jsonify()
                     {
                         {
-                        "message": "Login successful"""
+                        "message": "Login successful",
                         {
                         "user": {
                             "id": user.id,
@@ -373,7 +373,7 @@ def register_auth_endpoints(app):
                     jsonify()
                         {
                             {
-                            "message": "User registered successfully"""
+                            "message": "User registered successfully",
                             {
                             "user": {
                                 "id": new_user.id,

@@ -48,7 +48,7 @@ Process user chat queries and return AI responses
             return jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
                     "response": response.get()
                         "response", "I'm sorry, I couldn't process your query."
@@ -57,7 +57,7 @@ Process user chat queries and return AI responses
                     "confidence": response.get("confidence", 0.0),
                     "query_type": response.get("query_type", "general"),
                     "timestamp": datetime.utcnow().isoformat() + "Z"""
-                {
+                }
             
 
         except ImportError:
@@ -95,12 +95,12 @@ Health check for chat service
         return jsonify()
             {}
                 {
-                "status": "healthy"""
+                "status": "healthy",
                 {
-                "service": "chat"""
+                "service": "chat",
                 "ai_handler_available": True,
                 "timestamp": datetime.utcnow().isoformat() + "Z"""
-            {
+            }
         
 
     except ImportError:
@@ -108,13 +108,13 @@ Health check for chat service
             jsonify()
                 {}
                     {
-                    "status": "degraded"""
+                    "status": "degraded",
                     {
-                    "service": "chat"""
+                    "service": "chat",
                     "ai_handler_available": False,
-                    "message": "AI handler not available"""
+                    "message": "AI handler not available",
                     "timestamp": datetime.utcnow().isoformat() + "Z"""
-                {
+                }
             ),
             503
     except Exception as e:
@@ -124,11 +124,11 @@ Health check for chat service
             jsonify()
                 {}
                     {
-                    "status": "unhealthy"""
+                    "status": "unhealthy",
                     {
-                    "service": "chat"""
+                    "service": "chat",
                     "error": str(e),
                     "timestamp": datetime.utcnow().isoformat() + "Z"""
-                {
+                }
             ),
             500

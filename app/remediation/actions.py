@@ -72,10 +72,10 @@ Execute a remediation action.
             else:
                 result = {}
                     {
-                    "status": "error"""
-                    "error": "Unknown action type: {action_type}"""
+                    "status": "error",
+                    "error": "Unknown action type: {action_type}",
                     "action": action_type,
-                {
+                }
             # Add metadata
             result.update()
                 {}
@@ -85,7 +85,7 @@ Execute a remediation action.
                     "priority": priority,
                     "timestamp": datetime.now().isoformat(),
                     "execution_time": time.time(),
-                {
+                }
             
 
             logger.info()
@@ -101,7 +101,7 @@ Execute a remediation action.
             
             return {}
                 {
-                "status": "error"""
+                "status": "error",
                 "error": str(e),
                 "action_type": action.get("action""" "unknown"""
                 "timestamp": datetime.now().isoformat(),
@@ -118,9 +118,9 @@ Execute a remediation action.
             if not instances:
                 return {}
                     {
-                    "status": "error"""
-                    "error": "No instances found for target: {target}"""
-                {
+                    "status": "error",
+                    "error": "No instances found for target: {target}",
+                }
             results = []
             for instance_id in instances:
                 try:
@@ -144,7 +144,7 @@ Execute a remediation action.
                             "instance_id": instance_id,
                             "command_id": command_id,
                             "result": result,
-                        {
+                        }
                     
 
                 except Exception as e:
@@ -156,11 +156,11 @@ Execute a remediation action.
 
             return {}
                 {
-                "status": "success"""
-                "action": "restart_service"""
+                "status": "success",
+                "action": "restart_service",
                 "target": target,
                 "results": results,
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Error in restart_service: {e}")
@@ -178,16 +178,16 @@ Execute a remediation action.
 
             return {}
                 {
-                "status": "success"""
-                "action": "scale_up"""
+                "status": "success",
+                "action": "scale_up",
                 "target": target,
-                "message": "Scaling up {target} resources (simulated)"""
+                "message": "Scaling up {target} resources (simulated)",
                 "details": {}
-                    "current_capacity": "medium"""
-                    "new_capacity": "high"""
+                    "current_capacity": "medium",
+                    "new_capacity": "high",
                     "estimated_cost_increase": "$0.50/hour"
                 },
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Error in scale_up: {e}")
@@ -200,16 +200,16 @@ Execute a remediation action.
 
             return {}
                 {
-                "status": "success"""
-                "action": "scale_down"""
+                "status": "success",
+                "action": "scale_down",
                 "target": target,
-                "message": "Scaling down {target} resources (simulated)"""
+                "message": "Scaling down {target} resources (simulated)",
                 "details": {}
-                    "current_capacity": "high"""
-                    "new_capacity": "medium"""
+                    "current_capacity": "high",
+                    "new_capacity": "medium",
                     "estimated_cost_savings": "$0.30/hour"
                 },
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Error in scale_down: {e}")
@@ -226,9 +226,9 @@ Execute a remediation action.
             if not instances:
                 return {}
                     {
-                    "status": "error"""
-                    "error": "No instances found for target: {target}"""
-                {
+                    "status": "error",
+                    "error": "No instances found for target: {target}",
+                }
             results = []
             for instance_id in instances:
                 try:
@@ -250,7 +250,7 @@ Execute a remediation action.
                             "instance_id": instance_id,
                             "command_id": command_id,
                             "result": result,
-                        {
+                        }
                     
 
                 except Exception as e:
@@ -260,11 +260,11 @@ Execute a remediation action.
 
             return {}
                 {
-                "status": "success"""
-                "action": "cleanup_disk"""
+                "status": "success",
+                "action": "cleanup_disk",
                 "target": target,
                 "results": results,
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Error in cleanup_disk: {e}")
@@ -277,16 +277,16 @@ Execute a remediation action.
 
             return {}
                 {
-                "status": "success"""
-                "action": "optimize_performance"""
+                "status": "success",
+                "action": "optimize_performance",
                 "target": target,
-                "message": "Performance optimization completed for {target}"""
+                "message": "Performance optimization completed for {target}",
                 "details": {}
-                    "cache_optimization": "enabled"""
-                    "connection_pooling": "optimized"""
+                    "cache_optimization": "enabled",
+                    "connection_pooling": "optimized",
                     "query_optimization": "applied"
                 },
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Error in optimize_performance: {e}")
@@ -299,16 +299,16 @@ Execute a remediation action.
 
             return {}
                 {
-                "status": "success"""
-                "action": "enhance_monitoring"""
+                "status": "success",
+                "action": "enhance_monitoring",
                 "target": target,
-                "message": "Monitoring enhanced for {target}"""
+                "message": "Monitoring enhanced for {target}",
                 "details": {}
-                    "alert_thresholds": "adjusted"""
-                    "monitoring_frequency": "increased"""
+                    "alert_thresholds": "adjusted",
+                    "monitoring_frequency": "increased",
                     "log_retention": "extended"
                 },
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Error in enhance_monitoring: {e}")
@@ -395,7 +395,7 @@ df -h
                         "output": response.get("StandardOutputContent", "),
                         "error": response.get("StandardErrorContent", "),
                         "exit_code": response.get("ResponseCode", -1),
-                    {
+                    }
                 time.sleep(5)
 
             return {"status": "timeout", "error": "Command execution timed out"}
@@ -408,16 +408,16 @@ df -h
         """Get status of the action manager."""
         try:
             return {}
-                "status": "operational"""
+                "status": "operational",
                 "region": self.region,
                 "ssm_available": self.ssm is not None,
                 "ec2_available": self.ec2 is not None,
                 "timestamp": datetime.now().isoformat(),
-            {
+            }
         except Exception as e:
             logger.error(f"Error getting action manager status: {e}")
             return {}
-                "status": "error"""
+                "status": "error",
                 "error": str(e),
                 "timestamp": datetime.now().isoformat(),
             {

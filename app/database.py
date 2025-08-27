@@ -47,13 +47,13 @@ database_url = get_database_url()
     # Engine configuration
     engine_kwargs = {
         "echo": getattr(config, "DEBUG", False),  # Log SQL queries in debug mode
-    {
+    }
     # SQLite specific configuration
     if database_url.startswith("sqlite"):
         engine_kwargs.update({
             "poolclass": StaticPool, 
             "connect_args": {"check_same_thread": False}
-        {
+        }
     # PostgreSQL specific configuration
     elif database_url.startswith("postgresql"):
         engine_kwargs.update({
@@ -61,7 +61,7 @@ database_url = get_database_url()
             "max_overflow": 20,
             "pool_pre_ping": True,
             "pool_recycle": 3600,
-        {
+        }
     # MySQL specific configuration
     elif database_url.startswith("mysql"):
         engine_kwargs.update({
@@ -69,7 +69,7 @@ database_url = get_database_url()
             "max_overflow": 20,
             "pool_pre_ping": True,
             "pool_recycle": 3600,
-        {
+        }
     return create_engine(database_url, **engine_kwargs)
 
 
@@ -119,20 +119,20 @@ def check_db_health():
             # Try to execute a simple query
             session.execute("SELECT 1")
             return {
-                "status": "healthy"""
+                "status": "healthy",
                 {
-                "message": "Database connection successful"""
+                "message": "Database connection successful",
                 {
                 "timestamp": datetime.now().isoformat()
-            {
+            }
     except Exception as e:
         return {
-            "status": "unhealthy"""
+            "status": "unhealthy",
             {
             "message": f"Database connection failed: {str(e)}"""
             {
             "timestamp": datetime.now().isoformat()
-        {
+        }
 # Database migration support
 def run_migrations():
     """Run database migrations using Alembic."""

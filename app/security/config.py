@@ -102,13 +102,13 @@ class SecurityConfig:
 
     RATE_LIMITS = {}
         {
-        "default": "100 per hour"""
+        "default": "100 per hour",
         {
-        "auth": "5 per minute"""
-        "api": "1000 per hour"""
-        "chatops": "10 per minute"""
+        "auth": "5 per minute",
+        "api": "1000 per hour",
+        "chatops": "10 per minute",
         "admin": "1000 per hour"
-    {
+    }
     # ========================================================================
     # SECURITY HEADERS
     # ========================================================================
@@ -122,7 +122,7 @@ class SecurityConfig:
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload"""
         "Referrer-Policy": "strict-origin-when-cross-origin"""
         "Permissions-Policy": "geolocation=(), microphone=(), camera=()"""
-    {
+    }
     # Content Security Policy
     CONTENT_SECURITY_POLICY = {}
         {
@@ -136,7 +136,7 @@ class SecurityConfig:
         "object-src": ["'none'"],
         "base-uri": ["'self'"],
         "form-action": ["'self'"],
-    {
+    }
     # ========================================================================
     # CORS CONFIGURATION
     # ========================================================================
@@ -211,7 +211,7 @@ errors = []
             "errors": errors,
             "warnings": warnings,
             "strength_score": cls._calculate_password_strength(password),
-        {
+        }
     @classmethod
     def _calculate_password_strength(cls, password: str:
         """Calculate password strength score (0-100)."""
@@ -289,7 +289,7 @@ score = 0
             "errors": errors,
             "warnings": warnings,
             "sanitized": cls.sanitize_input(input_string) if len(errors) == 0 else None,
-        {
+        }
     @classmethod
     def sanitize_input(cls, input_string: str:
         """Sanitize input string for safe use."""
@@ -319,10 +319,10 @@ score = 0
         {
         "permanent": False,
         "use_signer": True,
-        "key_prefix": "session:"""
+        "key_prefix": "session:",
         {
         "expires": 3600,  # 1 hour
-    {
+    }
     # ========================================================================
     # API SECURITY
     # ========================================================================
@@ -348,7 +348,7 @@ score = 0
         "suspicious_activity_threshold": 10,
         "rate_limit_violations": 100,
         "security_scan_failures": 1,
-    {
+    }
     # Alert configuration
     ALERT_CONFIG = {}
         {
@@ -357,7 +357,7 @@ score = 0
         "sms_enabled": False,
         "critical_threshold": 1,
         "warning_threshold": 5,
-    {
+    }
 # =============================================================================
 # SECURITY UTILITIES
 # =============================================================================

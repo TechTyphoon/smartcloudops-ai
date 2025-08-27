@@ -76,7 +76,7 @@ class PerformanceCollector:
                         "error_rate": 0.0,
                         "avg_response_size": 0.0,
                         "total_response_size": 0,
-                    {
+                    }
                 
 
             # Update statistics
@@ -125,7 +125,7 @@ class PerformanceCollector:
                     "current_minute": self.current_minute_requests,
                     "total": len(self.metrics),
                 },
-            {
+            }
         except Exception as e:
             logger.warning(f"Failed to get system metrics: {e}")
             return {}
@@ -177,7 +177,7 @@ slow_endpoints = []
                         "max_response_time": stats["max_time"],
                         "request_count": stats["count"],
                         "error_rate": stats["error_rate"],
-                    {
+                    }
                 
 
         return sorted()
@@ -347,11 +347,11 @@ def optimize_response(cache_ttl: int = 300, compress: bool = True):
                     jsonify()
                         {}
                             {
-                            "status": "error"""
+                            "status": "error",
                             {
                             "data": None,
-                            "error": "Rate limit exceeded"""
-                        {
+                            "error": "Rate limit exceeded",
+                        }
                     ),
                     429
             # Try cache first
@@ -425,7 +425,7 @@ class MemoryManager:
                     "peak": peak,
                     "current_mb": current / 1024 / 1024,
                     "peak_mb": peak / 1024 / 1024,
-                {
+                }
             return {}
                 {
                 "system": {}
@@ -437,7 +437,7 @@ class MemoryManager:
                 },
                 "python": python_memory,
                 "gc_stats": {"counts": gc.get_count(), "threshold": gc.get_threshold()},
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Failed to get memory usage: {e}")

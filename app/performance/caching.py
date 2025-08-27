@@ -271,7 +271,7 @@ self.caches.update()
                 "quality_reports": LRUCache(max_size=100, default_ttl=1800),
                 "api_responses": LRUCache(max_size=1000, default_ttl=120),
                 "computed_metrics": LRUCache(max_size=200, default_ttl=300),
-            {
+            }
         
 
     def get_cache(self, name: str) -> Optional[Union[LRUCache, MultiLevelCache]]:
@@ -418,7 +418,7 @@ class CachePerformanceMonitor:
                     "count": 0,
                     "total_time": 0,
                     "avg_time": 0,
-                {
+                }
             op_metrics = self.metrics[cache_name]["operations"][operation]
             op_metrics["count"] += 1
             op_metrics["total_time"] += duration

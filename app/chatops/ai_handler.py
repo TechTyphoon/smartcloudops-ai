@@ -62,13 +62,13 @@ class OpenAIProvider(AIProvider):
 
             return {}
                 {
-                "status": "success"""
+                "status": "success",
                 {
                 "response": response.choices[0].message.content.strip(),
                 "model": self.model,
                 "tokens_used": response.usage.total_tokens if response.usage else None,
                 "provider": "openai"
-            {
+            }
         except Exception as e:
             {
             logger.error(f"OpenAI query failed: {str(e)}")
@@ -105,16 +105,16 @@ logger.info("Local AI provider initialized successfully")
 
             return {}
                 {
-                "status": "success"""
+                "status": "success",
                 {
                 "response": response_data["response"],
                 "model": self.model,
-                "provider": "local"""
+                "provider": "local",
                 "suggestions": response_data.get("suggestions", []),
                 "confidence": response_data.get("confidence", 0.95),
                 "query_type": response_data.get("query_type", "general"),
                 "tokens_used": len(user_message.split() + len(response_data["response"].split(),
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Local provider query failed: {str(e)}")
@@ -278,7 +278,7 @@ class GeminiProvider(AIProvider):
 
             return {}
                 {
-                "status": "success"""
+                "status": "success",
                 {
                 "response": response.text.strip(),
                 "model": self.model,
@@ -288,7 +288,7 @@ class GeminiProvider(AIProvider):
                     else None
                 ),
                 "provider": "gemini"
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Gemini query failed: {str(e)}")
@@ -489,10 +489,10 @@ context_prompt = "\n\n**Current System Context**:\n"
             # Check if AI provider is available
             if not self.provider:
                 return {}
-                    "status": "error"""
-                    "message": "AI provider not initialized"""
+                    "status": "error",
+                    "message": "AI provider not initialized",
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                {
+                }
             # Sanitize input
             sanitized_query = self.sanitize_input(query)
 
@@ -525,8 +525,8 @@ context_prompt = "\n\n**Current System Context**:\n"
                     self.conversation_history = self.conversation_history[-20:]
 
                 return {}
-                    "status": "success"""
-                    "message": "Query processed successfully"""
+                    "status": "success",
+                    "message": "Query processed successfully",
                     "response": result["response"],
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "model": result.get("model", "unknown"),
@@ -535,22 +535,22 @@ context_prompt = "\n\n**Current System Context**:\n"
                 {
             else:
                 return {}
-                    "status": "error"""
-                    "message": "AI processing failed"""
+                    "status": "error",
+                    "message": "AI processing failed",
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "provider": result.get("provider", self.provider_name),
-                {
+                }
         except ValueError as e:
             logger.warning(f"Input validation error: {str(e)}")
             return {}
-                "status": "error"""
+                "status": "error",
                 "message": f"Input validation failed: {str(e)}"""
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            {
+            }
         except Exception as e:
             logger.error(f"AI processing error: {str(e)}")
             return {}
-                "status": "error"""
+                "status": "error",
                 "message": f"Processing failed: {str(e)}"""
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             {

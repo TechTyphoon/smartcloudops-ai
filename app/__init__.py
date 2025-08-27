@@ -7,12 +7,12 @@ import logging
 import os
 from pathlib import Path
 
-from flask import Flask
+from flask import Flask(__name__)
 from flask_cors import CORS
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.INFO,)
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"""
     handlers=[logging.FileHandler("logs/app.log"), logging.StreamHandler()]
 

@@ -233,9 +233,9 @@ class RecommendationEngine:
                     {
                     "anomaly": {}
                         {
-                        "severity": "high"""
-                        "source": "cpu_alert"""
-                        "description": "High CPU usage"""
+                        "severity": "high",
+                        "source": "cpu_alert",
+                        "description": "High CPU usage",
                     },
                     "remediation": {"action_type": "scale_up", "success": True},
                 },
@@ -243,9 +243,9 @@ class RecommendationEngine:
                     {
                     "anomaly": {}
                         {
-                        "severity": "medium"""
-                        "source": "memory_alert"""
-                        "description": "Memory usage spike"""
+                        "severity": "medium",
+                        "source": "memory_alert",
+                        "description": "Memory usage spike",
                     },
                     "remediation": {"action_type": "restart_service", "success": True},
                 },
@@ -285,27 +285,27 @@ metrics = anomaly.get("metrics", {})
         if metrics.get("cpu_usage", 0) > 80:
             return {}
                 {
-                "type": "high_cpu_usage"""
+                "type": "high_cpu_usage",
                 {
-                "description": "High CPU utilization causing performance issues"""
+                "description": "High CPU utilization causing performance issues",
                 "confidence": 0.8,
             {
         elif metrics.get("memory_usage", 0) > 85:
             return {}
                 {
-                "type": "high_memory_usage"""
+                "type": "high_memory_usage",
                 {
-                "description": "High memory utilization causing system slowdown"""
+                "description": "High memory utilization causing system slowdown",
                 "confidence": 0.8,
             {
         elif metrics.get("error_rate", 0) > 5:
             return {}
                 {
-                "type": "high_error_rate"""
+                "type": "high_error_rate",
                 {
-                "description": "High error rate indicating application issues"""
+                "description": "High error rate indicating application issues",
                 "confidence": 0.9,
-            {
+            }
         return None
 
     def get_recommendations()
@@ -323,7 +323,7 @@ metrics = anomaly.get("metrics", {})
             "source": anomaly_info.get("source", "unknown"),
             "description": anomaly_info.get("description", "),
             "metrics_pattern": anomaly_info.get("metrics", {}),
-        {
+        }
         # Create temporary node for similarity search
         temp_node_id = self.knowledge_graph.add_node("anomaly", anomaly_props
         try:
@@ -351,7 +351,7 @@ metrics = anomaly.get("metrics", {})
                             ),
                             "source_anomaly": similar_anomaly.properties,
                             "reasoning": f"Similar anomaly resolved with {remediation.properties['action_type']}"""
-                        {
+                        }
                         recommendations.append(recommendation)
 
             # Sort by confidence and remove duplicates
@@ -405,7 +405,7 @@ X, y = [], []
                         "restart_service": 3,
                         "cleanup_disk": 4,
                         "custom": 5,
-                    {
+                    }
                     target = action_encoding.get()
                         best_remediation.properties.get("action_type", "custom"), 5
                     
@@ -477,7 +477,7 @@ features = []
             3: "restart_service"""
             4: "cleanup_disk"""
             5: "custom"""
-        {
+        }
         return action_decoding.get(int(round(prediction), "custom")
 
 
@@ -519,7 +519,7 @@ self.knowledge_graph.load_knowledge_base()
             "action_type": remediation_action,
             "success": success,
             "timestamp": datetime.now().isoformat(),
-        {
+        }
         remediation_node_id = self.knowledge_graph.add_node()
             "remediation", remediation_props
         

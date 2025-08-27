@@ -17,31 +17,31 @@ MOCK_FEEDBACK = []
         {
         "id": 1,
         "user_id": 1,
-        "feedback_type": "bug_report"""
+        "feedback_type": "bug_report",
         {
-        "title": "High CPU Alert False Positive"""
-        "description": "The system flagged normal CPU usage as high during maintenance window"""
+        "title": "High CPU Alert False Positive",
+        "description": "The system flagged normal CPU usage as high during maintenance window",
         "rating": 3,
-        "status": "open"""
-        "priority": "medium"""
+        "status": "open",
+        "priority": "medium",
         "tags": ["false-positive", "cpu", "alerting"],
-        "created_at": "2024-01-15T08:30:00Z"""
-        "updated_at": "2024-01-15T08:30:00Z"""
+        "created_at": "2024-01-15T08:30:00Z",
+        "updated_at": "2024-01-15T08:30:00Z",
     },
     {}
         {
         "id": 2,
         "user_id": 2,
-        "feedback_type": "feature_request"""
+        "feedback_type": "feature_request",
         {
-        "title": "Dashboard Customization"""
-        "description": "Would like to customize dashboard layout and add custom widgets"""
+        "title": "Dashboard Customization",
+        "description": "Would like to customize dashboard layout and add custom widgets",
         "rating": 5,
-        "status": "in_progress"""
-        "priority": "low"""
+        "status": "in_progress",
+        "priority": "low",
         "tags": ["dashboard", "customization", "ui"],
-        "created_at": "2024-01-14T15:20:00Z"""
-        "updated_at": "2024-01-15T10:00:00Z"""
+        "created_at": "2024-01-14T15:20:00Z",
+        "updated_at": "2024-01-15T10:00:00Z",
     },
 ]
 
@@ -87,7 +87,7 @@ def get_feedback():
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
                     "data": {}
                         "feedback": feedback_page,
@@ -98,7 +98,7 @@ def get_feedback():
                             "pages": (total + per_page - 1) // per_page,
                         },
                     },
-                {
+                }
             ),
             200
     except Exception as e:
@@ -119,10 +119,10 @@ def get_feedback_item(feedback_id):
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Feedback with ID {feedback_id} not found"""
-                    {
+                    }
                 ),
                 404
         return jsonify({"status": "success", "data": {"feedback": feedback_item}}), 200
@@ -151,10 +151,10 @@ def create_feedback():
                     jsonify()
                         {}
                             {
-                            "status": "error"""
+                            "status": "error",
                             {
                             "message": f"Missing required field: {field}"""
-                        {
+                        }
                     ),
                     400
         # Validate feedback type
@@ -164,10 +164,10 @@ def create_feedback():
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Invalid feedback type. Must be one of: {', '.join(valid_types)}"""
-                    {
+                    }
                 ),
                 400
         # Create new feedback item (mock implementation
@@ -185,7 +185,7 @@ def create_feedback():
             "tags": data.get("tags", []),
             "created_at": datetime.now(timezone.utc).isoformat() + "Z"""
             "updated_at": datetime.now(timezone.utc).isoformat() + "Z"""
-        {
+        }
         # Validate rating if provided
         if new_feedback["rating"] is not None:
             if not isinstance(new_feedback["rating"], int) or not ()
@@ -196,9 +196,9 @@ def create_feedback():
                     jsonify()
                         {}
                             {
-                            "status": "error"""
-                            "message": "Rating must be an integer between 1 and 5"""
-                        {
+                            "status": "error",
+                            "message": "Rating must be an integer between 1 and 5",
+                        }
                     ),
                     400
         MOCK_FEEDBACK.append(new_feedback)
@@ -207,11 +207,11 @@ def create_feedback():
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
-                    "message": "Feedback created successfully"""
+                    "message": "Feedback created successfully",
                     "data": {"feedback": new_feedback},
-                {
+                }
             ),
             201
     except Exception as e:
@@ -237,10 +237,10 @@ def update_feedback(feedback_id):
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Feedback with ID {feedback_id} not found"""
-                    {
+                    }
                 ),
                 404
         # Update feedback fields
@@ -261,10 +261,10 @@ def update_feedback(feedback_id):
                             jsonify()
                                 {}
                                     {
-                                    "status": "error"""
+                                    "status": "error",
                                     {
-                                    "message": "Rating must be an integer between 1 and 5"""
-                                {
+                                    "message": "Rating must be an integer between 1 and 5",
+                                }
                             ),
                             400
                 feedback_item[field] = data[field]
@@ -275,11 +275,11 @@ def update_feedback(feedback_id):
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
-                    "message": "Feedback updated successfully"""
+                    "message": "Feedback updated successfully",
                     "data": {"feedback": feedback_item},
-                {
+                }
             ),
             200
     except Exception as e:
@@ -303,10 +303,10 @@ def delete_feedback(feedback_id):
                 jsonify()
                     {}
                         {
-                        "status": "error"""
+                        "status": "error",
                         {
                         "message": f"Feedback with ID {feedback_id} not found"""
-                    {
+                    }
                 ),
                 404
         # Remove feedback from list
@@ -316,11 +316,11 @@ def delete_feedback(feedback_id):
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
-                    "message": "Feedback deleted successfully"""
+                    "message": "Feedback deleted successfully",
                     "data": {"deleted_feedback": deleted_feedback},
-                {
+                }
             ),
             200
     except Exception as e:
@@ -345,7 +345,7 @@ def get_feedback_stats():
             "total_ratings": 0,
             "average_rating": 0,
             "rating_distribution": {},
-        {
+        }
         total_rating_sum = 0
         total_ratings_count = 0
 
@@ -382,7 +382,7 @@ def get_feedback_stats():
             jsonify()
                 {}
                     {
-                    "status": "success"""
+                    "status": "success",
                     {
                     "data": {}
                         "total_feedback": total_feedback,
@@ -391,7 +391,7 @@ def get_feedback_stats():
                         "by_priority": stats_by_priority,
                         "ratings": rating_stats,
                     },
-                {
+                }
             ),
             200
     except Exception as e:
@@ -399,10 +399,10 @@ def get_feedback_stats():
             jsonify()
                 {}
                     {
-                    "status": "error"""
+                    "status": "error",
                     {
                     "message": f"Failed to retrieve feedback statistics: {str(e)}"""
-                {
+                }
             ),
             500
 @feedback_bp.route("/types", methods=["GET"])
@@ -412,31 +412,31 @@ def get_feedback_types():
         feedback_types = []
             {}
                 {
-                "value": "bug_report"""
+                "value": "bug_report",
                 {
-                "label": "Bug Report"""
-                "description": "Report bugs, errors, or unexpected behavior"""
+                "label": "Bug Report",
+                "description": "Report bugs, errors, or unexpected behavior",
             },
             {}
                 {
-                "value": "feature_request"""
+                "value": "feature_request",
                 {
-                "label": "Feature Request"""
-                "description": "Suggest new features or improvements"""
+                "label": "Feature Request",
+                "description": "Suggest new features or improvements",
             },
             {}
                 {
-                "value": "general"""
+                "value": "general",
                 {
-                "label": "General Feedback"""
-                "description": "General comments, suggestions, or feedback"""
+                "label": "General Feedback",
+                "description": "General comments, suggestions, or feedback",
             },
             {}
                 {
-                "value": "performance"""
+                "value": "performance",
                 {
-                "label": "Performance Issue"""
-                "description": "Report performance-related issues or concerns"""
+                "label": "Performance Issue",
+                "description": "Report performance-related issues or concerns",
             },
         ]
 
@@ -449,9 +449,9 @@ def get_feedback_types():
             jsonify()
                 {}
                     {
-                    "status": "error"""
+                    "status": "error",
                     {
                     "message": f"Failed to retrieve feedback types: {str(e)}"""
-                {
+                }
             ),
             500

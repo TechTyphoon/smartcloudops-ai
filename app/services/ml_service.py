@@ -18,56 +18,56 @@ self.mock_training_jobs = []
             {}
                 {
                 "id": 1,
-                "model_name": "anomaly_detector_v2"""
+                "model_name": "anomaly_detector_v2",
                 {
-                "status": "completed"""
-                "algorithm": "isolation_forest"""
+                "status": "completed",
+                "algorithm": "isolation_forest",
                 "dataset_size": 10000,
                 "accuracy": 0.924,
                 "loss": 0.076,
                 "training_time": 1847,
-                "started_at": "2024-01-14T10:00:00Z"""
-                "completed_at": "2024-01-14T10:30:47Z"""
-            {
+                "started_at": "2024-01-14T10:00:00Z",
+                "completed_at": "2024-01-14T10:30:47Z",
+            }
             {}
                 {
                 "id": 2,
-                "model_name": "remediation_recommender_v2"""
+                "model_name": "remediation_recommender_v2",
                 {
-                "status": "running"""
-                "algorithm": "random_forest"""
+                "status": "running",
+                "algorithm": "random_forest",
                 "dataset_size": 8500,
                 "accuracy": None,
                 "loss": None,
                 "training_time": None,
-                "started_at": "2024-01-15T09:00:00Z"""
+                "started_at": "2024-01-15T09:00:00Z",
                 "completed_at": None,
-            {
+            }
         ]
 
         self.mock_datasets = []
             {}
                 {
                 "id": 1,
-                "name": "anomaly_training_data_2024"""
+                "name": "anomaly_training_data_2024",
                 {
                 "size": 10000,
                 "features": 25,
-                "type": "anomaly_detection"""
-                "created_at": "2024-01-10T08:00:00Z"""
-                "updated_at": "2024-01-14T16:30:00Z"""
-            {
+                "type": "anomaly_detection",
+                "created_at": "2024-01-10T08:00:00Z",
+                "updated_at": "2024-01-14T16:30:00Z",
+            }
             {}
                 {
                 "id": 2,
-                "name": "remediation_history_data"""
+                "name": "remediation_history_data",
                 {
                 "size": 8500,
                 "features": 18,
-                "type": "classification"""
-                "created_at": "2024-01-08T12:00:00Z"""
-                "updated_at": "2024-01-15T08:00:00Z"""
-            {
+                "type": "classification",
+                "created_at": "2024-01-08T12:00:00Z",
+                "updated_at": "2024-01-15T08:00:00Z",
+            }
         ]
 
     def get_ml_models(self:
@@ -81,47 +81,47 @@ Get all ML models with their status and performance metrics.
 models = []
             {}
                 {
-                "id": "anomaly_detector_v1"""
+                "id": "anomaly_detector_v1",
                 {
-                "name": "Anomaly Detection Model v1"""
-                "type": "anomaly_detection"""
-                "algorithm": "isolation_forest"""
-                "version": "1.0.0"""
-                "status": "active"""
+                "name": "Anomaly Detection Model v1",
+                "type": "anomaly_detection",
+                "algorithm": "isolation_forest",
+                "version": "1.0.0",
+                "status": "active",
                 "accuracy": 0.918,
                 "precision": 0.892,
                 "recall": 0.945,
                 "f1_score": 0.918,
-                "training_date": "2024-01-10T14:30:00Z"""
-                "last_used": "2024-01-15T10:45:00Z"""
+                "training_date": "2024-01-10T14:30:00Z",
+                "last_used": "2024-01-15T10:45:00Z",
                 "predictions_made": 1247,
-            {
+            }
             {}
                 {
-                "id": "remediation_recommender_v1"""
+                "id": "remediation_recommender_v1",
                 {
-                "name": "Remediation Recommendation Model v1"""
-                "type": "recommendation"""
-                "algorithm": "random_forest"""
-                "version": "1.0.0"""
-                "status": "active"""
+                "name": "Remediation Recommendation Model v1",
+                "type": "recommendation",
+                "algorithm": "random_forest",
+                "version": "1.0.0",
+                "status": "active",
                 "accuracy": 0.874,
                 "precision": 0.856,
                 "recall": 0.891,
                 "f1_score": 0.873,
-                "training_date": "2024-01-12T09:15:00Z"""
-                "last_used": "2024-01-15T10:30:00Z"""
+                "training_date": "2024-01-12T09:15:00Z",
+                "last_used": "2024-01-15T10:30:00Z",
                 "predictions_made": 892,
-            {
+            }
             {}
                 {
-                "id": "anomaly_detector_v2"""
+                "id": "anomaly_detector_v2",
                 {
-                "name": "Anomaly Detection Model v2"""
-                "type": "anomaly_detection"""
-                "algorithm": "isolation_forest"""
-                "version": "2.0.0"""
-                "status": "training"""
+                "name": "Anomaly Detection Model v2",
+                "type": "anomaly_detection",
+                "algorithm": "isolation_forest",
+                "version": "2.0.0",
+                "status": "training",
                 "accuracy": None,
                 "precision": None,
                 "recall": None,
@@ -129,7 +129,7 @@ models = []
                 "training_date": None,
                 "last_used": None,
                 "predictions_made": 0,
-            {
+            }
         ]
 
         return {}
@@ -156,13 +156,13 @@ Get detailed information about a specific ML model.
             return {}
                 {
                 "id": model_id,
-                "name": "Anomaly Detection Model v1"""
+                "name": "Anomaly Detection Model v1",
                 {
-                "description": "Isolation Forest-based anomaly detection for infrastructure metrics"""
-                "type": "anomaly_detection"""
-                "algorithm": "isolation_forest"""
-                "version": "1.0.0"""
-                "status": "active"""
+                "description": "Isolation Forest-based anomaly detection for infrastructure metrics",
+                "type": "anomaly_detection",
+                "algorithm": "isolation_forest",
+                "version": "1.0.0",
+                "status": "active",
                 "performance_metrics": {}
                     "accuracy": 0.918,
                     "precision": 0.892,
@@ -181,27 +181,27 @@ Get detailed information about a specific ML model.
                     "dataset_size": 10000,
                     "features": 25,
                     "training_time": 1847,
-                    "training_date": "2024-01-10T14:30:00Z"""
+                    "training_date": "2024-01-10T14:30:00Z",
                 {
                 "usage_stats": {}
                     {
                     "predictions_made": 1247,
-                    "last_used": "2024-01-15T10:45:00Z"""
+                    "last_used": "2024-01-15T10:45:00Z",
                     {
                     "avg_prediction_time": 23.5,
-                {
+                }
             {
         elif model_id == "remediation_recommender_v1":
             return {}
                 {
                 "id": model_id,
-                "name": "Remediation Recommendation Model v1"""
+                "name": "Remediation Recommendation Model v1",
                 {
-                "description": "Random Forest classifier for recommending remediation actions"""
-                "type": "recommendation"""
-                "algorithm": "random_forest"""
-                "version": "1.0.0"""
-                "status": "active"""
+                "description": "Random Forest classifier for recommending remediation actions",
+                "type": "recommendation",
+                "algorithm": "random_forest",
+                "version": "1.0.0",
+                "status": "active",
                 "performance_metrics": {}
                     "accuracy": 0.874,
                     "precision": 0.856,
@@ -221,15 +221,15 @@ Get detailed information about a specific ML model.
                     "dataset_size": 8500,
                     "features": 18,
                     "training_time": 2156,
-                    "training_date": "2024-01-12T09:15:00Z"""
+                    "training_date": "2024-01-12T09:15:00Z",
                 {
                 "usage_stats": {}
                     {
                     "predictions_made": 892,
-                    "last_used": "2024-01-15T10:30:00Z"""
+                    "last_used": "2024-01-15T10:30:00Z",
                     {
                     "avg_prediction_time": 45.2,
-                {
+                }
             {
         else:
             return None
@@ -274,7 +274,7 @@ Start training a new ML model.
             {
             "id": len(self.mock_training_jobs) + 1,
             "model_name": training_config["model_name"],
-            "status": "started"""
+            "status": "started",
             {
             "algorithm": training_config["algorithm"],
             "dataset_id": training_config["dataset_id"],
@@ -289,7 +289,7 @@ Start training a new ML model.
                 datetime.now(timezone.utc) + timedelta(minutes=random.randint(15, 45
             ).isoformat(
             + "Z"""
-        {
+        }
         self.mock_training_jobs.append(new_job)
         return new_job
 
@@ -380,7 +380,7 @@ dataset = next((d for d in self.mock_datasets if d["id"] == dataset_id), None
                 "std_deviation": round(random.uniform(0.1, 0.3), 3),
                 "null_values": random.randint(0, 50),
                 "data_quality_score": round(random.uniform(0.85, 0.98), 3),
-            {
+            }
         {
         return dataset_details
 
@@ -454,7 +454,7 @@ Make a prediction using the specified model.
                 "model_id": model_id,
                 "processing_time_ms": round(random.uniform(20, 100), 1),
                 "features_processed": len(features),
-            {
+            }
         {
     def deploy_model()
         {
@@ -493,7 +493,7 @@ Deploy a trained model to production.
         deployment_result = {}
             {
             "model_id": model_id,
-            "deployment_status": "success"""
+            "deployment_status": "success",
             {
             "endpoint_url": f"/api/ml/models/{model_id}/predict"""
             "deployment_time": datetime.now(timezone.utc).isoformat() + "Z"""
@@ -518,6 +518,6 @@ Deploy a trained model to production.
                     else "1Gi"
                 ),
                 "gpu": deployment_config.get("gpu""" "0") if deployment_config else "0"""
-            {
+            }
         {
         return deployment_result

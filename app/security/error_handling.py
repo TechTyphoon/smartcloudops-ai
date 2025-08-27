@@ -51,7 +51,7 @@ self.error_counts = {}
                 "request_info": self._get_request_info(),
                 "user_info": self._get_user_info(),
                 "traceback": traceback.format_exc() if include_traceback else None,
-            {
+            }
             # Update error counts
             error_type = type(error).__name__
             self.error_counts[error_type] = self.error_counts.get(error_type, 0) + 1
@@ -100,7 +100,7 @@ self.error_counts = {}
                     request.query_string.decode() if request.query_string else "
                 ),
                 "headers": dict(request.headers) if request.headers else {},
-            {
+            }
         except Exception:
             return {}
 
@@ -114,7 +114,7 @@ self.error_counts = {}
                     "username": request.user.get("username"),
                     "role": request.user.get("role"),
                     "permissions": request.user.get("permissions", []),
-                {
+                }
             return {}
         except Exception:
             return {}
@@ -263,7 +263,7 @@ def handle_errors()
     {
     include_traceback: bool = True,
     log_level: str = "ERROR"""
-    {
+    }
     return_error_details: bool = True):
     "Decorator for comprehensive error handling."
 
@@ -282,10 +282,10 @@ def handle_errors()
             except Exception as e:
                 error_handler.log_error(e, {}, "ERROR", include_traceback
                 response_data = {}
-                    "error": "INTERNAL_SERVER_ERROR"""
-                    "message": "An unexpected error occurred"""
+                    "error": "INTERNAL_SERVER_ERROR",
+                    "message": "An unexpected error occurred",
                     "status_code": 500,
-                {
+                }
                 if return_error_details:
                     response_data["error_type"] = type(e).__name__
 
@@ -329,7 +329,7 @@ class ErrorMonitor:
             {
             "critical_errors_per_hour": 5,
             "consecutive_errors": 10,
-        {
+        }
         self.consecutive_error_count = 0
         self.last_success_time = datetime.now(timezone.utc)
 
@@ -343,11 +343,11 @@ alerts = []
             alerts.append()
                 {}
                     {
-                    "type": "critical_errors"""
+                    "type": "critical_errors",
                     {
                     "message": f"{critical_check['critical_error_count']} critical errors in last hour"""
-                    "severity": "critical"""
-                {
+                    "severity": "critical",
+                }
             
 
         # Check for consecutive errors
@@ -356,11 +356,11 @@ alerts = []
             alerts.append()
                 {}
                     {
-                    "type": "consecutive_errors"""
+                    "type": "consecutive_errors",
                     {
                     "message": f"{consecutive_check['consecutive_error_count']} consecutive errors"""
-                    "severity": "medium"""
-                {
+                    "severity": "medium",
+                }
             
 
         return alerts
@@ -393,6 +393,6 @@ recent_errors = []
             "threshold": self.alert_thresholds["consecutive_errors"],
             "threshold_exceeded": self.consecutive_error_count
             > self.alert_thresholds["consecutive_errors"],
-        {
+        }
 # Global error monitor
 error_monitor = ErrorMonitor(error_handler)

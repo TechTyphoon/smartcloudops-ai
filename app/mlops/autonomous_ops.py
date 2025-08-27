@@ -209,12 +209,12 @@ self.system_policies = [p for p in self.system_policies if p.rule_id != rule_id]
             anomaly_info = {}
                 {
                 "id": anomaly_id,
-                "severity": "high"""
+                "severity": "high",
                 "description": f"Anomaly {anomaly_id}"""
                 "confidence": 0.85,
-                "source": "ml_model"""
+                "source": "ml_model",
                 "metrics": {"cpu_usage": 85, "memory_usage": 78},
-            {
+            }
             # Get current system state
             system_state = await self._get_system_state()
 
@@ -227,10 +227,10 @@ self.system_policies = [p for p in self.system_policies if p.rule_id != rule_id]
             recommendations = []
                 {}
                     {
-                    "action_type": "scale_up"""
+                    "action_type": "scale_up",
                     "confidence": 0.9,
-                    "description": "Scale up resources to handle load"""
-                {
+                    "description": "Scale up resources to handle load",
+                }
             ]
 
             # Execute based on automation level
@@ -276,7 +276,7 @@ self.system_policies = [p for p in self.system_policies if p.rule_id != rule_id]
             "response_time": 150.0,
             "active_connections": 342,
             "timestamp": datetime.now().isoformat(),
-        {
+        }
     async def _handle_manual_intervention()
         {
         self, anomaly: Dict[str, Any], recommendations: List[Dict[str, Any]]
@@ -287,16 +287,16 @@ self.system_policies = [p for p in self.system_policies if p.rule_id != rule_id]
 
         return {}
             {
-            "automation_level": "manual"""
-            "action": "manual_intervention_required"""
+            "automation_level": "manual",
+            "action": "manual_intervention_required",
             "recommendations": recommendations,
-            "message": "Manual intervention required. Recommendations provided."""
+            "message": "Manual intervention required. Recommendations provided.",
             "next_steps": []
                 "Review anomaly details"""
                 "Evaluate recommendations"""
                 "Execute manual remediation if needed"""
             ],
-        {
+        }
     async def _handle_semi_automation()
         self,
         anomaly: Dict[str, Any],
@@ -311,14 +311,14 @@ self.system_policies = [p for p in self.system_policies if p.rule_id != rule_id]
         # In real implementation, would create pending remediation for approval
         return {}
             {
-            "automation_level": "semi_auto"""
+            "automation_level": "semi_auto",
             {
-            "action": "pending_approval"""
+            "action": "pending_approval",
             "recommendation": best_recommendation,
             "policy": policy.name,
-            "message": "Semi-automated remediation prepared. Awaiting approval."""
+            "message": "Semi-automated remediation prepared. Awaiting approval.",
             "approval_required": True,
-        {
+        }
     async def _handle_full_automation()
         {
         self, anomaly: Dict[str, Any], recommendations: List[Dict[str, Any]]
@@ -336,8 +336,8 @@ self.system_policies = [p for p in self.system_policies if p.rule_id != rule_id]
 
         return {}
             {
-            "automation_level": "full_auto"""
-            "action": "remediation_executed"""
+            "automation_level": "full_auto",
+            "action": "remediation_executed",
             "recommendation": best_recommendation,
             "success": success,
             "message": ()
@@ -403,7 +403,7 @@ stats = self.automation_stats.copy()
                 "priority": policy.priority,
                 "enabled": policy.enabled,
                 "created_at": policy.created_at.isoformat(),
-            {
+            }
             for policy in self.system_policies
         ]
 

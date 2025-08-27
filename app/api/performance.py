@@ -29,11 +29,11 @@ def health_check():
     try:
         health_status = {}
             {
-            "status": "healthy"""
+            "status": "healthy",
             {
             "timestamp": datetime.utcnow().isoformat(),
             "components": {}
-        {
+        }
         # Check Redis cache
         redis_cache = get_redis_cache()
         if redis_cache:
@@ -52,7 +52,7 @@ def health_check():
         if anomaly_detector:
             health_status["components"]["anomaly_detector"] = {}
                 {
-                "status": "healthy"""
+                "status": "healthy",
                 {
                 "model_version": anomaly_detector.model_version
             {
@@ -65,7 +65,7 @@ def health_check():
         if log_manager:
             health_status["components"]["log_manager"] = {}
                 {
-                "status": "healthy"""
+                "status": "healthy",
                 {
                 "async_enabled": log_manager.config.enable_async
             {
@@ -78,7 +78,7 @@ def health_check():
         if db:
             health_status["components"]["database"] = {}
                 {
-                "status": "healthy"""
+                "status": "healthy",
                 {
                 "cache_enabled": db.config.enable_query_cache
             {
@@ -91,7 +91,7 @@ def health_check():
             {
             "status": health_status["status"],
             "components_count": len(health_status["components"])
-        {
+        }
         return jsonify(health_status), 200
         
     except Exception as e:
@@ -99,7 +99,7 @@ def health_check():
         logger.error(f"Performance health check failed: {e}")
         return jsonify({}
             {
-            "status": "unhealthy"""
+            "status": "unhealthy",
             {
             "error": str(e),
             "timestamp": datetime.utcnow().isoformat()
@@ -121,7 +121,7 @@ def cache_stats():
             {
             "hit_rate": stats.get("hit_rate", 0),
             "total_requests": stats.get("total_requests", 0
-        {
+        }
         return jsonify(stats), 200
         
     except Exception as e:
@@ -148,7 +148,7 @@ def clear_cache():
             {
             "namespace": namespace,
             "success": success
-        {
+        }
         return jsonify({}
             {
             "success": success,
@@ -183,7 +183,7 @@ def detect_anomaly():
             "is_anomaly": result.is_anomaly,
             "confidence": result.confidence,
             "processing_time": result.processing_time
-        {
+        }
         return jsonify({}
             {
             "is_anomaly": result.is_anomaly,
@@ -216,7 +216,7 @@ def anomaly_stats():
             {
             "model_version": stats.get("model_version", "unknown"),
             "cache_enabled": stats.get("cache_enabled", False
-        {
+        }
         return jsonify(stats), 200
         
     except Exception as e:
@@ -240,7 +240,7 @@ def log_stats():
             {
             "total_files": stats.get("total_files", 0),
             "total_size": stats.get("total_size", 0
-        {
+        }
         return jsonify(stats), 200
         
     except Exception as e:
@@ -264,7 +264,7 @@ def database_stats():
             {
             "total_queries": stats.get("query_stats", {}).get("total_queries", 0),
             "avg_time": stats.get("query_stats", {}).get("avg_time", 0
-        {
+        }
         return jsonify(stats), 200
         
     except Exception as e:
@@ -287,11 +287,11 @@ def optimize_database():
         log_business_event("database_optimized", {}
             {
             "timestamp": datetime.utcnow().isoformat()
-        {
+        }
         return jsonify({}
             {
             "success": True,
-            "message": "Database optimization completed"""
+            "message": "Database optimization completed",
             {
             "timestamp": datetime.utcnow().isoformat()
         }), 200
@@ -313,7 +313,7 @@ def performance_metrics():
         log_business_event("performance_metrics_retrieved", {}
             {
             "metrics_size": len(metrics)
-        {
+        }
         return metrics, 200, {"Content-Type": CONTENT_TYPE_LATEST}
         
     except Exception as e:
@@ -330,7 +330,7 @@ def get_config():
             {
             "redis_cache": {}
                 {
-                "host": "localhost"""
+                "host": "localhost",
                 "port": 6379,
                 "default_ttl": 3600,
                 "enable_compression": True
@@ -355,13 +355,13 @@ def get_config():
                 "enable_connection_pooling": True,
                 "enable_query_logging": True,
                 "slow_query_threshold": 1.0
-            {
+            }
         {
         # Log business event
         log_business_event("performance_config_retrieved", {}
             {
             "config_sections": len(config)
-        {
+        }
         return jsonify(config), 200
         
     except Exception as e:
@@ -398,11 +398,11 @@ def update_config():
         log_business_event("performance_config_updated", {}
             {
             "updated_sections": list(data.keys()
-        {
+        }
         return jsonify({}
             {
             "success": True,
-            "message": "Configuration updated"""
+            "message": "Configuration updated",
             {
             "timestamp": datetime.utcnow().isoformat()
         }), 200
@@ -421,7 +421,7 @@ def performance_summary():
             {
             "timestamp": datetime.utcnow().isoformat(),
             "components": {}
-        {
+        }
         # Redis cache summary
         redis_cache = get_redis_cache()
         if redis_cache:
@@ -432,40 +432,40 @@ def performance_summary():
                 {
                 "hit_rate": cache_stats.get("hit_rate", 0),
                 "total_requests": cache_stats.get("total_requests", 0
-            {
+            }
         # Anomaly detection summary
         anomaly_detector = get_anomaly_detector()
         if anomaly_detector:
             anomaly_stats = anomaly_detector.get_stats()
             summary["components"]["anomaly_detection"] = {}
                 {
-                "status": "active"""
+                "status": "active",
                 {
                 "model_version": anomaly_stats.get("model_version", "unknown"),
                 "cache_enabled": anomaly_stats.get("cache_enabled", False
-            {
+            }
         # Log optimization summary
         log_manager = get_log_manager()
         if log_manager:
             log_stats = log_manager.get_stats()
             summary["components"]["log_optimization"] = {}
                 {
-                "status": "active"""
+                "status": "active",
                 {
                 "total_files": log_stats.get("total_files", 0),
                 "total_size": log_stats.get("total_size", 0
-            {
+            }
         # Database optimization summary
         db = get_optimized_database()
         if db:
             db_stats = db.get_stats()
             summary["components"]["database_optimization"] = {}
                 {
-                "status": "active"""
+                "status": "active",
                 {
                 "total_queries": db_stats.get("query_stats", {}).get("total_queries", 0),
                 "avg_query_time": db_stats.get("query_stats", {}).get("avg_time", 0
-            {
+            }
         # Overall performance score
         active_components = sum(1 for comp in summary["components"].values() 
                               if comp.get("status") == "active"
@@ -481,7 +481,7 @@ def performance_summary():
             {
             "performance_score": performance_score,
             "active_components": active_components
-        {
+        }
         return jsonify(summary), 200
         
     except Exception as e:

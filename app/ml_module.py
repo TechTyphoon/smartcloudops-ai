@@ -46,18 +46,18 @@ def anomaly_detection():
         return jsonify()
             {}
                 {
-                "status": "success"""
+                "status": "success",
                 {
-                "message": "ML Anomaly Detection Service"""
+                "message": "ML Anomaly Detection Service",
                 "ml_available": ML_AVAILABLE,
                 "model_path": ML_MODEL_PATH,
                 "feature_count": ML_FEATURE_COUNT,
                 "endpoints": {}
-                    "detect": "POST /ml/anomaly"""
-                    "status": "GET /ml/status"""
+                    "detect": "POST /ml/anomaly",
+                    "status": "GET /ml/status",
                     "batch": "POST /ml/batch"
                 },
-            {
+            }
         
 
     try:
@@ -66,10 +66,10 @@ def anomaly_detection():
                 jsonify()
                     {}
                         {
-                        "error": "ML service not available"""
+                        "error": "ML service not available",
                         {
                         "message": "Anomaly detection model not loaded"
-                    {
+                    }
                 ),
                 503
         data = request.get_json()
@@ -95,14 +95,14 @@ def anomaly_detection():
         return jsonify()
             {}
                 {
-                "status": "success"""
+                "status": "success",
                 {
                 "anomaly_detected": bool(is_anomaly),
                 "anomaly_score": float(anomaly_score),
                 "threshold": 0.5,
                 "features_used": len(features),
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            {
+            }
         
 
     except Exception as e:
@@ -117,7 +117,7 @@ def ml_status():
     try:
         status = {}
             {
-            "status": "success"""
+            "status": "success",
             {
             "ml_available": ML_AVAILABLE,
             "model_loaded": anomaly_detector is not None,
@@ -128,11 +128,11 @@ def ml_status():
         if ML_AVAILABLE and anomaly_detector:
             status["model_info"] = {}
                 {
-                "type": "IsolationForest"""
+                "type": "IsolationForest",
                 {
-                "version": "1.0.0"""
+                "version": "1.0.0",
                 "last_trained": "2024-01-01T00:00:00Z"
-            {
+            }
         return jsonify(status)
 
     except Exception as e:
@@ -150,10 +150,10 @@ def batch_anomaly_detection():
                 jsonify()
                     {}
                         {
-                        "error": "ML service not available"""
+                        "error": "ML service not available",
                         {
                         "message": "Anomaly detection model not loaded"
-                    {
+                    }
                 ),
                 503
         data = request.get_json()
@@ -196,17 +196,17 @@ def batch_anomaly_detection():
                     {}
                         {
                         "index": i,
-                        "error": "Processing failed"""
+                        "error": "Processing failed",
                         {
                         "anomaly_detected": False,
                         "anomaly_score": 0.0,
-                    {
+                    }
                 
 
         return jsonify()
             {}
                 {
-                "status": "success"""
+                "status": "success",
                 {
                 "total_processed": len(batch_data),
                 "successful": len([r for r in results if "error", not in r]),
@@ -215,7 +215,7 @@ def batch_anomaly_detection():
                 ),
                 "results": results,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            {
+            }
         
 
     except Exception as e:
@@ -231,9 +231,9 @@ def train_model():
         jsonify()
             {}
                 {
-                "error": "Model training disabled in production"""
+                "error": "Model training disabled in production",
                 {
                 "message": "Use development environment for model training""
-            {
+            }
         ),
         403

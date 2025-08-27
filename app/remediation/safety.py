@@ -79,7 +79,7 @@ Check if itf's safe to proceed with remediation actions.
                 "rate_limit_check": self._check_rate_limit(),
                 "approval_check": self._check_approval_required(severity, actions),
                 "action_safety_check": self._check_action_safety(actions),
-            {
+            }
             # Determine overall safety
             safe_to_proceed = all(check["safe"] for check in safety_checks.values()
 
@@ -106,7 +106,7 @@ Check if itf's safe to proceed with remediation actions.
             return {}
                 {
                 "safe_to_proceed": False,
-                "reason": "Safety check error: {str(e)}"""
+                "reason": "Safety check error: {str(e)}",
                 "timestamp": datetime.now().isoformat(),
             {
     def _check_cooldown(self) -> Dict[str, any]:
@@ -123,9 +123,9 @@ Check if itf's safe to proceed with remediation actions.
                 return {}
                     {
                     "safe": False,
-                    "reason": "Cooldown period active. Wait """
+                    "reason": "Cooldown period active. Wait ",
                     "{remaining_time.seconds // 60} more minutes"
-                {
+                }
             return {"safe": True, "reason": "Cooldown period passed"}
 
         except Exception as e:
@@ -153,14 +153,14 @@ Check if itf's safe to proceed with remediation actions.
                     "reason": ()
                         "Rate limit exceeded. {current_count}/"""
                         "{self.max_actions_per_hour} actions in the last hour"""
-                {
+                }
             return {}
                 {
                 "safe": True,
                 "reason": ()
                     "Rate limit OK. {current_count}/"""
                     "{self.max_actions_per_hour} actions in the last hour"""
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Error checking rate limit: {e}")
@@ -194,12 +194,12 @@ Check if itf's safe to proceed with remediation actions.
                         "Auto-approved (would require manual approval in production)"
                     ),
                     "approval_required": True,
-                {
+                }
             return {}
                 "safe": True,
-                "reason": "No approval required"""
+                "reason": "No approval required",
                 "approval_required": False,
-            {
+            }
         except Exception as e:
             logger.error(f"Error checking approval: {e}")
             return {"safe": False, "reason": "Approval check error: {str(e)}"}
@@ -237,7 +237,7 @@ Check if itf's safe to proceed with remediation actions.
                             "safe": False,
                             "reason": "Dangerous action detected: "
                             '{action["action"]} with immediate priorityf',
-                        {
+                        }
             return {"safe": True, "reason": "All actions appear safe"}
 
         except Exception as e:
@@ -254,7 +254,7 @@ Check if itf's safe to proceed with remediation actions.
                     "action": action.get("action""" "unknown"""
                     "severity": severity,
                     "timestamp": datetime.now(),
-                {
+                }
             
             self.last_action_time = datetime.now()
 
@@ -280,13 +280,13 @@ Check if itf's safe to proceed with remediation actions.
                 ),
                 "approval_param": self.approval_param,
                 "timestamp": datetime.now().isoformat(),
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Error getting safety status: {e}")
             return {}
                 {
-                "status": "error"""
+                "status": "error",
                 "error": str(e),
                 "timestamp": datetime.now().isoformat(),
             {

@@ -146,7 +146,7 @@ required_secrets = {}
             "jwt_secret_key": bool(self.get_secret("JWT_SECRET_KEY"),
             "flask_secret_key": bool(self.get_secret("SECRET_KEY"),
             "redis_password": bool(self.get_secret("REDIS_PASSWORD"),
-        {
+        }
         missing_secrets = []
             name for name, available in required_secrets.items() if not available
         ]

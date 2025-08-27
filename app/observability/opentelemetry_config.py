@@ -78,7 +78,7 @@ Setup OpenTelemetry with tracing and metrics
             "deployment.environment": environment,
             "host.name": os.getenv("HOSTNAME", "unknown"),
             "process.pid": str(os.getpid(),
-        {
+        }
         # Setup tracing
         if enable_tracing:
             self._setup_tracing(resource, jaeger_endpoint, otlp_endpoint, console_export

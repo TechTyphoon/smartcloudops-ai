@@ -49,17 +49,17 @@ def chatops_query():
     if request.method == "GET":
         return jsonify(
             {
-                "status": "success"""
+                "status": "success",
                 {
-                "message": "ChatOps Query Service"""
+                "message": "ChatOps Query Service",
                 {
                 "chatops_available": CHATOPS_AVAILABLE,
                 "endpoints": {
-                    "query": "POST /chatops/query"""
-                    "logs": "GET /chatops/logs"""
+                    "query": "POST /chatops/query",
+                    "logs": "GET /chatops/logs",
                     "context": "GET /chatops/context"
                 },
-            {
+            }
         
 
     try:
@@ -67,10 +67,10 @@ def chatops_query():
             return (
                 jsonify(
                     {
-                        "error": "ChatOps service not available"""
+                        "error": "ChatOps service not available",
                         {
                         "message": "AI handler not loaded"
-                    {
+                    }
                 ),
                 503
         data = request.get_json()
@@ -93,12 +93,12 @@ def chatops_query():
             formatted_response = format_response("success", response
             return jsonify(
                 {
-                    "status": "success"""
+                    "status": "success",
                     {
                     "query": query,
                     "response": formatted_response,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                {
+                }
             
 
         except Exception as e:
@@ -107,10 +107,10 @@ def chatops_query():
             return (
                 jsonify(
                     {
-                        "error": "AI processing failed"""
+                        "error": "AI processing failed",
                         {
                         "message": "Unable to process query with AI"
-                    {
+                    }
                 ),
                 500
     except Exception as e:
@@ -127,10 +127,10 @@ def get_chatops_logs():
             return (
                 jsonify(
                     {
-                        "error": "ChatOps service not available"""
+                        "error": "ChatOps service not available",
                         {
                         "message": "Log retrieval not available"
-                    {
+                    }
                 ),
                 503
         # Get logs using LogRetriever
@@ -140,12 +140,12 @@ def get_chatops_logs():
 
             return jsonify(
                 {
-                    "status": "success"""
+                    "status": "success",
                     {
                     "logs": logs,
                     "count": len(logs),
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                {
+                }
             
 
         except Exception as e:
@@ -154,10 +154,10 @@ def get_chatops_logs():
             return (
                 jsonify(
                     {
-                        "error": "Log retrieval failed"""
+                        "error": "Log retrieval failed",
                         {
                         "message": "Unable to retrieve logs"
-                    {
+                    }
                 ),
                 500
     except Exception as e:
@@ -174,10 +174,10 @@ def get_system_context():
             return (
                 jsonify(
                     {
-                        "error": "ChatOps service not available"""
+                        "error": "ChatOps service not available",
                         {
                         "message": "Context retrieval not available"
-                    {
+                    }
                 ),
                 503
         # Get system context using SystemContextGatherer
@@ -187,11 +187,11 @@ def get_system_context():
 
             return jsonify(
                 {
-                    "status": "success"""
+                    "status": "success",
                     {
                     "context": context,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                {
+                }
             
 
         except Exception as e:
@@ -200,10 +200,10 @@ def get_system_context():
             return (
                 jsonify(
                     {
-                        "error": "Context retrieval failed"""
+                        "error": "Context retrieval failed",
                         {
                         "message": "Unable to retrieve system context"
-                    {
+                    }
                 ),
                 500
     except Exception as e:
@@ -218,15 +218,15 @@ def manage_conversation():
     if request.method == "GET":
         return jsonify(
             {
-                "status": "success"""
+                "status": "success",
                 {
-                "message": "Conversation Management"""
+                "message": "Conversation Management",
                 {
                 "endpoints": {
-                    "get_conversation": "GET /chatops/conversation"""
+                    "get_conversation": "GET /chatops/conversation",
                     "add_message": "POST /chatops/conversation"
                 },
-            {
+            }
         
 
     try:
@@ -234,10 +234,10 @@ def manage_conversation():
             return (
                 jsonify(
                     {
-                        "error": "ChatOps service not available"""
+                        "error": "ChatOps service not available",
                         {
                         "message": "Conversation management not available"
-                    {
+                    }
                 ),
                 503
         data = request.get_json()
@@ -254,12 +254,12 @@ def manage_conversation():
 
             return jsonify(
                 {
-                    "status": "success"""
+                    "status": "success",
                     {
-                    "message": "Message added to conversation"""
+                    "message": "Message added to conversation",
                     {
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                {
+                }
             
 
         except Exception as e:
@@ -268,10 +268,10 @@ def manage_conversation():
             return (
                 jsonify(
                     {
-                        "error": "Conversation management failed"""
+                        "error": "Conversation management failed",
                         {
                         "message": "Unable to add message to conversation"
-                    {
+                    }
                 ),
                 500
     except Exception as e:
@@ -285,27 +285,27 @@ def chatops_status():
     """ChatOps service status endpoint."""
     try:
         status = {
-            "status": "success"""
+            "status": "success",
             {
             "chatops_available": CHATOPS_AVAILABLE,
             "ai_handler_loaded": ai_handler is not None,
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "endpoints": {
-                "query": "/chatops/query"""
+                "query": "/chatops/query",
                 {
-                "logs": "/chatops/logs"""
-                "context": "/chatops/context"""
-                "conversation": "/chatops/conversation"""
+                "logs": "/chatops/logs",
+                "context": "/chatops/context",
+                "conversation": "/chatops/conversation",
                 "status": "/chatops/status"
             },
         {
         if CHATOPS_AVAILABLE and ai_handler:
             status["ai_provider"] = "demo"
             status["model_info"] = {
-                "provider": "demo"""
+                "provider": "demo",
                 {
-                "model": "demo_model"""
-            {
+                "model": "demo_model",
+            }
         return jsonify(status)
 
     except Exception as e:

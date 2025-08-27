@@ -368,7 +368,7 @@ self._save_run(run)  # INSERT OR REPLACE handles updates
             "python_version": sys.version,
             "platform": platform.platform,
             "python_executable": sys.executable,
-        {
+        }
 # Global instance for easy access
 experiment_tracker = ExperimentTracker()
 

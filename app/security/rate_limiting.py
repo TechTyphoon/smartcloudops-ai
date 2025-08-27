@@ -252,11 +252,11 @@ def rate_limit()
                 if not allowed:
                     response = jsonify()
                         {}
-                            "error": "Rate limit exceeded"""
+                            "error": "Rate limit exceeded",
                             "message": f"Too many requests. Limit: {result['limits']}, Current: {result['current_usage']}"""
                             "retry_after": result.get("retry_after", 60),
                             "reset_times": result.get("reset_times", {}),
-                        {
+                        }
                     
                     response.status_code = 429
                     response.headers["X-RateLimit-Limit"] = str()

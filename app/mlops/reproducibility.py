@@ -178,7 +178,7 @@ created_by: str = "system"""
                 "python_version": python_version,
                 "packages": packages,
                 "platform_info": platform_info,
-            {
+            }
         
 
         snapshot = EnvironmentSnapshot()
@@ -467,7 +467,7 @@ SELECT * FROM reproducibility_reports
             "processor": platform.processor(),
             "architecture": platform.architecture()[0],
             "node": platform.node(),
-        {
+        }
     def _get_installed_packages()
         {
         self, exclude_patterns: List[str] = None
@@ -674,7 +674,7 @@ cuda_info = {}
                                 "name": parts[0],
                                 "driver_version": parts[1],
                                 "memory_mb": parts[2],
-                            {
+                            }
                         
 
             # Check CUDA version
@@ -713,14 +713,14 @@ cuda_info = {}
             "platform": {},
             "system": {},
             "git": {},
-        {
+        }
         # Python version differences
         if target.python_version != current.python_version:
             differences["python_version"] = {}
                 {
                 "target": target.python_version,
                 "current": current.python_version,
-            {
+            }
         # Package differences
         target_packages = set(target.packages.keys()
         current_packages = set(current.packages.keys()
@@ -743,7 +743,7 @@ cuda_info = {}
                     {
                     "target": target.packages[pkg],
                     "current": current.packages[pkg],
-                {
+                }
         # Platform differences
         for key in target.platform_info:
             if ()
@@ -754,7 +754,7 @@ cuda_info = {}
                 differences["platform"][key] = {}
                     "target": target.platform_info[key],
                     "current": current.platform_info[key],
-                {
+                }
         return differences
         def _calculate_compatibility_score(self, differences: Dict[str, Any]:
         """Calculate compatibility score based on differences"""
@@ -953,11 +953,11 @@ name = "pypi"
         if current_version != snapshot.python_version:
             return {}
                 {
-                "action": "change_python_version"""
+                "action": "change_python_version",
                 "current": current_version,
                 "target": snapshot.python_version,
                 "method": "pyenv, conda, or system package manager"
-            {
+            }
         return {"action": "no_change", "version": current_version}
 
     def _plan_package_installation()
@@ -993,7 +993,7 @@ name = "pypi"
                         "package": package,
                         "current_version": current_packages[package],
                         "action": "remove"
-                    {
+                    }
                 
 
         return to_remove
@@ -1017,7 +1017,7 @@ name = "pypi"
                         "current_version": current_packages[package],
                         "target_version": target_version,
                         "action": "update"
-                    {
+                    }
                 
 
         return to_update

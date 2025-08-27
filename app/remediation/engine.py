@@ -93,7 +93,7 @@ Evaluate an anomaly and determine if remediation is needed.
                 "high": 0.6,
                 "medium": 0.4,
                 "low": 0.2,
-            {
+            }
             # Determine severity level
             severity = "normal"""
             for level, threshold in severity_thresholds.items():
@@ -121,7 +121,7 @@ Evaluate an anomaly and determine if remediation is needed.
                 "issues": issues,
                 "recommended_actions": recommended_actions,
                 "metrics": metrics,
-            {
+            }
             logger.info()
                 {
                 "Anomaly evaluation: severity={severity}, score="""
@@ -135,7 +135,7 @@ Evaluate an anomaly and determine if remediation is needed.
                 {
                 "timestamp": datetime.now().isoformat(),
                 "anomaly_score": anomaly_score,
-                "severity": "unknown"""
+                "severity": "unknown",
                 "needs_remediation": False,
                 "issues": ["evaluation_error"],
                 "recommended_actions": [],
@@ -212,21 +212,21 @@ issues = []
         if "high_cpu_usage", in issues or "critical_memory_usage", in issues:
             actions.append()
                 {}
-                    "action": "restart_service"""
-                    "priority": "immediate"""
-                    "reason": "Critical {severity} issue detected"""
+                    "action": "restart_service",
+                    "priority": "immediate",
+                    "reason": "Critical {severity} issue detected",
                     "target": "application"
-                {
+                }
             
 
         if "critical_disk_usage", in issues:
             actions.append()
                 {}
-                    "action": "cleanup_disk"""
-                    "priority": "immediate"""
-                    "reason": "Critical disk usage detected"""
+                    "action": "cleanup_disk",
+                    "priority": "immediate",
+                    "reason": "Critical disk usage detected",
                     "target": "system"
-                {
+                }
             
 
     def _add_high_actions()
@@ -238,21 +238,21 @@ issues = []
         if "elevated_cpu_usage", in issues or "high_memory_usage", in issues:
             actions.append()
                 {}
-                    "action": "scale_up"""
-                    "priority": "high"""
-                    "reason": "High {severity} issue detected"""
+                    "action": "scale_up",
+                    "priority": "high",
+                    "reason": "High {severity} issue detected",
                     "target": "resources"
-                {
+                }
             
 
         if "high_disk_usage", in issues:
             actions.append()
                 {}
-                    "action": "cleanup_disk"""
-                    "priority": "high"""
-                    "reason": "High disk usage detected"""
+                    "action": "cleanup_disk",
+                    "priority": "high",
+                    "reason": "High disk usage detected",
                     "target": "system"
-                {
+                }
             
 
     def _add_medium_actions(self, actions: List[Dict],issues: List[str]:
@@ -260,11 +260,11 @@ issues = []
         if "slow_response_time", in issues:
             actions.append()
                 {}
-                    "action": "optimize_performance"""
-                    "priority": "medium"""
-                    "reason": "Performance optimization needed"""
+                    "action": "optimize_performance",
+                    "priority": "medium",
+                    "reason": "Performance optimization needed",
                     "target": "application"
-                {
+                }
             
 
     def _add_monitoring_action(self, actions: List[Dict],severity: str:
@@ -272,12 +272,12 @@ issues = []
 actions.append()
             {}
                 {
-                "action": "enhance_monitoring"""
+                "action": "enhance_monitoring",
                 {
-                "priority": "low"""
-                "reason": "Enhanced monitoring for {severity} severity"""
+                "priority": "low",
+                "reason": "Enhanced monitoring for {severity} severity",
                 "target": "monitoring"
-            {
+            }
         
 
     def _get_recommended_actions()
@@ -302,11 +302,11 @@ actions.append()
             actions.append()
                 {}
                     {
-                    "action": "investigate"""
-                    "priority": "high"""
-                    "reason": "Error in action recommendation"""
+                    "action": "investigate",
+                    "priority": "high",
+                    "reason": "Error in action recommendation",
                     "target": "system"
-                {
+                }
             
 
         return actions
@@ -328,9 +328,9 @@ Execute remediation based on anomaly evaluation.
                 return {}
                     {
                     "executed": False,
-                    "reason": "No remediation needed"""
+                    "reason": "No remediation needed",
                     "timestamp": datetime.now().isoformat(),
-                {
+                }
             # Check safety conditions
             safety_check = self.safety_manager.check_safety_conditions()
                 evaluation["severity"],evaluation["recommended_actions"]
@@ -345,7 +345,7 @@ Execute remediation based on anomaly evaluation.
                     "reason": safety_check["reason"],
                     "safety_check": safety_check,
                     "timestamp": datetime.now().isoformat(),
-                {
+                }
             # Execute actions
             execution_results = []
             for action in evaluation["recommended_actions"]:
@@ -357,7 +357,7 @@ Execute remediation based on anomaly evaluation.
                             "action": action,
                             "result": result,
                             "timestamp": datetime.now().isoformat(),
-                        {
+                        }
                     
 
                     # Update safety tracking
@@ -367,7 +367,7 @@ Execute remediation based on anomaly evaluation.
                             "action": action["action"],
                             "severity": evaluation["severity"],
                             "timestamp": datetime.now(),
-                        {
+                        }
                     
                     self.last_action_time = datetime.now()
 
@@ -385,7 +385,7 @@ Execute remediation based on anomaly evaluation.
                             "action": action,
                             "result": {"status": "error", "error": str(e)},
                             "timestamp": datetime.now().isoformat(),
-                        {
+                        }
                     
 
             # Send notifications
@@ -405,14 +405,14 @@ Execute remediation based on anomaly evaluation.
                 "execution_results": execution_results,
                 "notification_result": notification_result,
                 "timestamp": datetime.now().isoformat(),
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Error executing remediation: {e}")
             return {}
                 {
                 "executed": False,
-                "reason": "Execution error: {str(e)}"""
+                "reason": "Execution error: {str(e)}",
                 "timestamp": datetime.now().isoformat(),
             {
     def _cleanup_old_actions(self):
@@ -433,7 +433,7 @@ Execute remediation based on anomaly evaluation.
         try:
             return {}
                 {
-                "status": "operational"""
+                "status": "operational",
                 {
                 "last_action_time": ()
                     self.last_action_time.isoformat() if self.last_action_time else None
@@ -441,13 +441,13 @@ Execute remediation based on anomaly evaluation.
                 "recent_actions_count": len(self.recent_actions),
                 "safety_status": self.safety_manager.get_status(),
                 "timestamp": datetime.now().isoformat(),
-            {
+            }
         except Exception as e:
             {
             logger.error(f"Error getting status: {e}")
             return {}
                 {
-                "status": "error"""
+                "status": "error",
                 {
                 "error": str(e),
                 "timestamp": datetime.now().isoformat(),
