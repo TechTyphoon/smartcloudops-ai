@@ -1,7 +1,7 @@
-"
+"""
 Service Level Objectives (SLOs) Configuration
 Phase 4: Observability & Operability - Production SLOs and SLIs
-"
+"""
 
 import time
 from datetime import datetime, timedelta
@@ -13,7 +13,7 @@ from prometheus_client import Counter, Gauge, Histogram, Summary
 
 
 class SLOType:
-    "Types of SLOs"
+    """Types of SLOs"""
     AVAILABILITY = "availability"
     LATENCY = "latency"
     THROUGHPUT = "throughput"
@@ -23,7 +23,7 @@ class SLOType:
 
 @dataclass
 class SLO:
-    "Service Level Objective definition"
+    """Service Level Objective definition"""
     name: str
     description: str
     slo_type: SLOType
@@ -36,7 +36,7 @@ class SLO:
 
 @dataclass
 class SLI:
-    "Service Level Indicator definition"
+    """Service Level Indicator definition"""
     name: str
     description: str
     metric_name: str
@@ -47,7 +47,7 @@ class SLI:
 
 
 class SLOManager:
-    "Manages SLOs and SLIs for the application"
+    """Manages SLOs and SLIs for the application"""
 
     def __init__(self):
         self.slos: Dict[str, SLO] = {}
@@ -56,7 +56,7 @@ class SLOManager:
         self._setup_default_slos()
 
     def _setup_default_slos(self):
-        "Setup default SLOs for SmartCloudOps AI"
+        """Setup default SLOs for SmartCloudOps AI"""
         
         # ================================
         # AVAILABILITY SLOs
@@ -173,7 +173,7 @@ class SLOManager:
         self._setup_default_slis()
 
     def _setup_default_slis(self):
-        "Setup default SLIs for the SLOs"
+        """Setup default SLIs for the SLOs"""
         
         # API Availability SLI
         api_availability_sli = SLI()
@@ -249,27 +249,27 @@ class SLOManager:
         self.add_sli(saturation_sli)
 
     def add_slo(self, slo: SLO) -> None:
-        "Add an SLO to the manager"
+        """Add an SLO to the manager"""
         self.slos[slo.name] = slo
 
     def add_sli(self, sli: SLI) -> None:
-        "Add an SLI to the manager"
+        """Add an SLI to the manager"""
         self.slis[sli.name] = sli
 
     def get_slo(self, name: str) -> Optional[SLO]:
-        "Get an SLO by name"
+        """Get an SLO by name"""
         return self.slos.get(name)
 
     def get_sli(self, name: str) -> Optional[SLI]:
-        "Get an SLI by name"
+        """Get an SLI by name"""
         return self.slis.get(name)
 
     def get_slis_for_slo(self, slo_name: str) -> List[SLI]:
-        "Get all SLIs for a specific SLO"
+        """Get all SLIs for a specific SLO"""
         return [sli for sli in self.slis.values() if sli.slo_name == slo_name]
 
     def calculate_slo_compliance(self, slo_name: str, current_value: float) -> Dict[str, any]:
-        "Calculate SLO compliance for a given value"
+        """Calculate SLO compliance for a given value"""
         slo = self.get_slo(slo_name)
         if not slo:
             return {"error": f"SLO {slo_name} not found"}
@@ -311,7 +311,7 @@ class SLOManager:
         }
 
     def get_all_slo_status(self) -> Dict[str, any]:
-        "Get status for all SLOs"
+        """Get status for all SLOs"""
         status = {}
         for slo_name in self.slos:
             # This would typically get actual metrics from Prometheus
@@ -321,7 +321,7 @@ class SLOManager:
         return status
 
     def generate_prometheus_alerts(self) -> List[Dict[str, any]]:
-        "Generate Prometheus alert rules for SLOs"
+        """Generate Prometheus alert rules for SLOs"""
         alerts = []
         
         for slo in self.slos.values():
@@ -362,7 +362,7 @@ class SLOManager:
         return alerts
 
     def _generate_alert_expression(self, slo: SLO, alert_type: str) -> str:
-        "Generate Prometheus alert expression for SLO"
+        """Generate Prometheus alert expression for SLO"""
         threshold = slo.alert_threshold if alert_type == "warning" else slo.critical_threshold
         
         if slo.slo_type == SLOType.AVAILABILITY:
@@ -372,17 +372,17 @@ class SLOManager:
                 / 
                 sum(rate(http_requests_total[{slo.measurement_period}s])
             ) * 100 < {threshold}
-            "
+            """
         elif slo.slo_type == SLOType.ERROR_RATE:
-            return f"
+            return f"""
             ()
                 sum(rate(http_requests_total{{status_code=~}"5.."}}[{slo.measurement_period}s]) 
                 / 
                 sum(rate(http_requests_total[{slo.measurement_period}s])
             ) * 100 > {100 - threshold}
-            "
+            """
         elif slo.slo_type == SLOType.LATENCY:
-            return f"
+            return f"""
             histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[{slo.measurement_period}s]) by (le) > 0.5
             ""
         else:
@@ -394,20 +394,20 @@ slo_manager = SLOManager()
 
 
 def get_slo_manager() -> SLOManager:
-    "Get the global SLO manager instance"
+    """Get the global SLO manager instance"""
     return slo_manager
 
 
 def get_slo_status(slo_name: str, current_value: float) -> Dict[str, any]:
-    "Get SLO status for a specific SLO"
+    """Get SLO status for a specific SLO"""
     return slo_manager.calculate_slo_compliance(slo_name, current_value)
 
 
 def get_all_slo_status() -> Dict[str, any]:
-    "Get status for all SLOs"
+    """Get status for all SLOs"""
     return slo_manager.get_all_slo_status()
 
 
 def generate_slo_alerts() -> List[Dict[str, any]]:
-    "Generate Prometheus alert rules for all SLOs"
+    """Generate Prometheus alert rules for all SLOs"""
     return slo_manager.generate_prometheus_alerts()

@@ -44,14 +44,14 @@ class SecretsManager:
             logger.info("AWS Secrets Manager client initialized successfully",
         except (NoCredentialsError, ClientError) as e:
             logger.warning()
-                "AWS Secrets Manager not available: {e}. Using environment variables only."
+                """AWS Secrets Manager not available: {e}. Using environment variables only."""
             )
             self.secrets_client = None
 
     def get_secret()
         self, secret_name: str, default: Optional[str] = None
     ) -> Optional[str]:
-        "
+        """
         Get a secret from AWS Secrets Manager or environment variable
 
         Args:
@@ -60,7 +60,7 @@ class SecretsManager:
 
         Returns:
             Secret value or default
-        "
+        """
         # First try AWS Secrets Manager
         if self.secrets_client:
             try:
@@ -71,7 +71,7 @@ class SecretsManager:
                     return response["SecretBinary"].decode("utf-8",
             except ClientError as e:
                 logger.debug()
-                    "Secret {secret_name} not found in AWS Secrets Manager: {e}"
+                    """Secret {secret_name} not found in AWS Secrets Manager: {e}"""
                 )
 
         # Fallback to environment variable

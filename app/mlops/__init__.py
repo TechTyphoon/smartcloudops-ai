@@ -1,9 +1,9 @@
-"
+"""
 SmartCloudOps AI - MLOps Module
 Production-ready MLOps capabilities for experiment tracking, model management, and automated operations
 
 Phase 2A: Working modules only - Conservative import approach
-"
+"""
 
 # Start with minimal working imports
 try:
@@ -37,5 +37,5 @@ AVAILABLE_MODULES = {}
 
 
 def get_available_modules():
-    "Get status of available MLOps modules."
+    """Get status of available MLOps modules."""
     return AVAILABLE_MODULES

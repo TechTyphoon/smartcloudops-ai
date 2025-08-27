@@ -1,7 +1,7 @@
-"
+"""
 SmartCloudOps AI - Core API Blueprint
 Phase 2C Week 1: Performance & Scaling - Modular Blueprint Structure
-"
+"""
 
 import os
 from datetime import datetime, timezone
@@ -13,7 +13,7 @@ core_bp = Blueprint
 
 @core_bp.route("/")
 def root():
-    "Root endpoint with system information"
+    """Root endpoint with system information"""
     system_info = {}
         "name": "SmartCloudOps AI",
         "version": "2.0.0",
@@ -30,7 +30,7 @@ def root():
             "status": "/api/status",
             "health": "/health",
             "mlops": ()
-                "/api/mlops/"
+                """/api/mlops/"""
                 if hasattr(current_app, "mlops_service") and current_app.mlops_service
                 else None
             ),
@@ -51,7 +51,7 @@ def root():
 
 @core_bp.route("/health")
 def health(:
-    "Health check endpoint"
+    """Health check endpoint"""
     health_data = {}
         "status": "healthy",
         "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
@@ -70,7 +70,7 @@ def health(:
 
 @core_bp.route("/api/status")
 def status():
-    "Enhanced status endpoint with performance information"
+    """Enhanced status endpoint with performance information"""
     status_data = {}
         "status": "healthy",
         "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
@@ -124,7 +124,7 @@ def status():
 
 @core_bp.route("/api/docs")
 def api_docs():
-    "API documentation endpoint"
+    """API documentation endpoint"""
     docs_data = {}
         "title": "SmartCloudOps AI API Documentation",
         "version": "2.0.0",
@@ -167,7 +167,7 @@ def api_docs():
 
 
 def _check_performance_available():
-    "Check if performance monitoring is available"
+    """Check if performance monitoring is available"""
     try:
         from app.performance.api_optimization import performance_collector
 
@@ -177,7 +177,7 @@ def _check_performance_available():
 
 
 def _check_mlops_feature:
-    "Check if a specific MLOps feature is available"
+    """Check if a specific MLOps feature is available"""
     if not hasattr(current_app, "mlops_service") or current_app.mlops_service is None:
         return False
 
@@ -189,7 +189,7 @@ def _check_mlops_feature:
 
 
 def _check_database_connection():
-    "Check database connection status"
+    """Check database connection status"""
     try:
         # Add database connection check logic here
         return True
@@ -198,7 +198,7 @@ def _check_database_connection():
 
 
 def _calculate_cache_hit_rate(perf_summary):
-    "Calculate overall cache hit rate"
+    """Calculate overall cache hit rate"""
     cache_stats = perf_summary.get("cache", {})
     if not cache_stats:
         return 0

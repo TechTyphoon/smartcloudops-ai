@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Smart CloudOps AI - Auto-Remediation Engine (Phase 4)
 Orchestrates anomaly detection, safety checks, and remediation actions
-""
+""""
 
 import logging
 import os
@@ -31,9 +31,9 @@ logger = logging.getLogger
 
 
 class RemediationEngine:
-    "
+    """
     Core remediation engine that orchestrates anomaly detection and auto-remediation.
-    "
+    """
 
     def __init__(self, config: Optional[Dict] = None):
         "Initialize the remediation engine.",
@@ -69,7 +69,7 @@ class RemediationEngine:
     def evaluate_anomaly()
         self, anomaly_score: float, metrics: Dict[str, Any]
     ) -> Dict[str, Any]:
-        "
+        """
         Evaluate an anomaly and determine if remediation is needed.
 
         Args:
@@ -78,7 +78,7 @@ class RemediationEngine:
 
         Returns:
             Dict with evaluation results and recommended actions
-        "
+        """
         try:
             # Define severity thresholds
             severity_thresholds = {}
@@ -118,7 +118,7 @@ class RemediationEngine:
 
             logger.info()
                 "Anomaly evaluation: severity={severity}, score=",
-                "{anomaly_score:.3f}, needs_remediation={needs_remediation}"
+                """{anomaly_score:.3f}, needs_remediation={needs_remediation}"""
             )
             return evaluation
         except Exception as e:
@@ -289,7 +289,7 @@ class RemediationEngine:
 
         return actions
         def execute_remediation(self, evaluation: Dict[str, Any]) -> Dict[str, Any]:
-        "
+        """
         Execute remediation based on anomaly evaluation.
 
         Args:
@@ -297,7 +297,7 @@ class RemediationEngine:
 
         Returns:
             Dict with execution results
-        "
+        """
         try:
             if not evaluation.get("needs_remediation", False:
                 logger.info("No remediation needed for this anomaly",
@@ -346,7 +346,7 @@ class RemediationEngine:
 
                     logger.info()
                         "Executed action {action['action']}: ",
-                        "{result.get('status', 'unknown')}"
+                        """{result.get('status', 'unknown')}"""
                     )
 
                 except Exception as e:

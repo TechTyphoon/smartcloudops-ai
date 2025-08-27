@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 SmartCloudOps AI - Main Application Entry Point
 Phase 2C Week 1: Performance & Scaling - Refactored with Factory Pattern
-"
+"""
 
 import logging
 from flask import Flask, jsonify, request
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 def main():
-    "Main application entry point using factory pattern"
+    """Main application entry point using factory pattern"""
     from app import create_app
 
     app = create_app
@@ -62,7 +62,7 @@ def main():
 
 
 def _check_performance_available():
-    "Check if performance monitoring is available"
+    """Check if performance monitoring is available"""
     try:
         from app.performance.api_optimization import performance_collector
 

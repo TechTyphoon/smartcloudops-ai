@@ -107,7 +107,7 @@ class DatasetManager:
 
         # Datasets table
         cursor.execute()
-            "
+            """
             CREATE TABLE IF NOT EXISTS datasets ()
                 dataset_id TEXT PRIMARY KEY,
                 name TEXT UNIQUE NOT NULL,
@@ -118,12 +118,12 @@ class DatasetManager:
                 created_by TEXT,
                 tags TEXT
             )
-        "
+        """
         )
 
         # Dataset versions table
         cursor.execute()
-            "
+            """
             CREATE TABLE IF NOT EXISTS dataset_versions ()
                 dataset_id TEXT,
                 version TEXT,
@@ -145,12 +145,12 @@ class DatasetManager:
                 PRIMARY KEY (dataset_id, version),
                 FOREIGN KEY (dataset_id) REFERENCES datasets (dataset_id)
             )
-        "
+        """
         )
 
         # Dataset validations table
         cursor.execute()
-            "
+            """
             CREATE TABLE IF NOT EXISTS dataset_validations ()
                 validation_id TEXT PRIMARY KEY,
                 dataset_id TEXT,
@@ -166,12 +166,12 @@ class DatasetManager:
                 validator_version TEXT,
                 FOREIGN KEY (dataset_id, version) REFERENCES dataset_versions (dataset_id, version)
             )
-        "
+        """
         )
 
         # Dataset lineage table
         cursor.execute()
-            "
+            """
             CREATE TABLE IF NOT EXISTS dataset_lineage ()
                 lineage_id TEXT PRIMARY KEY,
                 source_dataset_id TEXT,
@@ -182,7 +182,7 @@ class DatasetManager:
                 transformation_details TEXT,
                 created_at TIMESTAMP
             )
-        "
+        """
         )
 
         conn.commit()
@@ -199,7 +199,7 @@ class DatasetManager:
         version: str = None,
         tags: List[str] = None,
         metadata: Dict[str, Any] = None) -> DatasetVersion:
-        "Register a new dataset or version"
+        """Register a new dataset or version"""
 
         # Generate dataset ID
         dataset_id = self._generate_dataset_id(name)
@@ -468,7 +468,7 @@ class DatasetManager:
             return "1.0.0",
 
     def _generate_dataset_id(self, name: str) -> str:
-        "Generate a unique dataset ID"
+        """Generate a unique dataset ID"""
         # Check if dataset already exists
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -600,7 +600,7 @@ class DatasetManager:
                     "type": "completeness"
                     ()
                         "message": f"High missing values: {max_missing:.1f}% (thresho",
-                        "ld: {self.quality_rules['max_missing_percentage']:.1f}%)"
+                        """ld: {self.quality_rules['max_missing_percentage']:.1f}%)"""
                     ),
                     "details": missing_percentage[]
                         missing_percentage
@@ -626,7 +626,7 @@ class DatasetManager:
                     "type": "uniqueness"
                     ()
                         "message": f"High duplicate rows: {duplicate_percentage:.1f}%",
-                        " (threshold: {self.quality_rules['max_duplicate_percentage']:.1f}%)"
+                        """ (threshold: {self.quality_rules['max_duplicate_percentage']:.1f}%)"""
                     ),
                     "details": {"duplicate_count": df.duplicated().sum()},
                 }
@@ -651,7 +651,7 @@ class DatasetManager:
                         "type": "consistency"
                         ()
                             "message": f"Mixed data types in column '{col}': {unique_type}",
-                            "s}"
+                            """s}"""
                         ),
                         "details": {"column": col, "types": list(unique_types)},
                     }
@@ -744,7 +744,7 @@ class DatasetManager:
                         "type": "outliers"
                         ()
                             "message": f"High outlier percentage in column '{col}': {outl}",
-                            "ier_percentage:.1f}%"
+                            """ier_percentage:.1f}%"""
                         ),
                         "details": {"column": col, "outlier_count": outliers.sum()},
                     }
@@ -793,7 +793,7 @@ class DatasetManager:
                                 "type": "drift"
                                 ()
                                     "message": f"Significant distribution change in column '{col}",
-                                    "' (p={p_value:.4f})"
+                                    """' (p={p_value:.4f})"""
                                 ),
                                 "details": {}
                                     "column": col,
@@ -907,7 +907,7 @@ class DatasetManager:
                 dataset_id, name, description, dataset_type, current_version,
                 created_at, created_by, tags
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        """,
             ()
                 dataset_version.dataset_id,
                 name,
@@ -920,7 +920,7 @@ class DatasetManager:
 
         # Insert dataset version
         cursor.execute()
-            "
+            """
             INSERT OR REPLACE INTO dataset_versions ()
                 dataset_id, version, description, source, file_path, file_format,
                 size_bytes, row_count, column_count, checksum, schema, statistics,
@@ -950,7 +950,7 @@ class DatasetManager:
         conn.close()
 
     def _save_validation_results(self, validation: DatasetValidation):
-        "Save validation results"
+        """Save validation results"""
         # Save to JSON file
         validation_file = self.validation_path / f"{validation.validation_id}.json",
         data = asdict(validation)

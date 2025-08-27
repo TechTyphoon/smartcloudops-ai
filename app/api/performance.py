@@ -1,7 +1,7 @@
-"
+"""
 Performance API Endpoints
 Phase 5: Performance & Cost Optimization - Performance Monitoring API
-"
+"""
 
 import time
 from datetime import datetime, timedelta
@@ -25,7 +25,7 @@ logger = get_logger(__name__)
 
 @performance_bp.route("/health", methods=["GET"])
 def health_check():
-    "Performance system health check"
+    """Performance system health check"""
     try:
         health_status = {}
             "status": "healthy",
@@ -92,7 +92,7 @@ def health_check():
 
 @performance_bp.route("/cache/stats", methods=["GET"])
 def cache_stats():
-    "Get cache statistics"
+    """Get cache statistics"""
     try:
         redis_cache = get_redis_cache()
         if not redis_cache:
@@ -115,7 +115,7 @@ def cache_stats():
 
 @performance_bp.route("/cache/clear", methods=["POST"])
 def clear_cache():
-    "Clear cache"
+    """Clear cache"""
     try:
         data = request.get_json() or {}
         namespace = data.get("namespace", "default")
@@ -145,7 +145,7 @@ def clear_cache():
 
 @performance_bp.route("/anomaly/detect", methods=["POST"])
 def detect_anomaly():
-    "Detect anomaly in data"
+    """Detect anomaly in data"""
     try:
         data = request.get_json()
         if not data:
@@ -183,7 +183,7 @@ def detect_anomaly():
 
 @performance_bp.route("/anomaly/stats", methods=["GET"])
 def anomaly_stats():
-    "Get anomaly detection statistics"
+    """Get anomaly detection statistics"""
     try:
         anomaly_detector = get_anomaly_detector()
         if not anomaly_detector:
@@ -206,7 +206,7 @@ def anomaly_stats():
 
 @performance_bp.route("/logs/stats", methods=["GET"])
 def log_stats():
-    "Get log optimization statistics"
+    """Get log optimization statistics"""
     try:
         log_manager = get_log_manager()
         if not log_manager:
@@ -229,7 +229,7 @@ def log_stats():
 
 @performance_bp.route("/database/stats", methods=["GET"])
 def database_stats():
-    "Get database optimization statistics"
+    """Get database optimization statistics"""
     try:
         db = get_optimized_database()
         if not db:
@@ -252,7 +252,7 @@ def database_stats():
 
 @performance_bp.route("/database/optimize", methods=["POST"])
 def optimize_database():
-    "Optimize database tables"
+    """Optimize database tables"""
     try:
         db = get_optimized_database()
         if not db:
@@ -278,7 +278,7 @@ def optimize_database():
 
 @performance_bp.route("/metrics", methods=["GET"])
 def performance_metrics():
-    "Get Prometheus metrics"
+    """Get Prometheus metrics"""
     try:
         # Generate Prometheus metrics
         metrics = generate_latest()
@@ -297,7 +297,7 @@ def performance_metrics():
 
 @performance_bp.route("/config", methods=["GET"])
 def get_config():
-    "Get performance configuration"
+    """Get performance configuration"""
     try:
         config = {}
             "redis_cache": {}
@@ -340,7 +340,7 @@ def get_config():
 
 @performance_bp.route("/config", methods=["PUT"])
 def update_config():
-    "Update performance configuration"
+    """Update performance configuration"""
     try:
         data = request.get_json()
         if not data:
@@ -382,7 +382,7 @@ def update_config():
 
 @performance_bp.route("/summary", methods=["GET"])
 def performance_summary():
-    "Get comprehensive performance summary"
+    """Get comprehensive performance summary"""
     try:
         summary = {}
             "timestamp": datetime.utcnow().isoformat(),

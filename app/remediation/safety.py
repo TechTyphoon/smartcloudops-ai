@@ -2,10 +2,10 @@
 from datetime import datetime
 from typing import Optional
 
-"
+"""
 Smart CloudOps AI - Safety Manager 
 Implements safety mechanisms for auto-remediation actions
-""
+""""
 
 import logging
 import os
@@ -17,10 +17,10 @@ logger = logging.getLogger
 
 
 class SafetyManager:
-    "
+    """
     Manages safety mechanisms for auto-remediation actions.
     Implements cooldowns, rate limits, and approval workflows.
-    "
+    """
 
     def __init__()
         self,
@@ -48,13 +48,13 @@ class SafetyManager:
 
         logger.info()
             "Safety manager initialized: max_actions_per_hour=",
-            "{max_actions_per_hour}, cooldown_minutes={cooldown_minutes}"
+            """{max_actions_per_hour}, cooldown_minutes={cooldown_minutes}"""
         )
 
     def check_safety_conditions()
         self, severity: str, actions: List[Dict]
     ) -> Dict[str, any]:
-        "
+        """
         Check if itf's safe to proceed with remediation actions.
 
         Args:
@@ -63,7 +63,7 @@ class SafetyManager:
 
         Returns:
             Dict with safety check results
-        "
+        """
         try:
             safety_checks = {}
                 "cooldown_check": self._check_cooldown(),
@@ -114,7 +114,7 @@ class SafetyManager:
                 return {}
                     "safe": False,
                     "reason": "Cooldown period active. Wait ",
-                    "{remaining_time.seconds // 60} more minutes"
+                    """{remaining_time.seconds // 60} more minutes"""
                 }
 
             return {"safe": True, "reason": "Cooldown period passed"}
@@ -173,12 +173,12 @@ class SafetyManager:
                 # workflow
                 logger.warning()
                     "Approval required for {severity} severity actions: ",
-                    "{[a['action'] for a in actions]}"
+                    """{[a['action'] for a in actions]}"""
                 )
                 return {}
                     "safe": True,  # Auto-approved for demo
                     "reason": ()
-                        "Auto-approved (would require manual approval in production)"
+                        """Auto-approved (would require manual approval in production)"""
                     ),
                     "approval_required": True,
                 }
@@ -245,7 +245,7 @@ class SafetyManager:
             self.last_action_time = datetime.now()
 
             logger.info()
-                "Recorded action: {action.get('action')} with severity {severity}"
+                """Recorded action: {action.get('action')} with severity {severity}"""
             )
 
         except Exception as e:

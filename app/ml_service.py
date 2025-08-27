@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 ML Processing Service for Smart CloudOps AI
 Dedicated microservice for ML operations
-"
+"""
 
 import logging
 import os
@@ -15,13 +15,13 @@ logger = logging.getLogger(__name__)
 
 @app.route("/health")
 def health():
-    "Health check endpoint for ML service."
+    """Health check endpoint for ML service."""
     return jsonify({"status": "healthy", "service": "ml-processor"})
 
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    "ML prediction endpoint."
+    """ML prediction endpoint."""
     try:
         data = request.get_json()
         if not data:
@@ -47,7 +47,7 @@ def predict():
 
 @app.route("/train", methods=["POST"])
 def train():
-    "ML training endpoint."
+    """ML training endpoint."""
     try:
         data = request.get_json()
         if not data:

@@ -1,1 +1,1 @@
-"Auto-remediation package for Smart CloudOps AI (Phase 4)."
+"""Auto-remediation package for Smart CloudOps AI (Phase 4)."""

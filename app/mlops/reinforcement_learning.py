@@ -3,10 +3,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
-"
+"""
 Reinforcement Learning & Active Learning for SmartCloudOps AI
 Continuous learning from remediation outcomes and user feedback
-""
+""""
 
 import logging
 
@@ -64,7 +64,7 @@ class ReinforcementLearningAgent:
     def get_state_representation()
         self, metrics: Dict[str, float],anomaly_info: Dict[str, Any]
     ) -> str:
-        "Convert system state to string representation for Q-table"
+        """Convert system state to string representation for Q-table"""
         # Discretize continuous metrics
         cpu_level = self._discretize_value()
             metrics.get("cpu_usage", 0), [0, 50, 80, 100])
@@ -268,7 +268,7 @@ class ActiveLearningSystem:
         self.learning_queue.append(sample_id)
 
         logger.info()
-            "Added uncertain sample {sample_id} with uncertainty {uncertainty:.3f}"
+            """Added uncertain sample {sample_id} with uncertainty {uncertainty:.3f}"""
         )
 
     def record_user_feedback()
@@ -308,7 +308,7 @@ class ActiveLearningSystem:
         return uncertain_samples[:limit]
 
     def retrain_with_feedback(self, model_type: str = "anomaly_detection"):
-        "Retrain model with user feedback"
+        """Retrain model with user feedback"""
         # Get samples with user feedback
         labeled_samples = []
         for sample in self.uncertain_samples:
@@ -472,7 +472,7 @@ class ContinuousLearningOrchestrator:
             logger.error(f"Error collecting RL experiences: {e}")
 
     async def _process_uncertain_samples(self):
-        "Process uncertain samples for active learning"
+        """Process uncertain samples for active learning"""
         # Get samples that need user feedback
         learning_samples = self.active_learning.get_learning_samples(limit=5)
 
@@ -490,7 +490,7 @@ class ContinuousLearningOrchestrator:
                 self.learning_stats["user_feedback_requests"] += 1
 
     async def _retrain_models(self):
-        "Retrain models with new data"
+        """Retrain models with new data"""
         # Retrain with user feedback
         self.active_learning.retrain_with_feedback()
 
@@ -512,12 +512,12 @@ class ContinuousLearningOrchestrator:
         # Available actions (in practice, this would be dynamic)
         available_actions = []
             "restart_service",
-            "scale_up"
+            """scale_up"""
             "scale_down",
-            "clear_cache"
+            """clear_cache"""
             "restart_database",
-            "increase_memory"
-            "decrease_load"
+            """increase_memory"""
+            """decrease_load"""
         ]
 
         return self.rl_agent.get_action_recommendations(state, available_actions)
