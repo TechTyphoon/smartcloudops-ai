@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
 
-"
+"""
 ChatOps Module for Smart CloudOps AI
 Extracted from main.py for modularity
 "
@@ -290,3 +290,5 @@ def chatops_status():
     except Exception as e:
         logger.error("ChatOps status error: {e}")
         return jsonify({"error": "Internal server error"}), 500
+
+"""

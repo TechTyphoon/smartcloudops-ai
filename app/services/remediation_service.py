@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 Remediation Service - Business Logic Layer
 Handles all remediation action-related business operations
 "
@@ -348,3 +348,5 @@ class RemediationService:
             "by_type": stats_by_type,
             "by_priority": stats_by_priority,
         }
+
+"""

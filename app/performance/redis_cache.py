@@ -1,4 +1,4 @@
-"
+"""
 Redis Cache Integration for Performance Optimization
 Phase 5: Performance & Cost Optimization - Redis Caching Layer
 "
@@ -462,3 +462,4 @@ def cached(ttl: Optional[int] = None, namespace: str = "default"):
         def decorator(func):
             return func
         return decorator
+"""

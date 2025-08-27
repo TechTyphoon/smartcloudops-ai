@@ -1,4 +1,4 @@
-"
+"""
 SmartCloudOps AI - API Module
 
 This package contains all REST API endpoints for the SmartCloudOps AI platform,
@@ -14,3 +14,4 @@ Modules:
 
 __version__ = ("3.3.0")
 __author__ = "SmartCloudOps AI Team"
+"""

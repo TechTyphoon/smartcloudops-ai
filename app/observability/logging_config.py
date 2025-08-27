@@ -1,4 +1,4 @@
-"
+"""
 Structured JSON Logging with Correlation IDs
 Production-ready logging configuration for SmartCloudOps AI
 "
@@ -305,3 +305,4 @@ def log_security_event()
             "severity": severity,
             "context": kwargs,
         })
+"""

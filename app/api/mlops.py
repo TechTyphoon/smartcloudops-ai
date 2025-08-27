@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 MLOps API Endpoints for Smart CloudOps AI
 Phase 2A Week 4: MLOps API Integration
 Provides comprehensive MLOps experiment tracking, model registry, and data pipeline endpoints
@@ -648,3 +648,5 @@ def health_check():
     except Exception as e:
         logger.error(f"MLOps health check failed: {e}")
         return jsonify({"status": "error", "error": str(e), "data": None}), 500
+
+"""

@@ -1,4 +1,4 @@
-"
+"""
 Dataset Manager - Dataset versioning, validation, and tracking
 ""
 
@@ -1025,3 +1025,4 @@ class DatasetManager:
 
         columns = [desc[0] for desc in cursor.description]
         return [dict(zip(columns, version) for version in versions]
+"""

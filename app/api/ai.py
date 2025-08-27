@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 AI/ML API Endpoints for Smart CloudOps AI - Minimal Working Version
 AI-powered analysis, recommendations, and chat operations
 "
@@ -476,3 +476,5 @@ def predict_with_model(model_id):
                 {"status": "error", "message": f"Failed to make prediction: {str(e)}"}
             ),
             500)
+
+"""

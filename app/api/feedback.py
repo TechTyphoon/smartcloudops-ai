@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 Feedback API Endpoints for Smart CloudOps AI - Minimal Working Version
 User feedback collection and management system
 "
@@ -434,3 +434,5 @@ def get_feedback_types():
                 }
             ),
             500)
+
+"""

@@ -1,4 +1,4 @@
-"
+"""
 Flask Middleware for Observability Integration
 ""
 
@@ -322,3 +322,4 @@ def log_security_event(event_type: str, severity: str, **kwargs):
             "trace_id": get_trace_id(),
             "span_id": get_span_id(),
         })
+"""

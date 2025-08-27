@@ -1,4 +1,4 @@
-"
+"""
 Performance API Endpoints
 Phase 5: Performance & Cost Optimization - Performance Monitoring API
 "
@@ -450,3 +450,4 @@ def performance_summary():
     except Exception as e:
         logger.error(f"Performance summary generation failed: {e}")
         return jsonify({"error": str(e)}), 500
+"""

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
 
-"
+"""
 Authentication System for Smart CloudOps AI
 Phase 7: Production Launch & Feedback - JWT Authentication
 "
@@ -431,3 +431,5 @@ def is_admin(user):
 def has_permission(user, required_role:
     "Check if user has required role."
     return user and (user.role == required_role or user.role == "admin")
+
+"""

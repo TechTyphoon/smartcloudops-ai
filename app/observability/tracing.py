@@ -1,4 +1,4 @@
-"
+"""
 OpenTelemetry Distributed Tracing
 "
 
@@ -391,3 +391,4 @@ def get_span_id() -> Optional[str]:
         if span and span.get_span_context().is_valid:
             return format(span.get_span_context().span_id, "016x")
     return None
+"""

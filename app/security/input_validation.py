@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from typing import Any, Dict, List, Optional, Union
 
-"
+"""
 Comprehensive Security Validation Module
 Enterprise-grade input validation, sanitization, and security checks
 ""
@@ -562,3 +562,5 @@ def validate_api_key(api_key: str) -> bool:
         logger.info("API key with known prefix detected",
 
     return True
+
+"""

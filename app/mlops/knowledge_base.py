@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 Knowledge Base and Recommendation Engine - Minimal Working Version
 Intelligent learning system for anomaly analysis and remediation recommendations
 "
@@ -525,3 +525,5 @@ class KnowledgeBaseManager:
             "edge_types": dict(edge_types),
             "model_trained": self.recommendation_engine.is_trained,
         }
+
+"""

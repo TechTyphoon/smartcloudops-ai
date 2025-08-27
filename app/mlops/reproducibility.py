@@ -1,4 +1,4 @@
-"
+"""
 Reproducibility Manager - Environment snapshots and reproducible ML workflows
 ""
 
@@ -1070,3 +1070,4 @@ name = "pypi"
 
         if snapshot.conda_environment:
             self._export_conda_requirements(snapshot)
+"""

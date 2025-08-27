@@ -1,4 +1,4 @@
-"
+"""
 SmartCloudOps AI - MLOps Module
 Production-ready MLOps capabilities for experiment tracking, model management, and automated operations
 
@@ -39,3 +39,4 @@ AVAILABLE_MODULES = {}
 def get_available_modules():
     "Get status of available MLOps modules."
     return AVAILABLE_MODULES
+"""

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 Autonomous Operations Engine - Minimal Working Version
 Intelligent automation for anomaly remediation
 "
@@ -439,3 +439,5 @@ class PolicyManager:
         "Delete a policy."
         self.ops_engine.remove_policy(rule_id)
         return True
+
+"""

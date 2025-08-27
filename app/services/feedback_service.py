@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 Feedback Service - Business Logic Layer
 Handles all user feedback-related business operations
 "
@@ -307,3 +307,5 @@ class FeedbackService:
                 "description": "Report performance-related issues or concerns",
             },
         ]
+
+"""

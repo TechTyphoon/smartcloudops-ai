@@ -1,4 +1,4 @@
-"
+"""
 Performance and Optimization Package
 Phase 2C Week 1: Performance & Scaling
 "
@@ -21,3 +21,4 @@ try:
 except ImportError:
     # Graceful fallback if dependencies are missing
     __all__ = []
+"""

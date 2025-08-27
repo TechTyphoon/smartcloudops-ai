@@ -1,4 +1,4 @@
-"
+"""
 SmartCloudOps AI - Observability Module
 Comprehensive observability with structured logging, metrics, and tracing
 "
@@ -14,3 +14,4 @@ __all__ = []
     "performance_metrics" "setup_tracing",
     "trace_request" "create_span",
 ]
+"""

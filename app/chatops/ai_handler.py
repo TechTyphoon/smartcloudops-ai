@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-"
+"""
 Smart CloudOps AI - Flexible AI Handler
 Supports both OpenAI and Google Gemini APIs
 "
@@ -559,3 +559,5 @@ Always respond in a professional, helpful manner focused on operational excellen
                 "provider": self.provider_name,
                 "status": "not_initialized"
             }
+
+"""

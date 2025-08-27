@@ -1,4 +1,4 @@
-"
+"""
 Service Level Objectives (SLOs) Configuration
 Phase 4: Observability & Operability - Production SLOs and SLIs
 "
@@ -411,3 +411,4 @@ def get_all_slo_status() -> Dict[str, any]:
 def generate_slo_alerts() -> List[Dict[str, any]]:
     "Generate Prometheus alert rules for all SLOs"
     return slo_manager.generate_prometheus_alerts()
+"""

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"
+"""
 Enhanced Data Pipeline - Production-ready data processing and versioning
 Phase 2A Week 3: Data Pipeline Automation with quality monitoring and versioning
 "
@@ -1130,3 +1130,5 @@ data_pipeline_manager = DataPipelineManager()
 def get_data_pipeline_manager() -> DataPipelineManager:
     "Get the global data pipeline manager instance."
     return data_pipeline_manager
+
+"""
