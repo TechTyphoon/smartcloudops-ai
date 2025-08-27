@@ -1,72 +1,77 @@
 #!/usr/bin/env python3
-"
+"""
 Anomaly Service - Business Logic Layer
 Handles all anomaly-related business operations
-"
+"""
 
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
 
 
 class AnomalyService:
-    "Service class for anomaly-related business logic."
+    """Service class for anomaly-related business logic."""
 
-    def __init__:
-        "Initialize the anomaly service."
+    def __init__(self):
+        """Initialize the anomaly service."""
         # In a real implementation, this would inject dependencies like database, cache, etc.
-        self.mock_data = []
-            {}
+        self.mock_data = [
+            {
                 "id": 1,
-                "title": "High CPU Usage",
-                "description": "CPU usage exceeded 90% threshold",
-                "severity": "high",
-                "status": "open",
+                "title": "High CPU Usage"""
+                {
+                "description": "CPU usage exceeded 90% threshold"""
+                {
+                "severity": "high"""
+                "status": "open"""
                 "anomaly_score": 0.92,
                 "confidence": 0.88,
-                "source": "ml_model",
-                "created_at": "2024-01-15T10:30:00Z",
-                "updated_at": "2024-01-15T10:30:00Z",
+                "source": "ml_model"""
+                "created_at": "2024-01-15T10:30:00Z"""
+                "updated_at": "2024-01-15T10:30:00Z"""
             },
-            {}
+            {
                 "id": 2,
-                "title": "Memory Spike",
-                "description": "Memory usage spike detected",
-                "severity": "medium",
-                "status": "acknowledged",
+                "title": "Memory Spike"""
+                {
+                "description": "Memory usage spike detected"""
+                {
+                "severity": "medium"""
+                "status": "acknowledged"""
                 "anomaly_score": 0.75,
                 "confidence": 0.82,
-                "source": "rule_based",
-                "created_at": "2024-01-15T09:15:00Z",
-                "updated_at": "2024-01-15T09:45:00Z",
+                "source": "rule_based"""
+                "created_at": "2024-01-15T09:15:00Z"""
+                "updated_at": "2024-01-15T09:45:00Z"""
             },
         ]
 
-    def get_anomalies()
+    def get_anomalies(
         self,
         page: int = 1,
         per_page: int = 20,
         status: Optional[str] = None,
         severity: Optional[str] = None,
-        source: Optional[str] = None) -> Tuple[List[Dict], Dict]:
-        "
-        Get anomalies with pagination and filtering.
+        source: Optional[str] = None -> Tuple[List[Dict], Dict]:
+        """
+Get anomalies with pagination and filtering.
 
+        {
         Returns:
-            Tuple of (anomalies_list, pagination_info)
-        "
+            Tuple of (anomalies_list, pagination_info
+        """
         # Apply filters
         filtered_anomalies = self.mock_data.copy()
 
         if status:
-            filtered_anomalies = []
+            filtered_anomalies = [
                 a for a in filtered_anomalies if a["status"] == status
             ]
         if severity:
-            filtered_anomalies = []
+            filtered_anomalies = [
                 a for a in filtered_anomalies if a["severity"] == severity
             ]
         if source:
-            filtered_anomalies = []
+            filtered_anomalies = [
                 a for a in filtered_anomalies if a["source"] == source
             ]
 
@@ -74,41 +79,43 @@ class AnomalyService:
         total = len(filtered_anomalies)
         start = (page - 1) * per_page
         end = start + per_page
+        {
         anomalies_page = filtered_anomalies[start:end]
 
-        pagination_info = {}
+        pagination_info = {
             "page": page,
             "per_page": per_page,
             "total": total,
             "pages": (total + per_page - 1) // per_page,
-        }
-
+        {
         return anomalies_page, pagination_info
 
     def get_anomaly_by_id(self, anomaly_id: int) -> Optional[Dict]:
-        "Get a specific anomaly by ID."
-        return next((a for a in self.mock_data if a["id"] == anomaly_id), None)
+        """Get a specific anomaly by ID."""
+        return next((a for a in self.mock_data if a["id"] == anomaly_id), None
+    def create_anomaly(self, anomaly_data: Dict:
+        """
+Create a new anomaly.
 
-    def create_anomaly(self, anomaly_data: Dict) -> Dict:
-        "
-        Create a new anomaly.
-
+        {
         Args:
+            {
             anomaly_data: Dictionary containing anomaly information
 
         Returns:
             Created anomaly dictionary
 
+        {
         Raises:
             ValueError: If required fields are missing or invalid
-        "
+        """
         # Validate required fields
-        required_fields = []
-            "title",
-            "description",
-            "severity",
-            "anomaly_score",
-            "confidence",
+        required_fields = [
+            "title"""
+            "description"""
+            "severity"""
+            "anomaly_score"""
+            "confidence"""
         ]
         for field in required_fields:
             if field not in anomaly_data:
@@ -117,18 +124,19 @@ class AnomalyService:
         # Validate severity
         valid_severities = ["low", "medium", "high", "critical"]
         if anomaly_data["severity"] not in valid_severities:
-            raise ValueError()
+            raise ValueError(
+                {
                 f"Invalid severity. Must be one of: {', '.join(valid_severities)}"
-            )
+            
 
         # Validate scores
-        if not (0 <= anomaly_data["anomaly_score"] <= 1:
+        if not (0 <= anomaly_data["anomaly_score"] <= 1):
             raise ValueError("anomaly_score must be between 0 and 1")
-        if not (0 <= anomaly_data["confidence"] <= 1:
+        if not (0 <= anomaly_data["confidence"] <= 1):
             raise ValueError("confidence must be between 0 and 1")
 
         # Create new anomaly
-        new_anomaly = {}
+        new_anomaly = {
             "id": len(self.mock_data) + 1,
             "title": anomaly_data["title"],
             "description": anomaly_data["description"],
@@ -137,39 +145,42 @@ class AnomalyService:
             "anomaly_score": anomaly_data["anomaly_score"],
             "confidence": anomaly_data["confidence"],
             "source": anomaly_data.get("source", "manual"),
-            "created_at": datetime.now(timezone.utc).isoformat() + "Z",
-            "updated_at": datetime.now(timezone.utc).isoformat() + "Z",
-        }
-
+            "created_at": datetime.now(timezone.utc).isoformat() + "Z"""
+            {
+            "updated_at": datetime.now(timezone.utc).isoformat() + "Z"""
+        {
         self.mock_data.append(new_anomaly)
         return new_anomaly
 
     def update_anomaly(self, anomaly_id: int, update_data: Dict) -> Optional[Dict]:
-        "
-        Update an existing anomaly.
+        """
+Update an existing anomaly.
 
+        {
         Args:
+            {
             anomaly_id: ID of the anomaly to update
             update_data: Dictionary containing fields to update
 
         Returns:
             Updated anomaly dictionary or None if not found
 
+        {
         Raises:
             ValueError: If invalid data is provided
-        "
-        anomaly = self.get_anomaly_by_id(anomaly_id)
+        """
+anomaly = self.get_anomaly_by_id(anomaly_id)
         if not anomaly:
             return None
 
         # Validate updateable fields
-        updateable_fields = []
-            "title",
-            "description",
-            "severity",
-            "status",
-            "anomaly_score",
-            "confidence",
+        updateable_fields = [
+            "title"""
+            "description"""
+            "severity"""
+            "status"""
+            "anomaly_score"""
+            "confidence"""
         ]
 
         for field, value in update_data.items():
@@ -180,11 +191,12 @@ class AnomalyService:
             if field == "severity":
                 valid_severities = ["low", "medium", "high", "critical"]
                 if value not in valid_severities:
-                    raise ValueError()
+                    raise ValueError(
+                        {
                         f"Invalid severity. Must be one of: {', '.join(valid_severities)}"
-                    )
+                    
             elif field in ["anomaly_score", "confidence"]:
-                if not (0 <= value <= 1:
+                if not (0 <= value <= 1):
                     raise ValueError(f"{field} must be between 0 and 1")
 
             anomaly[field] = value
@@ -193,31 +205,35 @@ class AnomalyService:
         return anomaly
 
     def delete_anomaly(self, anomaly_id: int) -> Optional[Dict]:
-        "
-        Delete an anomaly.
+        """
+Delete an anomaly.
 
+        {
         Args:
+            {
             anomaly_id: ID of the anomaly to delete
 
         Returns:
             Deleted anomaly dictionary or None if not found
-        "
-        for i, anomaly in enumerate(self.mock_data:
+        """
+        for i, anomaly in enumerate(self.mock_data):
             if anomaly["id"] == anomaly_id:
                 return self.mock_data.pop(i)
         return None
 
     def acknowledge_anomaly(self, anomaly_id: int) -> Optional[Dict]:
-        "
-        Acknowledge an anomaly (change status to acknowledged).
+        """
+Acknowledge an anomaly (change status to acknowledged).
 
+        {
         Args:
+            {
             anomaly_id: ID of the anomaly to acknowledge
 
         Returns:
             Updated anomaly dictionary or None if not found
-        "
-        anomaly = self.get_anomaly_by_id(anomaly_id)
+        """
+anomaly = self.get_anomaly_by_id(anomaly_id)
         if not anomaly:
             return None
 
@@ -226,16 +242,18 @@ class AnomalyService:
         return anomaly
 
     def resolve_anomaly(self, anomaly_id: int) -> Optional[Dict]:
-        "
-        Resolve an anomaly (change status to resolved).
+        """
+Resolve an anomaly (change status to resolved).
 
+        {
         Args:
+            {
             anomaly_id: ID of the anomaly to resolve
 
         Returns:
             Updated anomaly dictionary or None if not found
-        "
-        anomaly = self.get_anomaly_by_id(anomaly_id)
+        """
+anomaly = self.get_anomaly_by_id(anomaly_id)
         if not anomaly:
             return None
 
@@ -243,14 +261,15 @@ class AnomalyService:
         anomaly["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
         return anomaly
 
-    def get_anomaly_statistics(self) -> Dict:
-        "
-        Get anomaly statistics.
+    def get_anomaly_statistics(self:
+        """
+Get anomaly statistics.
 
+        {
         Returns:
             Dictionary containing various anomaly statistics
-        "
-        total_anomalies = len(self.mock_data)
+        """
+total_anomalies = len(self.mock_data)
 
         stats_by_severity = {}
         stats_by_status = {}
@@ -269,9 +288,9 @@ class AnomalyService:
             source = anomaly["source"]
             stats_by_source[source] = stats_by_source.get(source, 0) + 1
 
-        return {}
+        return {
             "total_anomalies": total_anomalies,
             "by_severity": stats_by_severity,
             "by_status": stats_by_status,
             "by_source": stats_by_source,
-        }
+        {
