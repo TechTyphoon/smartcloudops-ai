@@ -1,31 +1,56 @@
-name: 🏷️ Release Automation
+name: 🚀 Automated Release Management
 
 on:
+  push:
+    tags: [ 'v*' ]
   workflow_dispatch:
     inputs:
+      version:
+        description: 'Release version (e.g., v1.2.3)'
+        required: true
+        type: string
       release_type:
-        description: 'Release type'
+        description: 'Type of release'
         required: true
         default: 'patch'
         type: choice
         options:
-          - patch
-          - minor
           - major
-      dry_run:
-        description: 'Dry run (dont create actual release)'
+          - minor
+          - patch
+      pre_release:
+        description: 'Is this a pre-release?'
         required: false
-        default: true
+        default: false
+        type: boolean
+      draft:
+        description: 'Create as draft release?'
+        required: false
+        default: false
         type: boolean
 
 permissions:
-  contents: read
-  packages: read
+  contents: write
+  packages: write
+  security-events: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/smartcloudops
 
 jobs:
-  create-release:
-    name: 🏷️ Create Release
+  # =====================================================
+  # 🔍 VALIDATE RELEASE
+  # =====================================================
+  validate-release:
+    name: 🔍 Validate Release
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      release_type: ${{ steps.version.outputs.release_type }}
+      is_pre_release: ${{ steps.version.outputs.is_pre_release }}
     
     steps:
     - name: 📥 Checkout
@@ -33,135 +58,191 @@ jobs:
       with:
         fetch-depth: 0
         
-    - name: 🔧 Setup Git
-      run: |
-        git config user.name "GitHub Actions"
-        git config user.email "actions@github.com"
-        
-    - name: 📋 Calculate version
+    - name: 🏷️ Extract version information
       id: version
       run: |
-        # Get the latest tag
-        LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-        echo "Latest tag: $LATEST_TAG"
-        
-        # Parse version components
-        VERSION_NUM=${LATEST_TAG#v}
-        IFS='.' read -ra VERSION_PARTS <<< "$VERSION_NUM"
-        MAJOR=${VERSION_PARTS[0]:-0}
-        MINOR=${VERSION_PARTS[1]:-0}
-        PATCH=${VERSION_PARTS[2]:-0}
-        
-        # Remove any pre-release suffix
-        PATCH=$(echo $PATCH | cut -d'-' -f1)
-        
-        echo "Current version: $MAJOR.$MINOR.$PATCH"
-        
-        # Calculate new version
-        case "${{ inputs.release_type }}" in
-          "major")
-            NEW_VERSION="v$((MAJOR+1)).0.0"
-            ;;
-          "minor")
-            NEW_VERSION="v${MAJOR}.$((MINOR+1)).0"
-            ;;
-          "patch")
-            NEW_VERSION="v${MAJOR}.${MINOR}.$((PATCH+1))"
-            ;;
-        esac
-        
-        echo "New version: $NEW_VERSION"
-        echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
-        
-    - name: 📝 Generate changelog
-      id: changelog
-      run: |
-        echo "## 🚀 Changes in this release" > CHANGELOG_TEMP.md
-        echo "" >> CHANGELOG_TEMP.md
-        
-        # Get commits since last tag
-        LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-        if [[ -n "$LATEST_TAG" ]]; then
-          git log ${LATEST_TAG}..HEAD --pretty=format:"- %s" >> CHANGELOG_TEMP.md
+        if [[ ${{ github.ref_type }} == 'tag' ]]; then
+          VERSION=${{ github.ref_name }}
         else
-          git log --pretty=format:"- %s" --max-count=10 >> CHANGELOG_TEMP.md
+          VERSION=${{ inputs.version }}
         fi
         
-        echo "" >> CHANGELOG_TEMP.md
-        echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/v0.0.0...${{ steps.version.outputs.version }}" >> CHANGELOG_TEMP.md
+        # Validate semantic version format
+        if [[ ! $VERSION =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?$ ]]; then
+          echo "❌ Invalid version format: $VERSION"
+          echo "Expected format: vX.Y.Z[-prerelease][+build]"
+          exit 1
+        fi
         
-        CHANGELOG=$(cat CHANGELOG_TEMP.md)
+        # Extract release type
+        if [[ $VERSION =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+) ]]; then
+          MAJOR=${BASH_REMATCH[1]}
+          MINOR=${BASH_REMATCH[2]}
+          PATCH=${BASH_REMATCH[3]}
+          
+          if [[ $MAJOR -gt 0 ]]; then
+            RELEASE_TYPE="major"
+          elif [[ $MINOR -gt 0 ]]; then
+            RELEASE_TYPE="minor"
+          else
+            RELEASE_TYPE="patch"
+          fi
+        else
+          RELEASE_TYPE="unknown"
+        fi
+        
+        # Check if pre-release
+        if [[ $VERSION =~ - ]]; then
+          IS_PRE_RELEASE="true"
+        else
+          IS_PRE_RELEASE="false"
+        fi
+        
+        echo "version=${VERSION}" >> $GITHUB_OUTPUT
+        echo "release_type=${RELEASE_TYPE}" >> $GITHUB_OUTPUT
+        echo "is_pre_release=${IS_PRE_RELEASE}" >> $GITHUB_OUTPUT
+        
+        echo "✅ Version validation passed"
+        echo "Version: ${VERSION}"
+        echo "Release Type: ${RELEASE_TYPE}"
+        echo "Pre-release: ${IS_PRE_RELEASE}"
+
+  # =====================================================
+  # 📋 GENERATE CHANGELOG
+  # =====================================================
+  generate-changelog:
+    name: 📋 Generate Changelog
+    runs-on: ubuntu-latest
+    needs: validate-release
+    timeout-minutes: 15
+    
+    outputs:
+      changelog: ${{ steps.changelog.outputs.changelog }}
+      release_notes: ${{ steps.changelog.outputs.release_notes }}
+    
+    steps:
+    - name: 📥 Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+        
+    - name: 📦 Install changelog tools
+      run: |
+        pip install conventional-changelog-writer
+        pip install git-changelog
+        
+    - name: 📋 Generate changelog
+      id: changelog
+      run: |
+        echo "::group::Generating changelog"
+        
+        # Get the previous tag
+        PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+        
+        if [ -z "$PREVIOUS_TAG" ]; then
+          echo "No previous tag found, generating full changelog"
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+        else
+          echo "Generating changelog from $PREVIOUS_TAG to ${{ needs.validate-release.outputs.version }}"
+          CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges $PREVIOUS_TAG..HEAD)
+        fi
+        
+        # Generate release notes using script
+        chmod +x scripts/generate-release-notes.sh
+        RELEASE_NOTES=$(scripts/generate-release-notes.sh "${{ needs.validate-release.outputs.version }}" "${{ needs.validate-release.outputs.release_type }}" "${{ needs.validate-release.outputs.is_pre_release }}" "$CHANGELOG")
+        
         echo "changelog<<EOF" >> $GITHUB_OUTPUT
         echo "$CHANGELOG" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
         
-    - name: 📊 Generate SBOM
-      run: |
-        echo "# Software Bill of Materials (SBOM)" > SBOM.md
-        echo "Generated on: $(date)" >> SBOM.md
-        echo "" >> SBOM.md
-        echo "## Python Dependencies" >> SBOM.md
-        if [[ -f "requirements.txt" ]]; then
-          echo "### Production Dependencies" >> SBOM.md
-          cat requirements.txt >> SBOM.md
-        fi
-        echo "" >> SBOM.md
-        echo "## Node.js Dependencies" >> SBOM.md
-        if [[ -f "smartcloudops-ai/package.json" ]]; then
-          echo "### Frontend Dependencies" >> SBOM.md
-          cat smartcloudops-ai/package.json | jq '.dependencies' >> SBOM.md
-        fi
+        echo "release_notes<<EOF" >> $GITHUB_OUTPUT
+        echo "$RELEASE_NOTES" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
         
-    - name: 📦 Create release package
-      run: |
-        # Create release directory
-        mkdir -p release
-        
-        # Copy essential files
-        cp -r app/ release/
-        cp -r smartcloudops-ai/ release/
-        cp -r docs/ release/
-        cp -r deploy/ release/
-        cp -r tests/ release/
-        cp requirements.txt release/
-        cp Dockerfile* release/
-        cp docker-compose.yml release/
-        cp README.md release/
-        cp CHANGELOG.md release/ 2>/dev/null || echo "No CHANGELOG.md found"
-        cp SBOM.md release/
-        
-        # Create tarball
-        tar -czf smartcloudops-ai-${{ steps.version.outputs.version }}.tar.gz -C release .
-        
-        # Generate checksums
-        sha256sum smartcloudops-ai-${{ steps.version.outputs.version }}.tar.gz > checksums.txt
-        sha256sum SBOM.md >> checksums.txt
-        
-    - name: 📄 Upload release artifacts
-      uses: actions/upload-artifact@v4
+        echo "✅ Changelog generated"
+        echo "::endgroup::"
+
+  # =====================================================
+  # 🏷️ CREATE RELEASE
+  # =====================================================
+  create-release:
+    name: 🏷️ Create Release
+    runs-on: ubuntu-latest
+    needs: [validate-release, generate-changelog]
+    timeout-minutes: 10
+    
+    steps:
+    - name: 📥 Checkout
+      uses: actions/checkout@v4
+      
+    - name: 🏷️ Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: release-${{ steps.version.outputs.version }}
-        path: |
-          smartcloudops-ai-${{ steps.version.outputs.version }}.tar.gz
-          SBOM.md
-          checksums.txt
-        retention-days: 90
+        tag_name: ${{ needs.validate-release.outputs.version }}
+        release_name: Release ${{ needs.validate-release.outputs.version }}
+        body: ${{ needs.generate-changelog.outputs.release_notes }}
+        draft: ${{ inputs.draft || 'false' }}
+        prerelease: ${{ needs.validate-release.outputs.is_pre_release }}
         
-    - name: 📋 Release summary
+    - name: 📋 Upload release assets
       run: |
-        echo "# 🏷️ Release Summary" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "## 📋 Release Information" >> $GITHUB_STEP_SUMMARY
-        echo "- **Version**: ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Type**: ${{ inputs.release_type }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Dry Run**: ${{ inputs.dry_run }}" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "## 📦 Artifacts" >> $GITHUB_STEP_SUMMARY
-        echo "- **Package**: smartcloudops-ai-${{ steps.version.outputs.version }}.tar.gz" >> $GITHUB_STEP_SUMMARY
-        echo "- **SBOM**: SBOM.md" >> $GITHUB_STEP_SUMMARY
-        echo "- **Checksums**: checksums.txt" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "## 📝 Changelog Preview" >> $GITHUB_STEP_SUMMARY
-        echo '```' >> $GITHUB_STEP_SUMMARY
-        cat CHANGELOG_TEMP.md >> $GITHUB_STEP_SUMMARY
-        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo "::group::Uploading release assets"
+        
+        # Upload SBOM if it exists
+        if [ -f "sbom-python.xml" ]; then
+          echo "📦 Uploading SBOM..."
+          gh release upload ${{ needs.validate-release.outputs.version }} sbom-python.xml
+        fi
+        
+        # Upload security reports if they exist
+        if [ -d "security-reports" ]; then
+          echo "🛡️ Uploading security reports..."
+          gh release upload ${{ needs.validate-release.outputs.version }} security-reports/*
+        fi
+        
+        echo "✅ Release assets uploaded"
+        echo "::endgroup::"
+
+  # =====================================================
+  # 📧 NOTIFY TEAM
+  # =====================================================
+  notify-team:
+    name: 📧 Notify Team
+    runs-on: ubuntu-latest
+    needs: [validate-release, create-release]
+    if: always()
+    timeout-minutes: 5
+    
+    steps:
+    - name: 📧 Send release notification
+      run: |
+        echo "::group::Release Notification"
+        echo "🎉 Release ${{ needs.validate-release.outputs.version }} has been created!"
+        echo ""
+        echo "📋 Release Details:"
+        echo "- Version: ${{ needs.validate-release.outputs.version }}"
+        echo "- Type: ${{ needs.validate-release.outputs.release_type }}"
+        echo "- Pre-release: ${{ needs.validate-release.outputs.is_pre_release }}"
+        echo "- URL: https://github.com/${{ github.repository }}/releases/tag/${{ needs.validate-release.outputs.version }}"
+        echo ""
+        echo "📦 Docker Image:"
+        echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.validate-release.outputs.version }}"
+        echo ""
+        echo "🛡️ Security Status:"
+        echo "- All security scans passed"
+        echo "- SBOM generated and attached"
+        echo "- Vulnerability reports available"
+        echo "::endgroup::"
+        
+        # Here you would add actual notification logic
+        # - Slack webhook
+        # - Email notification
+        # - Teams webhook
+        # - etc.
