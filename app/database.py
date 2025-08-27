@@ -45,7 +45,7 @@ def create_db_engine():
     database_url = get_database_url()
 
     # Engine configuration
-    engine_kwargs = {:
+    engine_kwargs = {
         "echo": getattr(config, "DEBUG", False),  # Log SQL queries in debug mode
     }
 

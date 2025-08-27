@@ -1,9 +1,9 @@
 from datetime import datetime
 
-"
+"""
 Security Configuration for SmartCloudOps AI
 Comprehensive security settings and validation rules
-    """"""
+"""
 import os
 import re
 from datetime import timedelta

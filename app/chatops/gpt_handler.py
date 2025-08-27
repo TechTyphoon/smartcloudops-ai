@@ -16,11 +16,11 @@ from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 
-:
+
 class GPTHandler:
     """GPT handler for ChatOps queries with input sanitization and
     context management."""
-:
+
     def __init__(self, api_key: str = None):
         """Initialize GPT handler."""
         self.api_key = api_key or os.getenv("OPENAI_API_KEY")
@@ -67,7 +67,7 @@ class GPTHandler:
         )
 :
     def sanitize_input(self, query: str) -> str:
-        """Enhanced sanitize and validate user input with comprehensive security checks.""":
+        """Enhanced sanitize and validate user input with comprehensive security checks."""
         if not query or not isinstance(query, str):
             raise ValueError("Query must be a non-empty string")
 

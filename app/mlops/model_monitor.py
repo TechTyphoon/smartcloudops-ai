@@ -232,29 +232,28 @@ class ModelMonitor:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "
-            INSERT INTO prediction_logs ()
+        cursor.execute("""
+            INSERT INTO prediction_logs (
                 log_id, model_id, model_version, timestamp, input_features,
                 prediction, confidence, prediction_time_ms, error_message
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
-            ()
-                log_id,
-                model_id,
-                model_version,
-                datetime.now(),
-                json.dumps(input_features),
-                json.dumps(prediction),
-                confidence,
-                prediction_time_ms,
-                error_message))
+        """, (
+            log_id,
+            model_id,
+            model_version,
+            datetime.now(),
+            json.dumps(input_features),
+            json.dumps(prediction),
+            confidence,
+            prediction_time_ms,
+            error_message
+        ))
 
         conn.commit()
         conn.close()
 
     def compute_metrics(self, model_id: str, model_version: str, time_window_hours: int = 1) -> ModelPerformanceMetrics:
-        "Compute performance metrics for a time window",
+        """Compute performance metrics for a time window"""
         end_time = datetime.now()
         start_time = end_time - timedelta(hours=time_window_hours)
 
@@ -270,7 +269,7 @@ class ModelMonitor:
         error_rate = error_count / prediction_count if prediction_count > 0 else 0
 
         # Prediction times
-        prediction_times = []
+        prediction_times = [
             p.get("prediction_time_ms", 0)
             for p in predictions
             if p.get("prediction_time_ms") is not None
@@ -278,7 +277,7 @@ class ModelMonitor:
         avg_prediction_time_ms = np.mean(prediction_times) if prediction_times else 0
 
         # Confidence distribution
-        confidences = []
+        confidences = [
             p.get("confidence", 0)
             for p in predictions
             if p.get("confidence") is not None
@@ -297,7 +296,7 @@ class ModelMonitor:
         # Feature importance drift
         feature_importance_drift = self._calculate_feature_importance_drift(model_id, model_version, predictions)
 
-        metrics = ModelPerformanceMetrics()
+        metrics = ModelPerformanceMetrics(
             model_id=model_id,
             model_version=model_version,
             timestamp=end_time,
@@ -312,20 +311,21 @@ class ModelMonitor:
             outlier_rate=outlier_rate,
             confidence_distribution=confidence_distribution,
             feature_importance_drift=feature_importance_drift,
-            data_quality_score=data_quality_score)
+            data_quality_score=data_quality_score
+        )
 
         # Save metrics
         self._save_metrics(metrics)
 
         return metrics
         def check_alerts(self, metrics: ModelPerformanceMetrics) -> List[ModelAlert]:
-        "Check for alert conditions based on metrics",
+            """Check for alert conditions based on metrics"""
         alerts = []
 
         # High error rate alert
         if metrics.error_rate > self.monitoring_config["error_rate_threshold"]:
-            alerts.append()
-                self._create_alert()
+            alerts.append(
+                self._create_alert(
                     metrics.model_id,
                     metrics.model_version,
                     "high_error_rate",
