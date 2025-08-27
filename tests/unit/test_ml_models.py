@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import pytest
+from unittest.mock import Mock, patch
 """
 Unit tests for ML Models module
 Tests anomaly detection, model training, and prediction functionality
@@ -36,7 +38,7 @@ class TestAnomalyDetector:
 
     @pytest.fixture
     def mock_config(self):
-        """Create mock configuration for testing.""f"
+        """Create mock configuration for testing."""
         return {
             "MODEL_PATH": "/tmp/test_model.pkl",
             "ANOMALY_THRESHOLD": 0.7,
@@ -188,7 +190,7 @@ class TestAnomalyDetector:
         assert detector.config["ANOMALY_THRESHOLD"] <= 1.0
 
     def test_data_validation(self, mock_config):
-        """Test data validation functionality.""f"
+        """Test data validation functionality."""
         detector = AnomalyDetector(mock_config)
 
         # Test valid data
@@ -213,7 +215,7 @@ class TestModelVersioning:
 
     @pytest.fixture
     def mock_config(self):
-        """Create mock configuration for versioning tests.""f"
+        """Create mock configuration for versioning tests."""
         return {
             "MODEL_REGISTRY_PATH": "/tmp/model_registry",
             "VERSION_FORMAT": "v{major}.{minor}.{patch}",
@@ -254,7 +256,7 @@ class TestMLModelsIntegration:
 
     @pytest.fixture
     def sample_data(self):
-        """Create sample data for integration testing.""f"
+        """Create sample data for integration testing."""
         np.random.seed(42)
         return pd.DataFrame(
             {
@@ -266,7 +268,7 @@ class TestMLModelsIntegration:
 
     @patch("ml_models.anomaly_detector.joblib")
     def test_full_ml_pipeline(self, mock_joblib, sample_data):
-        """Test complete ML pipeline from training to prediction.""f"
+        """Test complete ML pipeline from training to prediction."""
         config = {
             "MODEL_PATH": "/tmp/test_model.pkl",
             "ANOMALY_THRESHOLD": 0.7,
@@ -291,7 +293,7 @@ class TestMLModelsIntegration:
         assert eval_result["success"] is True
 
     def test_model_persistence(self, sample_data):
-        """Test model persistence across sessions.""f"
+        """Test model persistence across sessions."""
         config = {
             "MODEL_PATH": "/tmp/persistent_model.pkl",
             "ANOMALY_THRESHOLD": 0.7,
@@ -329,7 +331,7 @@ class TestMLModelsErrorHandling:
     """Test error handling in ML models."""
 
     def test_invalid_data_handling(self):
-        """Test handling of invalid data.""f"
+        """Test handling of invalid data."""
         config = {
             "MODEL_PATH": "/tmp/test_model.pkl",
             "ANOMALY_THRESHOLD": 0.7,
@@ -350,7 +352,7 @@ class TestMLModelsErrorHandling:
         assert "error" in result
 
     def test_model_file_errors(self):
-        """Test handling of model file errors.""f"
+        """Test handling of model file errors."""
         config = {
             "MODEL_PATH": "/tmp/test_model.pkl",
             "ANOMALY_THRESHOLD": 0.7,
@@ -366,7 +368,7 @@ class TestMLModelsErrorHandling:
         assert "error" in result
 
     def test_configuration_errors(self):
-        """Test handling of configuration errors.""f"
+        """Test handling of configuration errors."""
         # Test with missing required config
         try:
             detector = AnomalyDetector({})
@@ -382,7 +384,7 @@ class TestMLModelsPerformance:
 
     @pytest.fixture
     def large_sample_data(self):
-        """Create large sample data for performance testing.""f"
+        """Create large sample data for performance testing."""
         np.random.seed(42)
         n_samples = 10000
         return pd.DataFrame(
@@ -397,7 +399,7 @@ class TestMLModelsPerformance:
 
     @patch("ml_models.anomaly_detector.IsolationForest")
     def test_training_performance(self, mock_isolation_forest, large_sample_data):
-        """Test model training performance.""f"
+        """Test model training performance."""
 
         config = {
             "MODEL_PATH": "/tmp/test_model.pkl",
@@ -422,7 +424,7 @@ class TestMLModelsPerformance:
 
     @patch("ml_models.anomaly_detector.IsolationForest")
     def test_prediction_performance(self, mock_isolation_forest, large_sample_data):
-        """Test prediction performance.""f"
+        """Test prediction performance."""
 
         config = {
             "MODEL_PATH": "/tmp/test_model.pkl",

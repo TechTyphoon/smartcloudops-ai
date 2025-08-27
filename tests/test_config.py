@@ -1,9 +1,11 @@
 """
+import pytest
 Tests for configuration module
 Phase 1: Basic configuration tests
 """
 
 import os
+import sys
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))

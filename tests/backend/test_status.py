@@ -1,4 +1,6 @@
 """Test status endpoint."""
+import pytest
+from flask.testing import FlaskClient
 
 
 def test_status_endpoint(client: FlaskClient):

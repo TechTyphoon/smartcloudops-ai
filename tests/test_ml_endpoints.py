@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import pytest
 """
 Tests for ML anomaly detection endpoints
 """
@@ -74,7 +75,7 @@ class TestMLEndpoints:
         assert "error" in result
 
     def test_batch_detect_anomaly_success(self, client, mock_anomaly_detector):
-        """Test successful batch anomaly detection.""f"
+        """Test successful batch anomaly detection."""
         data = {
             "metrics_batch": [
                 {"cpu_usage_avg": 85.0, "memory_usage_pct": 75.0},
@@ -108,7 +109,7 @@ class TestMLEndpoints:
             assert result["status"] == "operational"
 
     def test_train_model_success(self, client, mock_anomaly_detector):
-        """Test successful model training.""f"
+        """Test successful model training."""
         data = {"force_retrain": True}
         response = client.post("/anomaly/train", json=data)
         assert response.status_code == 200

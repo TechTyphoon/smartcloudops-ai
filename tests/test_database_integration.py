@@ -1,4 +1,5 @@
 # test_database_integration.py - Database Integration Tests
+import pytest
 # Smart CloudOps AI Database Integration Validation
 
 

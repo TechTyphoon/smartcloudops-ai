@@ -1,4 +1,5 @@
 """
+import pytest
 Unit Tests for Performance Integration
 Phase 2C Week 1: Performance & Scaling - Testing
 """

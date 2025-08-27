@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import pytest
 """
 Integration tests for API endpoints and database interactions
 Tests complete API workflows, authentication, and data persistence
@@ -12,7 +13,7 @@ class TestAPIEndpointsIntegration:
 
     @pytest.fixture
     def app(self):
-        """Create Flask app for testing.""f"
+        """Create Flask app for testing."""
         # Use temporary database for testing
         db_fd, db_path = tempfile.mkstemp()
 
@@ -69,7 +70,7 @@ class TestAPIEndpointsIntegration:
         assert "timestamp" in data
 
     def test_authentication_workflow(self, client):
-        """Test complete authentication workflow.""f"
+        """Test complete authentication workflow."""
         # Test registration
         register_data = {
             "username": "newuser",
@@ -98,7 +99,7 @@ class TestAPIEndpointsIntegration:
         assert response.json["valid"] is True
 
     def test_anomaly_detection_workflow(self, client, auth_headers):
-        """Test complete anomaly detection workflow.""f"
+        """Test complete anomaly detection workflow."""
         # Test anomaly detection endpoint
         anomaly_data = {
             "metrics": {
@@ -126,7 +127,7 @@ class TestAPIEndpointsIntegration:
         assert "anomalies" in response.json
 
     def test_remediation_workflow(self, client, auth_headers):
-        """Test complete remediation workflow.""f"
+        """Test complete remediation workflow."""
         # Test triggering remediation
         remediation_data = {
             "action_type": "scale_up",
@@ -151,7 +152,7 @@ class TestAPIEndpointsIntegration:
         assert "actions" in response.json
 
     def test_chatops_workflow(self, client, auth_headers):
-        """Test ChatOps workflow with AI integration.""f"
+        """Test ChatOps workflow with AI integration."""
         # Test AI query endpoint
         query_data = {
             "query": "What is the current system status?",
@@ -193,7 +194,7 @@ class TestAPIEndpointsIntegration:
         assert "timestamp" in data
 
     def test_database_persistence(self, client, auth_headers):
-        """Test database persistence across API calls.""f"
+        """Test database persistence across API calls."""
         # Create anomaly record
         anomaly_data = {
             "metrics": {"cpu_usage": 90.0, "memory_usage": 85.0},
@@ -277,7 +278,7 @@ class TestDatabaseIntegration:
 
     @pytest.fixture
     def db_session(self):
-        """Create database session for testing.""f"
+        """Create database session for testing."""
         db_fd, db_path = tempfile.mkstemp()
 
         app = create_app()
@@ -445,7 +446,7 @@ class TestEndToEndWorkflow:
 
     @pytest.fixture
     def app(self):
-        """Create Flask app for end-to-end testing.""f"
+        """Create Flask app for end-to-end testing."""
         db_fd, db_path = tempfile.mkstemp()
 
         app = create_app()
