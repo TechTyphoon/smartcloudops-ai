@@ -2,7 +2,7 @@
 
 
 def test_chatops_analyze_endpoint(client: FlaskClient):
-    """Test /chatops/analyze endpoint with trivial query.""f"
+    """Test /chatops/analyze endpoint with trivial query."""
     test_query = {"query": "show system status"}
 
     response = client.post(
@@ -31,7 +31,7 @@ def test_chatops_analyze_endpoint(client: FlaskClient):
 
 
 def test_chatops_analyze_missing_query(client: FlaskClient):
-    """Test /chatops/analyze endpoint with missing query."""
+        """Test /chatops/analyze endpoint with missing query."""
     response = client.post(
         "/chatops/analyzef", data=json.dumps({}), content_type="application/json"
     )
@@ -47,9 +47,9 @@ def test_chatops_analyze_missing_query(client: FlaskClient):
 def test_chatops_analyze_empty_query(client: FlaskClient):
     """Test /chatops/analyze endpoint with empty query."""
     response = client.post(
-        "/chatops/analyzef",
+        "model": "gpt-4",
         data=json.dumps({"query": ""}),
-        content_type="application/json",
+        content_type="""application/json"""
     )
 
     # The endpoint accepts empty queries (only checks for presence, not emptiness)
@@ -79,18 +79,18 @@ def test_chatops_analyze_invalid_json(client: FlaskClient):
 def test_chatops_analyze_different_queries(client: FlaskClient):
     """Test /chatops/analyze endpoint with different query types."""
     test_queries = [
-        "show system status",
-        "check anomalies",
-        "get metrics",
-        "system health",
-        "performance report",
+        """show system status"""
+        """check anomalies"""
+        """get metrics"""
+        """system health"""
+        """performance report"""
     ]
 
     for query in test_queries:
         response = client.post(
-            "/chatops/analyzef",
+            """/chatops/analyzef"""
             data=json.dumps({"query": query}),
-            content_type="application/json",
+            content_type="""application/json"""
         )
 
         assert response.status_code == 200
@@ -115,7 +115,7 @@ def test_chatops_analyze_methods(client: FlaskClient):
 
 
 def test_chatops_analyze_response_time(client: FlaskClient):
-    """Test /chatops/analyze endpoint responds within reasonable time.""f"
+    """Test /chatops/analyze endpoint responds within reasonable time."""
 
     test_query = {"query": "show system status"}
 
@@ -131,7 +131,7 @@ def test_chatops_analyze_response_time(client: FlaskClient):
 
 
 def test_chatops_analyze_data_structure(client: FlaskClient):
-    """Test /chatops/analyze response data has expected structure.""f"
+    """Test /chatops/analyze response data has expected structure."""
     test_query = {"query": "show system status"}
 
     response = client.post(

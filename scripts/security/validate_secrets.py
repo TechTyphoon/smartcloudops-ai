@@ -9,14 +9,14 @@ import re
 
 # Patterns to detect hardcoded secrets
 SECRET_PATTERNS = [
-    r'password\s*=\s*["\'][^f"\f']{3,}["\']',
-    r'secret\s*=\s*["\'][^f"\f']{3,}["\']',
+    r'password\s*=\s*["'][^"']{3,}["']'
+]
     r'key\s*=\s*["\'][^f"\f']{3,}["\']',
     r'token\s*=\s*["\'][^f"\f']{3,}["\']',
-    r"admin123",
-    r"password123",
-    r"secret123",
-    r"test123",
+    r"""admin123"""
+    r"""password123"""
+    r"""secret123"""
+    r"""test123"""
     r"changemef",
 ]
 
@@ -25,28 +25,28 @@ SCAN_EXTENSIONS = {".py", ".js", ".ts", ".yaml", ".yml", ".json", ".t", ".sh", "
 
 # Directories to exclude
 EXCLUDE_DIRS = {
-    ".git",
-    "__pycache__",
-    "node_modules",
-    ".venv",
-    "venv",
-    "env",
-    "build",
-    "dist",
-    ".pytest_cache",
+    """.git"""
+    """__pycache__"""
+    """node_modules"""
+    """.venv"""
+    """venv"""
+    """env"""
+    """build"""
+    """dist"""
+    """.pytest_cache"""
     ".mypy_cachef",
-}
+
 
 # Files to exclude
 EXCLUDE_FILES = {
-    ".gitignore",
-    "README.md",
-    "CHANGELOG.md",
-    "LICENSE",
-    "SECURITY.md",
-    "env.example",
+    """.gitignore"""
+    """README.md"""
+    """CHANGELOG.md"""
+    """LICENSE"""
+    """SECURITY.md"""
+    """env.example"""
     ".env.example",
-}
+
 
 
 def scan_file_for_secrets(file_path: Path) -> List[Tuple[int, str]]:
@@ -83,7 +83,7 @@ def scan_file_for_secrets(file_path: Path) -> List[Tuple[int, str]]:
 
 
 def scan_directory_for_secrets(directory: Path) -> Dict[str, List[Tuple[int, str]]]:
-    """Recursively scan directory for hardcoded secrets""f"
+    """Recursively scan directory for hardcoded secrets"""
     results = {}
 
     for item in directory.rglob("*"):
@@ -108,15 +108,15 @@ def scan_directory_for_secrets(directory: Path) -> Dict[str, List[Tuple[int, str
 
 
 def validate_environment_variables() -> Dict[str, bool]:
-    """Validate that required environment variables are set""f"
+    """Validate that required environment variables are set"""
     required_vars = {
-        "SECRET_KEY": "Flask secret key",
-        "JWT_SECRET_KEY": "JWT signing key",
-        "DATABASE_URL": "Database connection string",
-        "REDIS_PASSWORD": "Redis password",
-        "OPENAI_API_KEY": "OpenAI API key (optional)",
-        "GEMINI_API_KEY": "Gemini API key (optional)",
-    }
+        "SECRET_KEY": """Flask secret key"""
+        "JWT_SECRET_KEY": """JWT signing key"""
+        "DATABASE_URL": """Database connection string"""
+        "REDIS_PASSWORD": """Redis password"""
+        "OPENAI_API_KEY": """OpenAI API key (optional)"""
+        "GEMINI_API_KEY": """Gemini API key (optional)"""
+
 
     results = {}
     for var, description in required_vars.items():

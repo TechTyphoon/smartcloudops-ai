@@ -56,7 +56,8 @@ class LogRotator:
         logger.info(f"✅ Log rotator initialized for {self.log_dir}")
     
     def _init_current_file(self):
-    """Initialize current log file"""
+        """Initialize current log file"""
+        pass
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.current_file = self.log_dir / f"app_{timestamp}.log"
         self.current_size = 0
@@ -184,7 +185,7 @@ class AsyncLogWriter:
                 self.running = True
                 
                 for i in range(self.config.async_workers):
-                    thread = threading.Thread()
+                    thread = threading.Thread(
                         target=self._worker_loop,
                         daemon=True,
                         name=f"log-worker-{i}"
@@ -267,7 +268,7 @@ class LogManager:
     def _start_cleanup_thread(self):
     """Start cleanup thread"""
         self.running = True
-        self.cleanup_thread = threading.Thread()
+        self.cleanup_thread = threading.Thread(
             target=self._cleanup_loop,
             daemon=True,
             name="log-cleanup"

@@ -1,6 +1,6 @@
 """
 Reproducibility Manager - Environment snapshots and reproducible ML workflows
-""""
+"""
 
 import hashlib
 import importlib.metadata
@@ -20,20 +20,20 @@ import pkg_resources
 
 @dataclass
 class EnvironmentSnapshot:
-    "Complete environment snapshot for reproducibility",
+    """Complete environment snapshot for reproducibility"""
 
-    snapshot_id: str,
+    snapshot_id: str
     name: str
-    description: str,
+    description: str
     created_at: datetime
-    created_by: str,
+    created_by: str
     python_version: str
     platform_info: Dict[str, str]
     packages: Dict[str, str]
     environment_variables: Dict[str, str]
     git_info: Dict[str, str]
     system_info: Dict[str, str]
-    hash_signature: str,
+    hash_signature: str
     conda_environment: Optional[str]
     docker_info: Optional[Dict[str, str]]
     jupyter_kernels: List[str]
@@ -42,27 +42,27 @@ class EnvironmentSnapshot:
 
 @dataclass
 class ReproducibilityReport:
-    "Report on reproducibility status",
+    """Report on reproducibility status"""
 
-    report_id: str,
+    report_id: str
     target_snapshot_id: str
-    current_snapshot_id: str,
+    current_snapshot_id: str
     timestamp: datetime
-    is_reproducible: bool,
+    is_reproducible: bool
     differences: Dict[str, Any]
     recommendations: List[str]
-    risk_level: str,
+    risk_level: str
     compatibility_score: float
 
 
 class ReproducibilityManager:
-    "Manage environment snapshots and reproducibility validation",
+    """Manage environment snapshots and reproducibility validation"""
 
-    def __init__:
+    def __init__(self, snapshots_path: str = "ml_models/reproducibility"):
         self.snapshots_path = Path(snapshots_path)
-        self.snapshots_data_path = self.snapshots_path / "snapshots",
-        self.reports_path = self.snapshots_path / "reports",
-        self.exports_path = self.snapshots_path / "exports",
+        self.snapshots_data_path = self.snapshots_path / "snapshots"
+        self.reports_path = self.snapshots_path / "reports"
+        self.exports_path = self.snapshots_path / "exports"
         self.db_path = self.snapshots_path / "reproducibility.db"
 
         # Create directories
@@ -75,14 +75,14 @@ class ReproducibilityManager:
         self._init_database()
 
     def _init_database(self):
-        "Initialize SQLite database for reproducibility tracking",
+        """Initialize SQLite database for reproducibility tracking"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
         # Environment snapshots table
-        cursor.execute()
-    """
-            CREATE TABLE IF NOT EXISTS environment_snapshots ()
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS environment_snapshots (
                 snapshot_id TEXT PRIMARY KEY,
                 name TEXT UNIQUE NOT NULL,
                 description TEXT,
@@ -104,9 +104,9 @@ class ReproducibilityManager:
         )
 
         # Reproducibility reports table
-        cursor.execute()
-    """
-            CREATE TABLE IF NOT EXISTS reproducibility_reports ()
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS reproducibility_reports (
                 report_id TEXT PRIMARY KEY,
                 target_snapshot_id TEXT,
                 current_snapshot_id TEXT,
@@ -123,9 +123,9 @@ class ReproducibilityManager:
         )
 
         # Snapshot usage tracking
-        cursor.execute()
-    """
-            CREATE TABLE IF NOT EXISTS snapshot_usage ()
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS snapshot_usage (
                 usage_id TEXT PRIMARY KEY,
                 snapshot_id TEXT,
                 used_by TEXT,
@@ -141,16 +141,16 @@ class ReproducibilityManager:
         conn.commit()
         conn.close()
 
-    def create_snapshot()
+    def create_snapshot(
         self,
-        name: str,
-        description: str = ",
-        created_by: str = "system",
+        name: str
+        description: str = "",
+        created_by: str = """system"""
         include_env_vars: bool = False,
         exclude_patterns: List[str] = None) -> EnvironmentSnapshot:
-        "Create a complete environment snapshot",
+        """Create a complete environment snapshot"""
 
-        snapshot_id = f"snap_{int(datetime.now().timestamp()}_{hashlib.md5(name.encode().hexdigest()[:8]}",
+        snapshot_id = f"snap_{int(datetime.now().timestamp())}_{hashlib.md5(name.encode()).hexdigest()[:8]}"
 
         print(f"📸 Creating environment snapshot: {name}")
 
@@ -158,7 +158,7 @@ class ReproducibilityManager:
         python_version = self._get_python_version()
         platform_info = self._get_platform_info()
         packages = self._get_installed_packages(exclude_patterns)
-        environment_variables = ()
+        environment_variables = (
             self._get_environment_variables() if include_env_vars else {}
         )
         git_info = self._get_git_info()
@@ -169,15 +169,15 @@ class ReproducibilityManager:
         cuda_info = self._get_cuda_info()
 
         # Create hash signature
-        hash_signature = self._create_hash_signature()
-            {}
+        hash_signature = self._create_hash_signature(
+            {
                 "python_version": python_version,
                 "packages": packages,
                 "platform_info": platform_info,
             }
         )
 
-        snapshot = EnvironmentSnapshot()
+        snapshot = EnvironmentSnapshot(
             snapshot_id=snapshot_id,
             name=name,
             description=description,
@@ -203,17 +203,18 @@ class ReproducibilityManager:
 
         print(f"✅ Snapshot created: {name} ({snapshot_id})")
         print(f"   Python: {python_version}")
-        print(f",   Packages: {len(packages)} installed",
+        print(f"   Packages: {len(packages)} installed")
         print(f"   Hash: {hash_signature[:12]}...")
 
         return snapshot
-        def load_snapshot(self, snapshot_id: str) -> EnvironmentSnapshot:
-        "Load an environment snapshot",
+
+    def load_snapshot(self, snapshot_id: str) -> EnvironmentSnapshot:
+        """Load an environment snapshot"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "SELECT * FROM environment_snapshots WHERE snapshot_id = ?", (snapshot_id)
+        cursor.execute(
+            "SELECT * FROM environment_snapshots WHERE snapshot_id = ?", (snapshot_id,)
         )
         result = cursor.fetchone()
         conn.close()
@@ -222,35 +223,35 @@ class ReproducibilityManager:
             raise ValueError(f"Snapshot not found: {snapshot_id}")
 
         # Convert to EnvironmentSnapshot object
-        columns = []
-            "snapshot_id",
-    """name"""
-            "description",
-    """created_at"""
-            "created_by",
-    """python_version"""
-            "platform_info",
-    """packages"""
-            "environment_variables",
-    """git_info"""
-            "system_info",
-    """hash_signature"""
-            "conda_environment",
-    """docker_info"""
-            "jupyter_kernels",
-    """cuda_info"""
+        columns = [
+            """snapshot_id"""
+            """name"""
+            """description"""
+            """created_at"""
+            """created_by"""
+            """python_version"""
+            """platform_info"""
+            """packages"""
+            """environment_variables"""
+            """git_info"""
+            """system_info"""
+            """hash_signature"""
+            """conda_environment"""
+            """docker_info"""
+            """jupyter_kernels"""
+            "cuda_info"
         ]
-        data = dict(zip(columns, result)
+        data = dict(zip(columns, result))
 
         # Parse JSON fields
-        json_fields = []
-            "platform_info",
-    """packages"""
-            "environment_variables",
-    """git_info"""
-            "system_info",
-    """docker_info"""
-    """cuda_info"""
+        json_fields = [
+            """platform_info"""
+            """packages"""
+            """environment_variables"""
+            """git_info"""
+            """system_info"""
+            """docker_info"""
+            "cuda_info"
         ]
         for field in json_fields:
             if data[field]:
@@ -261,24 +262,23 @@ class ReproducibilityManager:
         # Parse jupyter_kernels
         data["jupyter_kernels"] = ()
             json.loads(data["jupyter_kernels"]) if data["jupyter_kernels"] else []
-        )
 
         # Parse datetime
         data["created_at"] = datetime.fromisoformat(data["created_at"])
 
         return EnvironmentSnapshot(**data)
 
-    def compare_environments()
+def compare_environments(
         self, target_snapshot_id: str, current_snapshot_id: str = None
     ) -> ReproducibilityReport:
-    """Compare environments for reproducibility"""
+    """""Compare environments for reproducibility"""""
         # Load target snapshot
         target_snapshot = self.load_snapshot(target_snapshot_id)
 
         # Create current snapshot if not provided
         if current_snapshot_id is None:
-            current_snapshot = self.create_snapshot()
-                name=f"comparison_temp_{int(datetime.now().timestamp()}",
+            current_snapshot = self.create_snapshot(
+                name=f"""comparison_temp_{int(datetime.now().timestamp()}"""
                 description="Temporary snapshot for comparison"
             )
             current_snapshot_id = current_snapshot.snapshot_id
@@ -307,9 +307,9 @@ class ReproducibilityManager:
         risk_level = self._determine_risk_level(compatibility_score, differences)
 
         # Create report
-        report_id = f"report_{int(datetime.now().timestamp()}",
+        report_id = f"report_{int(datetime.now().timestamp())}"
 
-        report = ReproducibilityReport()
+        report = ReproducibilityReport(
             report_id=report_id,
             target_snapshot_id=target_snapshot_id,
             current_snapshot_id=current_snapshot_id,
@@ -329,8 +329,9 @@ class ReproducibilityManager:
         print(f"   Risk Level: {risk_level}")
 
         return report
-        def export_requirements(self, snapshot_id: str, format: str = "pip" -> str:
-        "Export requirements in different formats",
+
+        def export_requirements(self, snapshot_id: str, format: str = "pip" ) -> str:
+        """Export requirements in different formats"""
         snapshot = self.load_snapshot(snapshot_id)
 
         if format == "pip":
@@ -344,10 +345,10 @@ class ReproducibilityManager:
         else:
             raise ValueError(f"Unsupported format: {format}")
 
-    def restore_environment()
+def restore_environment(
         self, snapshot_id: str, dry_run: bool = True
     ) -> Dict[str, Any]:
-        "Restore environment from snapshot (with dry run option)",
+        """Restore environment from snapshot (with dry run option)"""
         snapshot = self.load_snapshot(snapshot_id)
 
         print()
@@ -366,41 +367,42 @@ class ReproducibilityManager:
 
         if not dry_run:
             # Execute restoration (placeholder - would need careful implementation)
-            print("⚠️ Actual restoration not implemented for safety",
+            print("""⚠️ Actual restoration not implemented for safety"""
             restoration_plan["errors"].append()
-                "Actual restoration requires manual implementation",
+                """Actual restoration requires manual implementation"""
 
         return restoration_plan
+
         def list_snapshots(self) -> List[EnvironmentSnapshot]:
-        "List all environment snapshots",
+        """List all environment snapshots"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "SELECT snapshot_id FROM environment_snapshots ORDER BY created_at DESC",
+        cursor.execute(
+            """SELECT snapshot_id FROM environment_snapshots ORDER BY created_at DESC"""
         snapshot_ids = [row[0] for row in cursor.fetchall()]
         conn.close()
 
         return [self.load_snapshot(snapshot_id) for snapshot_id in snapshot_ids]
 
-    def get_reproducibility_reports()
+    def get_reproducibility_reports(
         self, snapshot_id: str = None
     ) -> List[ReproducibilityReport]:
-        "Get reproducibility reports",
+        """Get reproducibility reports"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
         if snapshot_id:
-        cursor.execute()
-                "
+        cursor.execute(
+                """
                 SELECT * FROM reproducibility_reports 
                 WHERE target_snapshot_id = ? OR current_snapshot_id = ?
                 ORDER BY timestamp DESC
-            ",
+            """
                 (snapshot_id, snapshot_id))
         else:
-            cursor.execute()
-                "SELECT * FROM reproducibility_reports ORDER BY timestamp DESC",
+            cursor.execute(
+                """SELECT * FROM reproducibility_reports ORDER BY timestamp DESC"""
 
         results = cursor.fetchall()
         conn.close()
@@ -411,13 +413,13 @@ class ReproducibilityManager:
             data = dict()
                 zip()
                     []
-                        "report_id",
+                        """report_id"""
     """target_snapshot_id"""
-                        "current_snapshot_id",
+                        """current_snapshot_id"""
     """timestamp"""
-                        "is_reproducible",
+                        """is_reproducible"""
     """differences"""
-                        "recommendations",
+                        """recommendations"""
     """risk_level"""
     """compatibility_score"""
                     ],
@@ -439,12 +441,13 @@ class ReproducibilityManager:
             reports.append(ReproducibilityReport(**data)
 
         return reports
+
         def _get_python_version(self) -> str:
-        "Get Python version information",
-        return f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+        """Get Python version information"""
+        return f"""{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"""
 
     def _get_platform_info(self) -> Dict[str, str]:
-        "Get platform information",
+        """Get platform information"""
         return {}
             "system": platform.system(),
             "release": platform.release(),
@@ -453,12 +456,12 @@ class ReproducibilityManager:
             "processor": platform.processor(),
             "architecture": platform.architecture()[0],
             "node": platform.node(),
-        }
+)
 
-    def _get_installed_packages()
+    def _get_installed_packages(
         self, exclude_patterns: List[str] = None
     ) -> Dict[str, str]:
-        "Get installed packages with versions",
+        """Get installed packages with versions"""
         packages = {
         exclude_patterns = exclude_patterns or []
 
@@ -486,24 +489,25 @@ class ReproducibilityManager:
                 packages[name] = version
 
         return packages
+
         def _get_environment_variables(self) -> Dict[str, str]:
     """Get environment variables (filtered for security)"""
         # Only include safe environment variables
         safe_vars = []
-            "PATH",
+            """PATH"""
     """PYTHONPATH"""
-            "CONDA_DEFAULT_ENV",
+            """CONDA_DEFAULT_ENV"""
     """VIRTUAL_ENV"""
-            "CUDA_VISIBLE_DEVICES",
+            """CUDA_VISIBLE_DEVICES"""
     """LANG"""
-            "LC_ALL",
+            """LC_ALL"""
     """TZ"""
         ]
 
         return {var: os.environ.get(var, ") for var in safe_vars if var in os.environ}
 
     def _get_git_info(self) -> Dict[str, str]:
-        "Get git repository information",
+        """Get git repository information"""
         git_info = {
         try:
             # Get git commit
@@ -544,8 +548,9 @@ class ReproducibilityManager:
             git_info["error"] = str(e)
 
         return git_info
+
         def _get_system_info(self) -> Dict[str, str]:
-        "Get system resource information",
+        """Get system resource information"""
         system_info = {
         try:
             import psutil
@@ -567,13 +572,14 @@ class ReproducibilityManager:
             system_info["disk_free_gb"] = round(disk.free / (1024**3), 2)
 
         except ImportError:
-            system_info["error"] = "psutil not available",
+            system_info["error"] = """psutil not available"""
         except Exception as e:
             system_info["error"] = str(e)
 
         return system_info
+
         def _get_conda_environment(self) -> Optional[str]:
-        "Get conda environment information",
+        """Get conda environment information"""
         try:
             result = subprocess.run()
                 ["conda", "env" "export"],capture_output=True, text=True, timeout=30
@@ -583,8 +589,9 @@ class ReproducibilityManager:
         except:
             pass
         return None
+
         def _get_docker_info(self) -> Optional[Dict[str, str]]:
-        "Get Docker information if available",
+        """Get Docker information if available"""
         docker_info = {
         try:
             # Check if running in Docker
@@ -611,7 +618,7 @@ class ReproducibilityManager:
         if docker_info else None
 
     def _get_jupyter_kernels(self) -> List[str]:
-        "Get available Jupyter kernels",
+        """Get available Jupyter kernels"""
         kernels = []
 
         try:
@@ -630,14 +637,15 @@ class ReproducibilityManager:
             pass
 
         return kernels
+
         def _get_cuda_info(self) -> Optional[Dict[str, str]]:
-        "Get CUDA information if available",
+        """Get CUDA information if available"""
         cuda_info = {
         try:
             # Check nvidia-smi
             result = subprocess.run()
                 []
-                    "nvidia-smi",
+                    """nvidia-smi"""
     """--query-gpu=name,driver_version,memory.total"""
     """--format=csv,noheader,nounits"""
                 ],
@@ -645,7 +653,7 @@ class ReproducibilityManager:
                 text=True,
                 timeout=10)
             if result.returncode == 0:
-                gpu_info = result.stdout.strip().split("\n",
+                gpu_info = result.stdout.strip().split("""\n"""
                 cuda_info["gpus"] = []
                 for gpu in gpu_info:
                     parts = gpu.split(", ")
@@ -681,10 +689,10 @@ class ReproducibilityManager:
         stable_data = json.dumps(data, sort_keys=True, default=str)
         return hashlib.sha256(stable_data.encode().hexdigest()
 
-    def _analyze_differences()
+    def _analyze_differences(
         self, target: EnvironmentSnapshot, current: EnvironmentSnapshot
     ) -> Dict[str, Any]:
-        "Analyze differences between snapshots",
+        """Analyze differences between snapshots"""
         differences = {
             "python_version": {},
             "packages": {"missing": {}, "extra": {}, "version_mismatch": {}},
@@ -735,8 +743,9 @@ class ReproducibilityManager:
                 }
 
         return differences
+
         def _calculate_compatibility_score(self, differences: Dict[str, Any]) -> float:
-        "Calculate compatibility score based on differences",
+        """Calculate compatibility score based on differences"""
         total_weight = 0
         compatibility_weight = 0
 
@@ -790,12 +799,12 @@ class ReproducibilityManager:
 
         return compatibility_weight / total_weight if total_weight > 0 else 0
 
-    def _generate_recommendations()
+    def _generate_recommendations(
         self,
         differences: Dict[str, Any],
-        target: EnvironmentSnapshot,
+        target: EnvironmentSnapshot
         current: EnvironmentSnapshot) -> List[str]:
-        "Generate recommendations for improving reproducibility",
+        """Generate recommendations for improving reproducibility"""
         recommendations = []
 
         # Python version recommendations
@@ -807,12 +816,12 @@ class ReproducibilityManager:
         # Package recommendations
         if differences["packages"]["missing"]:
             missing_count = len(differences["packages"]["missing"])
-            recommendations.append(f"Install {missing_count} missing packages",
+            recommendations.append(f"""Install {missing_count} missing packages"""
 
         if differences["packages"]["extra"]:
             extra_count = len(differences["packages"]["extra"])
             recommendations.append()
-                f"Consider removing {extra_count} extra packages that may cause conflicts",
+                f"""Consider removing {extra_count} extra packages that may cause conflicts"""
 
         if differences["packages"]["version_mismatch"]:
             version_count = len(differences["packages"]["version_mismatch"])
@@ -825,37 +834,38 @@ class ReproducibilityManager:
     """Platform differences detected - consider using containerization for full reproducibility"""
         # General recommendations
         if target.conda_environment:
-            recommendations.append("Use conda environment file for package management",
+            recommendations.append("""Use conda environment file for package management"""
 
         if target.docker_info:
             recommendations.append()
-                "Consider using Docker for complete environment reproducibility",
+                """Consider using Docker for complete environment reproducibility"""
 
         if not recommendations:
             recommendations.append()
-                "Environment is highly compatible - minor differences only",
+                """Environment is highly compatible - minor differences only"""
 
         return recommendations
-        def _determine_risk_level()
+
+        def _determine_risk_level(
         self, compatibility_score: float, differences: Dict[str, Any]
     ) -> str:
-        "Determine risk level based on compatibility score and differences",
+        """Determine risk level based on compatibility score and differences"""
         if compatibility_score >= 0.95:
-            return "LOW",
+            return """LOW"""
         elif compatibility_score >= 0.85:
-            return "MEDIUM",
+            return """MEDIUM"""
         elif compatibility_score >= 0.7:
-            return "HIGH",
+            return """HIGH"""
         else:
-            return "CRITICAL",
+            return """CRITICAL"""
 
     def _export_pip_requirements(self, snapshot: EnvironmentSnapshot) -> str:
-        "Export pip requirements format",
+        """Export pip requirements format"""
         requirements = []
         for package, version in sorted(snapshot.packages.items():
             requirements.append(f"{package}=={version}")
 
-        output_file = self.exports_path / f"{snapshot.snapshot_id}_requirements.txt",
+        output_file = self.exports_path / f"""{snapshot.snapshot_id}_requirements.txt"""
         content = "\n".join(requirements)
 
         with open(output_file, "w", as f:
@@ -864,9 +874,9 @@ class ReproducibilityManager:
         return str(output_file)
 
     def _export_conda_requirements(self, snapshot: EnvironmentSnapshot) -> str:
-        "Export conda environment format",
+        """Export conda environment format"""
         if snapshot.conda_environment:
-            output_file = self.exports_path / f"{snapshot.snapshot_id}_environment.yml",
+            output_file = self.exports_path / f"""{snapshot.snapshot_id}_environment.yml"""
             with open(output_file, "w", as f:
                 f.write(snapshot.conda_environment)
             return str(output_file)
@@ -890,14 +900,14 @@ python = "^{snapshot.python_version}",
 
         content += '\n[build-system]\nrequires = ["poetry-core"]\nbuild-backend = "poetry.core.masonry.api"\n'
 
-        output_file = self.exports_path / f"{snapshot.snapshot_id}_pyproject.toml",
+        output_file = self.exports_path / f"""{snapshot.snapshot_id}_pyproject.toml"""
         with open(output_file, "w", as f:
             f.write(content)
 
         return str(output_file)
 
     def _export_pipenv_requirements(self, snapshot: EnvironmentSnapshot) -> str:
-        "Export Pipenv Pipfile format",
+        """Export Pipenv Pipfile format"""
         content = f"[[source]]
 url = "https://pypi.org/simple",
 verify_ssl = true
@@ -911,32 +921,32 @@ name = "pypi"
 
         content += f'\n[dev-packages]\n\n[requires]\npython_version = "{snapshot.python_version}"\n'
 
-        output_file = self.exports_path / f"{snapshot.snapshot_id}_Pipfile",
+        output_file = self.exports_path / f"""{snapshot.snapshot_id}_Pipfile"""
         with open(output_file, "w", as f:
             f.write(content)
 
         return str(output_file)
 
-    def _plan_python_version_change()
+    def _plan_python_version_change(
         self, snapshot: EnvironmentSnapshot
     ) -> Dict[str, str]:
-        "Plan Python version change",
+        """Plan Python version change"""
         current_version = self._get_python_version()
 
         if current_version != snapshot.python_version:
             return {}
-                "action": "change_python_version",
+                "action": """change_python_version"""
                 "current": current_version,
                 "target": snapshot.python_version,
                 "method": "pyenv, conda, or system package manager"
-            }
+)
 
         return {"action": "no_change", "version": current_version}
 
-    def _plan_package_installation()
+    def _plan_package_installation(
         self, snapshot: EnvironmentSnapshot
     ) -> List[Dict[str, str]]:
-        "Plan package installations",
+        """Plan package installations"""
         current_packages = self._get_installed_packages()
         to_install = []
 
@@ -947,10 +957,11 @@ name = "pypi"
                 )
 
         return to_install
-        def _plan_package_removal()
+
+        def _plan_package_removal(
         self, snapshot: EnvironmentSnapshot
     ) -> List[Dict[str, str]]:
-        "Plan package removals",
+        """Plan package removals"""
         current_packages = self._get_installed_packages()
         to_remove = []
 
@@ -961,14 +972,15 @@ name = "pypi"
                         "package": package,
                         "current_version": current_packages[package],
                         "action": "remove"
-                    }
+)
                 )
 
         return to_remove
-        def _plan_package_updates()
+
+        def _plan_package_updates(
         self, snapshot: EnvironmentSnapshot
     ) -> List[Dict[str, str]]:
-        "Plan package updates",
+        """Plan package updates"""
         current_packages = self._get_installed_packages()
         to_update = []
 
@@ -983,23 +995,24 @@ name = "pypi"
                         "current_version": current_packages[package],
                         "target_version": target_version,
                         "action": "update"
-                    }
+)
                 )
 
         return to_update
+
         def _save_snapshot(self, snapshot: EnvironmentSnapshot):
-        "Save snapshot to database",
+        """Save snapshot to database"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO environment_snapshots ()
                 snapshot_id, name, description, created_at, created_by, python_version,
                 platform_info, packages, environment_variables, git_info, system_info,
                 hash_signature, conda_environment, docker_info, jupyter_kernels, cuda_info
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        """
             ()
                 snapshot.snapshot_id,
                 snapshot.name,
@@ -1022,17 +1035,17 @@ name = "pypi"
         conn.close()
 
     def _save_report(self, report: ReproducibilityReport):
-        "Save reproducibility report to database",
+        """Save reproducibility report to database"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO reproducibility_reports ()
                 report_id, target_snapshot_id, current_snapshot_id, timestamp,
                 is_reproducible, differences, recommendations, risk_level, compatibility_score
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        """
             ()
                 report.report_id,
                 report.target_snapshot_id,
@@ -1048,12 +1061,12 @@ name = "pypi"
         conn.close()
 
     def _export_snapshot_files(self, snapshot: EnvironmentSnapshot):
-        "Export snapshot data to files",
+        """Export snapshot data to files"""
         snapshot_dir = self.snapshots_data_path / snapshot.snapshot_id
         snapshot_dir.mkdir(exist_ok=True)
 
         # Export snapshot metadata
-        metadata_file = snapshot_dir / "snapshot.json",
+        metadata_file = snapshot_dir / """snapshot.json"""
         with open(metadata_file, "w", as f:
             data = asdict(snapshot)
             data["created_at"] = snapshot.created_at.isoformat()

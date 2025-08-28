@@ -15,46 +15,46 @@ ai_bp = Blueprint("ai", __name__)
 # Mock data for testing
 MOCK_MODELS = [
     {
-        "id": "anomaly_detector_v1",
-        "name": "Anomaly Detection Model",
-        "type": "anomaly_detection",
-        "version": "1.0.0",
-        "status": "active",
+        "id": """anomaly_detector_v1"""
+        "name": """Anomaly Detection Model"""
+        "type": """anomaly_detection"""
+        "version": """1.0.0"""
+        "status": """active"""
         "accuracy": 0.92,
-        "last_trained": "2024-01-10T14:30:00Z",
+        "last_trained": """2024-01-10T14:30:00Z"""
     },
     {
-        "id": "remediation_recommender_v1",
-        "name": "Remediation Recommendation Model",
-        "type": "recommendation",
-        "version": "1.0.0",
-        "status": "active",
+        "id": """remediation_recommender_v1"""
+        "name": """Remediation Recommendation Model"""
+        "type": """recommendation"""
+        "version": """1.0.0"""
+        "status": """active"""
         "accuracy": 0.87,
-        "last_trained": "2024-01-12T09:15:00Z",
+        "last_trained": """2024-01-12T09:15:00Z"""
     },
 ]
 
 MOCK_RECOMMENDATIONS = [
     {
-        "action_type": "scale_up",
+        "action_type": """scale_up"""
         "confidence": 0.89,
-        "description": "Scale up application instances to handle increased load",
-        "estimated_impact": "high",
-        "execution_time": "2-5 minutes",
+        "description": """Scale up application instances to handle increased load"""
+        "estimated_impact": """high"""
+        "execution_time": """2-5 minutes"""
     },
     {
-        "action_type": "restart_service",
+        "action_type": """restart_service"""
         "confidence": 0.76,
-        "description": "Restart application service to clear memory leaks",
-        "estimated_impact": "medium",
-        "execution_time": "30-60 seconds",
+        "description": """Restart application service to clear memory leaks"""
+        "estimated_impact": """medium"""
+        "execution_time": """30-60 seconds"""
     },
     {
-        "action_type": "cleanup_logs",
+        "action_type": """cleanup_logs"""
         "confidence": 0.65,
-        "description": "Clean up old log files to free disk space",
-        "estimated_impact": "low",
-        "execution_time": "1-2 minutes",
+        "description": """Clean up old log files to free disk space"""
+        "estimated_impact": """low"""
+        "execution_time": """1-2 minutes"""
     },
 ]
 
@@ -73,8 +73,8 @@ def get_recommendations():
             return (
                 jsonify(
                     {
-                        "status": "error",
-                        "message": "Missing required field: anomaly_data",
+                        "status": """error"""
+                        "message": """Missing required field: anomaly_data"""
                     }
                 ),
                 400,
@@ -109,7 +109,7 @@ def get_recommendations():
                 {
                     **rec,
                     "confidence": round(adjusted_confidence, 3),
-                    "reasoning": f"Recommended for {severity} severity {source} anomaly",
+                    "reasoning": f"""Recommended for {severity} severity {source} anomaly"""
                     "anomaly_match_score": round(random.uniform(0.7, 0.95), 3),
                 }
             )
@@ -121,11 +121,11 @@ def get_recommendations():
         return (
             jsonify(
                 {
-                    "status": "success",
+                    "status": """success"""
                     "data": {
                         "recommendations": top_recommendations,
                         "model_info": {
-                            "model_id": "remediation_recommender_v1",
+                            "model_id": """remediation_recommender_v1"""
                             "confidence_threshold": 0.6,
                             "processing_time_ms": round(random.uniform(50, 200), 1),
                         },
@@ -145,8 +145,8 @@ def get_recommendations():
         return (
             jsonify(
                 {
-                    "status": "error",
-                    "message": f"Failed to get recommendations: {str(e)}",
+                    "status": """error"""
+                    "message": f"""Failed to get recommendations: {str(e)}"""
                 }
             ),
             500,
@@ -174,12 +174,13 @@ def analyze_metrics():
 
         # Mock AI analysis
         analysis_result = {
-        analysis_result["anomaly_detected"] = False
-        analysis_result["anomaly_score"] = 0.0
-        analysis_result["confidence"] = 0.0
-        analysis_result["severity"] = "normal"
-        analysis_result["insights"] = []
-        analysis_result["predictions"] = {}
+            "anomaly_detected": False,
+            "anomaly_score": 0.0,
+            "confidence": 0.0,
+            "severity": "normal",
+            "insights": [],
+            "predictions": {}
+        }
 
         # Simple rule-based analysis for demonstration
         cpu_usage = metrics.get("cpu_usage", 0)
@@ -191,30 +192,30 @@ def analyze_metrics():
         if cpu_usage > 80:
             anomaly_indicators.append(
                 {
-                    "metric": "cpu_usage",
+                    "metric": """cpu_usage"""
                     "value": cpu_usage,
                     "threshold": 80,
-                    "severity": "high" if cpu_usage > 90 else "medium",
+                    "severity": "high" if cpu_usage > 90 else """medium"""
                 }
             )
 
         if memory_usage > 85:
             anomaly_indicators.append(
                 {
-                    "metric": "memory_usage",
+                    "metric": """memory_usage"""
                     "value": memory_usage,
                     "threshold": 85,
-                    "severity": "high" if memory_usage > 95 else "medium",
+                    "severity": "high" if memory_usage > 95 else """medium"""
                 }
             )
 
         if error_rate > 5:
             anomaly_indicators.append(
                 {
-                    "metric": "error_rate",
+                    "metric": """error_rate"""
                     "value": error_rate,
                     "threshold": 5,
-                    "severity": "critical" if error_rate > 15 else "high",
+                    "severity": "critical" if error_rate > 15 else """high"""
                 }
             )
 
@@ -242,27 +243,27 @@ def analyze_metrics():
 
             # Generate predictions
             analysis_result["predictions"] = {
-                "trend": "increasing" if len(anomaly_indicators) > 1 else "stable",
-                "estimated_resolution_time": f"{random.randint(5, 30)} minutes",
+                "trend": "increasing" if len(anomaly_indicators) > 1 else """stable"""
+                "estimated_resolution_time": f"""{random.randint(5, 30)} minutes"""
                 "impact_level": analysis_result["severity"],
             }
         else:
             analysis_result["confidence"] = round(random.uniform(0.6, 0.8), 3)
             analysis_result["insights"] = ["All metrics are within normal ranges"]
             analysis_result["predictions"] = {
-                "trend": "stable",
-                "estimated_resolution_time": "N/A",
-                "impact_level": "none",
+                "trend": """stable"""
+                "estimated_resolution_time": """N/A"""
+                "impact_level": """none"""
             }
 
         return (
             jsonify(
                 {
-                    "status": "success",
+                    "status": """success"""
                     "data": {
                         "analysis": analysis_result,
                         "model_info": {
-                            "model_id": "anomaly_detector_v1",
+                            "model_id": """anomaly_detector_v1"""
                             "processing_time_ms": round(random.uniform(100, 500), 1),
                             "features_analyzed": len(metrics),
                         },
@@ -274,7 +275,7 @@ def analyze_metrics():
 
     except Exception as e:
         return (
-            jsonify({"status": "error", "message": f"Failed to analyze metrics: {str(e)}"}),
+            jsonify({"status": "error", "message": f"Failed to analyze metrics: {str(e)}"})
             500,
         )
 
@@ -305,9 +306,9 @@ def chat_query():
             response["intent"] = "anomaly_inquiry"
             response["confidence"] = 0.92
             response["suggested_actions"] = [
-                "View anomaly details",
-                "Get remediation recommendations",
-                "Execute auto-remediation",
+                """View anomaly details"""
+                """Get remediation recommendations"""
+                """Execute auto-remediation"""
             ]
         elif "status" in query or "health" in query:
             response = {
@@ -315,9 +316,9 @@ def chat_query():
             response["intent"] = "status_inquiry"
             response["confidence"] = 0.88
             response["suggested_actions"] = [
-                "View detailed metrics",
-                "Check recent alerts",
-                "View system dashboard",
+                """View detailed metrics"""
+                """Check recent alerts"""
+                """View system dashboard"""
             ]
         elif "performance" in query:
             response = {
@@ -325,9 +326,9 @@ def chat_query():
             response["intent"] = "performance_inquiry"
             response["confidence"] = 0.85
             response["suggested_actions"] = [
-                "View performance dashboard",
-                "Check historical trends",
-                "Set up performance alerts",
+                """View performance dashboard"""
+                """Check historical trends"""
+                """Set up performance alerts"""
             ]
         elif "help" in query or "?" in query:
             response = {
@@ -335,9 +336,9 @@ def chat_query():
             response["intent"] = "help_request"
             response["confidence"] = 0.95
             response["suggested_actions"] = [
-                "Ask about system status",
-                "Investigate anomalies",
-                "Get recommendations",
+                """Ask about system status"""
+                """Investigate anomalies"""
+                """Get recommendations"""
             ]
         else:
             response = {
@@ -345,21 +346,21 @@ def chat_query():
             response["intent"] = "general_inquiry"
             response["confidence"] = 0.60
             response["suggested_actions"] = [
-                "Ask about system health",
-                "Check for anomalies",
-                "View dashboards",
+                """Ask about system health"""
+                """Check for anomalies"""
+                """View dashboards"""
             ]
 
         return (
             jsonify(
                 {
-                    "status": "success",
+                    "status": """success"""
                     "data": {
                         "response": response,
                         "query_metadata": {
                             "original_query": data["query"],
                             "processing_time_ms": round(random.uniform(50, 200), 1),
-                            "language": "en",
+                            "language": """en"""
                             "session_id": data.get("session_id", "default"),
                         },
                     },
@@ -372,8 +373,8 @@ def chat_query():
         return (
             jsonify(
                 {
-                    "status": "error",
-                    "message": f"Failed to process chat query: {str(e)}",
+                    "status": """error"""
+                    "message": f"""Failed to process chat query: {str(e)}"""
                 }
             ),
             500,
@@ -387,7 +388,7 @@ def get_models():
         return (
             jsonify(
                 {
-                    "status": "success",
+                    "status": """success"""
                     "data": {
                         "models": MOCK_MODELS,
                         "total_models": len(MOCK_MODELS),
@@ -402,7 +403,7 @@ def get_models():
 
     except Exception as e:
         return (
-            jsonify({"status": "error", "message": f"Failed to retrieve models: {str(e)}"}),
+            jsonify({"status": "error", "message": f"Failed to retrieve models: {str(e)}"})
             500,
         )
 
@@ -422,8 +423,8 @@ def predict_with_model(model_id):
             return (
                 jsonify(
                     {
-                        "status": "error",
-                        "message": f"Model with ID {model_id} not found",
+                        "status": """error"""
+                        "message": f"""Model with ID {model_id} not found"""
                     }
                 ),
                 404,
@@ -454,7 +455,7 @@ def predict_with_model(model_id):
         return (
             jsonify(
                 {
-                    "status": "success",
+                    "status": """success"""
                     "data": {
                         "prediction": prediction,
                         "model_info": {
@@ -472,6 +473,6 @@ def predict_with_model(model_id):
 
     except Exception as e:
         return (
-            jsonify({"status": "error", "message": f"Failed to make prediction: {str(e)}"}),
+            jsonify({"status": "error", "message": f"Failed to make prediction: {str(e)}"})
             500,
         )

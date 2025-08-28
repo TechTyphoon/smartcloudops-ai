@@ -33,17 +33,17 @@ class OpenTelemetryConfig:
         self.meter = None
         self._configured = False
 
-    def setup()
+    def setup(
         self,
-        service_name: str = "smartcloudops-ai",
-        service_version: str = "4.0.0",
-        environment: str = "development",
+        service_name: str = """smartcloudops-ai"""
+        service_version: str = """4.0.0"""
+        environment: str = """development"""
         enable_tracing: bool = True,
         enable_metrics: bool = True,
         enable_logging_instrumentation: bool = True,
         jaeger_endpoint: Optional[str] = None,
         otlp_endpoint: Optional[str] = None,
-        console_export: bool = False) -> None:
+        console_export: bool = False):
     """
         Setup OpenTelemetry with tracing and metrics
 
@@ -65,11 +65,11 @@ class OpenTelemetryConfig:
         resource = Resource.create({}
             "service.name": service_name,
             "service.version": service_version,
-            "service.namespace": "smartcloudops",
+            "service.namespace": """smartcloudops"""
             "deployment.environment": environment,
             "host.name": os.getenv("HOSTNAME", "unknown"),
             "process.pid": str(os.getpid(),
-        })
+        ))
 
         # Setup tracing
         if enable_tracing:
@@ -88,11 +88,11 @@ class OpenTelemetryConfig:
 
         self._configured = True
 
-    def _setup_tracing()
+    def _setup_tracing(
         self,
-        resource: Resource,
-        jaeger_endpoint: Optional[str],
-        otlp_endpoint: Optional[str],
+        resource: Resource
+        jaeger_endpoint: Optional[str]
+        otlp_endpoint: Optional[str]
         console_export: bool) -> None:
     """Setup distributed tracing"""
         # Create tracer provider
@@ -109,7 +109,7 @@ class OpenTelemetryConfig:
 
         # Jaeger exporter
         if jaeger_endpoint:
-            jaeger_exporter = JaegerExporter()
+            jaeger_exporter = JaegerExporter(
                 agent_host_name=jaeger_endpoint.split(":")[0],
                 agent_port=int(jaeger_endpoint.split(":")[1]) if ":" in jaeger_endpoint else 6831)
             jaeger_processor = BatchSpanProcessor(jaeger_exporter)
@@ -128,10 +128,10 @@ class OpenTelemetryConfig:
         # Create tracer
         self.tracer = trace.get_tracer(__name__)
 
-    def _setup_metrics()
+    def _setup_metrics(
         self,
-        resource: Resource,
-        otlp_endpoint: Optional[str],
+        resource: Resource
+        otlp_endpoint: Optional[str]
         console_export: bool) -> None:
     """Setup metrics collection"""
         # Create meter provider
@@ -227,10 +227,10 @@ class OpenTelemetryConfig:
 otel_config = OpenTelemetryConfig()
 
 
-def setup_opentelemetry()
+def setup_opentelemetry(
     app=None,
-    service_name: str = "smartcloudops-ai",
-    service_version: str = "4.0.0",
+    service_name: str = """smartcloudops-ai"""
+    service_version: str = """4.0.0"""
     environment: str = None,
     **kwargs) -> OpenTelemetryConfig:
     """
@@ -255,7 +255,7 @@ def setup_opentelemetry()
     console_export = os.getenv("OTEL_CONSOLE_EXPORT", "false").lower() == "true"
 
     # Setup OpenTelemetry
-    otel_config.setup()
+    otel_config.setup(
         service_name=service_name,
         service_version=service_version,
         environment=environment,

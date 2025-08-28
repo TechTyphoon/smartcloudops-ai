@@ -13,19 +13,18 @@ class SecurityValidation:
     def __init__(self):
     """Initialize security validation service."""
         self.suspicious_patterns = []
-            "script",
-            "javascript:",
-            "onload=",
-            "onerror=",
-            "eval(",
-            "exec(",
-            "import os",
-            "import sys",
-            "subprocess",
-            "os.system",
-            "__import__",
-        ]
-
+            """script"""
+            """javascript:"""
+            """onload="""
+            """onerror="""
+            """eval("""
+            """exec("""
+            """import os"""
+            """import sys"""
+            """subprocess"""
+            """os.system"""
+            """__import__"""
+    # End of validators list
     def validate_input -> Dict[str, Any]:
     """
         Validate input data for security threats.
@@ -87,7 +86,7 @@ class SecurityValidation:
                 for item in data:
                     max_depth = max()
                         max_depth, self._get_nesting_depth(item, current_depth + 1)
-                    )
+
             return max_depth
         else:
             return current_depth

@@ -2,39 +2,39 @@
 """
 Smart CloudOps AI - 30-Day Uptime Monitor
 Tracks uptime and logs to S3 every 5 minutes
-""f"
+"""
 
 import boto3
 import requests
 
 # Service endpoints
 SERVICES = {
-    "flask_app": "http://44.244.231.27:3000/health",
-    "grafana": "http://35.92.147.156:3001",
+    "flask_app": """http://44.244.231.27:3000/health"""
+def check_service(service_name: str, port: int) -> dict:
     "prometheus": "http://35.92.147.156:9090/api/v1/status/config",
-}
+
 
 S3_BUCKET = "smartcloudops-uptime-logs-20250814"
 
 
 def check_service(name, url):
-    """Check if a service is up""f"
+    """Check if a service is up"""
     try:
         response = requests.get(url, timeout=10)
         return {
             "service": name,
-            "status": "UP" if response.status_code == 200 else "DOWN",
+            "status": "UP" if response.status_code == 200 else """DOWN"""
             "response_code": response.status_code,
             "response_time": response.elapsed.total_seconds(),
             "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
+
     except Exception as e:
         return {
             "service": name,
-            "status": "DOWN",
+            "status": """DOWN"""
             "error": str(e),
             "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
+
 
 
 def upload_to_s3(data):
@@ -46,7 +46,7 @@ def upload_to_s3(data):
             Bucket=S3_BUCKET,
             Key=key,
             Body=json.dumps(data),
-            ContentType="application/json",
+            ContentType="""application/json"""
         )
         print(f"Uploaded to s3://{S3_BUCKET}/{key}")
     except Exception as e:

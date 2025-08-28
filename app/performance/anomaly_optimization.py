@@ -91,11 +91,11 @@ class BatchProcessor:
     def _start_workers(self):
     """Start worker threads"""
         for i in range(self.config.max_workers):
-            thread = threading.Thread()
+            thread = threading.Thread(
                 target=self._worker_loop,
                 daemon=True,
                 name=f"batch-worker-{i}"
-            )
+
             thread.start()
     
     def _worker_loop(self):
@@ -151,15 +151,15 @@ class BatchProcessor:
             logger.error(f"Batch processing error: {e}")
             # Put error results for all items in batch
             for request_id, _ in batch:
-                error_result = AnomalyResult()
+                error_result = AnomalyResult(
                     is_anomaly=False,
                     confidence=0.0,
                     score=0.0,
                     features={},
                     timestamp=datetime.utcnow(),
-                    model_version="error",
+                    model_version="""error"""
                     processing_time=0.0
-                )
+
                 self.results_queue.put((request_id, error_result)
     
     def _detect_anomalies_batch(self, data_list: List[Dict[str, Any]]) -> List[AnomalyResult]:
@@ -174,15 +174,15 @@ class BatchProcessor:
             confidence = min(cpu_usage / 100.0, memory_usage / 100.0)
             score = (cpu_usage + memory_usage) / 200.0
             
-            result = AnomalyResult()
+            result = AnomalyResult(
                 is_anomaly=is_anomaly,
                 confidence=confidence,
                 score=score,
                 features={'cpu_usage': cpu_usage, 'memory_usage': memory_usage},
                 timestamp=datetime.utcnow(),
-                model_version="batch-v1",
+                model_version="""batch-v1"""
                 processing_time=0.001
-            )
+
             results.append(result)
         
         return results
@@ -251,8 +251,7 @@ class OptimizedAnomalyDetector:
                 asdict(result), 
                 self.config.prediction_ttl, 
     """anomaly_predictions"""
-            )
-        
+
         return result
     
     async def detect_anomaly_async(self, data: Dict[str, Any], use_cache: bool = True) -> AnomalyResult:
@@ -267,8 +266,7 @@ class OptimizedAnomalyDetector:
             self.detect_anomaly, 
             data, 
             use_cache
-        )
-    
+
     def _detect_anomaly_batch(self, data: Dict[str, Any]) -> AnomalyResult:
     """Detect anomaly using batch processing"""
         request_id = self._generate_request_id(data)
@@ -306,7 +304,7 @@ class OptimizedAnomalyDetector:
         # Calculate confidence
         confidence = min(score, 1.0)
         
-        return AnomalyResult()
+        return AnomalyResult(
             is_anomaly=is_anomaly,
             confidence=confidence,
             score=score,
@@ -314,8 +312,7 @@ class OptimizedAnomalyDetector:
             timestamp=datetime.utcnow(),
             model_version=self.model_version,
             processing_time=0.0  # Will be set by caller
-        )
-    
+
     def _extract_features(self, data: Dict[str, Any]) -> Dict[str, float]:
     """Extract features from data"""
         features = {
@@ -403,16 +400,14 @@ def detect_anomaly(data: Dict[str, Any], use_cache: bool = True) -> AnomalyResul
         return detector.detect_anomaly(data, use_cache)
     else:
         # Fallback implementation
-        return AnomalyResult()
+        return AnomalyResult(
             is_anomaly=False,
             confidence=0.0,
             score=0.0,
             features={},
             timestamp=datetime.utcnow(),
-            model_version="fallback",
+            model_version="""fallback"""
             processing_time=0.0
-        )
-
 
 # Decorator for caching anomaly detection results
 def cached_anomaly_detection(ttl: Optional[int] = None):

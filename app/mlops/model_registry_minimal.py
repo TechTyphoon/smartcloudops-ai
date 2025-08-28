@@ -69,8 +69,8 @@ class ModelRegistry:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-    """
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS models ()
                 model_id TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
@@ -91,28 +91,28 @@ class ModelRegistry:
                 size_bytes INTEGER,
                 checksum TEXT,
                 UNIQUE(name, version)
-            )
-        """
-        )
+
+        """""
+        # End of method
 
         conn.commit()
         conn.close()
 
-    def register_model()
+    def register_model(
         self,
         model,
-        name: str,
-        version: str,
-        description: str = ",
-        model_type: str = "sklearn",
+        name: str
+        version: str
+        description: str = """
+        model_type: str = """sklearn"""
         algorithm: str = ",
-        framework: str = "scikit-learn",
+        framework: str = """scikit-learn"""
         input_features: List[str] = None,
         output_schema: Dict[str, Any] = None,
         training_data_hash: str = ",
         hyperparameters: Dict[str, Any] = None,
         metrics: Dict[str, float] = None,
-        created_by: str = "system",
+        created_by: str = """system"""
         tags: List[str] = None) -> ModelMetadata:
     """Register a new model in the registry"""
         model_id = f"{name}_{version}_{int(time.time()}"
@@ -126,7 +126,7 @@ class ModelRegistry:
         checksum = self._calculate_checksum(model_file_path)
         size_bytes = model_file_path.stat().st_size
 
-        metadata = ModelMetadata()
+        metadata = ModelMetadata(
             model_id=model_id,
             name=name,
             version=version,
@@ -163,13 +163,13 @@ class ModelRegistry:
         cursor = conn.cursor()
 
         if version == "latest":
-            cursor.execute()
-                "SELECT * FROM models WHERE name = ? ORDER BY created_at DESC LIMIT 1",
+            cursor.execute(
+            """SELECT * FROM models WHERE name = ? ORDER BY created_at DESC LIMIT 1"""
                 (name))
         else:
-            cursor.execute()
-                "SELECT * FROM models WHERE name = ? AND version = ?", (name, version)
-            )
+            cursor.execute(
+            "SELECT * FROM models WHERE name = ? AND version = ?", (name, version)
+
 
         row = cursor.fetchone()
         conn.close()
@@ -194,15 +194,15 @@ class ModelRegistry:
 
         return [self._row_to_metadata(row) for row in rows]
 
-    def update_model_status()
+    def update_model_status(
         self, name: str, version: str, status: ModelStatus
     ) -> ModelMetadata:
     """Update model status"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "UPDATE models SET status = ? WHERE name = ? AND version = ?",
+        cursor.execute(
+            """UPDATE models SET status = ? WHERE name = ? AND version = ?"""
             (status.value, name, version))
 
         conn.commit()
@@ -223,8 +223,8 @@ class ModelRegistry:
             # Delete metadata
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
-            cursor.execute()
-                "DELETE FROM models WHERE name = ? AND version = ?", (name, version)
+            cursor.execute(
+            "DELETE FROM models WHERE name = ? AND version = ?", (name, version)
             )
             conn.commit()
             conn.close()
@@ -238,14 +238,14 @@ class ModelRegistry:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO models 
             (model_id, name, version, description, model_type, algorithm, framework,
              input_features, output_schema, training_data_hash, hyperparameters,
              metrics, created_at, created_by, status, tags, size_bytes, checksum)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        """
             ()
                 metadata.model_id,
                 metadata.name,
@@ -271,7 +271,7 @@ class ModelRegistry:
 
     def _row_to_metadata(self, row) -> ModelMetadata:
     """Convert database row to ModelMetadata"""
-        return ModelMetadata()
+        return ModelMetadata(
             model_id=row[0],
             name=row[1],
             version=row[2],

@@ -10,7 +10,7 @@ class TestFlexibleAIHandler:
     """Test cases for flexible AI handler."""
 
     def test_handler_init_without_api_keys(self):
-        """Test handler initialization without API keys.""f"
+        """Test handler initialization without API keys."""
         with patch.dict(os.environ, {}, clear=True):
             handler = FlexibleAIHandler()
             # Now creates LocalProvider as fallback instead of None
@@ -47,7 +47,7 @@ class TestFlexibleAIHandler:
                 assert handler.provider_name == "gemini"
 
     def test_handler_init_with_specific_provider(self):
-        """Test handler initialization with specific provider.""f"
+        """Test handler initialization with specific provider."""
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test_key"}):
             handler = FlexibleAIHandler(provider="openai")
             assert handler.provider_name == "openai"
@@ -205,7 +205,7 @@ class TestGeminiProvider:
         pytest.skip("Skipping Gemini provider test - google.generativeai not available")
 
     def test_gemini_provider_convert_messages(self):
-        """Test Gemini provider message conversion.""f"
+        """Test Gemini provider message conversion."""
         provider = GeminiProvider()
 
         messages = [

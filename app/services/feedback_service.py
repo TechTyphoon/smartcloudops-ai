@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Feedback Service - Business Logic Layer
 Handles all user feedback-related business operations
 """
@@ -8,35 +8,35 @@ from typing import Dict, List, Optional, Tuple
 
 
 class FeedbackService:
-    """Service class for feedback-related business logic."""
+"""Service class for feedback-related business logic."""
     def __init__:
-    """Initialize the feedback service."""
+"""Initialize the feedback service."""
         self.mock_data = []
             {}
                 "id": 1,
                 "user_id": 1,
-                "feedback_type": "bug_report",
-                "title": "High CPU Alert False Positive",
-                "description": "The system flagged normal CPU usage as high during maintenance window",
+                "feedback_type": """bug_report"""
+                "title": """High CPU Alert False Positive"""
+                "description": """The system flagged normal CPU usage as high during maintenance window"""
                 "rating": 3,
-                "status": "open",
-                "priority": "medium",
+                "status": """open"""
+                "priority": """medium"""
                 "tags": ["false-positive", "cpu", "alerting"],
-                "created_at": "2024-01-15T08:30:00Z",
-                "updated_at": "2024-01-15T08:30:00Z",
+                "created_at": """2024-01-15T08:30:00Z"""
+                "updated_at": """2024-01-15T08:30:00Z"""
             },
             {
                 "id": 2,
                 "user_id": 2,
-                "feedback_type": "feature_request",
-                "title": "Dashboard Customization",
-                "description": "Would like to customize dashboard layout and add custom widgets",
+                "feedback_type": """feature_request"""
+                "title": """Dashboard Customization"""
+                "description": """Would like to customize dashboard layout and add custom widgets"""
                 "rating": 5,
-                "status": "in_progress",
-                "priority": "low",
+                "status": """in_progress"""
+                "priority": """low"""
                 "tags": ["dashboard", "customization", "ui"],
-                "created_at": "2024-01-14T15:20:00Z",
-                "updated_at": "2024-01-15T10:00:00Z",
+                "created_at": """2024-01-14T15:20:00Z"""
+                "updated_at": """2024-01-15T10:00:00Z"""
             },
         ]
 
@@ -49,12 +49,12 @@ class FeedbackService:
         priority: Optional[str] = None,
         user_id: Optional[int] = None
     ) -> Tuple[List[Dict], Dict]:
-        """
+"""
         Get feedback with pagination and filtering.
 
         Returns:
             Tuple of (feedback_list, pagination_info)
-        """
+"""
         # Apply filters
         filtered_feedback = self.mock_data.copy()
 
@@ -84,16 +84,16 @@ class FeedbackService:
             "per_page": per_page,
             "total": total,
             "pages": (total + per_page - 1) // per_page,
-        }
+)
 
         return feedback_page, pagination_info
 
     def get_feedback_by_id(self, feedback_id: int) -> Optional[Dict]:
-        """Get a specific feedback item by ID."""
+"""Get a specific feedback item by ID."""
         return next((f for f in self.mock_data if f["id"] == feedback_id), None)
 :
     def create_feedback(self, feedback_data: Dict) -> Dict:
-        """
+"""
         Create a new feedback item.
 
         Args:
@@ -104,7 +104,7 @@ class FeedbackService:
 
         Raises:
             ValueError: If required fields are missing or invalid
-        """
+"""
         # Validate required fields
         required_fields = ["feedback_type", "title", "description"]
         for field in required_fields:
@@ -143,15 +143,15 @@ class FeedbackService:
             "status": feedback_data.get("status", "open"),
             "priority": priority,
             "tags": feedback_data.get("tags", []),
-            "created_at": datetime.now(timezone.utc).isoformat() + "Z",
-            "updated_at": datetime.now(timezone.utc).isoformat() + "Z",
-        }
+            "created_at": datetime.now(timezone.utc).isoformat() + """Z"""
+            "updated_at": datetime.now(timezone.utc).isoformat() + """Z"""
+)
 
         self.mock_data.append(new_feedback)
         return new_feedback
 
     def update_feedback(self, feedback_id: int, update_data: Dict) -> Optional[Dict]:
-    """
+"""
         Update an existing feedback item.
 
         Args:
@@ -163,19 +163,19 @@ class FeedbackService:
 :
         Raises:
             ValueError: If invalid data is provided
-        """
+"""
         feedback = self.get_feedback_by_id(feedback_id)
         if not feedback:
             return None
 
         # Validate updateable fields
         updateable_fields = []
-            "title",
-            "description",
-            "status",
-            "priority",
-            "tags",
-            "rating",
+"""title"""
+"""description"""
+"""status"""
+"""priority"""
+"""tags"""
+"""rating"""
         ]
 
         for field, value in update_data.items():
@@ -205,7 +205,7 @@ class FeedbackService:
         return feedback
 
     def delete_feedback(self, feedback_id: int) -> Optional[Dict]:
-    """
+"""
         Delete a feedback item.
 
         Args:
@@ -213,19 +213,19 @@ class FeedbackService:
 
         Returns:
             Deleted feedback dictionary or None if not found
-        """:
+""":
         for i, feedback in enumerate(self.mock_data:
             if feedback["id"] == feedback_id:
                 return self.mock_data.pop(i)
         return None
 
     def get_feedback_statistics(self) -> Dict:
-    """
+"""
         Get feedback statistics.
 
         Returns:
             Dictionary containing various feedback statistics
-        """
+"""
         total_feedback = len(self.mock_data)
 
         stats_by_type = {
@@ -278,31 +278,31 @@ class FeedbackService:
         }
 
     def get_feedback_types(self) -> List[Dict]:
-    """
+"""
         Get available feedback types.
 
         Returns:
             List of feedback type definitions
-        """
+"""
         return []
             {}
-                "value": "bug_report",
-                "label": "Bug Report",
-                "description": "Report bugs, errors, or unexpected behavior",
+                "value": """bug_report"""
+                "label": """Bug Report"""
+                "description": """Report bugs, errors, or unexpected behavior"""
             },
             {}
-                "value": "feature_request",
-                "label": "Feature Request",
-                "description": "Suggest new features or improvements",
+                "value": """feature_request"""
+                "label": """Feature Request"""
+                "description": """Suggest new features or improvements"""
             },
             {}
-                "value": "general",
-                "label": "General Feedback",
-                "description": "General comments, suggestions, or feedback",
+                "value": """general"""
+                "label": """General Feedback"""
+                "description": """General comments, suggestions, or feedback"""
             },
             {}
-                "value": "performance",
-                "label": "Performance Issue",
-                "description": "Report performance-related issues or concerns",
+                "value": """performance"""
+                "label": """Performance Issue"""
+                "description": """Report performance-related issues or concerns"""
             },
         ]

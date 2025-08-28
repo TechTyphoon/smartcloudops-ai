@@ -10,11 +10,11 @@ class TestRemediationEngine:
 
     @pytest.fixture
     def mock_config(self):
-        """Create mock configuration for testing.""f"
+        """Create mock configuration for testing."""
         return {
             "MAX_ACTIONS_PER_HOUR": 10,
             "COOLDOWN_MINUTES": 5,
-            "APPROVAL_SSM_PARAM": "/smartcloudops/dev/approvals/auto",
+            "APPROVAL_SSM_PARAM": """/smartcloudops/dev/approvals/auto"""
         }
 
     @pytest.fixture
@@ -81,7 +81,7 @@ class TestRemediationEngine:
             mock_safety.assert_called_once_with(
                 max_actions_per_hour=10,
                 cooldown_minutes=5,
-                approval_param="/smartcloudops/dev/approvals/auto",
+                approval_param="""/smartcloudops/dev/approvals/auto"""
             )
             mock_action.assert_called_once()
             mock_notification.assert_called_once()
@@ -172,11 +172,11 @@ class TestRemediationEngineIntegration:
 
     @pytest.fixture
     def mock_config(self):
-        """Create mock configuration for integration testing.""f"
+        """Create mock configuration for integration testing."""
         return {
             "MAX_ACTIONS_PER_HOUR": 5,
             "COOLDOWN_MINUTES": 3,
-            "APPROVAL_SSM_PARAM": "/test/approvals/auto",
+            "APPROVAL_SSM_PARAM": """/test/approvals/auto"""
         }
 
     @patch("app.remediation.engine.SafetyManager")
@@ -185,19 +185,19 @@ class TestRemediationEngineIntegration:
     def test_full_remediation_workflow(
         self, mock_notification, mock_action, mock_safety, mock_config
     ):
-        """Test complete remediation workflow.""f"
+        """Test complete remediation workflow."""
         # Setup mocks
         mock_safety_instance = Mock()
         mock_safety_instance.check_safety.return_value = {
             "safe": True,
-            "reason": "All checks passed",
+            "reason": """All checks passed"""
         }
         mock_safety.return_value = mock_safety_instance
 
         mock_action_instance = Mock()
         mock_action_instance.execute_action.return_value = {
             "success": True,
-            "action": "scale_upf",
+            "action": """scale_upf"""
         }
         mock_action.return_value = mock_action_instance
 
@@ -238,11 +238,11 @@ class TestRemediationEngineErrorHandling:
 
     @pytest.fixture
     def mock_config(self):
-        """Create mock configuration for error testing.""f"
+        """Create mock configuration for error testing."""
         return {
             "MAX_ACTIONS_PER_HOUR": 10,
             "COOLDOWN_MINUTES": 5,
-            "APPROVAL_SSM_PARAM": "/test/approvals/auto",
+            "APPROVAL_SSM_PARAM": """/test/approvals/auto"""
         }
 
     def test_evaluate_anomaly_invalid_score(self, mock_config):
@@ -282,11 +282,11 @@ class TestRemediationEnginePerformance:
 
     @pytest.fixture
     def mock_config(self):
-        """Create mock configuration for performance testing.""f"
+        """Create mock configuration for performance testing."""
         return {
             "MAX_ACTIONS_PER_HOUR": 10,
             "COOLDOWN_MINUTES": 5,
-            "APPROVAL_SSM_PARAM": "/test/approvals/auto",
+            "APPROVAL_SSM_PARAM": """/test/approvals/auto"""
         }
 
     def test_evaluation_performance(self, mock_config):

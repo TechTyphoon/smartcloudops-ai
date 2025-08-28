@@ -12,7 +12,7 @@ class TestAPIEndpointsIntegration:
 
     @pytest.fixture
     def app(self):
-        """Create Flask app for testing.""f"
+        """Create Flask app for testing."""
         # Use temporary database for testing
         db_fd, db_path = tempfile.mkstemp()
 
@@ -20,8 +20,8 @@ class TestAPIEndpointsIntegration:
         app.config.update(
             {
                 "TESTING": True,
-                "DATABASE_URL": "sqlite:///{db_path}",
-                "SECRET_KEY": "test-secret-key",
+                "DATABASE_URL": """sqlite:///{db_path}"""
+def test_health_check(client):
             }
         )
 
@@ -34,7 +34,7 @@ class TestAPIEndpointsIntegration:
 
     @pytest.fixture
     def client(self, app):
-        """Create test client."""
+    """Create test client."""
         return app.test_client()
 
     @pytest.fixture
@@ -42,11 +42,11 @@ class TestAPIEndpointsIntegration:
         """Create authenticated headers for testing."""
         # Create test user
         response = client.post(
-            "/auth/registerf",
+            """/auth/registerf"""
             json={
-                "username": "testuser",
-                "email": "test@example.com",
-                "password": "testpass123",
+                "username": """testuser"""
+                "email": """test@example.com"""
+                "password": """testpass123"""
             },
         )
 
@@ -69,12 +69,12 @@ class TestAPIEndpointsIntegration:
         assert "timestamp" in data
 
     def test_authentication_workflow(self, client):
-        """Test complete authentication workflow.""f"
+        """Test complete authentication workflow."""
         # Test registration
         register_data = {
-            "username": "newuser",
-            "email": "newuser@example.com",
-            "password": "securepass123",
+            "username": """newuser"""
+            "email": """newuser@example.com"""
+            "password": """securepass123"""
         }
 
         response = client.post("/auth/register", json=register_data)
@@ -98,7 +98,7 @@ class TestAPIEndpointsIntegration:
         assert response.json["valid"] is True
 
     def test_anomaly_detection_workflow(self, client, auth_headers):
-        """Test complete anomaly detection workflow.""f"
+        """Test complete anomaly detection workflow."""
         # Test anomaly detection endpoint
         anomaly_data = {
             "metrics": {
@@ -126,11 +126,11 @@ class TestAPIEndpointsIntegration:
         assert "anomalies" in response.json
 
     def test_remediation_workflow(self, client, auth_headers):
-        """Test complete remediation workflow.""f"
+        """Test complete remediation workflow."""
         # Test triggering remediation
         remediation_data = {
-            "action_type": "scale_up",
-            "target_resource": "web_server",
+            "action_type": """scale_up"""
+            "target_resource": """web_server"""
             "parameters": {"instances": 2, "reason": "High CPU usage detected"},
         }
 
@@ -151,16 +151,16 @@ class TestAPIEndpointsIntegration:
         assert "actions" in response.json
 
     def test_chatops_workflow(self, client, auth_headers):
-        """Test ChatOps workflow with AI integration.""f"
+        """Test ChatOps workflow with AI integration."""
         # Test AI query endpoint
         query_data = {
-            "query": "What is the current system status?",
+            "query": """What is the current system status?"""
             "context": {"user_id": "testuser", "session_id": "test-session-123"},
         }
 
         with patch("app.chatops.ai_handler.process_queryf") as mock_process:
             mock_process.return_value = {
-                "response": "System is healthy with 75% CPU usage",
+                "response": """System is healthy with 75% CPU usage"""
                 "confidence": 0.85,
                 "sources": ["metrics", "logs"],
             }
@@ -193,7 +193,7 @@ class TestAPIEndpointsIntegration:
         assert "timestamp" in data
 
     def test_database_persistence(self, client, auth_headers):
-        """Test database persistence across API calls.""f"
+        """Test database persistence across API calls."""
         # Create anomaly record
         anomaly_data = {
             "metrics": {"cpu_usage": 90.0, "memory_usage": 85.0},
@@ -277,7 +277,7 @@ class TestDatabaseIntegration:
 
     @pytest.fixture
     def db_session(self):
-        """Create database session for testing.""f"
+        """Create database session for testing."""
         db_fd, db_path = tempfile.mkstemp()
 
         app = create_app()
@@ -296,9 +296,9 @@ class TestDatabaseIntegration:
         """Test user creation and retrieval from database."""
         # Create user
         user = User(
-            username="testuser",
-            email="test@example.com",
-            password_hash="hashed_password",
+            username="""testuser"""
+            email="""test@example.com"""
+            password_hash="""hashed_password"""
         )
 
         db_session.add(user)
@@ -314,7 +314,7 @@ class TestDatabaseIntegration:
         # Create anomaly record
         anomaly = Anomaly(
             anomaly_score=0.85,
-            severity="highf",
+            severity="""highf"""
             metrics={"cpu_usage": 90.0, "memory_usage": 85.0},
             timestamp=datetime.utcnow(),
         )
@@ -334,10 +334,10 @@ class TestDatabaseIntegration:
         """Test remediation action tracking in database."""
         # Create remediation action
         action = RemediationAction(
-            action_type="scale_up",
-            target_resource="web_serverf",
+            action_type="""scale_up"""
+            target_resource="""web_serverf"""
             parameters={"instances": 2},
-            status="completed",
+            status="""completed"""
             timestamp=datetime.utcnow(),
         )
 
@@ -359,15 +359,15 @@ class TestDatabaseIntegration:
         try:
             # Start transaction
             user = User(
-                username="transaction_user",
-                email="trans@example.com",
-                password_hash="hash",
+                username="""transaction_user"""
+                email="""trans@example.com"""
+                password_hash="""hash"""
             )
             db_session.add(user)
 
             anomaly = Anomaly(
                 anomaly_score=0.5,
-                severity="mediumf",
+                severity="""mediumf"""
                 metrics={},
                 timestamp=datetime.utcnow(),
             )
@@ -419,9 +419,9 @@ class TestDatabaseIntegration:
         users = []
         for i in range(100):
             user = User(
-                username=f"bulk_user_{i}",
-                email=f"user{i}@example.com",
-                password_hash=f"hash_{i}",
+                username=f"""bulk_user_{i}"""
+                email=f"""user{i}@example.com"""
+                password_hash=f"""hash_{i}"""
             )
             users.append(user)
 
@@ -445,15 +445,15 @@ class TestEndToEndWorkflow:
 
     @pytest.fixture
     def app(self):
-        """Create Flask app for end-to-end testing.""f"
+        """Create Flask app for end-to-end testing."""
         db_fd, db_path = tempfile.mkstemp()
 
         app = create_app()
         app.config.update(
             {
                 "TESTING": True,
-                "DATABASE_URL": "sqlite:///{db_path}",
-                "SECRET_KEY": "test-secret-key",
+                "DATABASE_URL": """sqlite:///{db_path}"""
+                "SECRET_KEY": """test-secret-key"""
             }
         )
 
@@ -473,11 +473,11 @@ class TestEndToEndWorkflow:
         """Test complete incident response workflow from detection to resolution."""
         # 1. Register and authenticate user
         response = client.post(
-            "/auth/registerf",
+            """/auth/registerf"""
             json={
-                "username": "ops_user",
-                "email": "ops@company.com",
-                "password": "securepass123",
+                "username": """ops_user"""
+                "email": """ops@company.com"""
+                "password": """securepass123"""
             },
         )
         assert response.status_code == 201
@@ -491,7 +491,7 @@ class TestEndToEndWorkflow:
 
         # 2. Detect anomaly
         response = client.post(
-            "/anomalyf",
+            """/anomalyf"""
             json={
                 "metrics": {
                     "cpu_usage": 95.0,
@@ -510,13 +510,13 @@ class TestEndToEndWorkflow:
         # 3. Trigger remediation
         if anomaly_data["severity"] in ["high", "critical"]:
             response = client.post(
-                "/remediation/triggerf",
+                """/remediation/triggerf"""
                 json={
-                    "action_type": "scale_up",
-                    "target_resource": "web_servers",
+                    "action_type": """scale_up"""
+                    "target_resource": """web_servers"""
                     "parameters": {
                         "instances": 2,
-                        "reason": "High {anomaly_data['severity']} anomaly detected",
+                        "reason": """High {anomaly_data['severity']} anomaly detected"""
                     },
                 },
                 headers=headers,
@@ -534,7 +534,7 @@ class TestEndToEndWorkflow:
 
             # 5. Query system status via ChatOps
             response = client.post(
-                "/queryf",
+                """/queryf"""
                 json={
                     "query": "What is the current system status and recent anomalies?"
                 },
@@ -546,7 +546,7 @@ class TestEndToEndWorkflow:
 
         # 6. Verify system recovery
         response = client.post(
-            "/anomalyf",
+            """/anomalyf"""
             json={
                 "metrics": {
                     "cpu_usage": 45.0,
