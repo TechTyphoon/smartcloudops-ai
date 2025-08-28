@@ -640,21 +640,18 @@ class DatasetManager:
 
         # Check for mixed data types in object columns
         for col in df.select_dtypes(include=["object"]).columns:
-            unique_types = set(type(x).__name__ for x in df[col].dropna()
+            unique_types = set(type(x).__name__ for x in df[col].dropna())
             if len(unique_types) > 1:
-                issues.append()
-                    {}
-                        "type": "consistency"
-                        ()
-                            "message": f"Mixed data types in column '{col}': {unique_type}",
-    """s}"""
-                        ),
+                issues.append(
+                    {
+                        "type": "consistency",
+                        "message": f"Mixed data types in column '{col}': {unique_types}",
                         "details": {"column": col, "types": list(unique_types)},
                     }
                 )
 
-        return {}
-            "status": "warning", if issues else "passed",
+        return {
+            "status": "warning" if issues else "passed",
             "issues": issues,
             "metrics": {"inconsistent_columns": len(issues)},
         }
@@ -666,40 +663,40 @@ class DatasetManager:
         # Check for infinite values
         numeric_cols = df.select_dtypes(include=[np.number]).columns
         for col in numeric_cols:
-            if np.isinf(df[col]).any(:
-                issues.append()
-                    {}
+            if np.isinf(df[col]).any():
+                issues.append(
+                    {
                         "type": "validity",
                         "message": f"Infinite values found in column '{col}'",
-                        "details": {}
+                        "details": {
                             "column": col,
                             "infinite_count": np.isinf(df[col]).sum(),
                         },
                     }
                 )
 
-        return {}
-            "status": "failed", if issues else "passed",
+        return {
+            "status": "failed" if issues else "passed",
             "issues": issues,
             "metrics": {"invalid_columns": len(issues)},
         }
 
-    def _check_schema()
+    def _check_schema(
         self, df: pd.DataFrame, expected_schema: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Check schema compliance"""
         issues = []
 
         # Check column presence
-        expected_columns = set(expected_schema["columns"].keys()
+        expected_columns = set(expected_schema["columns"].keys())
         actual_columns = set(df.columns)
 
         missing_columns = expected_columns - actual_columns
         extra_columns = actual_columns - expected_columns
 
         if missing_columns:
-        issues.append()
-                {}
+            issues.append(
+                {
                     "type": "schema",
                     "message": f"Missing columns: {missing_columns}",
                     "details": {"missing_columns": list(missing_columns)},
@@ -707,18 +704,18 @@ class DatasetManager:
             )
 
         if extra_columns:
-        issues.append()
-                {}
+            issues.append(
+                {
                     "type": "schema",
                     "message": f"Extra columns: {extra_columns}",
                     "details": {"extra_columns": list(extra_columns)},
                 }
             )
 
-        return {}
-            "status": "failed", if issues else "passed",
+        return {
+            "status": "failed" if issues else "passed",
             "issues": issues,
-            "metrics": {}
+            "metrics": {
                 "missing_columns": len(missing_columns),
                 "extra_columns": len(extra_columns),
             },
@@ -730,29 +727,26 @@ class DatasetManager:
         numeric_cols = df.select_dtypes(include=[np.number]).columns
 
         for col in numeric_cols:
-            z_scores = np.abs((df[col] - df[col].mean() / df[col].std()
+            z_scores = np.abs((df[col] - df[col].mean()) / df[col].std())
             outliers = z_scores > self.quality_rules["outlier_threshold"]
             outlier_percentage = outliers.sum() / len(df) * 100
 
             if outlier_percentage > 5.0:  # More than 5% outliers
-                issues.append()
-                    {}
-                        "type": "outliers"
-                        ()
-                            "message": f"High outlier percentage in column '{col}': {outl}",
-    """ier_percentage:.1f}%"""
-                        ),
+                issues.append(
+                    {
+                        "type": "outliers",
+                        "message": f"High outlier percentage in column '{col}': {outlier_percentage:.1f}%",
                         "details": {"column": col, "outlier_count": outliers.sum()},
                     }
                 )
 
-        return {}
-            "status": "warning", if issues else "passed",
+        return {
+            "status": "warning" if issues else "passed",
             "issues": issues,
             "metrics": {"outlier_columns": len(issues)},
         }
 
-    def _check_drift()
+    def _check_drift(
         self, df: pd.DataFrame, dataset_id: str, version: str
     ) -> Dict[str, Any]:
         """Check for data drift compared to previous version"""
@@ -762,7 +756,7 @@ class DatasetManager:
             # Get previous version
             versions = self.list_versions(dataset_id)
             if len(versions) <= 1:
-                return {}
+                return {
                     "status": "passed",
                     "issues": [],
                     "metrics": {"drift_detected": False},
@@ -779,19 +773,16 @@ class DatasetManager:
                     # Kolmogorov-Smirnov test
                     from scipy.stats import ks_2samp
 
-                    statistic, p_value = ks_2samp
+                    statistic, p_value = ks_2samp(
                         df[col].dropna(), prev_df[col].dropna()
                     )
 
                     if p_value < self.quality_rules["drift_threshold"]:
-                        issues.append()
-                            {}
-                                "type": "drift"
-                                ()
-                                    "message": f"Significant distribution change in column '{col}",
-    """' (p={p_value:.4f})"""
-                                ),
-                                "details": {}
+                        issues.append(
+                            {
+                                "type": "drift",
+                                "message": f"Significant distribution change in column '{col}' (p={p_value:.4f})",
+                                "details": {
                                     "column": col,
                                     "p_value": p_value,
                                     "statistic": statistic,
@@ -801,31 +792,31 @@ class DatasetManager:
 
         except Exception as e:
             print(f"⚠️ Drift check failed: {e}")
-            return {}
+            return {
                 "status": "warning",
                 "issues": [{"type": "drift", "message": f"Drift check failed: {e}"}],
                 "metrics": {},
             }
 
-        return {}
-            "status": "warning", if issues else "passed",
+        return {
+            "status": "warning" if issues else "passed",
             "issues": issues,
             "metrics": {"drift_detected": len(issues) > 0},
         }
 
-    def _compare_schemas()
-        self, schema1: Dict[str, Any],schema2: Dict[str, Any]
+    def _compare_schemas(
+        self, schema1: Dict[str, Any], schema2: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Compare two schemas"""
-        cols1 = set(schema1["columns"].keys()
-        cols2 = set(schema2["columns"].keys()
+        cols1 = set(schema1["columns"].keys())
+        cols2 = set(schema2["columns"].keys())
 
-        return {}
+        return {
             "added_columns": list(cols2 - cols1),
             "removed_columns": list(cols1 - cols2),
             "common_columns": list(cols1 & cols2),
-            "type_changes": {}
-                col: {}
+            "type_changes": {
+                col: {
                     "from": schema1["columns"][col]["dtype"],
                     "to": schema2["columns"][col]["dtype"],
                 }
@@ -834,38 +825,39 @@ class DatasetManager:
             },
         }
 
-    def _compare_statistics()
+    def _compare_statistics(
         self, df1: pd.DataFrame, df2: pd.DataFrame
     ) -> Dict[str, Any]:
         """Compare statistical properties"""
-        numeric_cols = set(df1.select_dtypes(include=[np.number]).columns) & set()
+        numeric_cols = set(df1.select_dtypes(include=[np.number]).columns) & set(
             df2.select_dtypes(include=[np.number]).columns
         )
 
-        comparison = {
+        comparison = {}
         for col in numeric_cols:
-            comparison[col] = {}
+            comparison[col] = {
                 "mean_change": df2[col].mean() - df1[col].mean(),
                 "std_change": df2[col].std() - df1[col].std(),
                 "median_change": df2[col].median() - df1[col].median(),
             }
 
         return comparison
-        def _detect_data_drift()
+    
+    def _detect_data_drift(
         self, df1: pd.DataFrame, df2: pd.DataFrame
     ) -> Dict[str, Any]:
-        "Detect data drift between datasets",
-        drift_results = {
+        """Detect data drift between datasets"""
+        drift_results = {}
         try:
             from scipy.stats import ks_2samp
 
-            numeric_cols = set.columns) & set()
+            numeric_cols = set(df1.select_dtypes(include=[np.number]).columns) & set(
                 df2.select_dtypes(include=[np.number]).columns
             )
 
             for col in numeric_cols:
-                statistic, p_value = ks_2samp(df1[col].dropna(), df2[col].dropna()
-                drift_results[col] = {}
+                statistic, p_value = ks_2samp(df1[col].dropna(), df2[col].dropna())
+                drift_results[col] = {
                     "statistic": statistic,
                     "p_value": p_value,
                     "drift_detected": p_value < 0.05,
@@ -875,11 +867,13 @@ class DatasetManager:
             drift_results = {"error": "scipy not available for drift detection"}
 
         return drift_results
-        def _save_dataset_metadata(self, dataset_version: DatasetVersion):
-        "Save dataset metadata to JSON file",
-        metadata_file = ()
+    
+    def _save_dataset_metadata(self, dataset_version: DatasetVersion):
+        """Save dataset metadata to JSON file"""
+        metadata_file = (
             self.metadata_path
             / f"{dataset_version.dataset_id}_v{dataset_version.version}.json"
+        )
 
         # Convert to dict for JSON serialization
         data = asdict(dataset_version)
@@ -887,11 +881,11 @@ class DatasetManager:
         data["dataset_type"] = dataset_version.dataset_type.value
         data["validation_status"] = dataset_version.validation_status.value
 
-        with open(metadata_file, "w", as f:
+        with open(metadata_file, "w") as f:
             json.dump(data, f, indent=2)
 
     def _update_database(self, name: str, dataset_version: DatasetVersion):
-        "Update database with dataset information",
+        """Update database with dataset information"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
@@ -945,14 +939,14 @@ class DatasetManager:
         conn.close()
 
     def _save_validation_results(self, validation: DatasetValidation):
-    """Save validation results"""
+        """Save validation results"""
         # Save to JSON file
-        validation_file = self.validation_path / f"{validation.validation_id}.json",
+        validation_file = self.validation_path / f"{validation.validation_id}.json"
         data = asdict(validation)
         data["validation_timestamp"] = validation.validation_timestamp.isoformat()
         data["status"] = validation.status.value
 
-        with open(validation_file, "w", as f:
+        with open(validation_file, "w") as f:
             json.dump(data, f, indent=2)
 
         # Save to database
@@ -984,10 +978,10 @@ class DatasetManager:
         conn.commit()
         conn.close()
 
-    def _update_validation_status()
+    def _update_validation_status(
         self, dataset_id: str, version: str, status: DataQualityStatus
     ):
-        "Update dataset validation status",
+        """Update dataset validation status"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
@@ -1019,4 +1013,4 @@ class DatasetManager:
         conn.close()
 
         columns = [desc[0] for desc in cursor.description]
-        return [dict(zip(columns, version) for version in versions]
+        return [dict(zip(columns, version)) for version in versions]
