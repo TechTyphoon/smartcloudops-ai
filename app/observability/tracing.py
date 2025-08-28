@@ -54,7 +54,7 @@ logger = get_logger
 tracer = None
 
 
-def setup_tracing()
+def setup_tracing(
     service_name: str = "smartcloudops-ai",
     service_version: str = "3.3.0",
     jaeger_endpoint: Optional[str] = None,

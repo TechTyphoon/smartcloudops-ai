@@ -106,7 +106,7 @@ class QueryLogger:
             # Log slow queries
             if execution_time > self.config.slow_query_threshold:
                 self.query_stats['slow_queries'] += 1
-                self.slow_queries.append({}
+                self.slow_queries.append({
                     'query': query,
                     'execution_time': execution_time,
                     'timestamp': datetime.now().isoformat()

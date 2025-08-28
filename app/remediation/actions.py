@@ -92,23 +92,23 @@ class ActionManager:
             return {}
                 "status": "error",
                 "error": str(e),
-                "action_type": action.get("action", "unknown",
+                "action_type": action.get("action", "unknown"),
                 "timestamp": datetime.now().isoformat(),
             }
 
     def _restart_service(self, target: str, action: Dict) -> Dict[str, Any]:
-        "Restart a service using AWS SSM.",
+        """Restart a service using AWS SSM."""
         try:
             if self.ssm is None:
                 return {"status": "error", "error": "SSM client not available"}
 
             # Find instances with the target tag
-            instances = self._find_instances_by_tag("Name", "smartcloudops-ai-{target}")
+            instances = self._find_instances_by_tag("Name", f"smartcloudops-ai-{target}")
 
             if not instances:
-                return {}
+                return {
                     "status": "error",
-                    "error": "No instances found for target: {target}",
+                    "error": f"No instances found for target: {target}",
                 }
 
             results = []
@@ -117,7 +117,7 @@ class ActionManager:
                     # Create SSM command to restart service
                     command = self._create_restart_service_command(target)
 
-                    response = self.ssm.send_command()
+                    response = self.ssm.send_command(
                         InstanceIds=[instance_id],
                         DocumentName="AWS-RunShellScript",
                         Parameters={"commands": [command]},

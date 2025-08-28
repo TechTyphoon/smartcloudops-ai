@@ -20,7 +20,7 @@ correlation_id: ContextVar[Optional[str]] = ContextVar
 
 class CorrelationJSONFormatter(jsonlogger.JsonFormatter):
     """Custom JSON formatter that includes correlation ID and request context"""
-    def add_fields()
+    def add_fields(
         self,
         log_record: Dict[str, Any],
         record: logging.LogRecord,

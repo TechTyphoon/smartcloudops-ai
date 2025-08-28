@@ -55,13 +55,13 @@ class SLOManager:
         self._setup_default_slos()
 
     def _setup_default_slos(self):
-    """Setup default SLOs for SmartCloudOps AI"""
+        """Setup default SLOs for SmartCloudOps AI"""
         # ================================
         # AVAILABILITY SLOs
         # ================================
         
         # API Availability SLO
-        api_availability_slo = SLO()
+        api_availability_slo = SLO(
             name="api_availability",
             description="API endpoints availability",
             slo_type=SLOType.AVAILABILITY,
@@ -74,7 +74,7 @@ class SLOManager:
         self.add_slo(api_availability_slo)
 
         # Database Availability SLO
-        db_availability_slo = SLO()
+        db_availability_slo = SLO(
             name="database_availability",
             description="Database connection availability",
             slo_type=SLOType.AVAILABILITY,

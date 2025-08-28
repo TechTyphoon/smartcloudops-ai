@@ -89,9 +89,9 @@ class BatchProcessor:
                 logger.info("✅ Batch processor stopped")
     
     def _start_workers(self):
-    """Start worker threads"""
+        """Start worker threads"""
         for i in range(self.config.max_workers):
-            thread = threading.Thread()
+            thread = threading.Thread(
                 target=self._worker_loop,
                 daemon=True,
                 name=f"batch-worker-{i}"
@@ -99,7 +99,7 @@ class BatchProcessor:
             thread.start()
     
     def _worker_loop(self):
-    """Worker loop for batch processing"""
+        """Worker loop for batch processing"""
         while self.running:
             try:
                 # Get batch with timeout

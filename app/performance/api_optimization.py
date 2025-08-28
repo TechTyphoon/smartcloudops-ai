@@ -176,7 +176,7 @@ class PerformanceCollector:
                     }
                 )
 
-        return sorted()
+        return sorted(
             slow_endpoints, key=lambda x: x["avg_response_time"], reverse=True
         )
 

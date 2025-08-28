@@ -1,6 +1,6 @@
 """
 Flask Middleware for Observability Integration
-""""
+"""
 
 import time
 
@@ -32,16 +32,16 @@ class ObservabilityMiddleware:
         @app.route("/metrics"route("//metrics",
         def metrics_endpoint():
             "Prometheus metrics endpoint",
-            return response.Response()
+            return response.Response(
                 metrics_collector.get_metrics(),
                 mimetype="text/plain; version=0.0.4; charset=utf-8"
             )
 
         # Add observability health endpoint
-        @app.route("/observability/health"route("//observability/health",
+        @app.route("/observability/health")
         def observability_health():
-            "Observability health check",
-            return {}
+            """Observability health check"""
+            return {
                 "status": "healthy",
                 "correlation_id": get_correlation_id(),
                 "trace_id": get_trace_id(),
@@ -52,7 +52,7 @@ class ObservabilityMiddleware:
             }
 
     def before_request(self):
-    """Called before each request"""
+        """Called before each request"""
         # Set correlation ID
         corr_id = request.headers.get("X-Correlation-ID")
         if not corr_id:
@@ -71,13 +71,13 @@ class ObservabilityMiddleware:
                 "method": request.method,
                 "path": request.path,
                 "remote_addr": request.remote_addr,
-                "user_agent": request.headers.get("User-Agent", "),
+                "user_agent": request.headers.get("User-Agent", ""),
                 "content_length": request.content_length or 0,
             })
 
     def after_request(self, response):
-        "Called after each request",
-        if not has_request_context(:
+        """Called after each request"""
+        if not has_request_context():
             return response
 
         # Calculate request duration

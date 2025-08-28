@@ -33,7 +33,7 @@ class OpenTelemetryConfig:
         self.meter = None
         self._configured = False
 
-    def setup()
+    def setup(
         self,
         service_name: str = "smartcloudops-ai",
         service_version: str = "4.0.0",
@@ -44,7 +44,7 @@ class OpenTelemetryConfig:
         jaeger_endpoint: Optional[str] = None,
         otlp_endpoint: Optional[str] = None,
         console_export: bool = False) -> None:
-    """
+        """
         Setup OpenTelemetry with tracing and metrics
 
         Args:

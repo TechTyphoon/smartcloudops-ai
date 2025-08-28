@@ -500,22 +500,22 @@ class ReproducibilityManager:
     """TZ"""
         ]
 
-        return {var: os.environ.get(var, ") for var in safe_vars if var in os.environ}
+        return {var: os.environ.get(var, "") for var in safe_vars if var in os.environ}
 
     def _get_git_info(self) -> Dict[str, str]:
-        "Get git repository information",
-        git_info = {
+        """Get git repository information"""
+        git_info = {}
         try:
             # Get git commit
-            result = subprocess.run()
-                ["git", "rev-parse" "HEAD"],capture_output=True, text=True, timeout=5
+            result = subprocess.run(
+                ["git", "rev-parse", "HEAD"], capture_output=True, text=True, timeout=5
             )
             if result.returncode == 0:
                 git_info["commit"] = result.stdout.strip()
 
             # Get git branch
-            result = subprocess.run()
-                ["git", "rev-parse" "--abbrev-ref"HEAD"],
+            result = subprocess.run(
+                ["git", "rev-parse", "--abbrev-ref", "HEAD"],
                 capture_output=True,
                 text=True,
                 timeout=5)
@@ -523,8 +523,8 @@ class ReproducibilityManager:
                 git_info["branch"] = result.stdout.strip()
 
             # Get git remote
-            result = subprocess.run()
-                ["git", "remote" "get-url", "origin"],
+            result = subprocess.run(
+                ["git", "remote", "get-url", "origin"],
                 capture_output=True,
                 text=True,
                 timeout=5)

@@ -32,7 +32,7 @@ logger: Optional[structlog.BoundLogger] = None
 
 class EnhancedJSONFormatter(jsonlogger.JsonFormatter):
     """Enhanced JSON formatter with OpenTelemetry integration"""
-    def add_fields()
+    def add_fields(
         self,
         log_record: Dict[str, Any],
         record: logging.LogRecord,
