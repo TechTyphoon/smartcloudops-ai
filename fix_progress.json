@@ -1,12 +1,12 @@
 {
-  "timestamp": "2025-08-28T07:07:22.847907",
+  "timestamp": "2025-08-28T07:35:26.319230",
   "total_files": 15,
   "fixed_files": 3,
   "remaining_files": 12,
   "details": [
     [
       "app/mlops/dataset_manager.py",
-      "Line 3: unterminated string literal (detected at line 3)"
+      "Line 644: invalid syntax"
     ],
     [
       "app/mlops/experiment_tracker_minimal.py",
