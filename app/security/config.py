@@ -271,9 +271,9 @@ class SecurityConfig:
 
         # Length validation
         if len(input_string) > 1000:
-            warnings.append("Input exceeds recommended length of 1000 characters",
+            warnings.append("Input exceeds recommended length of 1000 characters")
 
-        return {}
+        return {
             "valid": len(errors) == 0,
             "errors": errors,
             "warnings": warnings,

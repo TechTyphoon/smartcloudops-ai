@@ -269,7 +269,7 @@ class TrainingPipeline:
                         break
 
                 if not experiment:
-                    experiment = self.experiment_tracker.create_experiment()
+                    experiment = self.experiment_tracker.create_experiment(
                         name=experiment_name,
                         description=f"Training pipeline experiment for {config.algorithm}",
                         objective="Model training and validation",
@@ -277,7 +277,7 @@ class TrainingPipeline:
                         maximize_metric=True)
 
                 # Start run
-                run = self.experiment_tracker.start_run()
+                run = self.experiment_tracker.start_run(
                     experiment_id=experiment.experiment_id,
                     run_name=job_name,
                     parameters=config.hyperparameters,
@@ -319,7 +319,7 @@ class TrainingPipeline:
                 self._set_random_seed(job.seed)
 
             # Run training
-            training_result = algorithm_func()
+            training_result = algorithm_func(
                 config=config, dataset_info=dataset_info, job=job
             )
 
@@ -345,12 +345,12 @@ class TrainingPipeline:
             if self.experiment_tracker and job.experiment_run_id:
                 try:
                     for metric_name, metric_value in job.metrics.items():
-                        self.experiment_tracker.log_metric()
+                        self.experiment_tracker.log_metric(
                             metric_name, metric_value, run_id=job.experiment_run_id
                         )
 
                     if job.output_model_path:
-                        self.experiment_tracker.log_artifact()
+                        self.experiment_tracker.log_artifact(
                             job.output_model_path, run_id=job.experiment_run_id
                         )
                 except Exception as e:
@@ -362,7 +362,7 @@ class TrainingPipeline:
             job.duration_seconds = (job.end_time - job.start_time).total_seconds()
 
             print(f"✅ Training job completed: {job.name}")
-            print(f"   Duration: {job.duration_seconds:.2f} seconds",
+            print(f"   Duration: {job.duration_seconds:.2f} seconds")
             print(f"   Metrics: {job.metrics}")
 
         except Exception as e:
@@ -383,7 +383,7 @@ class TrainingPipeline:
                 try:
                     from app.mlops.experiment_tracker import ExperimentStatus
 
-                    status = 
+                    status = (
                         ExperimentStatus.COMPLETED
                         if job.status == JobStatus.COMPLETED
                         else ExperimentStatus.FAILED
@@ -411,32 +411,32 @@ class TrainingPipeline:
             raise ValueError(f"Training config not found: {config_id}")
 
         # Convert to TrainingConfig object
-        columns = []
+        columns = [
             "config_id",
-    """name"""
+            "name",
             "description",
-    """algorithm"""
+            "algorithm",
             "framework",
-    """hyperparameters"""
+            "hyperparameters",
             "dataset_config",
-    """validation_config"""
+            "validation_config",
             "training_args",
-    """environment"""
+            "environment",
             "resource_requirements",
-    """created_at"""
+            "created_at",
             "created_by",
-    """version"""
+            "version"
         ]
-        data = dict(zip(columns, result)
+        data = dict(zip(columns, result))
 
         # Parse JSON fields
-        json_fields = []
+        json_fields = [
             "hyperparameters",
-    """dataset_config"""
+            "dataset_config",
             "validation_config",
-    """training_args"""
+            "training_args",
             "environment",
-    """resource_requirements"""
+            "resource_requirements"
         ]
         for field in json_fields:
             data[field] = json.loads(data[field]) if data[field] else {}
@@ -451,7 +451,7 @@ class TrainingPipeline:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute("SELECT * FROM training_jobs WHERE job_id = ?", (job_id)
+        cursor.execute("SELECT * FROM training_jobs WHERE job_id = ?", (job_id,))
         result = cursor.fetchone()
         conn.close()
 
@@ -459,42 +459,42 @@ class TrainingPipeline:
             raise ValueError(f"Training job not found: {job_id}")
 
         # Convert to TrainingJob object
-        columns = []
+        columns = [
             "job_id",
-    """config_id"""
+            "config_id",
             "name",
-    """status"""
+            "status",
             "start_time",
-    """end_time"""
+            "end_time",
             "duration_seconds",
-    """output_model_path"""
+            "output_model_path",
             "metrics",
-    """validation_results"""
+            "validation_results",
             "logs",
-    """artifacts"""
+            "artifacts",
             "error_message",
-    """resource_usage"""
+            "resource_usage",
             "experiment_run_id",
-    """git_commit"""
-    """seed"""
+            "git_commit",
+            "seed"
         ]
-        data = dict(zip(columns, result)
+        data = dict(zip(columns, result))
 
         # Parse JSON fields
-        json_fields = []
+        json_fields = [
             "metrics",
-    """validation_results"""
+            "validation_results",
             "logs",
-    """artifacts"""
-    """resource_usage"""
+            "artifacts",
+            "resource_usage"
         ]
         for field in json_fields:
-            data[field] = ()
+            data[field] = (
                 json.loads(data[field])
                 if data[field]
-                else ()
+                else (
                     {}
-                    if field in ["metrics", "validation_results" "resource_usage"]
+                    if field in ["metrics", "validation_results", "resource_usage"]
                     else []
                 )
             )
@@ -558,8 +558,8 @@ class TrainingPipeline:
     def _register_default_algorithms(self):
         "Register default training algorithms",
 
-        def sklearn_anomaly_detection()
-            config: TrainingConfig, dataset_info: Dict[str, Any],job: TrainingJob
+        def sklearn_anomaly_detection(
+            config: TrainingConfig, dataset_info: Dict[str, Any], job: TrainingJob
         ) -> Dict[str, Any]:
             "Scikit-learn anomaly detection training",
             import joblib
@@ -817,7 +817,7 @@ class TrainingPipeline:
         output_schema = {"type": "anomaly_score", "format": "float"}
 
         # Register with model registry
-        self.model_registry.register_model()
+        self.model_registry.register_model(
             model=model,
             name=f"{config.name}_trained",
             description=f"Trained model from job {job.name}",

@@ -11,8 +11,8 @@ logger = logging.getLogger
 class SecurityValidation:
     """Security validation service for input sanitization and threat detection."""
     def __init__(self):
-    """Initialize security validation service."""
-        self.suspicious_patterns = []
+        """Initialize security validation service."""
+        self.suspicious_patterns = [
             "script",
             "javascript:",
             "onload=",
@@ -26,8 +26,8 @@ class SecurityValidation:
             "__import__",
         ]
 
-    def validate_input -> Dict[str, Any]:
-    """
+    def validate_input(self, input_data: Any) -> Dict[str, Any]:
+        """
         Validate input data for security threats.
 
         Args:

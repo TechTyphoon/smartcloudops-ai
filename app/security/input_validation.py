@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from typing import Any, Dict, List, Optional, Union
 
-"
+"""
 Comprehensive Security Validation Module
 Enterprise-grade input validation, sanitization, and security checks
-    """"""
+"""
 import logging
 import re
 import secrets

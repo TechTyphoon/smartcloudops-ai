@@ -1,11 +1,11 @@
 from typing import Dict, Optional
 
-"
+"""
 Secrets Management Utility for SmartCloudOps AI
 Handles secure retrieval of secrets from AWS Secrets Manager,
     environment variables,
     or local .env files
-    """"""
+"""
 import logging
 import os
 

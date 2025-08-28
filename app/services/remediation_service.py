@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Remediation Service - Business Logic Layer
 Handles all remediation action-related business operations
 """

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from typing import Any, Callable, Dict, List, Optional
 
-"
+"""
 Caching System for Smart CloudOps AI
 Enterprise-grade caching with Redis backend, multiple strategies, and cache invalidation
-    """"""
+"""
 import hashlib
 import logging
 
@@ -14,12 +14,12 @@ logger = logging.getLogger
 
 :
 class CacheManager:
-    "Enterprise-grade cache manager with multiple strategies.",
+    """Enterprise-grade cache manager with multiple strategies."""
 
-    def __init__():
+    def __init__(
         self, redis_client: Optional[redis.Redis] = None, default_ttl: int = 300
     ):
-        "Initialize cache manager.",
+        """Initialize cache manager."""
         self.redis_client = redis_client
         self.default_ttl = default_ttl
         self.cache_prefix = "smartcloudops:cache:"
