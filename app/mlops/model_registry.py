@@ -50,7 +50,7 @@ class ModelMetadata:
 class ModelRegistry:
     """Centralized model registry for versioning and lifecycle management"""
     def __init__(self, registry_path: str = "ml_models/registry"):
-    """Initialize model registry."""
+        """Initialize model registry."""
         self.registry_path = Path(registry_path)
         self.registry_path.mkdir(parents=True, exist_ok=True)
 
@@ -65,13 +65,13 @@ class ModelRegistry:
         self._init_database()
 
     def _init_database(self):
-    """Initialize SQLite database for model registry"""
+        """Initialize SQLite database for model registry"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-    """
-            CREATE TABLE IF NOT EXISTS models ()
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS models (
                 model_id TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
                 version TEXT NOT NULL,
@@ -98,24 +98,24 @@ class ModelRegistry:
         conn.commit()
         conn.close()
 
-    def register_model()
+    def register_model(
         self,
         model,
         name: str,
         version: str,
-        description: str = ",
+        description: str = "",
         model_type: str = "sklearn",
-        algorithm: str = ",
+        algorithm: str = "",
         framework: str = "scikit-learn",
         input_features: List[str] = None,
         output_schema: Dict[str, Any] = None,
-        training_data_hash: str = ",
+        training_data_hash: str = "",
         hyperparameters: Dict[str, Any] = None,
         metrics: Dict[str, float] = None,
         created_by: str = "system",
         tags: List[str] = None) -> ModelMetadata:
-    """Register a new model in the registry"""
-        model_id = f"{name}_{version}_{int(time.time()}"
+        """Register a new model in the registry"""
+        model_id = f"{name}_{version}_{int(time.time())}"
 
         # Save model file
         model_file_path = self.models_path / f"{model_id}.pkl"
@@ -126,7 +126,7 @@ class ModelRegistry:
         checksum = self._calculate_checksum(model_file_path)
         size_bytes = model_file_path.stat().st_size
 
-        metadata = ModelMetadata()
+        metadata = ModelMetadata(
             model_id=model_id,
             name=name,
             version=version,
@@ -163,11 +163,11 @@ class ModelRegistry:
         cursor = conn.cursor()
 
         if version == "latest":
-            cursor.execute()
+            cursor.execute(
                 "SELECT * FROM models WHERE name = ? ORDER BY created_at DESC LIMIT 1",
-                (name))
+                (name,))
         else:
-            cursor.execute()
+            cursor.execute(
                 "SELECT * FROM models WHERE name = ? AND version = ?", (name, version)
             )
 
@@ -185,7 +185,7 @@ class ModelRegistry:
         cursor = conn.cursor()
 
         if status:
-            cursor.execute("SELECT * FROM models WHERE status = ?", (status.value)
+            cursor.execute("SELECT * FROM models WHERE status = ?", (status.value,))
         else:
             cursor.execute("SELECT * FROM models")
 
@@ -201,7 +201,7 @@ class ModelRegistry:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
+        cursor.execute(
             "UPDATE models SET status = ? WHERE name = ? AND version = ?",
             (status.value, name, version))
 
@@ -223,7 +223,7 @@ class ModelRegistry:
             # Delete metadata
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
-            cursor.execute()
+            cursor.execute(
                 "DELETE FROM models WHERE name = ? AND version = ?", (name, version)
             )
             conn.commit()
