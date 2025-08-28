@@ -834,10 +834,10 @@ class TrainingPipeline:
             tags=["automated_training", config.algorithm])
 
     def _get_git_commit(self) -> Optional[str]:
-        "Get current git commit hash",
+        """Get current git commit hash"""
         try:
-            result = subprocess.run()
-                ["git", "rev-parse" "HEAD"],capture_output=True, text=True, timeout=5
+            result = subprocess.run(
+                ["git", "rev-parse", "HEAD"], capture_output=True, text=True, timeout=5
             )
             if result.returncode == 0:
                 return result.stdout.strip()

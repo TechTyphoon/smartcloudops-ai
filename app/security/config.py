@@ -243,30 +243,30 @@ class SecurityConfig:
 
         # Check for SQL injection patterns
         for pattern in cls.SQL_INJECTION_PATTERNS:
-            if re.search(pattern, input_string, re.IGNORECASE:
-                errors.append()
-    """Input contains potentially unsafe SQL content: {pattern}"""
+            if re.search(pattern, input_string, re.IGNORECASE):
+                errors.append(
+                    f"Input contains potentially unsafe SQL content: {pattern}"
                 )
 
         # Check for command injection patterns
         for pattern in cls.COMMAND_INJECTION_PATTERNS:
-            if re.search(pattern, input_string, re.IGNORECASE:
-                errors.append()
-    """Input contains potentially unsafe command content: {pattern}"""
+            if re.search(pattern, input_string, re.IGNORECASE):
+                errors.append(
+                    f"Input contains potentially unsafe command content: {pattern}"
                 )
 
         # Check for XSS patterns
         for pattern in cls.XSS_PATTERNS:
-            if re.search(pattern, input_string, re.IGNORECASE:
-                errors.append()
-    """Input contains potentially unsafe JavaScript content: {pattern}"""
+            if re.search(pattern, input_string, re.IGNORECASE):
+                errors.append(
+                    f"Input contains potentially unsafe JavaScript content: {pattern}"
                 )
 
         # Check for path traversal patterns
         for pattern in cls.PATH_TRAVERSAL_PATTERNS:
-            if re.search(pattern, input_string, re.IGNORECASE:
-                errors.append()
-    """Input contains potentially unsafe path content: {pattern}"""
+            if re.search(pattern, input_string, re.IGNORECASE):
+                errors.append(
+                    f"Input contains potentially unsafe path content: {pattern}"
                 )
 
         # Length validation
@@ -280,16 +280,16 @@ class SecurityConfig:
             "sanitized": cls.sanitize_input(input_string) if len(errors) == 0 else None,
         }
 
-    @classmethod:
+    @classmethod
     def sanitize_input(cls, input_string: str) -> str:
-        "Sanitize input string for safe use.",
+        """Sanitize input string for safe use."""
         import html
 
         # HTML encode the input
-        sanitized = html.escape
+        sanitized = html.escape(input_string)
 
         # Remove any remaining potentially dangerous characters
-        sanitized = re.sub(r'[<>"\']', ", sanitized)
+        sanitized = re.sub(r'[<>"\']', "", sanitized)
 
         return sanitized
 
@@ -354,17 +354,17 @@ class SecurityConfig:
 
 
 def get_security_config() -> SecurityConfig:
-    "Get security configuration instance.",
+    """Get security configuration instance."""
     return SecurityConfig()
 
 
 def validate_environment_security() -> Dict[str, Any]:
-    "Validate that all required security environment variables are set.",
-    required_vars = []
+    """Validate that all required security environment variables are set."""
+    required_vars = [
         "JWT_SECRET_KEY",
-    """SECRET_KEY"""
+        "SECRET_KEY",
         "DB_PASSWORD",
-    """OPENAI_API_KEY"""
+        "OPENAI_API_KEY"
     ]
 
     missing_vars = []
@@ -375,16 +375,16 @@ def validate_environment_security() -> Dict[str, Any]:
         if not value:
             missing_vars.append(var)
         elif len(value) < 32:
-            weak_vars.append("{var} (too short: {len(value)} chars)")
+            weak_vars.append(f"{var} (too short: {len(value)} chars)")
 
-    return {}
+    return {
         "secure": len(missing_vars) == 0 and len(weak_vars) == 0,
         "missing_variables": missing_vars,
         "weak_variables": weak_vars,
-        "recommendations": []
+        "recommendations": [
             "Use AWS Secrets Manager or HashiCorp Vault for production secrets",
             "Generate strong random secrets (minimum 32 characters)",
             "Rotate secrets regularly",
-    """Use different secrets for different environments"""
+            "Use different secrets for different environments"
         ],
     }
