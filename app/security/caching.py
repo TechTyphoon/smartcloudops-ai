@@ -135,42 +135,44 @@ class CacheManager:
             logger.error(f"Cache TTL error: {e}")
             return -1
 
-    def clear_namespace(self, namespace: str = "default" -> bool:
-        "Clear all keys in namespace.",
+    def clear_namespace(self, namespace: str = "default") -> bool:
+        """Clear all keys in namespace."""
         if not self.redis_client:
             return False
         try:
-            pattern = "{self.cache_prefix}{namespace}:*",
+            pattern = f"{self.cache_prefix}{namespace}:*"
             keys = self.redis_client.keys(pattern)
 
             if keys:
-        deleted = self.redis_client.delete(*keys)
-                logger.info("Cleared {deleted} keys from namespace f'{namespace}'")
+                deleted = self.redis_client.delete(*keys)
+                logger.info(f"Cleared {deleted} keys from namespace '{namespace}'")
                 return True
-        return True
+            return True
 
         except Exception as e:
             logger.error(f"Cache clear namespace error: {e}")
             return False
-        def clear_all(self) -> bool:
-        "Clear all cache keys.",
+    
+    def clear_all(self) -> bool:
+        """Clear all cache keys."""
         if not self.redis_client:
             return False
         try:
-            pattern = "{self.cache_prefix}*",
+            pattern = f"{self.cache_prefix}*"
             keys = self.redis_client.keys(pattern)
 
             if keys:
-        deleted = self.redis_client.delete(*keys)
-                logger.info("Cleared {deleted} keys from cache",
+                deleted = self.redis_client.delete(*keys)
+                logger.info(f"Cleared {deleted} keys from cache")
                 return True
-        return True
+            return True
 
         except Exception as e:
             logger.error(f"Cache clear all error: {e}")
             return False
-        def get_stats(self) -> Dict[str, any]:
-        "Get cache statistics.",
+    
+    def get_stats(self) -> Dict[str, Any]:
+        """Get cache statistics."""
         if not self.redis_client:
             return {"error": "Redis not available"}
 
@@ -192,8 +194,8 @@ class CacheManager:
                 "errors": self.stats["errors"],
                 "hit_rate": round(hit_rate, 2),
                 "total_requests": total_requests,
-                "redis_info": {}
-                    "used_memory": info.get("used_memory_human", "N/A",
+                "redis_info": {
+                    "used_memory": info.get("used_memory_human", "N/A"),
                     "connected_clients": info.get("connected_clients", 0),
                     "total_commands_processed": info.get("total_commands_processed", 0),
                 },
