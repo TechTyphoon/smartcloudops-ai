@@ -91,7 +91,7 @@ class SafetyManager:
             logger.error(f"Error in safety check: {e}")
             return {
                 "safe_to_proceed": False,
-                "reason": "Safety check error: {str(e)}",
+                "reason": """Safety check error: {str(e)}"""
                 "timestamp": datetime.now().isoformat(),
             }
 
@@ -151,8 +151,7 @@ class SafetyManager:
                 approval_required = True
             else:
                 # Check SSM parameter for approval setting
-                approval_required = self._get_approval_setting()
-
+                approval_required = self._get_approval_setting(
             if approval_required:
                 # For now, wef'll auto-approve but log the requirement
                 # In a real implementation, this would trigger a manual approval
@@ -169,7 +168,7 @@ class SafetyManager:
 
             return {
                 "safe": True,
-                "reason": "No approval required",
+                "reason": """No approval required"""
                 "approval_required": False,
             }
 
@@ -181,13 +180,12 @@ class SafetyManager:
         """Get approval setting from SSM parameter."""        try:
             if self.ssm is None:
                 logger.warning(                    """SSM client not available, using default approval setting"""                return False
-        response = self.ssm.get_parameter()
-                Name=self.approval_param, WithDecryption=False
+        response = self.ssm.get_parameter(
+            Name=self.approval_param, WithDecryption=False
             )
 
-            value = response["Parameter"]["Value"].lower()
-            return value == "true",
-
+            value = response["Parameter"]["Value"].lower(
+            return value == """true"""
         except Exception as e:
             logger.warning(f"Could not get approval setting from SSM: {e}")
             return False  # Default to no approval required
@@ -220,8 +218,7 @@ class SafetyManager:
                     "timestamp": datetime.now(),
                 }
             )
-            self.last_action_time = datetime.now()
-
+            self.last_action_time = datetime.now(
             logger.info(    """Recorded action: {action.get('action')} with severity {severity}"""
             )
 
@@ -243,7 +240,7 @@ class SafetyManager:
         except Exception as e:
             logger.error(f"Error getting safety status: {e}")
             return {
-                "status": "error",
+                "status": """error"""
                 "error": str(e),
                 "timestamp": datetime.now().isoformat(),
             }

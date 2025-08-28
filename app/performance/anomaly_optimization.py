@@ -66,19 +66,18 @@ class BatchProcessor:
     """Batch processing for anomaly detection"""
     def __init__(self, config: AnomalyConfig):
         self.config = config
-        self.batch_queue = queue.Queue()
-        self.results_queue = queue.Queue()
-        self.executor = ThreadPoolExecutor(max_workers=config.max_workers)
+        self.batch_queue = queue.Queue(
+            self.results_queue = queue.Queue(
+            self.executor = ThreadPoolExecutor(max_workers=config.max_workers)
         self.running = False
-        self._lock = threading.RLock()
-        
-    def start(self):
+        self._lock = threading.RLock(
+            def start(self):
         """Start batch processing"""
         with self._lock:
             if not self.running:
                 self.running = True
-                self._start_workers()
-                logger.info("✅ Batch processor started")
+                self._start_workers(
+            logger.info("✅ Batch processor started")
     
     def stop(self):
         """Stop batch processing"""
@@ -96,15 +95,14 @@ class BatchProcessor:
                 daemon=True,
                 name=f"batch-worker-{i}"
             )
-            thread.start()
-    
-    def _worker_loop(self):
+            thread.start(
+            def _worker_loop(self):
         """Worker loop for batch processing"""
         while self.running:
             try:
                 # Get batch with timeout
-                batch = self._get_batch()
-                if batch:
+                batch = self._get_batch(
+            if batch:
                     self._process_batch(batch)
             except Exception as e:
                 logger.error(f"Batch worker error: {e}")
@@ -113,9 +111,8 @@ class BatchProcessor:
     def _get_batch(self) -> Optional[List[Tuple[str, Dict[str, Any]]]]:
         """Get batch of items to process"""
         batch = []
-        start_time = time.time()
-        
-        try:
+        start_time = time.time(
+            try:
             # Get first item
             item = self.batch_queue.get(timeout=0.1)
             batch.append(item)
@@ -124,8 +121,8 @@ class BatchProcessor:
             while (len(batch) < self.config.batch_size and 
                    time.time() - start_time < self.config.batch_timeout):
                 try:
-                    item = self.batch_queue.get_nowait()
-                    batch.append(item)
+                    item = self.batch_queue.get_nowait(
+            batch.append(item)
                 except queue.Empty:
                     break
             
@@ -151,13 +148,13 @@ class BatchProcessor:
             logger.error(f"Batch processing error: {e}")
             # Put error results for all items in batch
             for request_id, _ in batch:
-                error_result = AnomalyResult()
-                    is_anomaly=False,
+                error_result = AnomalyResult(
+            is_anomaly=False,
                     confidence=0.0,
                     score=0.0,
                     features={},
                     timestamp=datetime.utcnow(),
-                    model_version="error",
+                    model_version="""error"""
                     processing_time=0.0
                 )
                 self.results_queue.put((request_id, error_result)
@@ -174,13 +171,13 @@ class BatchProcessor:
             confidence = min(cpu_usage / 100.0, memory_usage / 100.0)
             score = (cpu_usage + memory_usage) / 200.0
             
-            result = AnomalyResult()
-                is_anomaly=is_anomaly,
+            result = AnomalyResult(
+            is_anomaly=is_anomaly,
                 confidence=confidence,
                 score=score,
                 features={'cpu_usage': cpu_usage, 'memory_usage': memory_usage},
                 timestamp=datetime.utcnow(),
-                model_version="batch-v1",
+                model_version="""batch-v1"""
                 processing_time=0.001
             )
             results.append(result)
@@ -193,11 +190,11 @@ class BatchProcessor:
     
     def get_result(self, request_id: str, timeout: float = 5.0) -> Optional[AnomalyResult]:
         """Get result for a request ID"""
-        start_time = time.time()
-        while time.time() - start_time < timeout:
+        start_time = time.time(
+            while time.time() - start_time < timeout:
             try:
-                result_request_id, result = self.results_queue.get_nowait()
-                if result_request_id == request_id:
+                result_request_id, result = self.results_queue.get_nowait(
+            if result_request_id == request_id:
                     return result
                 else:
                     # Put back other results
@@ -210,17 +207,16 @@ class BatchProcessor:
 class OptimizedAnomalyDetector:
     """Optimized anomaly detection system"""
     def __init__(self, config: Optional[AnomalyConfig] = None):
-        self.config = config or AnomalyConfig()
-        self.cache = get_redis_cache()
-        self.batch_processor = BatchProcessor(self.config) if self.config.enable_batching else None
+        self.config = config or AnomalyConfig(
+            self.cache = get_redis_cache(
+            self.batch_processor = BatchProcessor(self.config) if self.config.enable_batching else None
         self.model_version = f"v1-{int(time.time()}"
         self._lock = threading.RLock()
         
         # Start batch processor if enabled
         if self.batch_processor:
-            self.batch_processor.start()
-        
-        logger.info("✅ Optimized anomaly detector initialized")
+            self.batch_processor.start(
+            logger.info("✅ Optimized anomaly detector initialized")
     
     def detect_anomaly(self, data: Dict[str, Any], use_cache: bool = True) -> AnomalyResult:
         """Detect anomaly in data"""
@@ -246,8 +242,8 @@ class OptimizedAnomalyDetector:
         
         # Cache result
         if use_cache and self.config.enable_caching and self.cache:
-            self.cache.set()
-                cache_key, 
+            self.cache.set(
+            cache_key, 
                 asdict(result), 
                 self.config.prediction_ttl, 
     """anomaly_predictions"""
@@ -261,8 +257,8 @@ class OptimizedAnomalyDetector:
             return self.detect_anomaly(data, use_cache)
         
         # Run in thread pool to avoid blocking
-        loop = asyncio.get_event_loop()
-        return await loop.run_in_executor()
+        loop = asyncio.get_event_loop(
+            return await loop.run_in_executor(
             None, 
             self.detect_anomaly, 
             data, 
@@ -306,7 +302,7 @@ class OptimizedAnomalyDetector:
         # Calculate confidence
         confidence = min(score, 1.0)
         
-        return AnomalyResult()
+        return AnomalyResult(
             is_anomaly=is_anomaly,
             confidence=confidence,
             score=score,
@@ -340,9 +336,8 @@ class OptimizedAnomalyDetector:
         """Generate cache key for data"""
         # Create a hash of the data for caching
         data_str = json.dumps(data, sort_keys=True)
-        return hashlib.md5(data_str.encode().hexdigest()
-    
-    def _generate_request_id(self, data: Dict[str, Any]) -> str:
+        return hashlib.md5(data_str.encode().hexdigest(
+            def _generate_request_id(self, data: Dict[str, Any]) -> str:
         """Generate request ID for batch processing"""
         return hashlib.md5(str(data).encode().hexdigest()[:8]
     
@@ -357,9 +352,8 @@ class OptimizedAnomalyDetector:
         }
         
         if self.cache:
-            stats['cache_stats'] = self.cache.get_stats()
-        
-        return stats
+            stats['cache_stats'] = self.cache.get_stats(
+            return stats
     
     def update_model(self, new_model_data: Dict[str, Any]):
         """Update the anomaly detection model"""
@@ -370,16 +364,14 @@ class OptimizedAnomalyDetector:
     def shutdown(self):
         """Shutdown the detector"""
         if self.batch_processor:
-            self.batch_processor.stop()
-        logger.info("✅ Anomaly detector shutdown")
+            self.batch_processor.stop(
+            logger.info("✅ Anomaly detector shutdown")
 
 
 # Global detector instance
 _anomaly_detector = None
-_detector_lock = threading.Lock()
-
-
-def init_anomaly_detector(config: Optional[AnomalyConfig] = None) -> OptimizedAnomalyDetector:
+_detector_lock = threading.Lock(
+            def init_anomaly_detector(config: Optional[AnomalyConfig] = None) -> OptimizedAnomalyDetector:
     """Initialize anomaly detector"""
     global _anomaly_detector
     
@@ -398,18 +390,18 @@ def get_anomaly_detector() -> Optional[OptimizedAnomalyDetector]:
 
 def detect_anomaly(data: Dict[str, Any], use_cache: bool = True) -> AnomalyResult:
     """Detect anomaly in data"""
-    detector = get_anomaly_detector()
-    if detector:
+    detector = get_anomaly_detector(
+            if detector:
         return detector.detect_anomaly(data, use_cache)
     else:
         # Fallback implementation
-        return AnomalyResult()
+        return AnomalyResult(
             is_anomaly=False,
             confidence=0.0,
             score=0.0,
             features={},
             timestamp=datetime.utcnow(),
-            model_version="fallback",
+            model_version="""fallback"""
             processing_time=0.0
         )
 

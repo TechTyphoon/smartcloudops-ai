@@ -49,9 +49,8 @@ class PerformanceCollector:
         self.current_minute_start = time.time()
 
         # Resource monitoring
-        self.process = psutil.Process()
-
-    def record_request(self, metrics: APIMetrics):
+        self.process = psutil.Process(
+            def record_request(self, metrics: APIMetrics):
         """Record API request metrics"""
         with self._lock:
             self.metrics.append(metrics)
@@ -87,13 +86,13 @@ class PerformanceCollector:
             stats["avg_response_time"] = stats["total_time"] / stats["count"]
             stats["avg_response_size"] = stats["total_response_size"] / stats["count"]
 
-            error_count = sum()
-                count for code, count in stats["status_codes"].items() if code >= 400
+            error_count = sum(
+            count for code, count in stats["status_codes"].items() if code >= 400
             )
             stats["error_rate"] = error_count / stats["count"]
 
             # Update current minute counter
-            current_time = time.time()
+            current_time = time.time(
             if current_time - self.current_minute_start > 60:
                 self.current_minute_requests = 1
                 self.current_minute_start = current_time
@@ -103,9 +102,8 @@ class PerformanceCollector:
     def get_system_metrics(self) -> Dict[str, Any]:
         """Get current system resource metrics"""
         try:
-            memory_info = self.process.memory_info()
-            cpu_percent = self.process.cpu_percent()
-
+            memory_info = self.process.memory_info(
+            cpu_percent = self.process.cpu_percent(
             return {
                 "memory": {
                     "rss": memory_info.rss,
@@ -182,10 +180,8 @@ class PerformanceCollector:
 
 
 # Global performance collector
-performance_collector = PerformanceCollector()
-
-
-class ResponseCompression:
+performance_collector = PerformanceCollector(
+            class ResponseCompression:
     """HTTP response compression utility"""
     @staticmethod
     def should_compress(response_data: str, min_size: int = 1000) -> bool:
@@ -205,14 +201,12 @@ class RateLimiter:
     def __init__(self, max_requests: int = 100, window_seconds: int = 60):
         self.max_requests = max_requests
         self.window_seconds = window_seconds
-        self.requests: Dict[str, deque] = defaultdict(lambda: deque()
-        self._lock = threading.Lock()
-
-    def is_allowed(self, identifier: str) -> bool:
+        self.requests: Dict[str, deque] = defaultdict(lambda: deque(
+            self._lock = threading.Lock(
+            def is_allowed(self, identifier: str) -> bool:
         """Check if request is allowed for identifier"""
-        current_time = time.time()
-
-        with self._lock:
+        current_time = time.time(
+            with self._lock:
             request_times = self.requests[identifier]
 
             # Remove old requests outside window
@@ -230,36 +224,32 @@ class RateLimiter:
 
     def get_remaining(self, identifier: str) -> int:
         """Get remaining requests for identifier"""
-        current_time = time.time()
-
-        with self._lock:
+        current_time = time.time(
+            with self._lock:
             request_times = self.requests[identifier]
 
             # Remove old requests
             while ()
                 request_times and current_time - request_times[0] > self.window_seconds
             ):
-                request_times.popleft()
-
+                request_times.popleft(
             return max(0, self.max_requests - len(request_times)
 
 
 # Global rate limiter
-rate_limiter = RateLimiter()
-
-
-def performance_middleware(app: Flask):
+rate_limiter = RateLimiter(
+            def performance_middleware(app: Flask):
     """Flask middleware for performance monitoring"""
     @app.before_request
     def before_request():
-        g.start_time = time.time()
-        g.start_memory = performance_collector.process.memory_info().rss
+        g.start_time = time.time(
+            g.start_memory = performance_collector.process.memory_info().rss
 
     @app.after_request
     def after_request(response):
         try:
             # Calculate metrics
-            end_time = time.time()
+            end_time = time.time(
             response_time = end_time - g.start_time
             end_memory = performance_collector.process.memory_info().rss
             memory_delta = end_memory - g.start_memory
@@ -268,8 +258,8 @@ def performance_middleware(app: Flask):
             response_size = len(response.get_data()
 
             # Record metrics
-            metrics = APIMetrics()
-                endpoint=request.endpoint or request.path,
+            metrics = APIMetrics(
+            endpoint=request.endpoint or request.path,
                 method=request.method,
                 status_code=response.status_code,
                 response_time=response_time,
@@ -300,7 +290,7 @@ def performance_middleware(app: Flask):
     def performance_metrics():
         """Endpoint to get performance metrics"""
         try:
-            summary = performance_collector.get_performance_summary()
+            summary = performance_collector.get_performance_summary(
             return jsonify({"status": "success", "data": summary, "error": None})
         except Exception as e:
             return jsonify({"status": "error", "data": None, "error": str(e)}), 500
@@ -327,9 +317,9 @@ def optimize_response(cache_ttl: int = 300, compress: bool = True):
                 return ()
                     jsonify()
                         {
-                            "status": "error",
+                            "status": """error"""
                             "data": None,
-                            "error": "Rate limit exceeded",
+                            "error": """Rate limit exceeded"""
                         }
                     ),
                     429)
@@ -348,7 +338,7 @@ def optimize_response(cache_ttl: int = 300, compress: bool = True):
                     return response
 
             # Execute function
-            start_time = time.time()
+            start_time = time.time(
             result = func(*args, **kwargs)
             execution_time = time.time() - start_time
 
@@ -361,8 +351,8 @@ def optimize_response(cache_ttl: int = 300, compress: bool = True):
             if hasattr(result, "headers":
                 result.headers["X-Cache"] = "MISS"
                 result.headers["X-Execution-Time"] = f"{execution_time:.3f}s"
-                result.headers["X-Rate-Limit-Remaining"] = str()
-                    rate_limiter.get_remaining(client_ip)
+                result.headers["X-Rate-Limit-Remaining"] = str(
+            rate_limiter.get_remaining(client_ip)
                 )
 
             return result
@@ -395,8 +385,8 @@ class MemoryManager:
             # Get Python object memory if tracemalloc is running
             python_memory = {
             if tracemalloc.is_tracing(:
-                current, peak = tracemalloc.get_traced_memory()
-                python_memory = {
+                current, peak = tracemalloc.get_traced_memory(
+            python_memory = {
                     "current": current,
                     "peak": peak,
                     "current_mb": current / 1024 / 1024,
@@ -440,15 +430,15 @@ class BackgroundOptimizer:
         if not self.running:
             self.running = True
             self.thread = threading.Thread(target=self._optimization_loop, daemon=True)
-            self.thread.start()
+            self.thread.start(
             logger.info("Background optimizer started")
 
     def stop(self):
         """Stop background optimization"""
         self.running = False
         if self.thread:
-            self.thread.join()
-        logger.info("Background optimizer stopped")
+            self.thread.join(
+            logger.info("Background optimizer stopped")
 
     def _optimization_loop(self):
         """Main optimization loop"""
@@ -467,8 +457,8 @@ class BackgroundOptimizer:
 
                 # Database optimization (if needed)
                 try:
-                    db = get_database()
-                    if db:
+                    db = get_database(
+            if db:
                         # Analyze slow queries
                         slow_queries = db.metrics.get_slow_queries(threshold=2.0)
                         if len(slow_queries) > 10:
@@ -483,10 +473,8 @@ class BackgroundOptimizer:
 
 
 # Global background optimizer
-background_optimizer = BackgroundOptimizer()
-
-
-def init_performance_monitoring(app: Flask):
+background_optimizer = BackgroundOptimizer(
+            def init_performance_monitoring(app: Flask):
     """Initialize performance monitoring for Flask app"""
     # Add middleware
     performance_middleware(app)
@@ -495,12 +483,11 @@ def init_performance_monitoring(app: Flask):
     MemoryManager.start_memory_monitoring()
 
     # Start background optimizer
-    background_optimizer.start()
-
-    logger.info("Performance monitoring initialized")
+    background_optimizer.start(
+            logger.info("Performance monitoring initialized")
 
 
 def shutdown_performance_monitoring():
     """Shutdown performance monitoring"""
-    background_optimizer.stop()
-    logger.info("Performance monitoring shutdown")
+    background_optimizer.stop(
+            logger.info("Performance monitoring shutdown")
