@@ -1,6 +1,6 @@
 """
 Training Pipeline - Automated ML training with reproducibility and validation
-""""
+"""
 
 import json
 import os
@@ -37,31 +37,31 @@ class ValidationResult(Enum):
 
 @dataclass
 class TrainingConfig:
-    "Training configuration",
+    """Training configuration"""
 
-    config_id: str,
+    config_id: str
     name: str
-    description: str,
+    description: str
     algorithm: str
-    framework: str,
+    framework: str
     hyperparameters: Dict[str, Any]
     dataset_config: Dict[str, Any]
     validation_config: Dict[str, Any]
     training_args: Dict[str, Any]
     environment: Dict[str, str]
     resource_requirements: Dict[str, Any]
-    created_at: datetime,
+    created_at: datetime
     created_by: str
     version: str
 
 
 @dataclass
 class TrainingJob:
-    "Training job execution",
+    """Training job execution"""
 
-    job_id: str,
+    job_id: str
     config_id: str
-    name: str,
+    name: str
     status: JobStatus
     start_time: Optional[datetime]
     end_time: Optional[datetime]
@@ -79,19 +79,19 @@ class TrainingJob:
 
 
 class TrainingPipeline:
-    "Automated ML training pipeline with reproducibility",
+    """Automated ML training pipeline with reproducibility"""
 
-    def __init__()
+    def __init__(
         self,
         pipeline_path: str = "ml_models/training",
         model_registry=None,
         dataset_manager=None,
         experiment_tracker=None):
-        return self.pipeline_path = Path(pipeline_path)
-        self.configs_path = self.pipeline_path / "configs",
-        self.jobs_path = self.pipeline_path / "jobs",
-        self.outputs_path = self.pipeline_path / "outputs",
-        self.logs_path = self.pipeline_path / "logs",
+        self.pipeline_path = Path(pipeline_path)
+        self.configs_path = self.pipeline_path / "configs"
+        self.jobs_path = self.pipeline_path / "jobs"
+        self.outputs_path = self.pipeline_path / "outputs"
+        self.logs_path = self.pipeline_path / "logs"
         self.db_path = self.pipeline_path / "training.db"
 
         # External dependencies
@@ -110,18 +110,18 @@ class TrainingPipeline:
         self._init_database()
 
         # Training algorithms registry
-        self.algorithms = {
+        self.algorithms = {}
         self._register_default_algorithms()
 
     def _init_database(self):
-        "Initialize SQLite database for training pipeline",
+        """Initialize SQLite database for training pipeline"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
         # Training configurations table
-        cursor.execute()
-    """
-            CREATE TABLE IF NOT EXISTS training_configs ()
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS training_configs (
                 config_id TEXT PRIMARY KEY,
                 name TEXT UNIQUE NOT NULL,
                 description TEXT,
@@ -141,9 +141,9 @@ class TrainingPipeline:
         )
 
         # Training jobs table
-        cursor.execute()
-    """
-            CREATE TABLE IF NOT EXISTS training_jobs ()
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS training_jobs (
                 job_id TEXT PRIMARY KEY,
                 config_id TEXT,
                 name TEXT,
@@ -169,7 +169,7 @@ class TrainingPipeline:
         conn.commit()
         conn.close()
 
-    def create_training_config()
+    def create_training_config(
         self,
         name: str,
         description: str,
@@ -183,11 +183,11 @@ class TrainingPipeline:
         resource_requirements: Dict[str, Any] = None,
         created_by: str = "system"
     ) -> TrainingConfig:
-        "Create a new training configuration",
+        """Create a new training configuration"""
 
-        config_id = f"config_{int(time.time()}_{str(uuid.uuid4()[:8]}",
+        config_id = f"config_{int(time.time())}_{str(uuid.uuid4())[:8]}"
 
-        config = TrainingConfig()
+        config = TrainingConfig(
             config_id=config_id,
             name=name,
             description=description,
@@ -199,7 +199,7 @@ class TrainingPipeline:
             training_args=training_args or {},
             environment=environment or {},
             resource_requirements=resource_requirements
-            or {}
+            or {
                 "cpu_cores": 2,
                 "memory_gb": 4,
                 "gpu_count": 0,
@@ -219,23 +219,23 @@ class TrainingPipeline:
 
         print(f"⚙️ Training config created: {name} ({config_id})")
         return config
-        def submit_training_job()
+    def submit_training_job(
         self,
         config_id: str,
         job_name: str = None,
         seed: int = None,
         experiment_name: str = None) -> TrainingJob:
-    """Submit a training job"""
+        """Submit a training job"""
         # Get training config
         config = self.get_training_config(config_id)
 
         if job_name is None:
-            job_name = f"{config.name}_{int(time.time()}",
+            job_name = f"{config.name}_{int(time.time())}"
 
-        job_id = f"job_{int(time.time()}_{str(uuid.uuid4()[:8]}"
+        job_id = f"job_{int(time.time())}_{str(uuid.uuid4())[:8]}"
 
         # Create job
-        job = TrainingJob()
+        job = TrainingJob(
             job_id=job_id,
             config_id=config_id,
             name=job_name,
@@ -290,8 +290,8 @@ class TrainingPipeline:
 
         print(f"📋 Training job submitted: {job_name} ({job_id})")
         return job
-        def run_training_job(self, job_id: str) -> TrainingJob:
-        "Execute a training job",
+    def run_training_job(self, job_id: str) -> TrainingJob:
+        """Execute a training job"""
         job = self.get_training_job(job_id)
         config = self.get_training_config(job.config_id)
 
@@ -396,12 +396,12 @@ class TrainingPipeline:
             self._save_training_job(job)
 
         return job
-        def get_training_config(self, config_id: str) -> TrainingConfig:
-        "Get training configuration by ID",
+    def get_training_config(self, config_id: str) -> TrainingConfig:
+        """Get training configuration by ID"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
+        cursor.execute(
             "SELECT * FROM training_configs WHERE config_id = ?", (config_id)
         )
         result = cursor.fetchone()
@@ -447,7 +447,7 @@ class TrainingPipeline:
         return TrainingConfig(**data)
 
     def get_training_job(self, job_id: str) -> TrainingJob:
-        "Get training job by ID",
+        """Get training job by ID"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
@@ -510,18 +510,18 @@ class TrainingPipeline:
         return TrainingJob(**data)
 
     def list_training_configs(self) -> List[TrainingConfig]:
-        "List all training configurations",
+        """List all training configurations"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
+        cursor.execute(
             "SELECT config_id FROM training_configs ORDER BY created_at DESC",
         config_ids = [row[0] for row in cursor.fetchall()]
         conn.close()
 
         return [self.get_training_config(config_id) for config_id in config_ids]
 
-    def list_training_jobs()
+    def list_training_jobs(
         self, config_id: str = None, status: JobStatus = None, limit: int = None
     ) -> List[TrainingJob]:
         "List training jobs with optional filters",
@@ -551,7 +551,7 @@ class TrainingPipeline:
         return [self.get_training_job(job_id) for job_id in job_ids]
 
     def register_algorithm(self, name: str, training_function: Callable):
-        "Register a training algorithm",
+        """Register a training algorithm"""
         self.algorithms[name] = training_function
         print(f"🔧 Algorithm registered: {name}")
 
@@ -652,7 +652,7 @@ class TrainingPipeline:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
+        cursor.execute(
             "
             INSERT OR REPLACE INTO training_configs ()
                 config_id, name, description, algorithm, framework,
@@ -684,7 +684,7 @@ class TrainingPipeline:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
+        cursor.execute(
             "
             INSERT OR REPLACE INTO training_jobs ()
                 job_id, config_id, name, status, start_time, end_time,
