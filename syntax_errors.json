@@ -1,0 +1,772 @@
+{
+  "python": [
+    {
+      "file": "scripts/monitoring/real_system_monitor.py",
+      "error": "Line 163: unterminated f-string literal (detected at line 163)\n    f\"  Memory Usage: {real_metrics['memory']['usage_percent']}% (\n            ^"
+    },
+    {
+      "file": "scripts/monitoring/uptime_monitor.py",
+      "error": "Line 21: invalid syntax\n    \"\"\"Check if a service is up\"\"f\"\n           ^"
+    },
+    {
+      "file": "scripts/monitoring/continuous_health_monitor.py",
+      "error": "Line 216: unterminated f-string literal (detected at line 216)\n    f\"\u2705 {endpoint} - {result['status_code']} (\n                        ^"
+    },
+    {
+      "file": "scripts/security/validate_secrets.py",
+      "error": "Line 12: unterminated string literal (detected at line 12)\n    r'password\\s*=\\s*[\"\\'][^f\"\\f']{3,}[\"\\']',\n                                           ^"
+    },
+    {
+      "file": "scripts/testing/production_validation.py",
+      "error": "Line 65: unterminated string literal (detected at line 65)\n    \"   smartcloudops-main      Up 45 minutes (\n                        ^"
+    },
+    {
+      "file": "scripts/testing/health_check.py",
+      "error": "Line 30: unterminated f-string literal (detected at line 30)\n    \"message\": f\"Flask endpoints failed: health={health_response.status_code},\n                                   ^"
+    },
+    {
+      "file": "ml_models/model_versioning.py",
+      "error": "Line 327: invalid syntax\n    \"\"\"Update performance metrics in model version\"\"\"\n               ^"
+    },
+    {
+      "file": "tests/test_integration.py",
+      "error": "Line 41: invalid syntax\n    \"\"\"Mock anomaly detector for testing.\"\"f\"\n               ^"
+    },
+    {
+      "file": "tests/test_ml_anomaly_detection.py",
+      "error": "Line 11: unexpected indent\n    AnomalyInferenceEngine,\n       ^"
+    },
+    {
+      "file": "tests/test_remediation.py",
+      "error": "Line 26: invalid syntax\n    \"\"\"Test remediation engine initialization.\"\"\"\n               ^"
+    },
+    {
+      "file": "tests/test_gpt_integration.py",
+      "error": "Line 19: invalid syntax\n    \"\"\"Test GPT handler initialization with API key.\"\"\"\n               ^"
+    },
+    {
+      "file": "tests/test_ai_handler.py",
+      "error": "Line 21: invalid syntax\n    \"\"\"Test handler initialization with OpenAI API key.\"\"\"\n               ^"
+    },
+    {
+      "file": "tests/test_chatops.py",
+      "error": "Line 10: unexpected indent\n    SystemContextGatherer,\n       ^"
+    },
+    {
+      "file": "tests/test_ml_endpoints.py",
+      "error": "Line 95: invalid syntax\n    \"\"\"Test batch anomaly detection with no data.\"\"\"\n               ^"
+    },
+    {
+      "file": "tests/unit/test_ml_models.py",
+      "error": "Line 49: invalid syntax\n    \"\"\"Test anomaly detector initialization.\"\"\"\n               ^"
+    },
+    {
+      "file": "tests/unit/test_remediation_engine.py",
+      "error": "Line 22: invalid syntax\n    \"\"\"Create remediation engine instance for testing.\"\"\"\n               ^"
+    },
+    {
+      "file": "tests/integration/test_api_endpoints.py",
+      "error": "Line 37: invalid syntax\n    \"\"\"Create test client.\"\"\"\n               ^"
+    },
+    {
+      "file": "tests/backend/test_chatops.py",
+      "error": "Line 34: invalid syntax\n    \"\"\"Test /chatops/analyze endpoint with missing query.\"\"\"\n           ^"
+    },
+    {
+      "file": "app/auth_routes.py",
+      "error": "Line 4: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/ml_module.py",
+      "error": "Line 3: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/chatops_module.py",
+      "error": "Line 3: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/auth.py",
+      "error": "Line 104: unexpected indent\n    user_id=user_id,\n                       ^"
+    },
+    {
+      "file": "app/monitoring/metrics.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/api/performance.py",
+      "error": "Line 166: closing parenthesis '}' does not match opening parenthesis '(' on line 162\n    })\n            ^"
+    },
+    {
+      "file": "app/api/anomalies_refactored.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/api/ai.py",
+      "error": "Line 177: cannot assign to subscript here. Maybe you meant '==' instead of '='?\n    analysis_result[\"anomaly_detected\"] = False\n            ^"
+    },
+    {
+      "file": "app/api/mlops.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/mlops/dataset_manager.py",
+      "error": "Line 3: unterminated string literal (detected at line 3)\n    \"\"\"\"\n       ^"
+    },
+    {
+      "file": "app/mlops/reinforcement_learning.py",
+      "error": "Line 6: unterminated string literal (detected at line 6)\n    \"\n    ^"
+    },
+    {
+      "file": "app/mlops/data_pipeline.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/mlops/experiment_tracker.py",
+      "error": "Line 94: unmatched ')'\n    )\n            ^"
+    },
+    {
+      "file": "app/mlops/model_registry.py",
+      "error": "Line 96: unmatched ')'\n    )\n            ^"
+    },
+    {
+      "file": "app/mlops/training_pipeline.py",
+      "error": "Line 3: unterminated string literal (detected at line 3)\n    \"\"\"\"\n       ^"
+    },
+    {
+      "file": "app/mlops/model_monitor.py",
+      "error": "Line 337: closing parenthesis '}' does not match opening parenthesis '(' on line 328\n    })\n                        ^"
+    },
+    {
+      "file": "app/mlops/reproducibility.py",
+      "error": "Line 3: unterminated string literal (detected at line 3)\n    \"\"\"\"\n       ^"
+    },
+    {
+      "file": "app/mlops/knowledge_base.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/mlops/model_registry_minimal.py",
+      "error": "Line 96: unmatched ')'\n    )\n            ^"
+    },
+    {
+      "file": "app/mlops/experiment_tracker_minimal.py",
+      "error": "Line 94: unmatched ')'\n    )\n            ^"
+    },
+    {
+      "file": "app/mlops/autonomous_ops.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/mlops/data_pipeline_enhanced.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/analytics/real_time_dashboard.py",
+      "error": "Line 5: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/remediation/engine.py",
+      "error": "Line 2: unterminated string literal (detected at line 2)\n    \"\n    ^"
+    },
+    {
+      "file": "app/remediation/safety.py",
+      "error": "Line 5: unterminated string literal (detected at line 5)\n    \"\n    ^"
+    },
+    {
+      "file": "app/remediation/__init__.py",
+      "error": "Line 1: unterminated triple-quoted string literal (detected at line 1)\n    \"\"\"Auto-remediation package for Smart CloudOps AI (Phase 4).\"\n    ^"
+    },
+    {
+      "file": "app/remediation/notifications.py",
+      "error": "Line 4: unterminated string literal (detected at line 4)\n    \"\n    ^"
+    },
+    {
+      "file": "app/remediation/actions.py",
+      "error": "Line 4: unterminated string literal (detected at line 4)\n    \"\n    ^"
+    },
+    {
+      "file": "app/performance/anomaly_optimization.py",
+      "error": "Line 98: unmatched ')'\n    )\n                ^"
+    },
+    {
+      "file": "app/performance/database_optimization.py",
+      "error": "Line 113: closing parenthesis '}' does not match opening parenthesis '(' on line 109\n    })\n                    ^"
+    },
+    {
+      "file": "app/performance/log_optimization.py",
+      "error": "Line 59: expected an indented block after function definition on line 58\n    \"\"\"Initialize current log file\"\"\"\n        ^"
+    },
+    {
+      "file": "app/performance/redis_cache.py",
+      "error": "Line 62: unexpected indent\n    **asdict(self),\n               ^"
+    },
+    {
+      "file": "app/performance/caching.py",
+      "error": "Line 67: unexpected indent\n    \"hits\": self.hits,\n               ^"
+    },
+    {
+      "file": "app/performance/__init__.py",
+      "error": "Line 12: unexpected indent\n    \"cache_manager\",\n           ^"
+    },
+    {
+      "file": "app/performance/api_optimization.py",
+      "error": "Line 75: unmatched '}'\n    }\n                        ^"
+    },
+    {
+      "file": "app/chatops/gpt_handler.py",
+      "error": "Line 175: expected an indented block after function definition on line 172\n    \"\"\"Process ChatOps query with GPT integration and enhanced security.\"\"\":\n        ^"
+    },
+    {
+      "file": "app/chatops/ai_handler.py",
+      "error": "Line 4: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/chatops/utils.py",
+      "error": "Line 7: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/security/secrets_manager.py",
+      "error": "Line 3: unterminated string literal (detected at line 3)\n    \"\n    ^"
+    },
+    {
+      "file": "app/security/config.py",
+      "error": "Line 281: closing parenthesis '}' does not match opening parenthesis '(' on line 274\n    }\n            ^"
+    },
+    {
+      "file": "app/security/input_validation.py",
+      "error": "Line 4: unterminated string literal (detected at line 4)\n    \"\n    ^"
+    },
+    {
+      "file": "app/security/error_handling.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/security/rate_limiting.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/security/caching.py",
+      "error": "Line 4: unterminated string literal (detected at line 4)\n    \"\n    ^"
+    },
+    {
+      "file": "app/services/ml_service.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/services/mlops_service.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/services/feedback_service.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/services/security_validation.py",
+      "error": "Line 27: unmatched ']'\n    ]\n            ^"
+    },
+    {
+      "file": "app/services/anomaly_service.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/services/ai_service.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/services/remediation_service.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/observability/opentelemetry_config.py",
+      "error": "Line 46: unmatched ')'\n    console_export: bool = False) -> None:\n                                        ^"
+    },
+    {
+      "file": "app/observability/slos.py",
+      "error": "Line 73: unmatched ')'\n    )\n            ^"
+    },
+    {
+      "file": "app/observability/metrics.py",
+      "error": "Line 72: unexpected indent\n    \"anomalies_detected_total\",\n       ^"
+    },
+    {
+      "file": "app/observability/middleware.py",
+      "error": "Line 3: unterminated string literal (detected at line 3)\n    \"\"\"\"\n       ^"
+    },
+    {
+      "file": "app/observability/logging_config.py",
+      "error": "Line 27: unmatched ')'\n    message_dict: Dict[str, Any]) -> None:\n                                        ^"
+    },
+    {
+      "file": "app/observability/tracing.py",
+      "error": "Line 62: unmatched ')'\n    enable_auto_instrumentation: bool = True) -> bool:\n                                                ^"
+    },
+    {
+      "file": "app/observability/enhanced_logging.py",
+      "error": "Line 39: unmatched ')'\n    message_dict: Dict[str, Any]) -> None:\n                                        ^"
+    },
+    {
+      "file": "app/observability/dashboards.py",
+      "error": "Line 2: unexpected indent\n    \"\"\"\n       ^"
+    },
+    {
+      "file": "app/observability/__init__.py",
+      "error": "Line 11: unexpected indent\n    \"setup_logging\",\n       ^"
+    }
+  ],
+  "javascript": [
+    {
+      "file": "scripts/performance/k6_load_test.js",
+      "error": "Unexpected token ':'"
+    }
+  ],
+  "typescript": [
+    {
+      "file": "smartcloudops-ai/vitest.config.ts",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/anomaly-details-modal.tsx",
+      "error": "Unexpected identifier 'AnomalyDetailsModalProps'"
+    },
+    {
+      "file": "smartcloudops-ai/components/audit-log.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/real-time-status.tsx",
+      "error": "Unexpected identifier 'RealTimeStatusProps'"
+    },
+    {
+      "file": "smartcloudops-ai/components/sidebar.tsx",
+      "error": "Unexpected identifier 'SidebarProps'"
+    },
+    {
+      "file": "smartcloudops-ai/components/chatops-interface.tsx",
+      "error": "Unexpected identifier 'Message'"
+    },
+    {
+      "file": "smartcloudops-ai/components/action-log.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/header.tsx",
+      "error": "Unexpected token '}'"
+    },
+    {
+      "file": "smartcloudops-ai/components/anomaly-card.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/welcome-hero.tsx",
+      "error": "Unexpected token '<'"
+    },
+    {
+      "file": "smartcloudops-ai/components/service-dependency-graph.tsx",
+      "error": "Unexpected token ']'"
+    },
+    {
+      "file": "smartcloudops-ai/components/cost-optimization-card.tsx",
+      "error": "Unexpected identifier 'undefined'"
+    },
+    {
+      "file": "smartcloudops-ai/components/sla-indicator.tsx",
+      "error": "Unexpected identifier 'undefined'"
+    },
+    {
+      "file": "smartcloudops-ai/components/theme-provider.tsx",
+      "error": "Unexpected identifier 'as'"
+    },
+    {
+      "file": "smartcloudops-ai/components/monitoring-dashboard.tsx",
+      "error": "Unexpected identifier 'SystemMetric'"
+    },
+    {
+      "file": "smartcloudops-ai/components/dashboard-layout.tsx",
+      "error": "Unexpected identifier 'DashboardLayoutProps'"
+    },
+    {
+      "file": "smartcloudops-ai/components/remediation-action-card.tsx",
+      "error": "Unexpected token '}'"
+    },
+    {
+      "file": "smartcloudops-ai/components/monitoring/monitoring-dashboard.tsx",
+      "error": "Unexpected token '}'"
+    },
+    {
+      "file": "smartcloudops-ai/components/auth/login-form.tsx",
+      "error": "missing ) after argument list"
+    },
+    {
+      "file": "smartcloudops-ai/components/auth/protected-route.tsx",
+      "error": "Unexpected identifier 'ProtectedRouteProps'"
+    },
+    {
+      "file": "smartcloudops-ai/components/mlops/data-pipeline-panel.tsx",
+      "error": "Unexpected identifier 'from'"
+    },
+    {
+      "file": "smartcloudops-ai/components/mlops/mlops-overview.tsx",
+      "error": "Unexpected identifier 'from'"
+    },
+    {
+      "file": "smartcloudops-ai/components/mlops/models-panel.tsx",
+      "error": "Unexpected identifier 'from'"
+    },
+    {
+      "file": "smartcloudops-ai/components/mlops/mlops-status-bar.tsx",
+      "error": "Unexpected identifier 'from'"
+    },
+    {
+      "file": "smartcloudops-ai/components/mlops/experiments-panel.tsx",
+      "error": "Unexpected identifier 'from'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/alert-dialog.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/chart.tsx",
+      "error": "Unexpected identifier 'as'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/separator.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/menubar.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/tooltip.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/loading-skeleton.tsx",
+      "error": "Unexpected token '<'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/navigation-menu.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/textarea.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/card.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/enhanced-themes.tsx",
+      "error": "Unexpected identifier 'as'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/carousel.tsx",
+      "error": "Unexpected identifier 'UseEmblaCarouselType'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/label.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/toaster.tsx",
+      "error": "Unexpected token '}'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/scroll-area.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/sonner.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/input-otp.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/pagination.tsx",
+      "error": "Unexpected token '}'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/aspect-ratio.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/sidebar.tsx",
+      "error": "Unexpected token '}'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/dropdown-menu.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/use-toast.ts",
+      "error": "Unexpected token '}'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/slider.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/dialog.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/popover.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/toggle-group.tsx",
+      "error": "Unexpected token '>'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/alert.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/select.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/input.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/use-mobile.tsx",
+      "error": "Unexpected token '}'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/error-boundary.tsx",
+      "error": "Unexpected identifier 'ErrorBoundaryState'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/collapsible.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/form.tsx",
+      "error": "Unexpected identifier 'ControllerProps'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/drawer.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/sheet.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/button.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/calendar.tsx",
+      "error": "Unexpected token '}'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/command.tsx",
+      "error": "Unexpected token '}'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/accordion.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/checkbox.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/breadcrumb.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/responsive-container.tsx",
+      "error": "Unexpected identifier 'ResponsiveContainerProps'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/hover-card.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/radio-group.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/context-menu.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/resizable.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/toast.tsx",
+      "error": "Unexpected token ','"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/skeleton.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/avatar.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/toggle.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/switch.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/badge.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/progress.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/table.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/components/ui/tabs.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/__tests__/setup.ts",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/__tests__/components/mlops/mlops-overview.test.tsx",
+      "error": "Unexpected token '<'"
+    },
+    {
+      "file": "smartcloudops-ai/__tests__/utils/test-utils.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/hooks/use-websocket.tsx",
+      "error": "Unexpected identifier 'WebSocketConfig'"
+    },
+    {
+      "file": "smartcloudops-ai/hooks/use-auth.tsx",
+      "error": "Unexpected identifier 'User'"
+    },
+    {
+      "file": "smartcloudops-ai/hooks/use-toast.ts",
+      "error": "Unexpected token '}'"
+    },
+    {
+      "file": "smartcloudops-ai/hooks/use-real-time-metrics.tsx",
+      "error": "Unexpected identifier 'MetricData'"
+    },
+    {
+      "file": "smartcloudops-ai/hooks/use-mlops-real-time.tsx",
+      "error": "Unexpected identifier 'UseMLOpsRealTimeOptions'"
+    },
+    {
+      "file": "smartcloudops-ai/hooks/use-mobile.ts",
+      "error": "Unexpected token '}'"
+    },
+    {
+      "file": "smartcloudops-ai/app/page.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/app/layout.tsx",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "smartcloudops-ai/app/monitoring/page.tsx",
+      "error": "Unexpected token '<'"
+    },
+    {
+      "file": "smartcloudops-ai/app/mlops/page.tsx",
+      "error": "Unexpected identifier 'from'"
+    },
+    {
+      "file": "smartcloudops-ai/app/remediation/page.tsx",
+      "error": "Unexpected token ']'"
+    },
+    {
+      "file": "smartcloudops-ai/app/remediation/loading.tsx",
+      "error": "Unexpected token '}'"
+    },
+    {
+      "file": "smartcloudops-ai/app/insights/page.tsx",
+      "error": "Missing initializer in const declaration"
+    },
+    {
+      "file": "smartcloudops-ai/app/insights/loading.tsx",
+      "error": "Unexpected token '}'"
+    },
+    {
+      "file": "smartcloudops-ai/app/chatops/page.tsx",
+      "error": "Unexpected token '<'"
+    },
+    {
+      "file": "smartcloudops-ai/app/settings/page.tsx",
+      "error": "Unexpected token '<'"
+    },
+    {
+      "file": "smartcloudops-ai/app/anomalies/page.tsx",
+      "error": "Unexpected token ']'"
+    },
+    {
+      "file": "smartcloudops-ai/app/anomalies/loading.tsx",
+      "error": "Unexpected token '}'"
+    },
+    {
+      "file": "smartcloudops-ai/app/anomalies/[id]/page.tsx",
+      "error": "Unexpected identifier 'from'"
+    },
+    {
+      "file": "smartcloudops-ai/app/login/page.tsx",
+      "error": "Unexpected token '<'"
+    },
+    {
+      "file": "tests/e2e/global-teardown.ts",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "tests/e2e/global-setup.ts",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "tests/e2e/playwright.config.ts",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "tests/e2e/tests/performance.spec.ts",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "tests/e2e/tests/dashboard.spec.ts",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "tests/e2e/tests/accessibility.spec.ts",
+      "error": "Unexpected token ':'"
+    },
+    {
+      "file": "tests/e2e/pages/DashboardPage.ts",
+      "error": "Unexpected identifier 'page'"
+    },
+    {
+      "file": "tests/e2e/pages/LoginPage.ts",
+      "error": "Unexpected identifier 'page'"
+    },
+    {
+      "file": "tests/e2e/utils/accessibility-utils.ts",
+      "error": "missing ) after argument list"
+    },
+    {
+      "file": "tests/e2e/utils/test-helpers.ts",
+      "error": "missing ) after argument list"
+    }
+  ]
+}

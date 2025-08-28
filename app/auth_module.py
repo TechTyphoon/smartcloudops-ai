@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Authentication Module for Smart CloudOps AI
 Extracted from main.py for modularity
 """
@@ -13,7 +13,7 @@ from flask import Blueprint, jsonify, request
 from werkzeug.security import check_password_hash, generate_password_hash
 
 # Configure logging
-logger = logging.getLogger
+logger = logging.getLogger(__name__)
 
 # Create blueprint
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -31,8 +31,8 @@ if not DEFAULT_ADMIN_PASSWORD:
     raise ValueError("DEFAULT_ADMIN_PASSWORD environment variable is required")
 
 # In-memory user store (replace with database in production)
-USERS_DB = {:
-    "admin": {}
+USERS_DB = {
+    "admin": {
         "password_hash": generate_password_hash(DEFAULT_ADMIN_PASSWORD),
         "role": "admin",
         "email": "admin@smartcloudops.ai"
@@ -66,7 +66,7 @@ def require_auth(f):
     """Decorator to require authentication."""
     def decorated_function(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
-        if not auth_header or not auth_header.startswith("Bearer":
+        if not auth_header or not auth_header.startswith("Bearer"):
             return jsonify({"error": "Missing or invalid authorization header"}), 401
 
         token = auth_header.split(" ")[1]
@@ -84,17 +84,15 @@ def require_auth(f):
 def login():
     """User login endpoint."""
     if request.method == "GET":
-        return jsonify()
-            {}
-                "message": "Login endpoint",
-                "method": "POST",
-                "required_fields": ["username", "password"],
-                "example": {}
-                    "username": "admin",
-                    "password": "use environment variable DEFAULT_ADMIN_PASSWORD"
-                },
+        return jsonify({
+            "message": "Login endpoint",
+            "method": "POST",
+            "required_fields": ["username", "password"],
+            "example": {
+                "username": "admin",
+                "password": "use environment variable DEFAULT_ADMIN_PASSWORD"
             }
-        )
+        })
 
     try:
         data = request.get_json()
@@ -109,25 +107,23 @@ def login():
 
         # Validate user
         user = USERS_DB.get(username)
-        if not user or not check_password_hash(user["password_hash"], password:
+        if not user or not check_password_hash(user["password_hash"], password):
             return jsonify({"error": "Invalid credentials"}), 401
 
         # Create token
         token = create_jwt_token(username, user["role"])
 
-        return jsonify()
-            {}
-                "status": "success",
-                "message": "Login successful",
-                "token": token,
-                "user": {}
-                    "username": username,
-                    "role": user["role"],
-                    "email": user["email"],
-                },
-                "expires_in": JWT_EXPIRATION_HOURS * 3600,
-            }
-        )
+        return jsonify({
+            "status": "success",
+            "message": "Login successful",
+            "token": token,
+            "user": {
+                "username": username,
+                "role": user["role"],
+                "email": user["email"]
+            },
+            "expires_in": JWT_EXPIRATION_HOURS * 3600
+        })
 
     except Exception as e:
         logger.error("Login error: {e}")
@@ -145,16 +141,14 @@ def profile():
         if not user:
             return jsonify({"error": "User not found"}), 404
 
-        return jsonify()
-            {}
-                "status": "success",
-                "user": {}
-                    "username": user_id,
-                    "role": user["role"],
-                    "email": user["email"],
-                },
+        return jsonify({
+            "status": "success",
+            "user": {
+                "username": user_id,
+                "role": user["role"],
+                "email": user["email"]
             }
-        )
+        })
 
     except Exception as e:
         logger.error(f"Profile error: {e}")
@@ -172,11 +166,7 @@ def logout():
 @auth_bp.route("/register", methods=["POST"])
 def register():
     """User registration endpoint (disabled in production)."""
-    return ()
-        jsonify()
-            {}
-                "error": "Registration disabled in production",
-                "message": "Contact administrator for account creation"
-            }
-        ),
-        403)
+    return jsonify({
+        "error": "Registration disabled in production",
+        "message": "Contact administrator for account creation"
+    }), 403
