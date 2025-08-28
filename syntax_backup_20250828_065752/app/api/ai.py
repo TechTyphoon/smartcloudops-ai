@@ -173,7 +173,7 @@ def analyze_metrics():
         metrics = data["metrics"]
 
         # Mock AI analysis
-        analysis_result = {}
+        analysis_result = {
         analysis_result["anomaly_detected"] = False
         analysis_result["anomaly_score"] = 0.0
         analysis_result["confidence"] = 0.0
@@ -300,7 +300,7 @@ def chat_query():
 
         # Mock chatbot responses based on query content
         if "anomaly" in query or "alert" in query:
-            response = {}
+            response = {
             response["message"] = "I found 2 active anomalies: High CPU usage (89%) and increased error rate (8%). Would you like me to recommend remediation actions?"
             response["intent"] = "anomaly_inquiry"
             response["confidence"] = 0.92
@@ -310,7 +310,7 @@ def chat_query():
                 "Execute auto-remediation",
             ]
         elif "status" in query or "health" in query:
-            response = {}
+            response = {
             response["message"] = "System health is currently GOOD. All critical services are running normally. CPU: 45%, Memory: 67%, Response time: 120ms."
             response["intent"] = "status_inquiry"
             response["confidence"] = 0.88
@@ -320,7 +320,7 @@ def chat_query():
                 "View system dashboard",
             ]
         elif "performance" in query:
-            response = {}
+            response = {
             response["message"] = "Performance metrics show normal operation. Average response time is 120ms, with 99.8% uptime over the last 24 hours."
             response["intent"] = "performance_inquiry"
             response["confidence"] = 0.85
@@ -330,7 +330,7 @@ def chat_query():
                 "Set up performance alerts",
             ]
         elif "help" in query or "?" in query:
-            response = {}
+            response = {
             response["message"] = "I can help you with: monitoring system health, investigating anomalies, recommending remediation actions, and answering questions about your infrastructure. What would you like to know?"
             response["intent"] = "help_request"
             response["confidence"] = 0.95
@@ -340,7 +340,7 @@ def chat_query():
                 "Get recommendations",
             ]
         else:
-            response = {}
+            response = {
             response["message"] = "I understand you're asking about your infrastructure. Could you be more specific? I can help with system status, anomalies, performance metrics, and remediation actions."
             response["intent"] = "general_inquiry"
             response["confidence"] = 0.60
@@ -437,12 +437,12 @@ def predict_with_model(model_id):
 
         # Mock prediction based on model type
         if model["type"] == "anomaly_detection":
-            prediction = {}
+            prediction = {
             prediction["anomaly_probability"] = round(random.uniform(0.1, 0.9), 3)
             prediction["is_anomaly"] = random.choice([True, False])
             prediction["confidence"] = round(random.uniform(0.7, 0.95), 3)
         elif model["type"] == "recommendation":
-            prediction = {}
+            prediction = {
             prediction["recommended_action"] = random.choice(
                 ["scale_up", "restart_service", "cleanup_logs"]
             )

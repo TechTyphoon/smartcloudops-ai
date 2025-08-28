@@ -3,10 +3,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
-"
+"""
 Reinforcement Learning & Active Learning for SmartCloudOps AI
 Continuous learning from remediation outcomes and user feedback
-    """"""
+"""
 import logging
 
 # Configure logging
@@ -16,11 +16,11 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class State:
-    "System state representation for RL",
+    """System state representation for RL"""
 
-    timestamp: datetime,
+    timestamp: datetime
     metrics: Dict[str, float]
-    anomaly_present: bool,
+    anomaly_present: bool
     anomaly_severity: str
     previous_actions: List[str]
     system_health_score: float
@@ -28,31 +28,31 @@ class State:
 
 @dataclass
 class Action:
-    "Remediation action for RL",
+    """Remediation action for RL"""
 
-    action_type: str,
+    action_type: str
     parameters: Dict[str, Any]
-    confidence: float,
+    confidence: float
     expected_impact: float
 
 
 @dataclass
 class Reward:
-    "Reward signal for RL",
+    """Reward signal for RL"""
 
-    immediate_reward: float,
+    immediate_reward: float
     long_term_reward: float
-    user_satisfaction: float,
+    user_satisfaction: float
     system_improvement: float
 
 
 class ReinforcementLearningAgent:
-    "Reinforcement learning agent for automated remediation",
+    """Reinforcement learning agent for automated remediation"""
 
     def __init__(self, learning_rate: float = 0.1, discount_factor: float = 0.9):
-        return self.learning_rate = learning_rate
+        self.learning_rate = learning_rate
         self.discount_factor = discount_factor
-        self.q_table = defaultdict(lambda: defaultdict(float)
+        self.q_table = defaultdict(lambda: defaultdict(float))
         self.state_history = []
         self.action_history = []
         self.reward_history = []
@@ -60,39 +60,39 @@ class ReinforcementLearningAgent:
         # Load existing Q-table if available
         self.load_q_table()
 
-    def get_state_representation()
-        self, metrics: Dict[str, float],anomaly_info: Dict[str, Any]
+    def get_state_representation(
+        self, metrics: Dict[str, float], anomaly_info: Dict[str, Any]
     ) -> str:
-    """Convert system state to string representation for Q-table"""
+        """Convert system state to string representation for Q-table"""
         # Discretize continuous metrics
-        cpu_level = self._discretize_value()
-            metrics.get("cpu_usage", 0), [0, 50, 80, 100])
+        cpu_level = self._discretize_value(
+            metrics.get("cpu_usage", 0), [0, 50, 80, 100]
         )
-        memory_level = self._discretize_value()
-            metrics.get("memory_usage", 0), [0, 50, 80, 100])
+        memory_level = self._discretize_value(
+            metrics.get("memory_usage", 0), [0, 50, 80, 100]
         )
-        error_level = self._discretize_value()
+        error_level = self._discretize_value(
             metrics.get("error_rate", 0), [0, 5, 10, 100]
         )
 
         # Anomaly severity level
-        severity_level = {"low": 1, "medium": 2, "high": 3, "critical": 4}.get()
-            anomaly_info.get("severity", "low", 0
+        severity_level = {"low": 1, "medium": 2, "high": 3, "critical": 4}.get(
+            anomaly_info.get("severity", "low"), 0
         )
 
-        return "{cpu_level}_{memory_level}_{error_level}_{severity_level}",
+        return f"{cpu_level}_{memory_level}_{error_level}_{severity_level}"
 
     def _discretize_value(self, value: float, thresholds: List[float]) -> int:
-        "Discretize continuous value into discrete levels",
+        """Discretize continuous value into discrete levels"""
         for i, threshold in enumerate(thresholds):
             if value <= threshold:
                 return i
         return len(thresholds)
 
-    def select_action()
-        self, state: str, available_actions: List[str],exploration_rate: float = 0.1
+    def select_action(
+        self, state: str, available_actions: List[str], exploration_rate: float = 0.1
     ) -> str:
-        "Select action using epsilon-greedy policy",
+        """Select action using epsilon-greedy policy"""
         if np.random.random() < exploration_rate:
             # Exploration: random action
             return np.random.choice(available_actions)
@@ -103,27 +103,27 @@ class ReinforcementLearningAgent:
             return available_actions[best_action_idx]
 
     def update_q_value(self, state: str, action: str, reward: float, next_state: str):
-        "Update Q-value using Q-learning algorithm",
+        """Update Q-value using Q-learning algorithm"""
         current_q = self.q_table[state][action]
 
         # Get maximum Q-value for next state
-        next_q_values = []
+        next_q_values = [
             self.q_table[next_state][a] for a in self.q_table[next_state].keys()
         ]
         max_next_q = max(next_q_values) if next_q_values else 0
 
         # Q-learning update rule
-        new_q = current_q + self.learning_rate * ()
+        new_q = current_q + self.learning_rate * (
             reward + self.discount_factor * max_next_q - current_q
         )
         self.q_table[state][action] = new_q
 
     def calculate_reward(self, action: str, outcome: Dict[str, Any]) -> float:
-        "Calculate reward based on action outcome",
+        """Calculate reward based on action outcome"""
         reward = 0.0
 
         # Base reward for successful remediation
-        if outcome.get("success", False:
+        if outcome.get("success", False):
             reward += 10.0
 
         # Penalty for failed remediation
@@ -143,10 +143,11 @@ class ReinforcementLearningAgent:
         reward -= action_cost * 0.5
 
         return reward
-        def learn_from_experience()
+    
+    def learn_from_experience(
         self, state: str, action: str, reward: float, next_state: str
     ):
-        "Learn from a single experience",
+        """Learn from a single experience"""
         self.update_q_value(state, action, reward, next_state)
 
         # Store experience for batch learning
@@ -158,22 +159,23 @@ class ReinforcementLearningAgent:
         if len(self.state_history) % 100 == 0:
             self.save_q_table()
 
-    def get_action_recommendations()
+    def get_action_recommendations(
         self, current_state: str, available_actions: List[str]
     ) -> List[Tuple[str, float]]:
-        "Get action recommendations with confidence scores",
+        """Get action recommendations with confidence scores"""
         recommendations = []
 
         for action in available_actions:
             q_value = self.q_table[current_state][action]
             confidence = self._calculate_confidence(current_state, action)
-            recommendations.append((action, confidence)
+            recommendations.append((action, confidence))
 
         # Sort by confidence (descending)
-        recommendations.sort(key=lambda x: x[1],reverse=True)
+        recommendations.sort(key=lambda x: x[1], reverse=True)
         return recommendations
-        def _calculate_confidence(self, state: str, action: str) -> float:
-        "Calculate confidence score for an action",
+    
+    def _calculate_confidence(self, state: str, action: str) -> float:
+        """Calculate confidence score for an action"""
         q_value = self.q_table[state][action]
 
         # Normalize Q-value to confidence score (0-1)
@@ -188,29 +190,29 @@ class ReinforcementLearningAgent:
             return 0.5
 
         confidence = (q_value - min_q) / (max_q - min_q)
-        return max(0.0, min(1.0, confidence)
+        return max(0.0, min(1.0, confidence))
 
     def save_q_table(self):
-        "Save Q-table to disk",
+        """Save Q-table to disk"""
         q_table_file = "mlops/q_table.json"
 
         # Convert defaultdict to regular dict for JSON serialization
-        q_table_dict = {
+        q_table_dict = {}
         for state in self.q_table:
             q_table_dict[state] = dict(self.q_table[state])
 
-        with open(q_table_file, "w", as f:
+        with open(q_table_file, "w") as f:
             json.dump(q_table_dict, f, indent=2)
 
-        logger.info("Saved Q-table",
+        logger.info("Saved Q-table")
 
     def load_q_table(self):
-        "Load Q-table from disk",
-        q_table_file = "mlops/q_table.json",
+        """Load Q-table from disk"""
+        q_table_file = "mlops/q_table.json"
 
-        if os.path.exists(q_table_file:
+        if os.path.exists(q_table_file):
             try:
-                with open(q_table_file, "r", as f:
+                with open(q_table_file, "r") as f:
                     q_table_dict = json.load(f)
 
                 # Convert back to defaultdict
@@ -218,40 +220,41 @@ class ReinforcementLearningAgent:
                     for action, q_value in actions.items():
                         self.q_table[state][action] = q_value
 
-                logger.info("Loaded Q-table",
+                logger.info("Loaded Q-table")
             except Exception as e:
                 logger.error(f"Error loading Q-table: {e}")
 
 
 class ActiveLearningSystem:
-    "Active learning system for uncertain anomaly detection",
+    """Active learning system for uncertain anomaly detection"""
 
     def __init__(self, uncertainty_threshold: float = 0.3):
-        return self.uncertainty_threshold = uncertainty_threshold
+        self.uncertainty_threshold = uncertainty_threshold
         self.uncertain_samples = []
-        self.user_feedback = {
+        self.user_feedback = {}
         self.learning_queue = []
 
     def calculate_uncertainty(self, prediction_proba: np.ndarray) -> float:
-        "Calculate prediction uncertainty using entropy",
+        """Calculate prediction uncertainty using entropy"""
         if len(prediction_proba) == 0:
             return 1.0
 
         # Calculate entropy as uncertainty measure
-        entropy = -np.sum(prediction_proba * np.log(prediction_proba + 1e-10)
+        entropy = -np.sum(prediction_proba * np.log(prediction_proba + 1e-10))
         return entropy
-        def should_request_feedback(self, prediction_proba: np.ndarray) -> bool:
-        "Determine if user feedback should be requested",
+    
+    def should_request_feedback(self, prediction_proba: np.ndarray) -> bool:
+        """Determine if user feedback should be requested"""
         uncertainty = self.calculate_uncertainty(prediction_proba)
         return uncertainty > self.uncertainty_threshold
 
-    def add_uncertain_sample()
+    def add_uncertain_sample(
         self,
         sample_id: str,
         features: Dict[str, float],
         prediction_proba: np.ndarray,
         timestamp: datetime):
-        "Add uncertain sample to learning queue",
+        """Add uncertain sample to learning queue"""
         uncertainty = self.calculate_uncertainty(prediction_proba)
 
         sample = {
@@ -266,17 +269,17 @@ class ActiveLearningSystem:
         self.uncertain_samples.append(sample)
         self.learning_queue.append(sample_id)
 
-        logger.info()
-    """Added uncertain sample {sample_id} with uncertainty {uncertainty:.3f}"""
+        logger.info(
+            f"Added uncertain sample {sample_id} with uncertainty {uncertainty:.3f}"
         )
 
-    def record_user_feedback()
+    def record_user_feedback(
         self,
         sample_id: str,
         user_label: bool,
         confidence: float,
-        feedback_text: str = "):
-        "Record user feedback for uncertain sample",
+        feedback_text: str = ""):
+        """Record user feedback for uncertain sample"""
         feedback = {
             "user_label": user_label,
             "confidence": confidence,
@@ -296,29 +299,29 @@ class ActiveLearningSystem:
         logger.info(f"Recorded user feedback for sample {sample_id}")
 
     def get_learning_samples(self, limit: int = 10) -> List[Dict[str, Any]]:
-        "Get samples that need user feedback",
-        uncertain_samples = []
+        """Get samples that need user feedback"""
+        uncertain_samples = [
             s for s in self.uncertain_samples if not s.get("feedback_received", False)
         ]
 
         # Sort by uncertainty (highest first)
-        uncertain_samples.sort(key=lambda x: x["uncertainty"],reverse=True)
+        uncertain_samples.sort(key=lambda x: x["uncertainty"], reverse=True)
 
         return uncertain_samples[:limit]
 
     def retrain_with_feedback(self, model_type: str = "anomaly_detection"):
-    """Retrain model with user feedback"""
+        """Retrain model with user feedback"""
         # Get samples with user feedback
         labeled_samples = []
         for sample in self.uncertain_samples:
-            if ()
+            if (
                 sample.get("feedback_received", False)
                 and sample["sample_id"] in self.user_feedback
-            :
+            ):
                 labeled_samples.append(sample)
 
         if len(labeled_samples) < 5:
-            logger.info("Not enough labeled samples for retraining",
+            logger.info("Not enough labeled samples for retraining")
             return
 
         # Prepare training data
@@ -326,7 +329,7 @@ class ActiveLearningSystem:
         y = []
 
         for sample in labeled_samples:
-            features = list(sample["features"].values()
+            features = list(sample["features"].values())
             X.append(features)
             y.append(self.user_feedback[sample["sample_id"]]["user_label"])
 
@@ -361,9 +364,9 @@ class ActiveLearningSystem:
 
             hyperparameters = {"n_estimators": 100, "random_state": 42}
 
-            feature_names = list(labeled_samples[0]["features"].keys()
+            feature_names = list(labeled_samples[0]["features"].keys())
 
-            version = model_registry.register_model()
+            version = model_registry.register_model(
                 model_type,
                 new_model,
                 new_scaler,
@@ -374,7 +377,7 @@ class ActiveLearningSystem:
             logger.info(f"Retrained model with user feedback. New version: {version}")
 
             # Clear processed samples
-            self.uncertain_samples = []
+            self.uncertain_samples = [
                 s
                 for s in self.uncertain_samples
                 if not s.get("feedback_received", False)
@@ -385,10 +388,10 @@ class ActiveLearningSystem:
 
 
 class ContinuousLearningOrchestrator:
-    "Orchestrates continuous learning processes",
+    """Orchestrates continuous learning processes"""
 
     def __init__(self):
-        return self.rl_agent = ReinforcementLearningAgent()
+        self.rl_agent = ReinforcementLearningAgent()
         self.active_learning = ActiveLearningSystem()
         self.learning_stats = {
             "total_experiences": 0,
@@ -398,8 +401,8 @@ class ContinuousLearningOrchestrator:
         }
 
     async def run_learning_cycle(self):
-        "Run a complete learning cycle",
-        logger.info("Starting continuous learning cycle"
+        """Run a complete learning cycle"""
+        logger.info("Starting continuous learning cycle")
 
         # 1. Collect recent experiences for RL
         await self._collect_rl_experiences()
@@ -413,16 +416,16 @@ class ContinuousLearningOrchestrator:
         # 4. Update learning statistics
         self.learning_stats["last_learning_cycle"] = datetime.now().isoformat()
 
-        logger.info("Completed continuous learning cycle",
+        logger.info("Completed continuous learning cycle")
 
-    async def _collect_rl_experiences(self:
-        "Collect recent experiences for reinforcement learning",
+    async def _collect_rl_experiences(self):
+        """Collect recent experiences for reinforcement learning"""
         session = get_db_session()
         try:
             # Get recent remediation actions with outcomes
-            recent_remediations = ()
+            recent_remediations = (
                 session.query(RemediationAction)
-                .filter()
+                .filter(
                     RemediationAction.created_at >= datetime.now() - timedelta(hours=24)
                 )
                 .all()
@@ -430,7 +433,7 @@ class ContinuousLearningOrchestrator:
 
             for remediation in recent_remediations:
                 # Get associated anomaly
-                anomaly = ()
+                anomaly = (
                     session.query(Anomaly)
                     .filter(Anomaly.id == remediation.anomaly_id)
                     .first()
@@ -444,7 +447,7 @@ class ContinuousLearningOrchestrator:
                         "source": anomaly.source,
                     }
 
-                    state = self.rl_agent.get_state_representation()
+                    state = self.rl_agent.get_state_representation(
                         metrics, anomaly_info
                     )
                     action = remediation.action_type
@@ -461,7 +464,7 @@ class ContinuousLearningOrchestrator:
 
                     # Update Q-table
                     next_state = state  # Simplified - in practice, get next state
-                    self.rl_agent.learn_from_experience()
+                    self.rl_agent.learn_from_experience(
                         state, action, reward, next_state
                     )
 
@@ -471,7 +474,7 @@ class ContinuousLearningOrchestrator:
             logger.error(f"Error collecting RL experiences: {e}")
 
     async def _process_uncertain_samples(self):
-    """Process uncertain samples for active learning"""
+        """Process uncertain samples for active learning"""
         # Get samples that need user feedback
         learning_samples = self.active_learning.get_learning_samples(limit=5)
 
@@ -482,14 +485,14 @@ class ContinuousLearningOrchestrator:
                 user_label = np.random.choice([True, False])
                 confidence = np.random.uniform(0.7, 1.0)
 
-                self.active_learning.record_user_feedback()
-                    sample["sample_id"],user_label, confidence
+                self.active_learning.record_user_feedback(
+                    sample["sample_id"], user_label, confidence
                 )
 
                 self.learning_stats["user_feedback_requests"] += 1
 
     async def _retrain_models(self):
-    """Retrain models with new data"""
+        """Retrain models with new data"""
         # Retrain with user feedback
         self.active_learning.retrain_with_feedback()
 
@@ -499,24 +502,24 @@ class ContinuousLearningOrchestrator:
         self.learning_stats["model_retrainings"] += 1
 
     def get_learning_stats(self) -> Dict[str, Any]:
-        "Get learning statistics",
+        """Get learning statistics"""
         return self.learning_stats.copy()
 
-    def get_action_recommendations()
-        self, current_metrics: Dict[str, float],anomaly_info: Dict[str, Any]
+    def get_action_recommendations(
+        self, current_metrics: Dict[str, float], anomaly_info: Dict[str, Any]
     ) -> List[Tuple[str, float]]:
-        "Get action recommendations using RL agent",
+        """Get action recommendations using RL agent"""
         state = self.rl_agent.get_state_representation(current_metrics, anomaly_info)
 
         # Available actions (in practice, this would be dynamic)
-        available_actions = []
+        available_actions = [
             "restart_service",
-    """scale_up"""
+            "scale_up",
             "scale_down",
-    """clear_cache"""
+            "clear_cache",
             "restart_database",
-    """increase_memory"""
-    """decrease_load"""
+            "increase_memory",
+            "decrease_load"
         ]
 
         return self.rl_agent.get_action_recommendations(state, available_actions)

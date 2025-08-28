@@ -50,7 +50,7 @@ class ModelMetadata:
 class ModelRegistry:
     """Centralized model registry for versioning and lifecycle management"""
     def __init__(self, registry_path: str = "ml_models/registry"):
-    """Initialize model registry."""
+        """Initialize model registry."""
         self.registry_path = Path(registry_path)
         self.registry_path.mkdir(parents=True, exist_ok=True)
 
@@ -65,13 +65,13 @@ class ModelRegistry:
         self._init_database()
 
     def _init_database(self):
-    """Initialize SQLite database for model registry"""
+        """Initialize SQLite database for model registry"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-    """
-            CREATE TABLE IF NOT EXISTS models ()
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS models (
                 model_id TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
                 version TEXT NOT NULL,
@@ -98,24 +98,24 @@ class ModelRegistry:
         conn.commit()
         conn.close()
 
-    def register_model()
+    def register_model(
         self,
         model,
         name: str,
         version: str,
-        description: str = ",
+        description: str = "",
         model_type: str = "sklearn",
-        algorithm: str = ",
+        algorithm: str = "",
         framework: str = "scikit-learn",
         input_features: List[str] = None,
         output_schema: Dict[str, Any] = None,
-        training_data_hash: str = ",
+        training_data_hash: str = "",
         hyperparameters: Dict[str, Any] = None,
         metrics: Dict[str, float] = None,
         created_by: str = "system",
         tags: List[str] = None) -> ModelMetadata:
-    """Register a new model in the registry"""
-        model_id = f"{name}_{version}_{int(time.time()}"
+        """Register a new model in the registry"""
+        model_id = f"{name}_{version}_{int(time.time())}"
 
         # Save model file
         model_file_path = self.models_path / f"{model_id}.pkl"
@@ -126,7 +126,7 @@ class ModelRegistry:
         checksum = self._calculate_checksum(model_file_path)
         size_bytes = model_file_path.stat().st_size
 
-        metadata = ModelMetadata()
+        metadata = ModelMetadata(
             model_id=model_id,
             name=name,
             version=version,
@@ -150,7 +150,7 @@ class ModelRegistry:
         return metadata
 
     def get_model(self, name: str, version: str = "latest") -> Any:
-    """Load a model from the registry"""
+        """Load a model from the registry"""
         metadata = self.get_model_metadata(name, version)
 
         model_file_path = self.models_path / f"{metadata.model_id}.pkl"
@@ -158,16 +158,16 @@ class ModelRegistry:
             return pickle.load(f)
 
     def get_model_metadata(self, name: str, version: str = "latest") -> ModelMetadata:
-    """Get model metadata"""
+        """Get model metadata"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
         if version == "latest":
-            cursor.execute()
+            cursor.execute(
                 "SELECT * FROM models WHERE name = ? ORDER BY created_at DESC LIMIT 1",
-                (name))
+                (name,))
         else:
-            cursor.execute()
+            cursor.execute(
                 "SELECT * FROM models WHERE name = ? AND version = ?", (name, version)
             )
 
@@ -180,12 +180,12 @@ class ModelRegistry:
         return self._row_to_metadata(row)
 
     def list_models(self, status: ModelStatus = None) -> List[ModelMetadata]:
-    """List all models in the registry"""
+        """List all models in the registry"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
         if status:
-            cursor.execute("SELECT * FROM models WHERE status = ?", (status.value)
+            cursor.execute("SELECT * FROM models WHERE status = ?", (status.value,))
         else:
             cursor.execute("SELECT * FROM models")
 
@@ -194,14 +194,14 @@ class ModelRegistry:
 
         return [self._row_to_metadata(row) for row in rows]
 
-    def update_model_status()
+    def update_model_status(
         self, name: str, version: str, status: ModelStatus
     ) -> ModelMetadata:
-    """Update model status"""
+        """Update model status"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
+        cursor.execute(
             "UPDATE models SET status = ? WHERE name = ? AND version = ?",
             (status.value, name, version))
 
@@ -211,19 +211,19 @@ class ModelRegistry:
         return self.get_model_metadata(name, version)
 
     def delete_model(self, name: str, version: str) -> bool:
-    """Delete a model from the registry"""
+        """Delete a model from the registry"""
         try:
             metadata = self.get_model_metadata(name, version)
 
             # Delete model file
             model_file_path = self.models_path / f"{metadata.model_id}.pkl"
-            if model_file_path.exists(:
+            if model_file_path.exists():
                 model_file_path.unlink()
 
             # Delete metadata
             conn = sqlite3.connect(self.db_path)
             cursor = conn.cursor()
-            cursor.execute()
+            cursor.execute(
                 "DELETE FROM models WHERE name = ? AND version = ?", (name, version)
             )
             conn.commit()
@@ -234,19 +234,19 @@ class ModelRegistry:
             return False
 
     def _save_metadata(self, metadata: ModelMetadata):
-    """Save model metadata to database"""
+        """Save model metadata to database"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO models 
             (model_id, name, version, description, model_type, algorithm, framework,
              input_features, output_schema, training_data_hash, hyperparameters,
              metrics, created_at, created_by, status, tags, size_bytes, checksum)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
-            ()
+            """,
+            (
                 metadata.model_id,
                 metadata.name,
                 metadata.version,
@@ -270,8 +270,8 @@ class ModelRegistry:
         conn.close()
 
     def _row_to_metadata(self, row) -> ModelMetadata:
-    """Convert database row to ModelMetadata"""
-        return ModelMetadata()
+        """Convert database row to ModelMetadata"""
+        return ModelMetadata(
             model_id=row[0],
             name=row[1],
             version=row[2],
@@ -292,10 +292,10 @@ class ModelRegistry:
             checksum=row[17])
 
     def _calculate_checksum(self, file_path: Path) -> str:
-    """Calculate SHA256 checksum of a file"""
+        """Calculate SHA256 checksum of a file"""
         sha256_hash = hashlib.sha256()
         with open(file_path, "rb") as f:
-            for byte_block in iter(lambda: f.read(4096), b"):
+            for byte_block in iter(lambda: f.read(4096), b""):
                 sha256_hash.update(byte_block)
         return sha256_hash.hexdigest()
 
@@ -305,5 +305,5 @@ model_registry = ModelRegistry()
 
 
 def get_model_registry() -> ModelRegistry:
-    "Get the global model registry instance.""
+    """Get the global model registry instance."""
     return model_registry
