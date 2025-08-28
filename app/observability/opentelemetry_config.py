@@ -62,13 +62,13 @@ class OpenTelemetryConfig:
             return
 
         # Create resource with service information
-        resource = Resource.create({}
+        resource = Resource.create({
             "service.name": service_name,
             "service.version": service_version,
             "service.namespace": "smartcloudops",
             "deployment.environment": environment,
             "host.name": os.getenv("HOSTNAME", "unknown"),
-            "process.pid": str(os.getpid(),
+            "process.pid": str(os.getpid()),
         })
 
         # Setup tracing
@@ -158,7 +158,7 @@ class OpenTelemetryConfig:
             self.meter = metrics.get_meter(__name__)
 
     def _setup_logging_instrumentation(self) -> None:
-    """Setup logging instrumentation"""
+        """Setup logging instrumentation"""
         # LoggingInstrumentor not available in current version
         # LoggingInstrumentor().instrument()
         #     set_logging_format=True,
@@ -167,56 +167,56 @@ class OpenTelemetryConfig:
         pass
 
     def _setup_propagators(self) -> None:
-    """Setup context propagators"""
+        """Setup context propagators"""
         # B3 propagator not available in current version
         # b3_propagator = B3Format()
         # set_global_textmap(b3_propagator)
         pass
 
     def instrument_flask(self, app) -> None:
-    """Instrument Flask application"""
+        """Instrument Flask application"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
         FlaskInstrumentor().instrument_app(app)
 
     def instrument_requests(self) -> None:
-    """Instrument requests library"""
+        """Instrument requests library"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
         RequestsInstrumentor().instrument()
 
     def instrument_psycopg2(self) -> None:
-    """Instrument PostgreSQL connections"""
+        """Instrument PostgreSQL connections"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
         Psycopg2Instrumentor().instrument()
 
     def instrument_redis(self) -> None:
-    """Instrument Redis connections"""
+        """Instrument Redis connections"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
         RedisInstrumentor().instrument()
 
     def get_tracer(self, name: str = None):
-    """Get tracer instance"""
+        """Get tracer instance"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
         return trace.get_tracer(name or __name__)
 
     def get_meter(self, name: str = None):
-    """Get meter instance"""
+        """Get meter instance"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
         return metrics.get_meter(name or __name__)
 
     def shutdown(self) -> None:
-    """Shutdown OpenTelemetry"""
+        """Shutdown OpenTelemetry"""
         if self.tracer_provider:
             self.tracer_provider.shutdown()
         if self.meter_provider:

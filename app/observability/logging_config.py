@@ -38,17 +38,17 @@ class CorrelationJSONFormatter(jsonlogger.JsonFormatter):
         # Add request context if available
         if request:
             try:
-                log_record["request"] = {}
+                log_record["request"] = {
                     "method": request.method,
                     "path": request.path,
                     "remote_addr": request.remote_addr,
-                    "user_agent": request.headers.get("User-Agent", "),
+                    "user_agent": request.headers.get("User-Agent", ""),
                     "content_type": request.content_type,
                 }
 
                 # Add user context if available
                 if hasattr(g, "current_user") and g.current_user:
-                    log_record["user"] = {}
+                    log_record["user"] = {
                         "id": g.current_user.get("id"),
                         "email": g.current_user.get("email"),
                     }
@@ -57,7 +57,7 @@ class CorrelationJSONFormatter(jsonlogger.JsonFormatter):
                 pass
 
         # Add service information
-        log_record["service"] = {}
+        log_record["service"] = {
             "name": "smartcloudops-ai",
             "version": "3.3.0",
             "component": record.name,
@@ -67,7 +67,7 @@ class CorrelationJSONFormatter(jsonlogger.JsonFormatter):
         log_record["level"] = record.levelname
 
         # Add source location
-        log_record["source"] = {}
+        log_record["source"] = {
             "file": record.filename,
             "line": record.lineno,
             "function": record.funcName,
@@ -105,24 +105,24 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
     config = {
         "version": 1,
         "disable_existing_loggers": False,
-        "formatters": {}
+        "formatters": {
             "detailed": {"()": formatter_class, "format": format_string},
             "simple": {"format": "%(levelname)s - %(name)s - %(message)s"},
         },
-        "filters": {}
-            "request_id": {}
+        "filters": {
+            "request_id": {
                 "()": RequestIDFilter,
             }
         },
-        "handlers": {}
-            "console": {}
+        "handlers": {
+            "console": {
                 "level": "DEBUG",
                 "class": "logging.StreamHandler",
                 "formatter": "detailed",
                 "filters": ["request_id"],
                 "stream": "ext://sys.stdout",
             },
-            "file": {}
+            "file": {
                 "level": "INFO",
                 "class": "logging.handlers.RotatingFileHandler",
                 "formatter": "detailed",
@@ -132,7 +132,7 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
                 "backupCount": 5,
                 "mode": "a",
             },
-            "error_file": {}
+            "error_file": {
                 "level": "ERROR",
                 "class": "logging.handlers.RotatingFileHandler",
                 "formatter": "detailed",
@@ -149,32 +149,32 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
                 "handlers": ["console", "file"],
                 "propagate": False,
             },
-            "app": {}
+            "app": {
                 "level": log_level,
                 "handlers": ["console", "file"],
                 "propagate": False,
             },
-            "app.api": {}
+            "app.api": {
                 "level": log_level,
                 "handlers": ["console", "file"],
                 "propagate": False,
             },
-            "app.ml": {}
+            "app.ml": {
                 "level": log_level,
                 "handlers": ["console", "file"],
                 "propagate": False,
             },
-            "app.remediation": {}
+            "app.remediation": {
                 "level": log_level,
                 "handlers": ["console", "file", "error_file"],
                 "propagate": False,
             },
-            "werkzeug": {}
+            "werkzeug": {
                 "level": "WARNING",
                 "handlers": ["console"],
                 "propagate": False,
             },
-            "urllib3": {}
+            "urllib3": {
                 "level": "WARNING",
                 "handlers": ["console"],
                 "propagate": False,
@@ -229,8 +229,7 @@ def get_correlation_id() -> Optional[str]:
     return correlation_id.get()
 
 
-def log_performance()
-    logger: logging.Logger, operation: str, duration_ms: float, **kwargs
+def log_performance(    logger: logging.Logger, operation: str, duration_ms: float, **kwargs
 ) -> None:
     """
     Log performance metrics in structured format
@@ -241,9 +240,7 @@ def log_performance()
         duration_ms: Duration in milliseconds
         **kwargs: Additional context
     """
-    logger.info()
-        "Performance metric recorded",
-        extra={}
+    logger.info(        """Performance metric recorded"""        extra={}
             "metric_type": "performance",
             "operation": operation,
             "duration_ms": duration_ms,
@@ -251,8 +248,7 @@ def log_performance()
         })
 
 
-def log_business_event()
-    logger: logging.Logger, event_type: str, entity_type: str, entity_id: str, **kwargs
+def log_business_event(    logger: logging.Logger, event_type: str, entity_type: str, entity_id: str, **kwargs
 ) -> None:
     """
     Log business events in structured format
@@ -264,8 +260,7 @@ def log_business_event()
         entity_id: Entity identifier
         **kwargs: Additional event data
     """
-    logger.info()
-        f"{entity_type.title()} {event_type}",
+    logger.info(        f"{entity_type.title()} {event_type}",
         extra={}
             "event_type": "business",
             "action": event_type,
@@ -274,8 +269,7 @@ def log_business_event()
         })
 
 
-def log_security_event()
-    logger: logging.Logger, event_type: str, severity: str, **kwargs
+def log_security_event(    logger: logging.Logger, event_type: str, severity: str, **kwargs
 ) -> None:
     """
     Log security events in structured format
@@ -293,8 +287,7 @@ def log_security_event()
         "critical": logging.CRITICAL,
     }.get(severity, logging.WARNING)
 
-    logger.log()
-        log_level,
+    logger.log(        log_level,
         f"Security event: {event_type}",
         extra={}
             "event_type": "security",

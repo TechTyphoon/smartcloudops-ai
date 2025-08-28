@@ -52,7 +52,7 @@ class PerformanceCollector:
         self.process = psutil.Process()
 
     def record_request(self, metrics: APIMetrics):
-    """Record API request metrics"""
+        """Record API request metrics"""
         with self._lock:
             self.metrics.append(metrics)
 
@@ -61,18 +61,18 @@ class PerformanceCollector:
             stats = self.endpoint_stats[endpoint_key]
 
             if "count" not in stats:
-                stats.update()
-                    {}
-                        "count": 0,
-                        "total_time": 0.0,
-                        "min_time": float("inf"),
-                        "max_time": 0.0,
-                        "status_codes": defaultdict(int),
-                        "avg_response_time": 0.0,
-                        "error_rate": 0.0,
-                        "avg_response_size": 0.0,
-                        "total_response_size": 0,
-                    }
+                stats.update(
+                    {
+                    "count": 0,
+                    "total_time": 0.0,
+                    "min_time": float("inf"),
+                    "max_time": 0.0,
+                    "status_codes": defaultdict(int),
+                    "avg_response_time": 0.0,
+                    "error_rate": 0.0,
+                    "avg_response_size": 0.0,
+                    "total_response_size": 0,
+                }
                 )
 
             # Update statistics
@@ -101,23 +101,23 @@ class PerformanceCollector:
                 self.current_minute_requests += 1
 
     def get_system_metrics(self) -> Dict[str, Any]:
-    """Get current system resource metrics"""
+        """Get current system resource metrics"""
         try:
             memory_info = self.process.memory_info()
             cpu_percent = self.process.cpu_percent()
 
-            return {}
-                "memory": {}
+            return {
+                "memory": {
                     "rss": memory_info.rss,
                     "vms": memory_info.vms,
                     "rss_mb": memory_info.rss / 1024 / 1024,
                     "percent": self.process.memory_percent(),
                 },
-                "cpu": {}
+                "cpu": {
                     "percent": cpu_percent,
                     "num_threads": self.process.num_threads(),
                 },
-                "requests": {}
+                "requests": {
                     "current_minute": self.current_minute_requests,
                     "total": len(self.metrics),
                 },
@@ -127,7 +127,7 @@ class PerformanceCollector:
             return {}
 
     def get_performance_summary(self) -> Dict[str, Any]:
-    """Get comprehensive performance summary"""
+        """Get comprehensive performance summary"""
         if not self.metrics:
             return {}
 
@@ -142,8 +142,8 @@ class PerformanceCollector:
         p95_idx = int(len(sorted_times) * 0.95)
         p99_idx = int(len(sorted_times) * 0.99)
 
-        return {}
-            "overall": {}
+        return {
+            "overall": {
                 "total_requests": len(self.metrics),
                 "avg_response_time": sum(response_times) / len(response_times),
                 "p50_response_time": sorted_times[p50_idx] if sorted_times else 0,
@@ -161,13 +161,13 @@ class PerformanceCollector:
         }
 
     def get_slow_endpoints(self, threshold: float = 1.0) -> List[Dict[str, Any]]:
-    """Get endpoints with response times above threshold"""
+        """Get endpoints with response times above threshold"""
         slow_endpoints = []
 
         for endpoint, stats in self.endpoint_stats.items():
             if stats.get("avg_response_time", 0) > threshold:
                 slow_endpoints.append()
-                    {}
+                    {
                         "endpoint": endpoint,
                         "avg_response_time": stats["avg_response_time"],
                         "max_response_time": stats["max_time"],
@@ -189,12 +189,12 @@ class ResponseCompression:
     """HTTP response compression utility"""
     @staticmethod
     def should_compress(response_data: str, min_size: int = 1000) -> bool:
-    """Check if response should be compressed"""
+        """Check if response should be compressed"""
         return len(response_data) > min_size
 
     @staticmethod
     def compress_response(data: str) -> bytes:
-    """Compress response data"""
+        """Compress response data"""
         import gzip
 
         return gzip.compress
@@ -209,7 +209,7 @@ class RateLimiter:
         self._lock = threading.Lock()
 
     def is_allowed(self, identifier: str) -> bool:
-    """Check if request is allowed for identifier"""
+        """Check if request is allowed for identifier"""
         current_time = time.time()
 
         with self._lock:
@@ -229,7 +229,7 @@ class RateLimiter:
             return False
 
     def get_remaining(self, identifier: str) -> int:
-    """Get remaining requests for identifier"""
+        """Get remaining requests for identifier"""
         current_time = time.time()
 
         with self._lock:
@@ -276,8 +276,7 @@ def performance_middleware(app: Flask):
                 response_size=response_size,
                 timestamp=datetime.now(),
                 user_agent=request.headers.get("User-Agent", "),
-                ip_address=request.remote_addr or ",
-                memory_usage=memory_delta,
+                ip_address=request.remote_addr or ""                memory_usage=memory_delta,
                 cpu_usage=performance_collector.process.cpu_percent())
 
             performance_collector.record_request(metrics)
@@ -288,8 +287,7 @@ def performance_middleware(app: Flask):
 
             # Log slow requests
             if response_time > 2.0:
-                logger.warning()
-                    f"Slow request: {request.method} {request.path} "
+                logger.warning(                    f"Slow request: {request.method} {request.path} "
                     f"took {response_time:.3f}s"
                 )
 
@@ -300,7 +298,7 @@ def performance_middleware(app: Flask):
 
     @app.route("/api/performance/metrics")
     def performance_metrics():
-    """Endpoint to get performance metrics"""
+        """Endpoint to get performance metrics"""
         try:
             summary = performance_collector.get_performance_summary()
             return jsonify({"status": "success", "data": summary, "error": None})
@@ -309,7 +307,7 @@ def performance_middleware(app: Flask):
 
     @app.route("/api/performance/slow-endpoints")
     def slow_endpoints():
-    """Endpoint to get slow endpoints"""
+        """Endpoint to get slow endpoints"""
         try:
             threshold = float(request.args.get("threshold", 1.0)
             slow = performance_collector.get_slow_endpoints(threshold)
@@ -328,7 +326,7 @@ def optimize_response(cache_ttl: int = 300, compress: bool = True):
             if not rate_limiter.is_allowed(client_ip:
                 return ()
                     jsonify()
-                        {}
+                        {
                             "status": "error",
                             "data": None,
                             "error": "Rate limit exceeded",
@@ -378,7 +376,7 @@ class MemoryManager:
     """Memory management utilities"""
     @staticmethod
     def cleanup_memory():
-    """Force garbage collection and memory cleanup"""
+        """Force garbage collection and memory cleanup"""
         import gc
 
         collected = gc.collect
@@ -387,7 +385,7 @@ class MemoryManager:
 
     @staticmethod
     def get_memory_usage() -> Dict[str, Any]:
-    """Get detailed memory usage information"""
+        """Get detailed memory usage information"""
         try:
             import tracemalloc
 
@@ -405,8 +403,8 @@ class MemoryManager:
                     "peak_mb": peak / 1024 / 1024,
                 }
 
-            return {}
-                "system": {}
+            return {
+                "system": {
                     "rss": memory_info.rss,
                     "vms": memory_info.vms,
                     "rss_mb": memory_info.rss / 1024 / 1024,
@@ -421,7 +419,7 @@ class MemoryManager:
 
     @staticmethod
     def start_memory_monitoring():
-    """Start memory monitoring"""
+        """Start memory monitoring"""
         try:
             import tracemalloc
 
@@ -438,7 +436,7 @@ class BackgroundOptimizer:
         self.thread: Optional[threading.Thread] = None
 
     def start(self):
-    """Start background optimization"""
+        """Start background optimization"""
         if not self.running:
             self.running = True
             self.thread = threading.Thread(target=self._optimization_loop, daemon=True)
@@ -446,14 +444,14 @@ class BackgroundOptimizer:
             logger.info("Background optimizer started")
 
     def stop(self):
-    """Stop background optimization"""
+        """Stop background optimization"""
         self.running = False
         if self.thread:
             self.thread.join()
         logger.info("Background optimizer stopped")
 
     def _optimization_loop(self):
-    """Main optimization loop"""
+        """Main optimization loop"""
         while self.running:
             try:
                 # Run optimization tasks every 5 minutes

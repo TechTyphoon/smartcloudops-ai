@@ -67,12 +67,12 @@ class EnhancedJSONFormatter(jsonlogger.JsonFormatter):
         # Add request context
         if request:
             try:
-                log_record["request"] = {}
+                log_record["request"] = {
                     "method": request.method,
                     "path": request.path,
                     "endpoint": request.endpoint,
                     "remote_addr": request.remote_addr,
-                    "user_agent": request.headers.get("User-Agent", "),
+                    "user_agent": request.headers.get("User-Agent", ""),
                     "content_type": request.content_type,
                     "content_length": request.content_length,
                     "query_string": request.query_string.decode() if request.query_string else None,
@@ -91,7 +91,7 @@ class EnhancedJSONFormatter(jsonlogger.JsonFormatter):
                 pass
 
         # Add service information
-        log_record["service"] = {}
+        log_record["service"] = {
             "name": "smartcloudops-ai",
             "version": os.getenv("APP_VERSION", "4.0.0"),
             "environment": os.getenv("FLASK_ENV", "development"),
@@ -101,7 +101,7 @@ class EnhancedJSONFormatter(jsonlogger.JsonFormatter):
 
         # Add performance metrics
         if hasattr(record, "duration_ms":
-            log_record["performance"] = {}
+            log_record["performance"] = {
                 "duration_ms": record.duration_ms,
                 "memory_usage_mb": self._get_memory_usage(),
             }
@@ -110,7 +110,7 @@ class EnhancedJSONFormatter(jsonlogger.JsonFormatter):
         log_record["level"] = record.levelname
 
         # Add source location
-        log_record["source"] = {}
+        log_record["source"] = {
             "file": record.filename,
             "line": record.lineno,
             "function": record.funcName,
@@ -119,14 +119,14 @@ class EnhancedJSONFormatter(jsonlogger.JsonFormatter):
 
         # Add exception information
         if record.exc_info:
-            log_record["exception"] = {}
+            log_record["exception"] = {
                 "type": record.exc_info[0].__name__ if record.exc_info[0] else None,
                 "message": str(record.exc_info[1]) if record.exc_info[1] else None,
                 "traceback": self.formatException(record.exc_info),
             }
 
     def _get_memory_usage(self) -> Optional[float]:
-    """Get current memory usage in MB"""
+        """Get current memory usage in MB"""
         try:
             import psutil
             process = psutil.Process
@@ -144,8 +144,7 @@ class PerformanceFilter(logging.Filter):
         return True
 
 
-def setup_enhanced_logging()
-    app: Flask,
+def setup_enhanced_logging(    app: Flask,
     log_level: str = "INFO",
     log_format: str = "json",
     enable_structlog: bool = True) -> None:
@@ -235,9 +234,7 @@ def setup_enhanced_logging()
         logger = logging.getLogger(__name__)
 
     # Log setup completion
-    logger.info()
-        "Enhanced logging configured",
-        log_level=log_level,
+    logger.info(        """Enhanced logging configured"""        log_level=log_level,
         log_format=log_format,
         structlog_enabled=enable_structlog,
         environment=os.getenv("FLASK_ENV", "development"))
@@ -257,8 +254,7 @@ def get_logger(name: str = None) -> Union[structlog.BoundLogger, logging.Logger]
         return logging.getLogger(name or __name__)
 
 
-def set_request_context()
-    corr_id: Optional[str] = None,
+def set_request_context(    corr_id: Optional[str] = None,
     req_id: Optional[str] = None,
     usr_id: Optional[str] = None,
     sess_id: Optional[str] = None) -> None:
@@ -281,8 +277,7 @@ def clear_request_context() -> None:
     session_id.set(None)
 
 
-def log_with_span()
-    message: str,
+def log_with_span(    message: str,
     level: str = "info",
     span_name: Optional[str] = None,
     **kwargs: Any) -> None:
@@ -302,8 +297,7 @@ def log_with_span()
         log_func(message, **kwargs)
 
 
-def log_performance()
-    operation: str,
+def log_performance(    operation: str,
     duration_ms: float,
     success: bool = True,
     **kwargs: Any) -> None:
@@ -337,8 +331,7 @@ def log_performance()
         get_logger().log(level, f"Performance: {operation}", **log_data)
 
 
-def log_security_event()
-    event_type: str,
+def log_security_event(    event_type: str,
     severity: str = "info",
     user_id: Optional[str] = None,
     ip_address: Optional[str] = None,
@@ -369,8 +362,7 @@ def log_security_event()
         get_logger().log(severity, f"Security Event: {event_type}", **security_data)
 
 
-def log_business_event()
-    event_type: str,
+def log_business_event(    event_type: str,
     business_value: Optional[float] = None,
     **kwargs: Any) -> None:
     """Log business events with metrics"""

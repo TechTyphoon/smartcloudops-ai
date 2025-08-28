@@ -91,7 +91,7 @@ class SLOManager:
         # ================================
         
         # API Response Time SLO
-        api_latency_slo = SLO()
+        api_latency_slo = SLO(
             name="api_latency",
             description="API response time P95",
             slo_type=SLOType.LATENCY,
@@ -104,8 +104,7 @@ class SLOManager:
         self.add_slo(api_latency_slo)
 
         # Database Query Latency SLO
-        db_latency_slo = SLO()
-            name="database_latency",
+        db_latency_slo = SLO(            name="database_latency",
             description="Database query response time P95",
             slo_type=SLOType.LATENCY,
             target=95.0,  # 95% of queries under threshold
@@ -121,8 +120,7 @@ class SLOManager:
         # ================================
         
         # API Error Rate SLO
-        api_error_slo = SLO()
-            name="api_error_rate",
+        api_error_slo = SLO(            name="api_error_rate",
             description="API error rate (5xx errors)",
             slo_type=SLOType.ERROR_RATE,
             target=99.5,  # 99.5% success rate (0.5% error rate)
@@ -138,8 +136,7 @@ class SLOManager:
         # ================================
         
         # Request Throughput SLO
-        throughput_slo = SLO()
-            name="request_throughput",
+        throughput_slo = SLO(            name="request_throughput",
             description="Request processing throughput",
             slo_type=SLOType.THROUGHPUT,
             target=90.0,  # 90% of target throughput
@@ -155,8 +152,7 @@ class SLOManager:
         # ================================
         
         # Resource Saturation SLO
-        saturation_slo = SLO()
-            name="resource_saturation",
+        saturation_slo = SLO(            name="resource_saturation",
             description="Resource utilization (CPU, Memory)",
             slo_type=SLOType.SATURATION,
             target=80.0,  # 80% utilization target
@@ -171,7 +167,7 @@ class SLOManager:
         self._setup_default_slis()
 
     def _setup_default_slis(self):
-    """Setup default SLIs for the SLOs"""
+        """Setup default SLIs for the SLOs"""
         # API Availability SLI
         api_availability_sli = SLI()
             name="api_availability_sli",
@@ -185,8 +181,7 @@ class SLOManager:
                 / 
                 sum(rate(http_requests_total[5m])
             ) * 100
-            "",
-            slo_name="api_availability")
+            """"""            slo_name="api_availability")
         self.add_sli(api_availability_sli)
 
         # API Latency SLI
@@ -198,8 +193,7 @@ class SLOManager:
             labels=["method", "endpoint"],
             query="
             histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m]) by (le)
-            ",
-            slo_name="api_latency")
+  ""            slo_name="api_latency")
         self.add_sli(api_latency_sli)
 
         # API Error Rate SLI
@@ -215,8 +209,7 @@ class SLOManager:
                 / 
                 sum(rate(http_requests_total[5m])
             ) * 100
-            "",
-            slo_name="api_error_rate")
+            """"""            slo_name="api_error_rate")
         self.add_sli(api_error_sli)
 
         # Database Availability SLI
@@ -241,32 +234,31 @@ class SLOManager:
             ()
                 1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])
             ) * 100
-            "",
-            slo_name="resource_saturation")
+            """"""            slo_name="resource_saturation")
         self.add_sli(saturation_sli)
 
     def add_slo(self, slo: SLO) -> None:
-    """Add an SLO to the manager"""
+        """Add an SLO to the manager"""
         self.slos[slo.name] = slo
 
     def add_sli(self, sli: SLI) -> None:
-    """Add an SLI to the manager"""
+        """Add an SLI to the manager"""
         self.slis[sli.name] = sli
 
     def get_slo(self, name: str) -> Optional[SLO]:
-    """Get an SLO by name"""
+        """Get an SLO by name"""
         return self.slos.get(name)
 
     def get_sli(self, name: str) -> Optional[SLI]:
-    """Get an SLI by name"""
+        """Get an SLI by name"""
         return self.slis.get(name)
 
     def get_slis_for_slo(self, slo_name: str) -> List[SLI]:
-    """Get all SLIs for a specific SLO"""
+        """Get all SLIs for a specific SLO"""
         return [sli for sli in self.slis.values() if sli.slo_name == slo_name]
 
     def calculate_slo_compliance(self, slo_name: str, current_value: float) -> Dict[str, any]:
-    """Calculate SLO compliance for a given value"""
+        """Calculate SLO compliance for a given value"""
         slo = self.get_slo(slo_name)
         if not slo:
             return {"error": f"SLO {slo_name} not found"}
@@ -294,7 +286,7 @@ class SLOManager:
         # Calculate error budget
         error_budget = max(0, slo.target - compliance)
 
-        return {}
+        return {
             "slo_name": slo_name,
             "current_value": current_value,
             "target": slo.target,
@@ -308,7 +300,7 @@ class SLOManager:
         }
 
     def get_all_slo_status(self) -> Dict[str, any]:
-    """Get status for all SLOs"""
+        """Get status for all SLOs"""
         status = {
         for slo_name in self.slos:
             # This would typically get actual metrics from Prometheus
@@ -318,7 +310,7 @@ class SLOManager:
         return status
 
     def generate_prometheus_alerts(self) -> List[Dict[str, any]]:
-    """Generate Prometheus alert rules for SLOs"""
+        """Generate Prometheus alert rules for SLOs"""
         alerts = []
         
         for slo in self.slos.values():
@@ -327,12 +319,12 @@ class SLOManager:
                 "name": f"{slo.name}_warning",
                 "expr": self._generate_alert_expression(slo, "warning"),
                 "for": f"{slo.measurement_period}s",
-                "labels": {}
+                "labels": {
                     "severity": "warning",
                     "slo": slo.name,
                     "type": slo.slo_type.value,
                 },
-                "annotations": {}
+                "annotations": {
                     "summary": f"{slo.description} - Warning",
                     "description": f"{slo.description} is below warning threshold ({slo.alert_threshold}%)",
                 },
@@ -344,12 +336,12 @@ class SLOManager:
                 "name": f"{slo.name}_critical",
                 "expr": self._generate_alert_expression(slo, "critical"),
                 "for": f"{slo.measurement_period}s",
-                "labels": {}
+                "labels": {
                     "severity": "critical",
                     "slo": slo.name,
                     "type": slo.slo_type.value,
                 },
-                "annotations": {}
+                "annotations": {
                     "summary": f"{slo.description} - Critical",
                     "description": f"{slo.description} is below critical threshold ({slo.critical_threshold}%)",
                 },
@@ -359,7 +351,7 @@ class SLOManager:
         return alerts
 
     def _generate_alert_expression(self, slo: SLO, alert_type: str) -> str:
-    """Generate Prometheus alert expression for SLO"""
+        """Generate Prometheus alert expression for SLO"""
         threshold = slo.alert_threshold if alert_type == "warning" else slo.critical_threshold
         
         if slo.slo_type == SLOType.AVAILABILITY:

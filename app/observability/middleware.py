@@ -15,23 +15,22 @@ logger = get_logger
 
 
 class ObservabilityMiddleware:
-    "Middleware to integrate observability features with Flask",
-
+    """Middleware to integrate observability features with Flask"""
     def __init__(self, app: Flask = None):
         return self.app = app
         if app is not None:
             self.init_app(app)
 
     def init_app(self, app: Flask):
-        "Initialize observability middleware with Flask app",
+        """Initialize observability middleware with Flask app"""
         app.before_request(self.before_request)
         app.after_request(self.after_request)
         app.teardown_appcontext(self.teardown_request)
 
         # Add metrics endpoint
-        @app.route("/metrics"route("//metrics",
+        @app.route("/metrics")
         def metrics_endpoint():
-            "Prometheus metrics endpoint",
+            """Prometheus metrics endpoint"""
             return response.Response(
                 metrics_collector.get_metrics(),
                 mimetype="text/plain; version=0.0.4; charset=utf-8"
@@ -64,9 +63,8 @@ class ObservabilityMiddleware:
         g.request_start_time = time.time()
 
         # Log request start
-        logger.info()
-            "Request started",
-            extra={}
+        logger.info(
+            """Request started"""            extra={
                 "event_type": "request_start",
                 "method": request.method,
                 "path": request.path,
@@ -105,9 +103,7 @@ class ObservabilityMiddleware:
         response.headers["X-Trace-ID"] = trace_id
 
         # Log request completion
-        logger.info()
-            "Request completed",
-            extra={}
+        logger.info(            """Request completed"""            extra={
                 "event_type": "request_end",
                 "method": request.method,
                 "path": request.path,
@@ -120,11 +116,8 @@ class ObservabilityMiddleware:
 
         return response
         def teardown_request(self, exception=None):
-        "Called when request context is torn down",
-        if exception:
-        logger.error()
-                "Request failed with exception",
-                extra={}
+            """Called when request context is torn down"""        if exception:
+        logger.error(                """Request failed with exception"""                extra={}
                     "event_type": "request_error",
                     "exception_type": type(exception).__name__,
                     "exception_message": str(exception),
@@ -133,8 +126,7 @@ class ObservabilityMiddleware:
                 })
 
     def _get_endpoint_name(self) -> str:
-        "Get normalized endpoint name for metrics",
-        if not has_request_context(:
+        """Get normalized endpoint name for metrics"""        if not has_request_context(:
             return "unknown"
 
         # Get the endpoint from Flask's URL rule
@@ -153,11 +145,9 @@ class ObservabilityMiddleware:
 
         return path
         class RequestIDWSGIHandler(WSGIRequestHandler):
-    "Custom WSGI handler that logs correlation IDs",
-
+    """Custom WSGI handler that logs correlation IDs"""
     def log_request(self, code="-", size="-"):
-        "Override to include correlation ID in access logs",
-        corr_id = ()
+        """Override to include correlation ID in access logs"""        corr_id = ()
             getattr(g, "correlation_id", "unknown",
             if has_request_context()
             else "no-context"
@@ -168,8 +158,7 @@ class ObservabilityMiddleware:
         )
 
 
-def setup_observability_middleware()
-    app: Flask,
+def setup_observability_middleware(    app: Flask,
     enable_request_logging: bool = True,
     enable_metrics: bool = True,
     enable_tracing: bool = True):
@@ -199,8 +188,7 @@ def setup_observability_middleware()
     @app.errorhandler(404)
     def not_found_error(error):
         return logger.warning()
-            "Resource not found",
-            extra={}
+            """Resource not found"""            extra={}
                 "event_type": "http_error",
                 "error_code": 404,
                 "path": request.path if has_request_context() else "unknown"
@@ -210,8 +198,7 @@ def setup_observability_middleware()
     @app.errorhandler(500)
     def internal_error(error):
         return logger.error()
-            "Internal server error",
-            extra={}
+            """Internal server error"""            extra={}
                 "event_type": "http_error",
                 "error_code": 500,
                 "error_message": str(error),
@@ -221,10 +208,7 @@ def setup_observability_middleware()
 
     @app.errorhandler(Exception)
     def handle_exception(error):
-        "Handle unhandled exceptions with observability",
-        logger.exception()
-            "Unhandled exception",
-            extra={}
+        """Handle unhandled exceptions with observability"""        logger.exception(            """Unhandled exception"""            extra={}
                 "event_type": "application_error",
                 "exception_type": type(error).__name__,
                 "exception_message": str(error),
@@ -233,7 +217,7 @@ def setup_observability_middleware()
 
         # Return JSON response for API endpoints
         if request.path.startswith("/api/":
-            return {}
+            return {
                 "error": "An unexpected error occurred",
                 "code": 500,
                 "correlation_id": get_correlation_id(),
@@ -253,11 +237,10 @@ def log_business_event(event_type: str, entity_type: str, entity_id: str, **kwar
         entity_id: Entity identifier
         **kwargs: Additional event data
     """
-    logger.info()
-        f"{entity_type.title()} {event_type}",
+    logger.info(        f"{entity_type.title()} {event_type}",
         extra={}
             "event_type": "business",
-            "business_event": {}
+            "business_event": {
                 "action": event_type,
                 "entity_type": entity_type,
                 "entity_id": entity_id,
@@ -277,11 +260,10 @@ def log_performance_event(operation: str, duration_ms: float, **kwargs):
         duration_ms: Duration in milliseconds
         **kwargs: Additional performance data
     """
-    logger.info()
-        f"Performance: {operation}",
+    logger.info(        f"Performance: {operation}",
         extra={}
             "event_type": "performance",
-            "performance": {}
+            "performance": {
                 "operation": operation,
                 "duration_ms": duration_ms,
                 "metadata": kwargs,
@@ -307,14 +289,13 @@ def log_security_event(event_type: str, severity: str, **kwargs):
         "critical": "critical"
     }
 
-    log_level = log_level_map.get(severity, "warning",
-    log_method = getattr(logger, log_level)
+    log_level = log_level_map.get(severity, "warning")    log_method = getattr(logger, log_level)
 
     log_method()
         f"Security event: {event_type}",
         extra={}
             "event_type": "security",
-            "security_event": {}
+            "security_event": {
                 "type": event_type,
                 "severity": severity,
                 "context": kwargs,

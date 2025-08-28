@@ -82,7 +82,7 @@ def setup_tracing(
     try:
         # Create resource
         resource = Resource.create()
-            {}
+            {
                 ResourceAttributes.SERVICE_NAME: service_name,
                 ResourceAttributes.SERVICE_VERSION: service_version,
                 ResourceAttributes.SERVICE_NAMESPACE: "cloudops",
@@ -91,7 +91,7 @@ def setup_tracing(
         )
 
         # Create tracer provider
-        trace.set_tracer_provider(TracerProvider(resource=resource)
+        trace.set_tracer_provider(TracerProvider(resource=resource))
         tracer_provider = trace.get_tracer_provider()
 
         # Configure exporters
@@ -159,8 +159,7 @@ def get_tracer():
 
 
 @contextmanager
-def create_span()
-    name: str, kind: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None
+def create_span(    name: str, kind: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None
 ):
     """
     Create a new span
@@ -241,8 +240,7 @@ def trace_anomaly_detection(func: Callable) -> Callable:
     @wraps(func)
     def wrapper(*args, **kwargs):
         with create_span()
-            "anomaly.detection",
-            kind="internal",
+            """anomaly.detection"""            kind="internal",
             attributes={}
                 "anomaly.detector": func.__name__,
                 "anomaly.detector_module": func.__module__,
@@ -279,8 +277,7 @@ def trace_remediation(func: Callable) -> Callable:
     @wraps(func)
     def wrapper(*args, **kwargs):
         with create_span()
-            "remediation.action",
-            kind="internal",
+            """remediation.action"""            kind="internal",
             attributes={}
                 "remediation.action_type": func.__name__,
                 "remediation.module": func.__module__,
