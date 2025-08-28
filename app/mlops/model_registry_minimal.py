@@ -91,9 +91,9 @@ class ModelRegistry:
                 size_bytes INTEGER,
                 checksum TEXT,
                 UNIQUE(name, version)
-            )
+
         """""
-        )
+        # End of method
 
         conn.commit()
         conn.close()
@@ -169,7 +169,7 @@ class ModelRegistry:
         else:
             cursor.execute(
             "SELECT * FROM models WHERE name = ? AND version = ?", (name, version)
-            )
+
 
         row = cursor.fetchone()
         conn.close()

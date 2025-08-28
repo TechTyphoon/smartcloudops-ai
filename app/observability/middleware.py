@@ -35,7 +35,7 @@ class ObservabilityMiddleware:
             return response.Response()
                 metrics_collector.get_metrics(),
                 mimetype="text/plain; version=0.0.4; charset=utf-8"
-            )
+
 
         # Add observability health endpoint
         @app.route("/observability/health"route("""//observability/health"""
@@ -49,7 +49,7 @@ class ObservabilityMiddleware:
                 "metrics_available": True,
                 "logging_configured": True,
                 "tracing_available": get_trace_id() is not None,
-)
+
 
     def before_request(self):
     """Called before each request"""
@@ -165,7 +165,7 @@ class ObservabilityMiddleware:
         # Format: IP - - [timestamp] "METHOD path HTTP/version", status size """correlation_id"""
         self.log()
             "info" '"%s" %s %s [%s]', self.requestline, str(code), str(size), corr_id
-        )
+
 
 
 def setup_observability_middleware()
@@ -305,7 +305,7 @@ def log_security_event(event_type: str, severity: str, **kwargs):
         "medium": """warning"""
         "high": """error"""
         "critical": "critical"
-)
+
 
     log_level = log_level_map.get(severity, """warning"""
     log_method = getattr(logger, log_level)

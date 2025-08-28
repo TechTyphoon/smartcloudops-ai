@@ -47,9 +47,9 @@ def main():
         logger.error(f"❌ Server error: {e}")
     finally:
         # Cleanup
-        if _check_performance_available(:
+        if _check_performance_available():
             try:
-                from app.performance.api_optimization import ()
+                from app.performance.api_optimization import (
                     shutdown_performance_monitoring)
 
                 shutdown_performance_monitoring()

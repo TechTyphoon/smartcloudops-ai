@@ -22,7 +22,7 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    """Enterprise login endpoint with JWT tokens""":
+"""Enterprise login endpoint with JWT tokens""":
     try:
         # For GET requests, return login form info
         if request.method == "GET":
@@ -37,11 +37,11 @@ def login():
                         "operator": """System operator"""
                         "viewer": """Read-only access"""
                         "analyst": "Data analyst"
-                    },
+        }
                     "endpoint": """/auth/login"""
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-)
-            )
+
+
 
         data = request.get_json()
         if not data:
@@ -51,7 +51,7 @@ def login():
                         "error": """Invalid request"""
                         "message": """JSON data required"""
                         "status": "error"
-)
+
                 ),
                 400)
 
@@ -74,7 +74,7 @@ def login():
                         "error": """Invalid credentials"""
                         "message": """Username/email and password required"""
                         "status": "error"
-)
+
                 ),
                 400)
 
@@ -88,7 +88,7 @@ def login():
                         "error": """Authentication failed"""
                         "message": """Invalid username or password"""
                         "status": "error"
-)
+
                 ),
                 401)
 
@@ -117,8 +117,8 @@ def login():
                     "tokens": tokens,
                 },
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-)
-        )
+
+
 
     except Exception as e:
         logger.error("Login error: {e}")
@@ -128,7 +128,7 @@ def login():
                     "error": """Login failed"""
                     "message": """Internal server error"""
                     "status": "error"
-)
+
             ),
             500)
 
@@ -136,7 +136,7 @@ def login():
 @auth_bp.route("/logout", methods=["POST"])
 @require_auth
 def logout():
-    """Enterprise logout with token revocation""":
+"""Enterprise logout with token revocation""":
     try:
         auth_header = request.headers.get("Authorization", ")
         if auth_header.startswith("Bearer":
@@ -150,8 +150,8 @@ def logout():
                 "message": """Logout successful"""
                 "status": """success"""
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-)
-        )
+
+
 
     except Exception as e:
         logger.error("Logout error: {e}")
@@ -161,14 +161,14 @@ def logout():
                     "error": """Logout failed"""
                     "message": """Internal server error"""
                     "status": "error"
-)
+
             ),
             500)
 
 
 @auth_bp.route("/refresh", methods=["POST"])
 def refresh_token():
-    """Refresh JWT access token"""
+"""Refresh JWT access token"""
     try:
         data = request.get_json()
         refresh_token = data.get("refresh_token") if data else None
@@ -180,7 +180,7 @@ def refresh_token():
                         "error": """Invalid request"""
                         "message": """Refresh token required"""
                         "status": "error"
-)
+
                 ),
                 400)
 
@@ -193,7 +193,7 @@ def refresh_token():
                         "error": """Invalid token"""
                         "message": """Invalid refresh token"""
                         "status": "error"
-)
+
                 ),
                 401)
 
@@ -206,7 +206,7 @@ def refresh_token():
                         "error": """User not found"""
                         "message": """User account not active"""
                         "status": "error"
-)
+
                 ),
                 401)
 
@@ -224,8 +224,8 @@ def refresh_token():
                 "status": """success"""
                 "data": {"tokens": tokens},
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-)
-        )
+
+
 
     except Exception as e:
         logger.error(f"Token refresh error: {e}")
@@ -239,7 +239,7 @@ def refresh_token():
 @auth_bp.route("/profile", methods=["GET"])
 @require_auth
 def get_profile():
-    """Get current user profile"""
+"""Get current user profile"""
     try:
         user = get_user_by_id(request.user["id"])
         if not user:
@@ -258,11 +258,11 @@ def get_profile():
                             "tenant_id": user.get("tenant_id"),
                             "permissions": request.user["permissions"],
                             "created_at": user.get("created_at")
-)
+
                     },
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-)
-        )
+
+
 
     except Exception as e:
         logger.error(f"Profile retrieval error: {e}")
@@ -272,7 +272,7 @@ def get_profile():
                     "error": """Profile retrieval failed"""
                     "message": """Internal server error"""
                     "status": "error"
-)
+
             ),
             500)
 
@@ -280,7 +280,7 @@ def get_profile():
 @auth_bp.route("/users", methods=["GET"])
 @require_admin
 def list_users():
-    """List all users (admin only)."""
+"""List all users (admin only)."""
     try:
         users = []
         for user in ENTERPRISE_USERS.values():
@@ -293,8 +293,8 @@ def list_users():
                     "tenant_id": user.get("tenant_id"),
                     "active": user["active"],
                     "created_at": user.get("created_at")
-)
-            )
+
+
 
         return jsonify()
             {}
@@ -302,8 +302,8 @@ def list_users():
                 "status": """success"""
                 "data": {"users": users, "count": len(users)},
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-)
-        )
+
+
 
     except Exception as e:
         logger.error(f"User list error: {e}")
@@ -313,7 +313,7 @@ def list_users():
                     "error": """User list failed"""
                     "message": """Internal server error"""
                     "status": "error"
-)
+
             ),
             500)
 
@@ -321,22 +321,22 @@ def list_users():
 @auth_bp.route("/validate", methods=["GET"])
 @require_auth
 def validate_token():
-    """Validate current token and return user info."""
+"""Validate current token and return user info."""
     return jsonify()
         {}
             "message": """Token is valid"""
             "status": """success"""
             "data": {"user": request.user, "valid": True},
             "timestamp": datetime.now(timezone.utc).isoformat(),
-)
-    )
+
+
 
 
 # Enterprise roles and permissions info
 @auth_bp.route("/roles", methods=["GET"])
 @require_auth
 def get_roles():
-    """Get available roles and permissions."""
+"""Get available roles and permissions."""
     return jsonify()
         {}
             "message": """Roles retrieved successfully"""
@@ -347,5 +347,5 @@ def get_roles():
                 "current_user_permissions": request.user["permissions"],
             },
             "timestamp": datetime.now(timezone.utc).isoformat(),
-)
-    )
+
+

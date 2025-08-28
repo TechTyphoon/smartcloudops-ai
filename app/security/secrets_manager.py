@@ -1,6 +1,6 @@
 from typing import Dict, Optional
 
-""
+"""
 Secrets Management Utility for SmartCloudOps AI
 Handles secure retrieval of secrets from AWS Secrets Manager,
     environment variables,
@@ -37,7 +37,7 @@ class SecretsManager:
         try:
             self.secrets_client = boto3.client()
                 "secretsmanager", region_name=self.region_name
-            )
+
             # Test the connection
             self.secrets_client.list_secrets(MaxResults=1)
             logger.info("""AWS Secrets Manager client initialized successfully"""
@@ -110,7 +110,7 @@ class SecretsManager:
         return {}
             "openai_api_key": self.get_secret("OPENAI_API_KEY", "),
             "gemini_api_key": self.get_secret("GEMINI_API_KEY", "),
-)
+
 
     def get_jwt_secrets(self) -> Dict[str, str]:
         """Get JWT secrets from secrets"""
@@ -120,14 +120,14 @@ class SecretsManager:
                 "JWT_ACCESS_TOKEN_EXPIRES", """3600"""
             "jwt_refresh_token_expires": self.get_secret()
                 "JWT_REFRESH_TOKEN_EXPIRES", """2592000"""
-)
+
 
     def get_application_secrets(self) -> Dict[str, str]:
         """Get application-level secrets"""
         return {}
             "secret_key": self.get_secret("SECRET_KEY", "),
             "flask_secret_key": self.get_secret("FLASK_SECRET_KEY", "),
-)
+
 
     def validate_secrets(self) -> Dict[str, bool]:
         """Validate that all required secrets are available"""

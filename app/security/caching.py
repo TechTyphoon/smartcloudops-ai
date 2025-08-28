@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from typing import Any, Callable, Dict, List, Optional
 
-""
+"""
 Caching System for Smart CloudOps AI
 Enterprise-grade caching with Redis backend, multiple strategies, and cache invalidation
     """""
@@ -182,7 +182,7 @@ class CacheManager:
             total_requests = self.stats["hits"] + self.stats["misses"]
             hit_rate = ()
                 (self.stats["hits"] / total_requests * 100) if total_requests > 0 else 0
-            )
+
 
             return {}:
                 "hits": self.stats["hits"],
@@ -418,7 +418,7 @@ class TieredCacheStrategy(CacheStrategy):
             "hot": {"ttl": 60, "namespace": "hot"},  # 1 minute
             "warm": {"ttl": 300, "namespace": "warm"},  # 5 minutes
             "cold": {"ttl": 3600, "namespace": "cold"},  # 1 hour
-)
+
 
     def get(self, key: str, namespace: str = "default" -> Optional[Any]:
         """Get value from all tiers."""
@@ -449,7 +449,7 @@ class TieredCacheStrategy(CacheStrategy):
             next_tier_config = self.tiers[next_tier]
             super().set()
                 key, value, next_tier_config["ttl"],next_tier_config["namespace"]
-            )
+
 
 
 # Cache monitoring
@@ -476,13 +476,13 @@ class CacheMonitor:
             "good": 60 <= hit_rate < 80,
             "fair": 40 <= hit_rate < 60,
             "poor": hit_rate < 40,
-)
+
 
         return {}
             **stats,
             "performance": performance,
             "recommendations": self._get_recommendations(stats),
-)
+
 
     def _get_recommendations(self, stats: Dict[str, any]) -> List[str]:
         """Get cache optimization recommendations."""
@@ -501,7 +501,7 @@ class CacheMonitor:
 
         return recommendations
         def get_cache_usage_report(self) -> Dict[str, any]:
-        """Get detailed cache usage report."""
+        """Get detailed cache usage report.""""""""
         if not self.cache_manager.redis_client:
             return {"error": "Redis not available"}
 
@@ -525,7 +525,7 @@ class CacheMonitor:
                 "largest_namespaces": sorted()
                     namespace_stats.items(), key=lambda x: x[1]["count"],reverse=True
                 )[:5],
-)
+
 
         except Exception as e:
             logger.error(f"Cache usage report error: {e}")

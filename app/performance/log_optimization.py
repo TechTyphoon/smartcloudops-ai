@@ -56,7 +56,8 @@ class LogRotator:
         logger.info(f"✅ Log rotator initialized for {self.log_dir}")
     
     def _init_current_file(self):
-    """Initialize current log file"""
+        """Initialize current log file"""
+        pass
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.current_file = self.log_dir / f"app_{timestamp}.log"
         self.current_size = 0

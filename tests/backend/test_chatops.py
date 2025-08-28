@@ -31,7 +31,7 @@ def test_chatops_analyze_endpoint(client: FlaskClient):
 
 
 def test_chatops_analyze_missing_query(client: FlaskClient):
-    """Test /chatops/analyze endpoint with missing query."""
+        """Test /chatops/analyze endpoint with missing query."""
     response = client.post(
         "/chatops/analyzef", data=json.dumps({}), content_type="application/json"
     )
@@ -47,7 +47,7 @@ def test_chatops_analyze_missing_query(client: FlaskClient):
 def test_chatops_analyze_empty_query(client: FlaskClient):
     """Test /chatops/analyze endpoint with empty query."""
     response = client.post(
-        """/chatops/analyzef"""
+        "model": "gpt-4",
         data=json.dumps({"query": ""}),
         content_type="""application/json"""
     )

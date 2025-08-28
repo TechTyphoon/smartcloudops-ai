@@ -43,7 +43,7 @@ class OpenTelemetryConfig:
         enable_logging_instrumentation: bool = True,
         jaeger_endpoint: Optional[str] = None,
         otlp_endpoint: Optional[str] = None,
-        console_export: bool = False) -> None:
+        console_export: bool = False):
     """
         Setup OpenTelemetry with tracing and metrics
 

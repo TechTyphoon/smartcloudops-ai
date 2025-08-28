@@ -36,7 +36,7 @@ class EnhancedJSONFormatter(jsonlogger.JsonFormatter):
         self,
         log_record: Dict[str, Any],
         record: logging.LogRecord
-        message_dict: Dict[str, Any]) -> None:
+        message_dict: Dict[str, Any]):
         super().add_fields(log_record, record, message_dict)
 
         # Add ISO timestamp

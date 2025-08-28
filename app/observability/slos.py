@@ -70,7 +70,7 @@ class SLOManager:
             measurement_period=300,  # 5 minute measurement
             alert_threshold=99.5,  # Alert at 99.5%
             critical_threshold=99.0,  # Critical at 99.0%
-        )
+
         self.add_slo(api_availability_slo)
 
         # Database Availability SLO
@@ -83,7 +83,7 @@ class SLOManager:
             measurement_period=300,  # 5 minute measurement
             alert_threshold=99.9,  # Alert at 99.9%
             critical_threshold=99.5,  # Critical at 99.5%
-        )
+
         self.add_slo(db_availability_slo)
 
         # ================================
@@ -100,7 +100,7 @@ class SLOManager:
             measurement_period=300,  # 5 minute measurement
             alert_threshold=90.0,  # Alert at 90%
             critical_threshold=80.0,  # Critical at 80%
-        )
+
         self.add_slo(api_latency_slo)
 
         # Database Query Latency SLO
@@ -113,7 +113,7 @@ class SLOManager:
             measurement_period=300,  # 5 minute measurement
             alert_threshold=90.0,  # Alert at 90%
             critical_threshold=80.0,  # Critical at 80%
-        )
+
         self.add_slo(db_latency_slo)
 
         # ================================
@@ -130,7 +130,7 @@ class SLOManager:
             measurement_period=300,  # 5 minute measurement
             alert_threshold=99.0,  # Alert at 99.0%
             critical_threshold=98.0,  # Critical at 98.0%
-        )
+
         self.add_slo(api_error_slo)
 
         # ================================
@@ -147,7 +147,7 @@ class SLOManager:
             measurement_period=300,  # 5 minute measurement
             alert_threshold=80.0,  # Alert at 80%
             critical_threshold=70.0,  # Critical at 70%
-        )
+
         self.add_slo(throughput_slo)
 
         # ================================
@@ -164,7 +164,7 @@ class SLOManager:
             measurement_period=300,  # 5 minute measurement
             alert_threshold=85.0,  # Alert at 85%
             critical_threshold=90.0,  # Critical at 90%
-        )
+
         self.add_slo(saturation_slo)
 
         # Setup corresponding SLIs
@@ -305,7 +305,6 @@ class SLOManager:
             "critical_threshold": slo.critical_threshold,
             "window_seconds": slo.window,
             "measurement_period_seconds": slo.measurement_period,
-)
 
     def get_all_slo_status(self) -> Dict[str, any]:
     """Get status for all SLOs"""
@@ -336,7 +335,7 @@ class SLOManager:
                     "summary": f"""{slo.description} - Warning"""
                     "description": f"""{slo.description} is below warning threshold ({slo.alert_threshold}%)"""
                 },
-)
+
             alerts.append(warning_alert)
 
             # Critical alert
@@ -353,7 +352,7 @@ class SLOManager:
                     "summary": f"""{slo.description} - Critical"""
                     "description": f"""{slo.description} is below critical threshold ({slo.critical_threshold}%)"""
                 },
-)
+
             alerts.append(critical_alert)
 
         return alerts

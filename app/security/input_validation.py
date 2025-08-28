@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from typing import Any, Dict, List, Optional, Union
 
-""
+"""
 Comprehensive Security Validation Module
 Enterprise-grade input validation, sanitization, and security checks
     """""
@@ -204,7 +204,7 @@ class InputValidator:
         if len(value) > max_length:
             raise SecurityValidationError()
     """String too long (max {max_length} characters)"""
-            )
+
 
         # Check allowed characters
         if allowed_chars and not re.match("^[{re.escape(allowed_chars)}]*$", value:
@@ -456,7 +456,7 @@ class InputValidator:
         if current_depth > max_depth:
             raise SecurityValidationError()
     """JSON nesting too deep (max {max_depth} levels)"""
-            )
+
 
         if isinstance(obj, dict:
             for value in obj.values():

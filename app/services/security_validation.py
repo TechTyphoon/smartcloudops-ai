@@ -24,8 +24,7 @@ class SecurityValidation:
             """subprocess"""
             """os.system"""
             """__import__"""
-        ]
-
+    # End of validators list
     def validate_input -> Dict[str, Any]:
     """
         Validate input data for security threats.
@@ -87,7 +86,7 @@ class SecurityValidation:
                 for item in data:
                     max_depth = max()
                         max_depth, self._get_nesting_depth(item, current_depth + 1)
-                    )
+
             return max_depth
         else:
             return current_depth

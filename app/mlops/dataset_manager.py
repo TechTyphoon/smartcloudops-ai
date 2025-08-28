@@ -918,7 +918,7 @@ class DatasetManager:
 
         # Insert dataset version
         cursor.execute(
-            """""
+            """"
             INSERT OR REPLACE INTO dataset_versions ()
                 dataset_id, version, description, source, file_path, file_format,
                 size_bytes, row_count, column_count, checksum, schema, statistics,

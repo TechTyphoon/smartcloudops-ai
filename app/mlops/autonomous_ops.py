@@ -13,7 +13,7 @@ logger = logging.getLogger
 
 
 class AutomationLevel(Enum):
-    """Automation levels for remediation actions."""
+"""Automation levels for remediation actions."""
     MANUAL = "manual"
     SEMI_AUTO = "semi_auto"
     FULL_AUTO = "full_auto"
@@ -22,7 +22,7 @@ class AutomationLevel(Enum):
 
 @dataclass
 class PolicyRule:
-    """Policy rule for automation decisions."""
+"""Policy rule for automation decisions."""
     rule_id: str
     name: str
     conditions: Dict[str, Any]
@@ -38,7 +38,7 @@ class PolicyRule:
     def evaluate(
         self, anomaly_info: Dict[str, Any], system_state: Dict[str, Any]
     ) -> bool:
-    """Evaluate if this policy rule applies to the given anomaly and system state."""
+"""Evaluate if this policy rule applies to the given anomaly and system state."""
         # Check severity condition - ensure anomaly severity matches required levels
         if "severity" in self.conditions:
             required_severity = self.conditions["severity"]
@@ -72,7 +72,7 @@ class PolicyRule:
 
 
 class AutonomousOperationsEngine:
-    """Autonomous operations engine with closed-loop automation."""
+"""Autonomous operations engine with closed-loop automation."""
     def __init__(self):
         self.policies = []
         self.automation_history = []
@@ -86,7 +86,7 @@ class AutonomousOperationsEngine:
         }
 
     def _load_default_policies(self) -> List[PolicyRule]:
-    """Load default automation policies."""
+"""Load default automation policies."""
         policies = []
             # Critical anomalies - full automation
             PolicyRule(
@@ -139,19 +139,19 @@ class AutonomousOperationsEngine:
         return policies
 
     def add_policy(self, policy: PolicyRule):
-    """Add a new automation policy."""
+"""Add a new automation policy."""
         self.system_policies.append(policy)
         logger.info(f"Added automation policy: {policy.name}")
 
     def remove_policy(self, rule_id: str):
-    """Remove an automation policy."""
+"""Remove an automation policy."""
         self.system_policies = [p for p in self.system_policies if p.rule_id != rule_id]
         logger.info(f"Removed automation policy: {rule_id}")
 
     def evaluate_automation_level(
         self, anomaly_info: Dict[str, Any], system_state: Dict[str, Any]
     ) -> Tuple[AutomationLevel, PolicyRule]:
-    """Evaluate automation level based on policies."""
+"""Evaluate automation level based on policies."""
         applicable_policies = []
 
         # Find all applicable policies
@@ -181,7 +181,7 @@ class AutonomousOperationsEngine:
         return selected_policy.automation_level, selected_policy
 
     async def process_anomaly(self, anomaly_id: int) -> Dict[str, Any]:
-    """Process anomaly with autonomous operations."""
+"""Process anomaly with autonomous operations."""
         try:
             # Mock anomaly data for demonstration
             anomaly_info = {
@@ -240,7 +240,7 @@ class AutonomousOperationsEngine:
             return {"error": str(e)}
 
     async def _get_system_state(self) -> Dict[str, Any]:
-    """Get current system state."""
+"""Get current system state."""
         # Mock implementation - in real system, would fetch from monitoring
         return {}
             "cpu_usage": 75.0,
@@ -255,7 +255,7 @@ class AutonomousOperationsEngine:
     async def _handle_manual_intervention(
         self, anomaly: Dict[str, Any], recommendations: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
-    """Handle manual intervention."""
+"""Handle manual intervention."""
         self.automation_stats["manual_interventions"] += 1
 
         return {}
@@ -264,9 +264,9 @@ class AutonomousOperationsEngine:
             "recommendations": recommendations,
             "message": """Manual intervention required. Recommendations provided."""
             "next_steps": []
-                """Review anomaly details"""
-                """Evaluate recommendations"""
-                """Execute manual remediation if needed"""
+"""Review anomaly details"""
+"""Evaluate recommendations"""
+"""Execute manual remediation if needed"""
             ],
 )
 
@@ -275,7 +275,7 @@ class AutonomousOperationsEngine:
         anomaly: Dict[str, Any],
         recommendations: List[Dict[str, Any]],
         policy: PolicyRule) -> Dict[str, Any]:
-    """Handle semi-automation with human oversight."""
+"""Handle semi-automation with human oversight."""
         if not recommendations:
             return await self._handle_manual_intervention(anomaly, recommendations)
 
@@ -295,7 +295,7 @@ class AutonomousOperationsEngine:
     async def _handle_full_automation(
         self, anomaly: Dict[str, Any], recommendations: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
-    """Handle full automation."""
+"""Handle full automation."""
         if not recommendations:
             return {"error": "No recommendations available for full automation"}
 
@@ -311,7 +311,7 @@ class AutonomousOperationsEngine:
             "recommendation": best_recommendation,
             "success": success,
             "message": ()
-    """Fully automated remediation executed successfully."""
+"""Fully automated remediation executed successfully."""
                 if success
                 else "Automated remediation failed."
             ),
@@ -322,7 +322,7 @@ class AutonomousOperationsEngine:
         anomaly: Dict[str, Any],
         recommendations: List[Dict[str, Any]],
         system_state: Dict[str, Any]) -> Dict[str, Any]:
-    """Handle adaptive automation based on confidence and system state."""
+"""Handle adaptive automation based on confidence and system state."""
         if not recommendations:
             return await self._handle_manual_intervention(anomaly, recommendations)
 
@@ -341,7 +341,7 @@ class AutonomousOperationsEngine:
             return await self._handle_manual_intervention(anomaly, recommendations)
 
     def _update_automation_stats(self, result: Dict[str, Any]):
-    """Update automation statistics."""
+"""Update automation statistics."""
         self.automation_stats["total_automations"] += 1
         self.automation_stats["last_automation"] = datetime.now().isoformat()
 
@@ -351,7 +351,7 @@ class AutonomousOperationsEngine:
             self.automation_stats["failed_automations"] += 1
 
     def get_automation_stats(self) -> Dict[str, Any]:
-    """Get automation statistics."""
+"""Get automation statistics."""
         stats = self.automation_stats.copy()
 
         # Calculate success rate
@@ -366,7 +366,7 @@ class AutonomousOperationsEngine:
         return stats
 
     def get_policies(self) -> List[Dict[str, Any]]:
-    """Get all automation policies."""
+"""Get all automation policies."""
         return []
             {}
                 "rule_id": policy.rule_id,
@@ -382,7 +382,7 @@ class AutonomousOperationsEngine:
 
 
 class PolicyManager:
-    """Manages automation policies."""
+"""Manages automation policies."""
     def __init__(self, ops_engine: AutonomousOperationsEngine):
         self.ops_engine = ops_engine
 
@@ -392,7 +392,7 @@ class PolicyManager:
         conditions: Dict[str, Any],
         automation_level: str
         priority: int = 5) -> str:
-    """Create a new automation policy."""
+"""Create a new automation policy."""
         rule_id = f"custom_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
         automation_level_enum = AutomationLevel(automation_level)
@@ -408,7 +408,7 @@ class PolicyManager:
         return rule_id
 
     def update_policy(self, rule_id: str, updates: Dict[str, Any]) -> bool:
-    """Update an existing policy."""
+"""Update an existing policy."""
         for policy in self.ops_engine.system_policies:
             if policy.rule_id == rule_id:
                 if "name" in updates:
@@ -430,6 +430,6 @@ class PolicyManager:
         return False
 
     def delete_policy(self, rule_id: str) -> bool:
-    """Delete a policy."""
+"""Delete a policy."""
         self.ops_engine.remove_policy(rule_id)
         return True

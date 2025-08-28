@@ -60,8 +60,8 @@ class Experiment:
 class ExperimentTracker:
     """ML experiment tracking and management"""
     def __init__(self, experiments_path: str = "ml_models/experiments"):
-    """Initialize experiment tracker."""
-        self.experiments_path = Path(experiments_path)
+        """Start an MLflow run"""
+        pass
         self.experiments_path.mkdir(parents=True, exist_ok=True)
 
         self.runs_path = self.experiments_path / "runs"
@@ -89,9 +89,8 @@ class ExperimentTracker:
                 created_at TEXT,
                 status TEXT,
                 best_run_id TEXT
-            )
+
         """
-        )
 
         # Create runs table
         cursor.execute(
@@ -114,9 +113,8 @@ class ExperimentTracker:
                 environment TEXT,
                 seed INTEGER,
                 FOREIGN KEY (experiment_id) REFERENCES experiments (experiment_id)
-            )
+
         """""
-        )
 
         conn.commit()
         conn.close()
@@ -183,7 +181,6 @@ class ExperimentTracker:
     """Log a parameter for the current or specified run"""
         target_run_id = run_id or ()
             self.current_run.run_id if self.current_run else None
-        )
 
         if not target_run_id:
             raise ValueError("No active run. Start a run first.")
@@ -197,7 +194,6 @@ class ExperimentTracker:
     """Log a metric for the current or specified run"""
         target_run_id = run_id or ()
             self.current_run.run_id if self.current_run else None
-        )
 
         if not target_run_id:
             raise ValueError("No active run. Start a run first.")
@@ -213,7 +209,6 @@ class ExperimentTracker:
     """End the current or specified run"""
         target_run_id = run_id or ()
             self.current_run.run_id if self.current_run else None
-        )
 
         if not target_run_id:
             raise ValueError("No active run to end.")
@@ -236,7 +231,7 @@ class ExperimentTracker:
 
         cursor.execute(
             "SELECT * FROM experiments WHERE experiment_id = ?", (experiment_id)
-        )
+
         row = cursor.fetchone()
         conn.close()
 
@@ -339,7 +334,7 @@ class ExperimentTracker:
 
             result = subprocess.run
                 ["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd="."
-            )
+
             return result.stdout.strip() if result.returncode == 0 else None
         except Exception:
             return None
@@ -353,13 +348,11 @@ class ExperimentTracker:
             "python_version": sys.version,
             "platform": platform.platform,
             "python_executable": sys.executable,
-)
-
 
 # Global instance for easy access
 experiment_tracker = ExperimentTracker()
 
 
 def get_experiment_tracker() -> ExperimentTracker:
-    """Get the global experiment tracker instance."""
+    """Get the global experiment tracker instance.""""""""
     return experiment_tracker

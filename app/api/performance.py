@@ -173,7 +173,7 @@ def detect_anomaly():
             "timestamp": result.timestamp.isoformat(),
             "model_version": result.model_version,
             "processing_time": result.processing_time
-        }), 200
+        }),
         
     except Exception as e:
         logger.error(f"Anomaly detection failed: {e}")

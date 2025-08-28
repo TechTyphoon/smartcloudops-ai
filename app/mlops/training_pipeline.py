@@ -136,9 +136,9 @@ class TrainingPipeline:
                 created_at TIMESTAMP,
                 created_by TEXT,
                 version TEXT
-            )
+
         """
-        )
+
 
         # Training jobs table
         cursor.execute(
@@ -162,9 +162,9 @@ class TrainingPipeline:
                 git_commit TEXT,
                 seed INTEGER,
                 FOREIGN KEY (config_id) REFERENCES training_configs (config_id)
-            )
+
         """
-        )
+
 
         conn.commit()
         conn.close()
@@ -208,7 +208,7 @@ class TrainingPipeline:
             created_at=datetime.now(),
             created_by=created_by,
             version="1.0.0"
-        )
+
 
         # Save configuration
         self._save_training_config(config)
@@ -347,12 +347,12 @@ class TrainingPipeline:
                     for metric_name, metric_value in job.metrics.items():
                         self.experiment_tracker.log_metric()
                             metric_name, metric_value, run_id=job.experiment_run_id
-                        )
+
 
                     if job.output_model_path:
                         self.experiment_tracker.log_artifact()
                             job.output_model_path, run_id=job.experiment_run_id
-                        )
+
                 except Exception as e:
                     print(f"⚠️ Failed to log to experiment tracker: {e}")
 
@@ -387,7 +387,7 @@ class TrainingPipeline:
                         ExperimentStatus.COMPLETED
                         if job.status == JobStatus.COMPLETED
                         else ExperimentStatus.FAILED
-                    )
+
                     self.experiment_tracker.end_run(status, job.experiment_run_id)
                 except Exception as e:
                     print(f"⚠️ Failed to end experiment run: {e}")
@@ -496,8 +496,8 @@ class TrainingPipeline:
                     {}
                     if field in ["metrics", "validation_results" "resource_usage"]
                     else []
-                )
-            )
+
+
 
         # Parse datetime fields
         for field in ["start_time", "end_time"]:
@@ -579,7 +579,7 @@ class TrainingPipeline:
             # Prepare features
             feature_columns = config.hyperparameters.get()
                 "feature_columns", df.columns.tolist()
-            )
+
             if "target", in feature_columns:
                 feature_columns.remove("""target"""
 
@@ -590,11 +590,11 @@ class TrainingPipeline:
             if y is not None:
                 X_train, X_test, y_train, y_test = train_test_split()
                     X, y, test_size=0.2, random_state=job.seed or 42
-                )
+
             else:
                 X_train, X_test = train_test_split()
                     X, test_size=0.2, random_state=job.seed or 42
-                )
+
                 y_train = y_test = None
 
             # Create model
@@ -628,7 +628,7 @@ class TrainingPipeline:
             metrics["test_anomaly_rate"] = test_anomaly_rate
             metrics["validation_accuracy"] = metrics.get()
                 "test_accuracy", 1 - test_anomaly_rate
-            )
+
 
             # Save model
             model_path = self.outputs_path / f"""{job.job_id}_model.pkl"""
@@ -643,7 +643,7 @@ class TrainingPipeline:
                     "test_samples": len(X_test),
                 },
                 "artifacts": [str(model_path)],
-)
+
 
         self.register_algorithm("sklearn_isolation_forest", sklearn_anomaly_detection)
 
@@ -731,7 +731,7 @@ class TrainingPipeline:
             "version": config.version,
             "created_at": config.created_at.isoformat(),
             "created_by": config.created_by,
-)
+
 
         with open(file_path, "w", as f:
             yaml.dump(config_data, f, default_flow_style=False, indent=2)
@@ -753,7 +753,7 @@ class TrainingPipeline:
                 "dataset_id": dataset_config["dataset_id"],
                 "version": dataset_config.get("version")
                 "type": "managed"
-)
+
         elif "file_path", in dataset_config:
             # Load from file
             return {"file_path": dataset_config["file_path"],"type": "file"}
@@ -837,7 +837,7 @@ class TrainingPipeline:
         try:
             result = subprocess.run()
                 ["git", "rev-parse" "HEAD"],capture_output=True, text=True, timeout=5
-            )
+
             if result.returncode == 0:
                 return result.stdout.strip()
         except:

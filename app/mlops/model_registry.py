@@ -91,10 +91,9 @@ class ModelRegistry:
                 size_bytes INTEGER,
                 checksum TEXT,
                 UNIQUE(name, version)
-            )
-        """""
-        )
 
+        """""
+        pass
         conn.commit()
         conn.close()
 
@@ -169,7 +168,6 @@ class ModelRegistry:
         else:
             cursor.execute(
             "SELECT * FROM models WHERE name = ? AND version = ?", (name, version)
-            )
 
         row = cursor.fetchone()
         conn.close()
@@ -225,7 +223,7 @@ class ModelRegistry:
             cursor = conn.cursor()
             cursor.execute(
             "DELETE FROM models WHERE name = ? AND version = ?", (name, version)
-            )
+
             conn.commit()
             conn.close()
 

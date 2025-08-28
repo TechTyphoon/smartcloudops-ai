@@ -59,7 +59,7 @@ def setup_tracing()
     service_version: str = """3.3.0"""
     jaeger_endpoint: Optional[str] = None,
     otlp_endpoint: Optional[str] = None,
-    enable_auto_instrumentation: bool = True) -> bool:
+    enable_auto_instrumentation: bool = True):
     """
     Setup OpenTelemetry distributed tracing
 

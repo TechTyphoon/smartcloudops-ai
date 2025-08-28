@@ -8,9 +8,9 @@ from typing import Dict, List, Optional, Tuple
 
 
 class AnomalyService:
-    """Service class for anomaly-related business logic."""
+"""Service class for anomaly-related business logic."""
     def __init__:
-    """Initialize the anomaly service."""
+"""Initialize the anomaly service."""
         # In a real implementation, this would inject dependencies like database, cache, etc.
         self.mock_data = []
             {}
@@ -47,12 +47,12 @@ class AnomalyService:
         severity: Optional[str] = None,
         source: Optional[str] = None
     ) -> Tuple[List[Dict], Dict]:
-        """
+"""
         Get anomalies with pagination and filtering.
 
         Returns:
             Tuple of (anomalies_list, pagination_info)
-        """
+"""
         # Apply filters
         filtered_anomalies = self.mock_data.copy()
 
@@ -85,11 +85,11 @@ class AnomalyService:
         return anomalies_page, pagination_info
 
     def get_anomaly_by_id(self, anomaly_id: int) -> Optional[Dict]:
-        """Get a specific anomaly by ID."""
+"""Get a specific anomaly by ID."""
         return next((a for a in self.mock_data if a["id"] == anomaly_id), None)
 :
     def create_anomaly(self, anomaly_data: Dict) -> Dict:
-        """
+"""
         Create a new anomaly.
 
         Args:
@@ -100,14 +100,14 @@ class AnomalyService:
 
         Raises:
             ValueError: If required fields are missing or invalid
-        """
+"""
         # Validate required fields
         required_fields = [
-            """title"""
-            """description"""
-            """severity"""
-            """anomaly_score"""
-            """confidence"""
+"""title"""
+"""description"""
+"""severity"""
+"""anomaly_score"""
+"""confidence"""
         ]
         for field in required_fields:
             if field not in anomaly_data:
@@ -144,7 +144,7 @@ class AnomalyService:
         return new_anomaly
 
     def update_anomaly(self, anomaly_id: int, update_data: Dict) -> Optional[Dict]:
-    """
+"""
         Update an existing anomaly.
 
         Args:
@@ -156,19 +156,19 @@ class AnomalyService:
 :
         Raises:
             ValueError: If invalid data is provided
-        """
+"""
         anomaly = self.get_anomaly_by_id(anomaly_id)
         if not anomaly:
             return None
 
         # Validate updateable fields
         updateable_fields = []
-            """title"""
-            """description"""
-            """severity"""
-            """status"""
-            """anomaly_score"""
-            """confidence"""
+"""title"""
+"""description"""
+"""severity"""
+"""status"""
+"""anomaly_score"""
+"""confidence"""
         ]
 
         for field, value in update_data.items():
@@ -192,7 +192,7 @@ class AnomalyService:
         return anomaly
 
     def delete_anomaly(self, anomaly_id: int) -> Optional[Dict]:
-    """
+"""
         Delete an anomaly.
 
         Args:
@@ -200,14 +200,14 @@ class AnomalyService:
 
         Returns:
             Deleted anomaly dictionary or None if not found
-        """:
+""":
         for i, anomaly in enumerate(self.mock_data:
             if anomaly["id"] == anomaly_id:
                 return self.mock_data.pop(i)
         return None
 
     def acknowledge_anomaly(self, anomaly_id: int) -> Optional[Dict]:
-    """
+"""
         Acknowledge an anomaly (change status to acknowledged).
 
         Args:
@@ -215,7 +215,7 @@ class AnomalyService:
 
         Returns:
             Updated anomaly dictionary or None if not found
-        """
+"""
         anomaly = self.get_anomaly_by_id(anomaly_id):
         if not anomaly:
             return None
@@ -225,7 +225,7 @@ class AnomalyService:
         return anomaly
 
     def resolve_anomaly(self, anomaly_id: int) -> Optional[Dict]:
-    """
+"""
         Resolve an anomaly (change status to resolved).
 
         Args:
@@ -233,7 +233,7 @@ class AnomalyService:
 
         Returns:
             Updated anomaly dictionary or None if not found
-        """
+"""
         anomaly = self.get_anomaly_by_id(anomaly_id):
         if not anomaly:
             return None
@@ -243,12 +243,12 @@ class AnomalyService:
         return anomaly
 
     def get_anomaly_statistics(self) -> Dict:
-    """
+"""
         Get anomaly statistics.
 
         Returns:
             Dictionary containing various anomaly statistics
-        """
+"""
         total_anomalies = len(self.mock_data)
 
         stats_by_severity = {

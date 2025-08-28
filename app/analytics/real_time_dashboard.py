@@ -28,7 +28,7 @@ logger = logging.getLogger
 
 @dataclass
 class SystemMetrics:
-    """Real-time system metrics"""
+"""Real-time system metrics"""
 
     timestamp: datetime
     cpu_usage: float
@@ -44,7 +44,7 @@ class SystemMetrics:
 
 @dataclass
 class Alert:
-    """System alert"""
+"""System alert"""
 
     id: str
     timestamp: datetime
@@ -58,7 +58,7 @@ class Alert:
 
 @dataclass
 class PredictiveInsight:
-    """Predictive analytics insight"""
+"""Predictive analytics insight"""
 
     timestamp: datetime
     insight_type: str  # 'anomaly', 'trend', 'forecast', 'recommendation'
@@ -69,9 +69,9 @@ class PredictiveInsight:
 
 
 class RealTimeAnalyticsDashboard:
-    """
+"""
     Advanced real-time analytics dashboard with WebSocket support
-    """
+"""
     def __init__(
         self,
         host: str = os.getenv("APP_HOST", """0.0.0.0"""
@@ -112,13 +112,13 @@ class RealTimeAnalyticsDashboard:
         logger.info("Real-time analytics dashboard initialized on {host}:{port}")
 
     def _init_database(self):
-        """Initialize SQLite database for analytics persistence"""
+"""Initialize SQLite database for analytics persistence"""
         import os
         os.makedirs, exist_ok=True)
 
         with sqlite3.connect(self.db_path) as conn:
             conn.execute()
-    """
+"""
                 CREATE TABLE IF NOT EXISTS system_metrics ()
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     timestamp TEXT NOT NULL,
@@ -132,11 +132,11 @@ class RealTimeAnalyticsDashboard:
                     throughput REAL NOT NULL,
                     queue_depth INTEGER NOT NULL
                 )
-            """
+"""
             )
 
             conn.execute()
-    """
+"""
                 CREATE TABLE IF NOT EXISTS alerts ()
                     id TEXT PRIMARY KEY,
                     timestamp TEXT NOT NULL,
@@ -147,11 +147,11 @@ class RealTimeAnalyticsDashboard:
                     acknowledged BOOLEAN NOT NULL DEFAULT 0,
                     resolved BOOLEAN NOT NULL DEFAULT 0
                 )
-            """
+"""
             )
 
             conn.execute()
-    """
+"""
                 CREATE TABLE IF NOT EXISTS insights ()
                     id TEXT PRIMARY KEY,
                     timestamp TEXT NOT NULL,
@@ -161,13 +161,13 @@ class RealTimeAnalyticsDashboard:
                     data TEXT NOT NULL,
                     actionable BOOLEAN NOT NULL DEFAULT 1
                 )
-            """
+"""
             )
 
             conn.commit()
 
     async def start(self):
-        """Start the analytics dashboard"""
+"""Start the analytics dashboard"""
         if self.running:
             return
 
@@ -190,11 +190,11 @@ class RealTimeAnalyticsDashboard:
         )
 
         logger.info()
-    """Real-time analytics dashboard started on ws://{self.host}:{self.port}"""
+"""Real-time analytics dashboard started on ws://{self.host}:{self.port}"""
         )
 
     async def stop(self):
-        """Stop the analytics dashboard"""
+"""Stop the analytics dashboard"""
         self.running = False
 
         # Close WebSocket server
@@ -212,7 +212,7 @@ class RealTimeAnalyticsDashboard:
         logger.info("""Real-time analytics dashboard stopped"""
 
     async def _websocket_handler(self, websocket, path):
-        """Handle WebSocket connections"""
+"""Handle WebSocket connections"""
         client_id = str(uuid.uuid4()
 
         with self.client_lock:
@@ -241,7 +241,7 @@ class RealTimeAnalyticsDashboard:
                 self.clients.discard(websocket)
 
     async def _send_initial_data(self, websocket):
-        """Send initial dashboard data to client"""
+"""Send initial dashboard data to client"""
         data = {
             "type": """initial_data"""
             "timestamp": datetime.now().isoformat(),
@@ -254,7 +254,7 @@ class RealTimeAnalyticsDashboard:
         await websocket.send(json.dumps(data)
 
     async def _handle_client_message(self, websocket, message: str, client_id: str):
-        """Handle client messages"""
+"""Handle client messages"""
         try:
             data = json.loads(message)
             message_type = data.get("type")
@@ -276,17 +276,17 @@ class RealTimeAnalyticsDashboard:
             logger.error("Error handling client message: {e}")
 
     async def _handle_subscription(self, websocket, data):
-    """Handle metric subscriptions"""
+"""Handle metric subscriptions"""
         # Implementation for metric subscriptions
 
     async def _handle_alert_acknowledgment(self, data):
-        """Handle alert acknowledgment"""
+"""Handle alert acknowledgment"""
         alert_id = data.get("alert_id")
         if alert_id:
         self._acknowledge_alert(alert_id)
 
     async def _handle_insight_request(self, websocket, data):
-        """Handle insight requests"""
+"""Handle insight requests"""
         insight_type = data.get("insight_type", """all"""
         insights = self._get_insights_by_type(insight_type)
 
@@ -299,7 +299,7 @@ class RealTimeAnalyticsDashboard:
         await websocket.send(json.dumps(response)
 
     def _metrics_collector(self):
-        """Background thread for collecting system metrics"""
+"""Background thread for collecting system metrics"""
         while self.running:
             try:
                 # Collect system metrics
@@ -325,7 +325,7 @@ class RealTimeAnalyticsDashboard:
                 time.sleep(self.update_interval)
 
     def _collect_system_metrics(self) -> SystemMetrics:
-    """Collect current system metrics"""
+"""Collect current system metrics"""
         # CPU usage
         cpu_usage = psutil.cpu_percent(interval=1)
 
@@ -366,21 +366,21 @@ class RealTimeAnalyticsDashboard:
             queue_depth=queue_depth)
 
     def _get_avg_response_time(self) -> float:
-        """Get average response time"""
+"""Get average response time"""
         if LOGGING_AVAILABLE:
         metrics = centralized_logging.get_metrics()
             return metrics.get("avg_response_time", 0.0)
         return 0.0
 
     def _get_error_rate(self) -> float:
-        """Get current error rate"""
+"""Get current error rate"""
         if LOGGING_AVAILABLE:
         metrics = centralized_logging.get_metrics()
             return metrics.get("error_rate", 0.0)
         return 0.0
 
     def _get_throughput(self) -> float:
-        """Get current throughput (requests per second)"""
+"""Get current throughput (requests per second)"""
         if LOGGING_AVAILABLE:
         metrics = centralized_logging.get_metrics()
             total_logs = metrics.get("total_logs", 0)
@@ -389,22 +389,22 @@ class RealTimeAnalyticsDashboard:
         return 0.0
 
     def _get_queue_depth(self) -> int:
-        """Get current queue depth"""
+"""Get current queue depth"""
         if LOGGING_AVAILABLE:
         return centralized_logging.log_queue.qsize()
         return 0
         def _store_metrics(self, metrics: SystemMetrics):
-        """Store metrics in database"""
+"""Store metrics in database"""
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.execute()
-                    """
+"""
                     INSERT INTO system_metrics
                     (timestamp, cpu_usage, memory_usage, disk_usage,
                      network_io, active_connections, response_time_avg,
                      error_rate, throughput, queue_depth)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """
+"""
                     ()
                         metrics.timestamp.isoformat(),
                         metrics.cpu_usage,
@@ -421,67 +421,67 @@ class RealTimeAnalyticsDashboard:
             logger.error("Error storing metrics: {e}")
 
     def _check_alerts(self, metrics: SystemMetrics):
-    """Check for system alerts"""
+"""Check for system alerts"""
         # CPU alert
         if metrics.cpu_usage > 90:
             self._create_alert()
-                """critical"""
-    """system"""
-                """High CPU usage: {metrics.cpu_usage:.1f}%"""
+"""critical"""
+"""system"""
+"""High CPU usage: {metrics.cpu_usage:.1f}%"""
                 {"cpu_usage": metrics.cpu_usage})
         elif metrics.cpu_usage > 80:
             self._create_alert()
-                """warning"""
-    """system"""
-                """Elevated CPU usage: {metrics.cpu_usage:.1f}%"""
+"""warning"""
+"""system"""
+"""Elevated CPU usage: {metrics.cpu_usage:.1f}%"""
                 {"cpu_usage": metrics.cpu_usage})
 
         # Memory alert
         if metrics.memory_usage > 95:
             self._create_alert()
-                """critical"""
-    """system"""
-                """Critical memory usage: {metrics.memory_usage:.1f}%"""
+"""critical"""
+"""system"""
+"""Critical memory usage: {metrics.memory_usage:.1f}%"""
                 {"memory_usage": metrics.memory_usage})
         elif metrics.memory_usage > 85:
             self._create_alert()
-                """warning"""
-    """system"""
-                """High memory usage: {metrics.memory_usage:.1f}%"""
+"""warning"""
+"""system"""
+"""High memory usage: {metrics.memory_usage:.1f}%"""
                 {"memory_usage": metrics.memory_usage})
 
         # Disk alert
         if metrics.disk_usage > 95:
             self._create_alert()
-                """critical"""
-    """system"""
-                """Critical disk usage: {metrics.disk_usage:.1f}%"""
+"""critical"""
+"""system"""
+"""Critical disk usage: {metrics.disk_usage:.1f}%"""
                 {"disk_usage": metrics.disk_usage})
         elif metrics.disk_usage > 85:
             self._create_alert()
-                """warning"""
-    """system"""
-                """High disk usage: {metrics.disk_usage:.1f}%"""
+"""warning"""
+"""system"""
+"""High disk usage: {metrics.disk_usage:.1f}%"""
                 {"disk_usage": metrics.disk_usage})
 
         # Error rate alert
         if metrics.error_rate > 0.1:
             self._create_alert()
-                """critical"""
-    """application"""
-                """High error rate: {metrics.error_rate:.2%}"""
+"""critical"""
+"""application"""
+"""High error rate: {metrics.error_rate:.2%}"""
                 {"error_rate": metrics.error_rate})
         elif metrics.error_rate > 0.05:
             self._create_alert()
-                """warning"""
-    """application"""
-                """Elevated error rate: {metrics.error_rate:.2%}"""
+"""warning"""
+"""application"""
+"""Elevated error rate: {metrics.error_rate:.2%}"""
                 {"error_rate": metrics.error_rate})
 
     def _create_alert(
         self, severity: str, category: str, message: str, details: Dict[str, Any]
     ):
-        """Create a new alert"""
+"""Create a new alert"""
         alert = Alert(
             id=str(uuid.uuid4(),
             timestamp=datetime.now(),
@@ -496,11 +496,11 @@ class RealTimeAnalyticsDashboard:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.execute()
-                    """
+"""
                     INSERT INTO alerts (id, timestamp, severity, category,
                     message, details)
                     VALUES (?, ?, ?, ?, ?, ?)
-                """
+"""
                     ()
                         alert.id,
                         alert.timestamp.isoformat(),
@@ -513,7 +513,7 @@ class RealTimeAnalyticsDashboard:
             logger.error("Error storing alert: {e}")
 
     def _acknowledge_alert(self, alert_id: str):
-        """Acknowledge an alert"""
+"""Acknowledge an alert"""
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.execute()
@@ -524,7 +524,7 @@ class RealTimeAnalyticsDashboard:
             logger.error("Error acknowledging alert: {e}")
 
     def _analytics_processor(self):
-        """Background thread for analytics processing"""
+"""Background thread for analytics processing"""
         while self.running:
             try:
                 # Analyze recent metrics for insights
@@ -545,7 +545,7 @@ class RealTimeAnalyticsDashboard:
     def _analyze_metrics(
         self, metrics_list: List[SystemMetrics]
     ) -> List[PredictiveInsight]:
-        """Analyze metrics for insights"""
+"""Analyze metrics for insights"""
         insights = []
 
         # Convert to DataFrame for analysis
@@ -589,15 +589,15 @@ class RealTimeAnalyticsDashboard:
 
         return insights
         def _store_insight(self, insight: PredictiveInsight):
-        """Store insight in database"""
+"""Store insight in database"""
         try:
             with sqlite3.connect(self.db_path) as conn:
                 conn.execute()
-                    """
+"""
                     INSERT INTO insights (id, timestamp, insight_type,
                     confidence, message, data, actionable)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
-                """
+"""
                     ()
                         str(uuid.uuid4(),
                         insight.timestamp.isoformat(),
@@ -611,7 +611,7 @@ class RealTimeAnalyticsDashboard:
             logger.error("Error storing insight: {e}")
 
     async def _broadcast_metrics(self, metrics: SystemMetrics):
-        """Broadcast metrics to all connected clients"""
+"""Broadcast metrics to all connected clients"""
         if not self.clients:
             return
 
@@ -638,22 +638,22 @@ class RealTimeAnalyticsDashboard:
             self.clients -= disconnected_clients
 
     def _get_current_metrics(self) -> Dict[str, Any]:
-        """Get current metrics for dashboard"""
+"""Get current metrics for dashboard"""
         if self.metrics_history:
             latest = self.metrics_history[-1]
             return asdict(latest)
         return {}
 
     def _get_recent_alerts(self) -> List[Dict[str, Any]]:
-        """Get recent alerts"""
+"""Get recent alerts"""
         return [asdict(alert) for alert in list(self.alerts)[-10:]]
 
     def _get_recent_insights(self) -> List[Dict[str, Any]]:
-        """Get recent insights"""
+"""Get recent insights"""
         return [asdict(insight) for insight in list(self.insights)[-5:]]
 
     def _get_insights_by_type(self, insight_type: str) -> List[Dict[str, Any]]:
-        """Get insights by type"""
+"""Get insights by type"""
         if insight_type == "all":
             return self._get_recent_insights()
 
@@ -663,7 +663,7 @@ class RealTimeAnalyticsDashboard:
         return [asdict(insight) for insight in filtered[-10:]]
 
     def _get_system_status(self) -> Dict[str, Any]:
-        """Get overall system status"""
+"""Get overall system status"""
         if not self.metrics_history:
             return {"status": "unknown", "message": "No metrics available"}
 
@@ -698,10 +698,10 @@ class RealTimeAnalyticsDashboard:
 
 
 class AnomalyDetector:
-    """Simple anomaly detection for metrics"""
+"""Simple anomaly detection for metrics"""
 
     def detect_anomalies(self, values: List[float]) -> Dict[str, Any]:
-        """Detect anomalies in time series data"""
+"""Detect anomalies in time series data"""
         if len(values) < 5:
             return {"anomalies": [],"confidence": 0.0}
 
@@ -726,10 +726,10 @@ class AnomalyDetector:
 
 
 class TrendAnalyzer:
-    """Simple trend analysis for metrics"""
+"""Simple trend analysis for metrics"""
 
     def analyze_trend(self, values: List[float]) -> Dict[str, Any]:
-        """Analyze trend in time series data"""
+"""Analyze trend in time series data"""
         if len(values) < 3:
             return {"trend": "unknown", "slope": 0.0, "confidence": 0.0}
 
@@ -758,10 +758,10 @@ class TrendAnalyzer:
 
 
 class TimeSeriesForecaster:
-    """Simple time series forecasting"""
+"""Simple time series forecasting"""
 
     def forecast(self, values: List[float],steps: int = 5) -> Dict[str, Any]:
-        """Forecast future values"""
+"""Forecast future values"""
         if len(values) < 10:
             return {"forecast": [],"confidence": 0.0}
 

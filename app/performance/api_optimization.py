@@ -72,8 +72,7 @@ class PerformanceCollector:
                         "error_rate": 0.0,
                         "avg_response_size": 0.0,
                         "total_response_size": 0,
-                )
-
+        )
             # Update statistics
             stats["count"] += 1
             stats["total_time"] += metrics.response_time
@@ -88,7 +87,6 @@ class PerformanceCollector:
 
             error_count = sum()
                 count for code, count in stats["status_codes"].items() if code >= 400
-            )
             stats["error_rate"] = error_count / stats["count"]
 
             # Update current minute counter
@@ -120,7 +118,7 @@ class PerformanceCollector:
                     "current_minute": self.current_minute_requests,
                     "total": len(self.metrics),
                 },
-)
+
         except Exception as e:
             logger.warning(f"Failed to get system metrics: {e}")
             return {}
@@ -157,7 +155,7 @@ class PerformanceCollector:
             "database": ()
                 get_database().get_performance_report() if get_database() else {}
             ),
-)
+
 
     def get_slow_endpoints(self, threshold: float = 1.0) -> List[Dict[str, Any]]:
     """Get endpoints with response times above threshold"""
@@ -172,12 +170,12 @@ class PerformanceCollector:
                         "max_response_time": stats["max_time"],
                         "request_count": stats["count"],
                         "error_rate": stats["error_rate"],
-)
-                )
+
+
 
         return sorted()
             slow_endpoints, key=lambda x: x["avg_response_time"], reverse=True
-        )
+
 
 
 # Global performance collector
@@ -290,7 +288,7 @@ def performance_middleware(app: Flask):
                 logger.warning()
                     f"Slow request: {request.method} {request.path} "
                     f"took {response_time:.3f}s"
-                )
+
 
         except Exception as e:
             logger.error(f"Performance middleware error: {e}")
@@ -331,14 +329,14 @@ def optimize_response(cache_ttl: int = 300, compress: bool = True):
                             "status": """error"""
                             "data": None,
                             "error": """Rate limit exceeded"""
-)
+
                     ),
                     429)
 
             # Try cache first
             cache_key = ()
                 f"{request.method}:{request.path}:{request.query_string.decode()}"
-            )
+
             cached_response = cache_manager.get_cache("api_responses")
 
             if cached_response:
@@ -402,7 +400,7 @@ class MemoryManager:
                     "peak": peak,
                     "current_mb": current / 1024 / 1024,
                     "peak_mb": peak / 1024 / 1024,
-)
+
 
             return {}
                 "system": {}
@@ -413,7 +411,7 @@ class MemoryManager:
                 },
                 "python": python_memory,
                 "gc_stats": {"counts": gc.get_count(), "threshold": gc.get_threshold()},
-)
+
         except Exception as e:
             logger.error(f"Failed to get memory usage: {e}")
             return {}

@@ -9,9 +9,9 @@ from typing import Dict, List, Optional
 
 
 class AIService:
-    """Service class for AI-related business logic."""
+"""Service class for AI-related business logic."""
     def __init__:
-    """Initialize the AI service."""
+"""Initialize the AI service."""
         self.mock_models = []
             {}
                 "id": """anomaly_detector_v1"""
@@ -58,7 +58,7 @@ class AIService:
         ]
 
     def get_recommendations(self, anomaly_data: Dict, limit: int = 3) -> Dict:
-    """
+"""
         Get AI-powered remediation recommendations for an anomaly.
 
         Args:
@@ -70,7 +70,7 @@ class AIService:
 
         Raises:
             ValueError: If anomaly_data is invalid
-        """
+"""
         if not anomaly_data:
             raise ValueError("anomaly_data is required")
 
@@ -126,7 +126,7 @@ class AIService:
 )
 
     def analyze_metrics(self, metrics: Dict) -> Dict:
-    """
+"""
         Analyze metrics data using AI/ML models.
 
         Args:
@@ -137,7 +137,7 @@ class AIService:
 
         Raises:
             ValueError: If metrics data is invalid
-        """
+"""
         if not metrics:
             raise ValueError("metrics data is required")
 
@@ -235,7 +235,7 @@ class AIService:
 )
 
     def process_chat_query(self, query: str, session_id: str = "default") -> Dict:
-    """
+"""
         Process natural language queries about the system.
 
         Args:
@@ -247,7 +247,7 @@ class AIService:
 
         Raises:
             ValueError: If query is empty
-        """
+"""
         if not query or not query.strip(:
             raise ValueError("Query cannot be empty")
 
@@ -260,9 +260,9 @@ class AIService:
                 "intent": """anomaly_inquiry"""
                 "confidence": 0.92,
                 "suggested_actions": []
-                    """View anomaly details"""
-                    """Get remediation recommendations"""
-                    """Execute auto-remediation"""
+"""View anomaly details"""
+"""Get remediation recommendations"""
+"""Execute auto-remediation"""
                 ],
 )
         elif "status" in query_lower or "health" in query_lower:
@@ -271,9 +271,9 @@ class AIService:
                 "intent": """status_inquiry"""
                 "confidence": 0.88,
                 "suggested_actions": []
-                    """View detailed metrics"""
-                    """Check recent alerts"""
-                    """View system dashboard"""
+"""View detailed metrics"""
+"""Check recent alerts"""
+"""View system dashboard"""
                 ],
 )
         elif "performance" in query_lower:
@@ -282,9 +282,9 @@ class AIService:
                 "intent": """performance_inquiry"""
                 "confidence": 0.85,
                 "suggested_actions": []
-                    """View performance dashboard"""
-                    """Check historical trends"""
-                    """Set up performance alerts"""
+"""View performance dashboard"""
+"""Check historical trends"""
+"""Set up performance alerts"""
                 ],
 )
         elif "help" in query_lower or "?" in query_lower:
@@ -293,9 +293,9 @@ class AIService:
                 "intent": """help_request"""
                 "confidence": 0.95,
                 "suggested_actions": []
-                    """Ask about system status"""
-                    """Investigate anomalies"""
-                    """Get recommendations"""
+"""Ask about system status"""
+"""Investigate anomalies"""
+"""Get recommendations"""
                 ],
 )
         else:
@@ -304,9 +304,9 @@ class AIService:
                 "intent": """general_inquiry"""
                 "confidence": 0.60,
                 "suggested_actions": []
-                    """Ask about system health"""
-                    """Check for anomalies"""
-                    """View dashboards"""
+"""Ask about system health"""
+"""Check for anomalies"""
+"""View dashboards"""
                 ],
 )
 
@@ -321,12 +321,12 @@ class AIService:
 )
 
     def get_models(self) -> Dict:
-    """
+"""
         Get information about available AI/ML models.
 
         Returns:
             Dictionary containing model information
-        """
+"""
         return {}
             "models": self.mock_models,
             "total_models": len(self.mock_models),
@@ -336,7 +336,7 @@ class AIService:
         }:
 :
     def predict_with_model(self, model_id: str, input_data: Dict) -> Dict:
-    """
+"""
         Make predictions using a specific model.
 
         Args:
@@ -348,7 +348,7 @@ class AIService:
 
         Raises:
             ValueError: If model not found or invalid input
-        """
+"""
         if not model_id:
             raise ValueError("model_id is required")
 

@@ -7,10 +7,9 @@ import os
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
-    AnomalyInferenceEngine,
-    AnomalyModelTrainer,
-    DataProcessor,
+from app.ml_module import AnomalyInferenceEngine
+from app.ml_module import AnomalyInferenceEngine
+from app.ml_module import AnomalyDetector
 )
 
 

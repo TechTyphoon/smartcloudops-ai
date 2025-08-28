@@ -6,10 +6,9 @@ import os
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
-    SystemContextGatherer,
-    format_response,
-    validate_query_params,
+from app.chatops.system_context import SystemContextGatherer
+from app.chatops.system_context import SystemContextGatherer
+from app.chatops.utils import analyze_logs
 )
 
 class TestGPTHandler:

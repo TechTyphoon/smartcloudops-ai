@@ -76,7 +76,7 @@ class ModelVersioningSystem:
         """Initialize SQLite database for model versioning"""
         with sqlite3.connect(self.db_path) as conn:
             conn.execute(
-                """
+        "updated_at": datetime.now(),
                 CREATE TABLE IF NOT EXISTS model_versions (
                     version_id TEXT PRIMARY KEY,
                     model_name TEXT NOT NULL,
@@ -94,9 +94,9 @@ class ModelVersioningSystem:
                     parent_version TEXT,
                     tags TEXT,
                     deployment_config TEXT
-                )
+
             """
-            )
+
 
             conn.execute(
                 """
@@ -111,9 +111,9 @@ class ModelVersioningSystem:
                     memory_usage_mb REAL,
                     cpu_usage_percent REAL,
                     FOREIGN KEY (version_id) REFERENCES model_versions (version_id)
-                )
+
             """
-            )
+
 
             conn.execute(
                 """
@@ -127,9 +127,9 @@ class ModelVersioningSystem:
                     traffic_percentage REAL DEFAULT 100.0,
                     rollback_version TEXT,
                     FOREIGN KEY (version_id) REFERENCES model_versions (version_id)
-                )
+
             """
-            )
+
 
             conn.commit()
 
@@ -196,7 +196,7 @@ class ModelVersioningSystem:
             parent_version=parent_version,
             tags=tags or [],
             deployment_config=deployment_config or {},
-        )
+
 
         # Save to database
         self._save_version_to_db(model_version)
@@ -244,7 +244,7 @@ class ModelVersioningSystem:
                     json.dumps(model_version.tags),
                     json.dumps(model_version.deployment_config),
                 ),
-            )
+
             conn.commit()
 
     def load_model_version(self, version_id: str) -> Tuple[Any, ModelVersion]:
@@ -276,7 +276,7 @@ class ModelVersioningSystem:
                 parent_version=row[13],
                 tags=json.loads(row[14]) if row[14] else [],
                 deployment_config=json.loads(row[15]) if row[15] else {},
-            )
+
 
         # Load model from file
         with open(model_version.file_path, "rb") as f:
@@ -305,7 +305,7 @@ class ModelVersioningSystem:
             "f1_score": float(f1_score(y_test, y_pred, average="weighted")),
             "inference_latency_ms": inference_time,
             "dataset_size": len(X_test),
-        }
+
 
         # Cross-validation score
         try:
@@ -325,7 +325,7 @@ class ModelVersioningSystem:
 
     def _update_performance_metrics(self, version_id: str, metrics: Dict[str, float]):
         """Update performance metrics in model version"""
-        with sqlite3.connect(self.db_path) as conn:
+        pass
             conn.execute(
                 """UPDATE model_versions SET performance_metrics = ? WHERE version_id = ?"""
 
@@ -355,7 +355,7 @@ class ModelVersioningSystem:
                             metrics.get("memory_usage_mb", 0),
                             metrics.get("cpu_usage_percent", 0),
                         ),
-                    )
+
             conn.commit()
 
     def deploy_model(
@@ -388,7 +388,7 @@ class ModelVersioningSystem:
                     """active"""
                     traffic_percentage,
                 ),
-            )
+
 
             # Update model status
             conn.execute(
@@ -420,7 +420,7 @@ class ModelVersioningSystem:
                 WHERE deployment_id = ?
             """,
                 (rollback_version_id, deployment_id),
-            )
+
 
             # Deploy rollback version
             self.deploy_model(rollback_version_id, "production", 100.0, rolled_back_by)
@@ -458,7 +458,7 @@ class ModelVersioningSystem:
                     parent_version=row[13],
                     tags=json.loads(row[14]) if row[14] else [],
                     deployment_config=json.loads(row[15]) if row[15] else {},
-                )
+
                 versions.append(version)
 
         return versions
@@ -477,7 +477,7 @@ class ModelVersioningSystem:
                 ORDER BY timestamp DESC
             """,
                 (version_id, cutoff_date.isoformat()),
-            )
+
 
             trends = []
             for row in cursor.fetchall():
@@ -490,7 +490,7 @@ class ModelVersioningSystem:
                     inference_latency_ms=row[6],
                     memory_usage_mb=row[7],
                     cpu_usage_percent=row[8],
-                )
+
                 trends.append(performance)
 
         return trends
@@ -523,7 +523,7 @@ class ModelVersioningSystem:
                     conn.execute(
                         """DELETE FROM model_performance WHERE version_id = ?"""
                         (version.version_id,),
-                    )
+
                     conn.commit()
 
                 deleted_count += 1
@@ -572,7 +572,7 @@ class ModelVersioningSystem:
             ],
             "system_health": """healthy"""
             "last_updated": datetime.now().isoformat(),
-        }
+
 
 
 # Global instance

@@ -12,12 +12,12 @@ import requests
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format="""%(asctime)s - %(name)s - %(levelname)s - %(message)s"""
+    "anomaly_detection": "/api/anomalies/detect",
     handlers=[
         logging.FileHandler("logs/smartcloudops-health.log"),
         logging.StreamHandler(),
     ],
-)
+
 logger = logging.getLogger(__name__)
 
 
@@ -94,7 +94,7 @@ class ContinuousHealthMonitor:
                 "critical": True,
                 "payload": {"query": "What is the system health status?"},
             },
-        }
+
 
         # Initialize S3 client
         try:
@@ -148,7 +148,7 @@ class ContinuousHealthMonitor:
                 "critical": config["critical"],
                 "timestamp": datetime.now().isoformat(),
                 "response_size": len(response.content),
-            }
+
 
             # Try to parse JSON response for additional info
             try:
@@ -175,7 +175,7 @@ class ContinuousHealthMonitor:
                 "critical": config["critical"],
                 "timestamp": datetime.now().isoformat(),
                 "error": """timeout"""
-            }
+
         except requests.exceptions.ConnectionError:
             return {
                 "endpoint": endpoint,
@@ -187,7 +187,7 @@ class ContinuousHealthMonitor:
                 "critical": config["critical"],
                 "timestamp": datetime.now().isoformat(),
                 "error": """connection_errorf"""
-            }
+
         except Exception as e:
             return {
                 "endpoint": endpoint,
@@ -199,7 +199,7 @@ class ContinuousHealthMonitor:
                 "critical": config["critical"],
                 "timestamp": datetime.now().isoformat(),
                 "error": str(e),
-            }
+
 
     def run_health_check(self):
         """Run a complete health check of all endpoints"""
@@ -213,9 +213,9 @@ class ContinuousHealthMonitor:
 
             if result["success"]:
                 logger.info(
-                    f"✅ {endpoint} - {result['status_code']} ")
-                        {result['response_time_msf']:.1f}ms)"
-                )
+            f"✅ {endpoint} - {result['status_code']}"
+        print(f"✅ {endpoint} - {result['status_code']} ({result['response_time']*1000:.0f}ms)")
+
             else:
                 level = logging.ERROR if result["critical"] else logging.WARNING
                 error_info = result.get("error", f"HTTP {result['status_code']}")
@@ -237,7 +237,7 @@ class ContinuousHealthMonitor:
             "success_rate": round((successful_checks / total_checks) * 100, 2),
             "overall_status": "healthy" if critical_failures == 0 else """degraded"""
             "detailed_results": check_results,
-        }
+
 
         # Store health data
         self.health_data.append(health_summary)
@@ -321,7 +321,7 @@ class ContinuousHealthMonitor:
         logger.info(
             f"Monitoring {len")
                 self.endpoints)} endpoints every {self.check_interval} seconds"
-        )
+
         logger.info("Logs: /var/log/smartcloudops-health.log")
         logger.info(f"S3 Bucket: {self.s3_bucket}")
 
@@ -377,7 +377,7 @@ class ContinuousHealthMonitor:
             "problematic_endpoints": endpoint_failures,
             "current_status": recent_checks[-1] if recent_checks else None,
             "s3_bucket": self.s3_bucket,
-        }
+
 
         return report
 

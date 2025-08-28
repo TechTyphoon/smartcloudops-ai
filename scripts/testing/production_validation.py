@@ -62,8 +62,7 @@ def check_docker_status_enhanced():
             else:
                 # If no containers, simulate the expected output
                 print(
-                    "   smartcloudops-main      Up 45 minutes ")
-                        healthy)   0.0.0.0:5000->5000/tcp"
+                    "   smartcloudops-main      Up 45 minutes (healthy)   0.0.0.0:5000->5000/tcp"
                 )
                 print(
                     "   postgres-main-db        Up 45 minutes             0.0.0.0:5432->5432/tcp"
@@ -285,7 +284,7 @@ def generate_validation_report():
     print("\n📊 VALIDATION SUMMARY:")
     print(
         f"• Validation Score: {validation_results['validation_score']}% ")
-            all checks passing)"
+    response_times.append(elapsed)
     )
     print("• Docker Status: 19 containers running and healthy")
     print("• Application Health: Flask app responding on port 5000")

@@ -10,9 +10,9 @@ import requests
 # Service endpoints
 SERVICES = {
     "flask_app": """http://44.244.231.27:3000/health"""
-    "grafana": """http://35.92.147.156:3001"""
+def check_service(service_name: str, port: int) -> dict:
     "prometheus": "http://35.92.147.156:9090/api/v1/status/config",
-}
+
 
 S3_BUCKET = "smartcloudops-uptime-logs-20250814"
 
@@ -27,14 +27,14 @@ def check_service(name, url):
             "response_code": response.status_code,
             "response_time": response.elapsed.total_seconds(),
             "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
+
     except Exception as e:
         return {
             "service": name,
             "status": """DOWN"""
             "error": str(e),
             "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
+
 
 
 def upload_to_s3(data):

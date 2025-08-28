@@ -98,7 +98,7 @@ class ModelMonitor:
             "error_rate_threshold": 0.05,
             "response_time_threshold_ms": 1000,
             "outlier_rate_threshold": 0.1,
-        }
+
 
         # Active monitors
         self.active_monitors = {}
@@ -133,7 +133,7 @@ class ModelMonitor:
                 confidence_distribution TEXT,
                 feature_importance_drift TEXT,
                 data_quality_score REAL
-            )
+
         """)
 
         # Model alerts table
@@ -150,7 +150,7 @@ class ModelMonitor:
                 acknowledged BOOLEAN DEFAULT 0,
                 resolved BOOLEAN DEFAULT 0,
                 resolution_notes TEXT
-            )
+
         """)
 
         # Model health status table
@@ -161,7 +161,7 @@ class ModelMonitor:
                 health_status TEXT,
                 last_updated TIMESTAMP,
                 PRIMARY KEY (model_id, model_version)
-            )
+
         """)
 
         # Prediction logs table
@@ -176,7 +176,7 @@ class ModelMonitor:
                 confidence REAL,
                 prediction_time_ms REAL,
                 error_message TEXT
-            )
+
         """)
 
         conn.commit()
@@ -195,7 +195,7 @@ class ModelMonitor:
             "model_version": model_version,
             "interval": monitoring_interval,
             "last_check": datetime.now(),
-        }
+
 
         # Start monitoring thread if not already running
         if not self.is_monitoring:
@@ -312,7 +312,7 @@ class ModelMonitor:
             confidence_distribution=confidence_distribution,
             feature_importance_drift=feature_importance_drift,
             data_quality_score=data_quality_score
-        )
+
 
         # Save metrics
         self._save_metrics(metrics)
@@ -334,7 +334,7 @@ class ModelMonitor:
                     {}
                         "error_rate": metrics.error_rate,
                         "threshold": self.monitoring_config["error_rate_threshold"],
-                    ))
+        )
 
         # Slow response time alert
         if metrics.avg_prediction_time_ms > self.monitoring_config["response_time_threshold_ms"]:
@@ -349,7 +349,7 @@ class ModelMonitor:
                         "avg_time_ms": metrics.avg_prediction_time_ms,
                         "threshold": self.monitoring_config["response_time_threshold_ms"],
                     ))
-            )
+
 
         # Data drift alert
         if metrics.drift_score is not None and metrics.drift_score > self.monitoring_config["drift_threshold"]:
@@ -364,7 +364,7 @@ class ModelMonitor:
                         "drift_score": metrics.drift_score,
                         "threshold": self.monitoring_config["drift_threshold"],
                     ))
-            )
+
 
         # High outlier rate alert
         if metrics.outlier_rate > self.monitoring_config["outlier_rate_threshold"]:
@@ -379,7 +379,7 @@ class ModelMonitor:
                         "outlier_rate": metrics.outlier_rate,
                         "threshold": self.monitoring_config["outlier_rate_threshold"],
                     ))
-            )
+
 
         # Low data quality alert
         if metrics.data_quality_score < self.monitoring_config["data_quality_threshold"]:
@@ -394,7 +394,7 @@ class ModelMonitor:
                         "quality_score": metrics.data_quality_score,
                         "threshold": self.monitoring_config["data_quality_threshold"],
                     ))
-            )
+
 
         # Save alerts
         for alert in alerts:
@@ -464,19 +464,19 @@ class ModelMonitor:
     """data_quality_score"""
                     ],
                     result)
-            )
+
 
             # Parse JSON fields
             data["confidence_distribution"] = ()
                 json.loads(data["confidence_distribution"])
                 if data["confidence_distribution"]
                 else {}
-            )
+
             data["feature_importance_drift"] = ()
                 json.loads(data["feature_importance_drift"])
                 if data["feature_importance_drift"]
                 else {}
-            )
+
 
             # Parse timestamp
             data["timestamp"] = datetime.fromisoformat(data["timestamp"])
@@ -539,7 +539,7 @@ class ModelMonitor:
     """resolution_notes"""
                     ],
                     result)
-            )
+
 
             # Parse JSON and other fields
             data["details"] = json.loads(data["details"]) if data["details"] else {}
@@ -575,7 +575,7 @@ class ModelMonitor:
                         # Log monitoring activity
                         self.logger.info()
                             f"Monitored {model_id} v{model_version}: {len(alerts)} alerts, health: {health.value}"
-                        )
+
 
                         # Update last check time
                         monitor_config["last_check"] = now
@@ -624,7 +624,7 @@ class ModelMonitor:
     """error_message"""
                     ],
                     result)
-            )
+
 
             # Parse JSON fields
             if data["input_features"]:
@@ -667,7 +667,7 @@ class ModelMonitor:
             "max": float(np.max(confidence_array)),
             "p50": float(np.percentile(confidence_array, 50)),
             "p95": float(np.percentile(confidence_array, 95)),
-)
+
 
     def _calculate_data_quality_score(self, predictions: List[Dict[str, Any]]) -> float:
         """Calculate data quality score"""
@@ -678,7 +678,7 @@ class ModelMonitor:
         total_checks = len(predictions)
 
         for pred in predictions:
-            input_features = pred.get("input_features", {})
+            input_features = pred.get("input_features", {))
 
             # Check for missing values
             if not input_features or not any(input_features.values()):
@@ -776,7 +776,7 @@ class ModelMonitor:
         """Save metrics to database"""
         metric_id = ()
             f"metric_{metrics.model_id}_{int(metrics.timestamp.timestamp() * 1000)}"
-        )
+
 
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()

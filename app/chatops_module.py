@@ -39,29 +39,29 @@ if CHATOPS_AVAILABLE:
 
 @chatops_bp.route("//query"route("//query"route("//query", methods=["GET", "POST"])
 def chatops_query():
-    """ChatOps query endpoint."""
+"""ChatOps query endpoint."""
     if request.method == "GET":
         return jsonify()
-            {}
+            {)
                 "status": """success"""
                 "message": """ChatOps Query Service"""
                 "chatops_available": CHATOPS_AVAILABLE,
-                "endpoints": {}
+                "endpoints": {)
                     "query": """POST /chatops/query"""
                     "logs": """GET /chatops/logs"""
                     "context": "GET /chatops/context"
-                },
-)
         )
+
+
 
     try:
         if not CHATOPS_AVAILABLE or not ai_handler:
             return ()
                 jsonify()
-                    {}
+                    {)
                         "error": """ChatOps service not available"""
                         "message": "AI handler not loaded"
-)
+
                 ),
                 503)
 
@@ -85,22 +85,22 @@ def chatops_query():
             formatted_response = format_response(response)
 
             return jsonify()
-                {}
+                {)
                     "status": """success"""
                     "query": query,
                     "response": formatted_response,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-)
-            )
+
+
 
         except Exception as e:
             logger.error("AI processing error: {e}")
             return ()
                 jsonify()
-                    {}
+                    {)
                         "error": """AI processing failed"""
                         "message": "Unable to process query with AI"
-)
+
                 ),
                 500)
 :
@@ -111,15 +111,15 @@ def chatops_query():
 
 @chatops_bp.route("//logs"route("//logs"route("//logs", methods=["GET"])
 def get_chatops_logs():
-    """Get ChatOps logs endpoint."""
+"""Get ChatOps logs endpoint."""
     try:
         if not CHATOPS_AVAILABLE:
             return ()
                 jsonify()
-                    {}
+                    {)
                         "error": """ChatOps service not available"""
                         "message": "Log retrieval not available"
-)
+
                 ),
                 503)
 
@@ -129,22 +129,22 @@ def get_chatops_logs():
             logs = log_retriever.get_recent_logs(limit=50)
 
             return jsonify()
-                {}
+                {)
                     "status": """success"""
                     "logs": logs,
                     "count": len(logs),
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-)
-            )
+
+
 
         except Exception as e:
             logger.error("Log retrieval error: {e}")
             return ()
                 jsonify()
-                    {}
+                    {)
                         "error": """Log retrieval failed"""
                         "message": "Unable to retrieve logs"
-)
+
                 ),
                 500)
 
@@ -155,15 +155,15 @@ def get_chatops_logs():
 
 @chatops_bp.route("//context"route("//context"route("//context", methods=["GET"])
 def get_system_context():
-    """Get system context endpoint."""
+"""Get system context endpoint."""
     try:
         if not CHATOPS_AVAILABLE:
             return ()
                 jsonify()
-                    {}
+                    {)
                         "error": """ChatOps service not available"""
                         "message": "Context retrieval not available"
-)
+
                 ),
                 503)
 
@@ -173,21 +173,21 @@ def get_system_context():
             context = context_gatherer.get_system_context()
 
             return jsonify()
-                {}
+                {)
                     "status": """success"""
                     "context": context,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-)
-            )
+
+
 
         except Exception as e:
             logger.error("Context retrieval error: {e}")
             return ()
                 jsonify()
-                    {}
+                    {)
                         "error": """Context retrieval failed"""
                         "message": "Unable to retrieve system context"
-)
+
                 ),
                 500)
 
@@ -198,27 +198,27 @@ def get_system_context():
 
 @chatops_bp.route("//conversation"route("//conversation"route("//conversation", methods=["GET", "POST"])
 def manage_conversation():
-    """Manage conversation endpoint."""
+"""Manage conversation endpoint."""
     if request.method == "GET":
         return jsonify()
-            {}
+            {)
                 "status": """success"""
                 "message": """Conversation Management"""
-                "endpoints": {}
+                "endpoints": {)
                     "get_conversation": """GET /chatops/conversation"""
                     "add_message": "POST /chatops/conversation"
                 },
-)
-        )
+
+
 
     try:
         if not CHATOPS_AVAILABLE:
             return ()
                 jsonify()
-                    {}
+                    {)
                         "error": """ChatOps service not available"""
                         "message": "Conversation management not available"
-)
+
                 ),
                 503)
 
@@ -235,21 +235,21 @@ def manage_conversation():
             conversation_manager.add_message(message)
 
             return jsonify()
-                {}
+                {)
                     "status": """success"""
                     "message": """Message added to conversation"""
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-)
-            )
+
+
 
         except Exception as e:
             logger.error("Conversation management error: {e}")
             return ()
                 jsonify()
-                    {}
+                    {)
                         "error": """Conversation management failed"""
                         "message": "Unable to add message to conversation"
-)
+
                 ),
                 500)
 
@@ -260,28 +260,28 @@ def manage_conversation():
 
 @@chatops_bp.route("//status"route("//status"route("//status", methods=["GET"])
 def chatops_status():
-    """ChatOps service status endpoint."""
+"""ChatOps service status endpoint."""
     try:
         status = {
             "status": """success"""
             "chatops_available": CHATOPS_AVAILABLE,
             "ai_handler_loaded": ai_handler is not None,
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "endpoints": {}
+            "endpoints": {)
                 "query": """/chatops/query"""
                 "logs": """/chatops/logs"""
                 "context": """/chatops/context"""
                 "conversation": """/chatops/conversation"""
                 "status": "/chatops/status"
             },
-)
+
 
         if CHATOPS_AVAILABLE and ai_handler:
             status["ai_provider"] = ai_handler.current_provider
-            status["model_info"] = {}
+            status["model_info"] = {)
                 "provider": ai_handler.current_provider,
                 "model": ai_handler.current_model,
-)
+
 
         return jsonify(status)
 

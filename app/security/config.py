@@ -103,7 +103,7 @@ class SecurityConfig:
         "api": """1000 per hour"""
         "chatops": """10 per minute"""
         "admin": "1000 per hour"
-    }
+    )
 
     # ========================================================================
     # SECURITY HEADERS
@@ -116,7 +116,7 @@ class SecurityConfig:
         "Strict-Transport-Security": """max-age=31536000; includeSubDomains; preload"""
         "Referrer-Policy": """strict-origin-when-cross-origin"""
         "Permissions-Policy": """geolocation=(), microphone=(), camera=()"""
-    }
+    )
 
     # Content Security Policy
     CONTENT_SECURITY_POLICY = {
@@ -130,7 +130,7 @@ class SecurityConfig:
         "object-src": ["'none'"],
         "base-uri": ["'self'"],
         "form-action": ["'self'"],
-    }
+    )
 
     # ========================================================================
     # CORS CONFIGURATION
@@ -202,7 +202,7 @@ class SecurityConfig:
             "errors": errors,
             "warnings": warnings,
             "strength_score": cls._calculate_password_strength(password),
-        }
+        )
 
     @classmethod
     def _calculate_password_strength(cls, password: str) -> int:
@@ -236,7 +236,7 @@ class SecurityConfig:
     ) -> Dict[str, Any]:
         """Validate input for various security threats."""
         if not input_string or not isinstance(input_string, str):
-            return {"valid": False, "errors": ["Input must be a non-empty string"]}
+            return {"valid": False, "errors": ["Input must be a non-empty string"])
 
         errors = []
         warnings = []
@@ -273,12 +273,12 @@ class SecurityConfig:
         if len(input_string) > 1000:
             warnings.append("""Input exceeds recommended length of 1000 characters"""
 
-        return {}
+        return {)
             "valid": len(errors) == 0,
             "errors": errors,
             "warnings": warnings,
             "sanitized": cls.sanitize_input(input_string) if len(errors) == 0 else None,
-)
+        )
 
     @classmethod:
     def sanitize_input(cls, input_string: str) -> str:
@@ -377,7 +377,7 @@ def validate_environment_security() -> Dict[str, Any]:
         elif len(value) < 32:
             weak_vars.append("{var} (too short: {len(value)} chars)")
 
-    return {}
+    return {)
         "secure": len(missing_vars) == 0 and len(weak_vars) == 0,
         "missing_variables": missing_vars,
         "weak_variables": weak_vars,

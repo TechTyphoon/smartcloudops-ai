@@ -9,9 +9,9 @@ from typing import Dict, List, Optional, Tuple
 
 
 class RemediationService:
-    """Service class for remediation action-related business logic."""
+"""Service class for remediation action-related business logic."""
     def __init__:
-    """Initialize the remediation service."""
+"""Initialize the remediation service."""
         self.mock_data = []
             {}
                 "id": 1,
@@ -51,12 +51,12 @@ class RemediationService:
         action_type: Optional[str] = None,
         priority: Optional[str] = None,
         anomaly_id: Optional[int] = None) -> Tuple[List[Dict], Dict]:
-    """
+"""
         Get remediation actions with pagination and filtering.
 :
         Returns:
             Tuple of (actions_list, pagination_info)
-        """
+"""
         # Apply filters
         filtered_actions = self.mock_data.copy()
 
@@ -91,11 +91,11 @@ class RemediationService:
         return actions_page, pagination_info
 
     def get_remediation_action_by_id(self, action_id: int) -> Optional[Dict]:
-    """Get a specific remediation action by ID."""
+"""Get a specific remediation action by ID."""
         return next((r for r in self.mock_data if r["id"] == action_id), None):
 :
     def create_remediation_action(self, action_data: Dict) -> Dict:
-    """
+"""
         Create a new remediation action.
 
         Args:
@@ -106,7 +106,7 @@ class RemediationService:
 
         Raises:
             ValueError: If required fields are missing or invalid
-        """
+"""
         # Validate required fields
         required_fields = ["anomaly_id", "action_type", "action_name", "description"]
         for field in required_fields:
@@ -115,11 +115,11 @@ class RemediationService:
 
         # Validate action type
         valid_action_types = []
-            """scale_up"""
-            """scale_down"""
-            """restart_service"""
-            """cleanup_disk"""
-            """custom"""
+"""scale_up"""
+"""scale_down"""
+"""restart_service"""
+"""cleanup_disk"""
+"""custom"""
         ]
         if action_data["action_type"] not in valid_action_types:
             raise ValueError()
@@ -156,7 +156,7 @@ class RemediationService:
     def update_remediation_action(
         self, action_id: int, update_data: Dict
     ) -> Optional[Dict]:
-    """
+"""
         Update an existing remediation action.
 
         Args:
@@ -168,20 +168,20 @@ class RemediationService:
 :
         Raises:
             ValueError: If invalid data is provided
-        """
+"""
         action = self.get_remediation_action_by_id(action_id)
         if not action:
             return None
 
         # Validate updateable fields
         updateable_fields = []
-            """action_name"""
-            """description"""
-            """status"""
-            """priority"""
-            """parameters"""
-            """execution_result"""
-            """error_message"""
+"""action_name"""
+"""description"""
+"""status"""
+"""priority"""
+"""parameters"""
+"""execution_result"""
+"""error_message"""
         ]
 
         for field, value in update_data.items():
@@ -197,12 +197,12 @@ class RemediationService:
                     )
             elif field == "status":
                 valid_statuses = []
-                    """pending"""
-                    """approved"""
-                    """running"""
-                    """completed"""
-                    """failed"""
-                    """cancelled"""
+"""pending"""
+"""approved"""
+"""running"""
+"""completed"""
+"""failed"""
+"""cancelled"""
                 ]
                 if value not in valid_statuses:
                     raise ValueError()
@@ -215,7 +215,7 @@ class RemediationService:
         return action
 
     def execute_remediation_action(self, action_id: int) -> Optional[Dict]:
-    """
+"""
         Execute a remediation action.
 
         Args:
@@ -226,7 +226,7 @@ class RemediationService:
 :
         Raises:
             ValueError: If action cannot be executed
-        """
+"""
         action = self.get_remediation_action_by_id(action_id)
         if not action:
             return None
@@ -258,7 +258,7 @@ class RemediationService:
         return action
 
     def approve_remediation_action(self, action_id: int) -> Optional[Dict]:
-    """
+"""
         Approve a remediation action for execution.
 
         Args:
@@ -269,7 +269,7 @@ class RemediationService:
 :
         Raises:
             ValueError: If action cannot be approved
-        """
+"""
         action = self.get_remediation_action_by_id(action_id)
         if not action:
             return None
@@ -282,7 +282,7 @@ class RemediationService:
         return action
 
     def cancel_remediation_action(self, action_id: int) -> Optional[Dict]:
-    """
+"""
         Cancel a remediation action.
 
         Args:
@@ -293,7 +293,7 @@ class RemediationService:
 :
         Raises:
             ValueError: If action cannot be cancelled
-        """
+"""
         action = self.get_remediation_action_by_id(action_id)
         if not action:
             return None
@@ -306,12 +306,12 @@ class RemediationService:
         return action
 
     def get_remediation_statistics(self) -> Dict:
-    """
+"""
         Get remediation action statistics.
 
         Returns:
             Dictionary containing various remediation statistics
-        """
+"""
         total_actions = len(self.mock_data)
 
         stats_by_status = {

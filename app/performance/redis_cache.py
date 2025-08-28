@@ -63,7 +63,7 @@ class CacheEntry:
             'timestamp': self.timestamp.isoformat(),
             'last_access': self.last_access.isoformat() if self.last_access else None,
             'value': None  # Don't serialize the actual value in metadata
-)
+
 
 
 @dataclass
@@ -93,7 +93,7 @@ class CacheStats:
             **asdict(self),
             'hit_rate': self.hit_rate,
             'miss_rate': self.miss_rate
-)
+
 
 
 class CacheSerializer:
@@ -157,7 +157,7 @@ class RedisCache:
                 retry_on_timeout=self.config.retry_on_timeout,
                 decode_responses=False,  # We handle serialization ourselves
                 health_check_interval=self.config.health_check_interval
-            )
+
             
             # Test connection
             self._redis_client.ping()
@@ -299,7 +299,7 @@ class RedisCache:
                     'serializer': serializer,
                     'access_count': 0,
                     'last_access': datetime.utcnow().isoformat()
-)
+
                 meta_data = json.dumps(meta).encode('utf-8')
                 
                 # Store value and metadata

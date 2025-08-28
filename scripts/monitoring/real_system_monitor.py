@@ -76,7 +76,7 @@ def get_real_system_metrics():
             "uptime_seconds": int(uptime_seconds),
             "uptime_hours": round(uptime_seconds / 3600, 2),
         },
-    }
+
 
 
 def get_real_docker_stats():
@@ -93,7 +93,7 @@ def get_real_docker_stats():
             capture_output=True,
             text=True,
             timeout=10,
-        )
+
 
         if result.returncode == 0:
             lines = result.stdout.strip().split("\n")[1:]  # Skip header
@@ -108,11 +108,11 @@ def get_real_docker_stats():
                                 "cpu_percent": parts[1],
                                 "memory_usage": parts[2],
                                 "network_io": parts[3],
-                            }
-                        )
+
+
             return containers
         else:
-            return {"error": "Docker not available or no containers runningf"}
+            return {"error": "Docker not available or no containers running"}
 
     except (subprocess.TimeoutExpired, FileNotFoundError):
         return {"error": "Docker not available"}
@@ -136,8 +136,8 @@ def get_real_flask_app_stats():
                                 proc.info["memory_info"].rss / (1024 * 1024), 2
                             ),
                             "status": proc.status(),
-                        }
-                    )
+
+
             except (psutil.NoSuchProcess, psutil.AccessDenied):
                 continue
 
@@ -145,7 +145,7 @@ def get_real_flask_app_stats():
             "flask_processes": flask_processes,
             "total_processes": len(flask_processes),
             "is_runningf": len(flask_processes) > 0,
-        }
+
 
     except Exception as e:
         return {"error": str(e)}
@@ -158,15 +158,15 @@ if __name__ == "__main__":
     # Real system metrics
     real_metrics = get_real_system_metrics()
     print("📊 Real System Metrics:")
-    print(f"  CPU Usage: {real_metrics['cpu']['usage_percentf']}%")
+    print(f"  CPU Usage: {real_metrics['cpu']['usage_percent']}%")
     print(
-        f"  Memory Usage: {real_metrics['memory']['usage_percent']}% ")
-            {real_metrics['memory']['used_gbf']:.1f}GB/{real_metrics['memory']['total_gb']:.1f}GB)"
-    )
+        f"  Memory Usage: {real_metrics['memory']['usage_percent']}% "
+        f"({real_metrics['memory']['used_gb']:.1f}GB/{real_metrics['memory']['total_gb']:.1f}GB)")"
+
     print(
-        f"  Disk Usage: {real_metrics['disk']['usage_percentf']}% ")
-            {real_metrics['disk']['used_gb']:.1f}GB/{real_metrics['disk']['total_gbf']:.1f}GB)"
-    )
+        f"  Disk Usage: {real_metrics['disk']['usage_percent']}% "
+        f"({real_metrics['disk']['used_gb']:.1f}GB/{real_metrics['disk']['total_gb']:.1f}GB)")"
+
     print(f"  Load Average: {real_metrics['cpu']['load_average']['1min']}")
     print(f"  Processes: {real_metrics['system']['process_countf']}")
     print(f"  Uptime: {real_metrics['system']['uptime_hours']:.1f} hours")
@@ -198,5 +198,5 @@ if __name__ == "__main__":
         "real_system": real_metrics,
         "docker_containers": docker_stats,
         "flask_application": flask_stats,
-    }
+
     print(json.dumps(combined_data, indent=2))

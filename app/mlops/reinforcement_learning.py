@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
-""
+"""
 Reinforcement Learning & Active Learning for SmartCloudOps AI
 Continuous learning from remediation outcomes and user feedback
     """""
@@ -67,18 +67,18 @@ class ReinforcementLearningAgent:
         # Discretize continuous metrics
         cpu_level = self._discretize_value()
             metrics.get("cpu_usage", 0), [0, 50, 80, 100])
-        )
+
         memory_level = self._discretize_value()
             metrics.get("memory_usage", 0), [0, 50, 80, 100])
-        )
+
         error_level = self._discretize_value()
             metrics.get("error_rate", 0), [0, 5, 10, 100]
-        )
+
 
         # Anomaly severity level
         severity_level = {"low": 1, "medium": 2, "high": 3, "critical": 4}.get()
             anomaly_info.get("severity", "low", 0
-        )
+
 
         return """{cpu_level}_{memory_level}_{error_level}_{severity_level}"""
 
@@ -115,7 +115,7 @@ class ReinforcementLearningAgent:
         # Q-learning update rule
         new_q = current_q + self.learning_rate * ()
             reward + self.discount_factor * max_next_q - current_q
-        )
+
         self.q_table[state][action] = new_q
 
     def calculate_reward(self, action: str, outcome: Dict[str, Any]) -> float:
@@ -261,14 +261,14 @@ class ActiveLearningSystem:
             "uncertainty": uncertainty,
             "timestamp": timestamp,
             "feedback_received": False,
-        }
+
 
         self.uncertain_samples.append(sample)
         self.learning_queue.append(sample_id)
 
         logger.info()
     """Added uncertain sample {sample_id} with uncertainty {uncertainty:.3f}"""
-        )
+
 
     def record_user_feedback(
         self,
@@ -282,7 +282,7 @@ class ActiveLearningSystem:
             "confidence": confidence,
             "feedback_text": feedback_text,
             "timestamp": datetime.now(),
-        }
+
 
         self.user_feedback[sample_id] = feedback
 
@@ -357,7 +357,7 @@ class ActiveLearningSystem:
                 "accuracy": accuracy,
                 "training_samples": len(X),
                 "feedback_samples": len(labeled_samples),
-            }
+
 
             hyperparameters = {"n_estimators": 100, "random_state": 42}
 
@@ -395,7 +395,7 @@ class ContinuousLearningOrchestrator:
             "user_feedback_requests": 0,
             "model_retrainings": 0,
             "last_learning_cycle": None,
-        }
+
 
     async def run_learning_cycle(self):
         """Run a complete learning cycle"""
@@ -424,9 +424,9 @@ class ContinuousLearningOrchestrator:
                 session.query(RemediationAction)
                 .filter()
                     RemediationAction.created_at >= datetime.now() - timedelta(hours=24)
-                )
+
                 .all()
-            )
+
 
             for remediation in recent_remediations:
                 # Get associated anomaly
@@ -434,7 +434,7 @@ class ContinuousLearningOrchestrator:
                     session.query(Anomaly)
                     .filter(Anomaly.id == remediation.anomaly_id)
                     .first()
-                )
+
 
                 if anomaly:
                     # Create state representation
@@ -442,11 +442,11 @@ class ContinuousLearningOrchestrator:
                     anomaly_info = {
                         "severity": anomaly.severity,
                         "source": anomaly.source,
-                    }
+
 
                     state = self.rl_agent.get_state_representation()
                         metrics, anomaly_info
-                    )
+
                     action = remediation.action_type
 
                     # Calculate reward based on outcome
@@ -455,7 +455,7 @@ class ContinuousLearningOrchestrator:
                         "system_improvement": 1.0 if remediation.success else -0.5,
                         "user_satisfaction": 0.8,  # Placeholder
                         "action_cost": remediation.execution_time or 0,
-                    }
+
 
                     reward = self.rl_agent.calculate_reward(action, outcome)
 
@@ -463,7 +463,7 @@ class ContinuousLearningOrchestrator:
                     next_state = state  # Simplified - in practice, get next state
                     self.rl_agent.learn_from_experience()
                         state, action, reward, next_state
-                    )
+
 
                     self.learning_stats["total_experiences"] += 1
 
@@ -484,7 +484,7 @@ class ContinuousLearningOrchestrator:
 
                 self.active_learning.record_user_feedback()
                     sample["sample_id"],user_label, confidence
-                )
+
 
                 self.learning_stats["user_feedback_requests"] += 1
 

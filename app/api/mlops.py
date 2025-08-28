@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MLOps API Endpoints for Smart CloudOps AI
+"""
 Phase 2A Week 4: MLOps API Integration
 Provides comprehensive MLOps experiment tracking, model registry, and data pipeline endpoints
 """
@@ -31,7 +31,7 @@ except Exception as e:
 
 
 def validate_service_availability():
-    """Validate that MLOps service is available."""
+"""Validate that MLOps service is available."""
     if not mlops_service:
         return ()
             jsonify()
@@ -42,7 +42,7 @@ def validate_service_availability():
 
 
 def validate_security(data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    """Validate input data for security threats."""
+"""Validate input data for security threats."""
     if not security_validation:
         return None
 
@@ -63,7 +63,7 @@ def validate_security(data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
 
 @mlops_bp.route("/experiments", methods=["GET"])
 def get_experiments():
-    """Get all experiments with pagination and filtering."""
+"""Get all experiments with pagination and filtering."""
     error_response = validate_service_availability():
     if error_response:
         return error_response
@@ -93,7 +93,7 @@ def get_experiments():
 
 @mlops_bp.route("/experiments", methods=["POST"])
 def create_experiment():
-    """Create a new experiment."""
+"""Create a new experiment."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -138,7 +138,7 @@ def create_experiment():
 
 @mlops_bp.route("/experiments/<experiment_id>/runs", methods=["POST"])
 def start_experiment_run(experiment_id):
-    """Start a new experiment run."""
+"""Start a new experiment run."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -166,7 +166,7 @@ def start_experiment_run(experiment_id):
 
 @mlops_bp.route("/experiments/<experiment_id>/runs/<run_id>/metrics", methods=["POST"])
 def log_metric(experiment_id, run_id):
-    """Log metrics for an experiment run."""
+"""Log metrics for an experiment run."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -210,7 +210,7 @@ def log_metric(experiment_id, run_id):
     "/experiments/<experiment_id>/runs/<run_id>/parameters", methods=["POST"]
 )
 def log_parameter(experiment_id, run_id):
-    """Log parameters for an experiment run."""
+"""Log parameters for an experiment run."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -252,7 +252,7 @@ def log_parameter(experiment_id, run_id):
 
 @mlops_bp.route("/experiments/<experiment_id>/runs/<run_id>/end", methods=["POST"])
 def end_run(experiment_id, run_id):
-    """End an experiment run."""
+"""End an experiment run."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -283,7 +283,7 @@ def end_run(experiment_id, run_id):
 
 @mlops_bp.route("/models", methods=["GET"])
 def get_models():
-    """Get all registered models with pagination and filtering."""
+"""Get all registered models with pagination and filtering."""
     error_response = validate_service_availability():
     if error_response:
         return error_response
@@ -313,7 +313,7 @@ def get_models():
 
 @mlops_bp.route("/models", methods=["POST"])
 def register_model():
-    """Register a new model."""
+"""Register a new model."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -361,7 +361,7 @@ def register_model():
 
 @mlops_bp.route("/models/<model_id>/status", methods=["PUT"])
 def update_model_status(model_id):
-    """Update model status (e.g., promote to production)."""
+"""Update model status (e.g., promote to production)."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -402,7 +402,7 @@ def update_model_status(model_id):
 
 @mlops_bp.route("/data/versions", methods=["GET"])
 def get_data_versions():
-    """Get data versions with pagination and filtering."""
+"""Get data versions with pagination and filtering."""
     error_response = validate_service_availability():
     if error_response:
         return error_response
@@ -432,7 +432,7 @@ def get_data_versions():
 
 @mlops_bp.route("/data/versions/<version_id>/quality", methods=["GET"])
 def get_data_quality_report(version_id):
-    """Get data quality report for a specific version."""
+"""Get data quality report for a specific version."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -460,7 +460,7 @@ def get_data_quality_report(version_id):
 
 @mlops_bp.route("/data/transformations", methods=["POST"])
 def create_data_transformation():
-    """Create a new data transformation pipeline."""
+"""Create a new data transformation pipeline."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -510,7 +510,7 @@ def create_data_transformation():
 
 @mlops_bp.route("/mlflow/experiments", methods=["GET"])
 def get_mlflow_experiments():
-    """Get MLflow experiments."""
+"""Get MLflow experiments."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -527,7 +527,7 @@ def get_mlflow_experiments():
 
 @mlops_bp.route("/mlflow/experiments/<experiment_id>/runs", methods=["GET"])
 def get_mlflow_runs(experiment_id):
-    """Get MLflow runs for an experiment."""
+"""Get MLflow runs for an experiment."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -549,7 +549,7 @@ def get_mlflow_runs(experiment_id):
 
 @mlops_bp.route("/statistics", methods=["GET"])
 def get_mlops_statistics():
-    """Get comprehensive MLOps statistics."""
+"""Get comprehensive MLOps statistics."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -566,7 +566,7 @@ def get_mlops_statistics():
 
 @mlops_bp.route("/frameworks", methods=["GET"])
 def get_available_frameworks():
-    """Get available ML frameworks."""
+"""Get available ML frameworks."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -583,7 +583,7 @@ def get_available_frameworks():
 
 @mlops_bp.route("/algorithms", methods=["GET"])
 def get_available_algorithms():
-    """Get available ML algorithms."""
+"""Get available ML algorithms."""
     error_response = validate_service_availability()
     if error_response:
         return error_response
@@ -605,7 +605,7 @@ def get_available_algorithms():
 
 @mlops_bp.route("/health", methods=["GET"])
 def health_check():
-    """Health check endpoint for MLOps service."""
+"""Health check endpoint for MLOps service."""
     try:
         if not mlops_service:
             return ()

@@ -21,7 +21,7 @@ class TestAPIEndpointsIntegration:
             {
                 "TESTING": True,
                 "DATABASE_URL": """sqlite:///{db_path}"""
-                "SECRET_KEY": """test-secret-key"""
+def test_health_check(client):
             }
         )
 
@@ -34,7 +34,7 @@ class TestAPIEndpointsIntegration:
 
     @pytest.fixture
     def client(self, app):
-        """Create test client."""
+    """Create test client."""
         return app.test_client()
 
     @pytest.fixture

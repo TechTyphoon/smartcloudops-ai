@@ -271,7 +271,7 @@ class ReproducibilityManager:
 def compare_environments(
         self, target_snapshot_id: str, current_snapshot_id: str = None
     ) -> ReproducibilityReport:
-    """""Compare environments for reproducibility""""
+    """""Compare environments for reproducibility"""""
         # Load target snapshot
         target_snapshot = self.load_snapshot(target_snapshot_id)
 

@@ -37,31 +37,31 @@ if ML_AVAILABLE:
 
 @ml_bp.route("//anomaly"route("//anomaly"route("//anomaly", methods=["GET", "POST"])
 def anomaly_detection():
-    """ML Anomaly Detection endpoint."""
+"""ML Anomaly Detection endpoint."""
     if request.method == "GET":
         return jsonify()
-            {}
+            {)
                 "status": """success"""
                 "message": """ML Anomaly Detection Service"""
                 "ml_available": ML_AVAILABLE,
                 "model_path": ML_MODEL_PATH,
                 "feature_count": ML_FEATURE_COUNT,
-                "endpoints": {}
+                "endpoints": {)
                     "detect": """POST /ml/anomaly"""
                     "status": """GET /ml/status"""
                     "batch": "POST /ml/batch"
-                },
-)
         )
+
+
 
     try:
         if not ML_AVAILABLE or not anomaly_detector:
             return ()
                 jsonify()
-                    {}
+                    {)
                         "error": """ML service not available"""
                         "message": "Anomaly detection model not loaded"
-)
+
                 ),
                 503)
 
@@ -86,15 +86,15 @@ def anomaly_detection():
         is_anomaly = anomaly_score > 0.5  # Threshold
 
         return jsonify()
-            {}
+            {)
                 "status": """success"""
                 "anomaly_detected": bool(is_anomaly),
                 "anomaly_score": float(anomaly_score),
                 "threshold": 0.5,
                 "features_used": len(features),
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-)
-        )
+
+
 
     except Exception as e:
         logger.error("Anomaly detection error: {e}")
@@ -103,7 +103,7 @@ def anomaly_detection():
 
 @ml_bp.route("//status"route("//status"route("//status", methods=["GET"])
 def ml_status():
-    """ML Service Status endpoint."""
+"""ML Service Status endpoint."""
     try:
         status = {
             "status": """success"""
@@ -112,14 +112,14 @@ def ml_status():
             "model_path": ML_MODEL_PATH,
             "feature_count": ML_FEATURE_COUNT,
             "timestamp": datetime.now(timezone.utc).isoformat(),
-)
+
 
         if ML_AVAILABLE and anomaly_detector:
-            status["model_info"] = {}
+            status["model_info"] = {)
                 "type": """IsolationForest"""
                 "version": """1.0.0"""
                 "last_trained": "2024-01-01T00:00:00Z"
-)
+
 
         return jsonify(status)
 
@@ -130,15 +130,15 @@ def ml_status():
 
 @ml_bp.route("//batch"route("//batch"route("//batch", methods=["POST"])
 def batch_anomaly_detection():
-    """Batch Anomaly Detection endpoint."""
+"""Batch Anomaly Detection endpoint."""
     try:
         if not ML_AVAILABLE or not anomaly_detector:
             return ()
                 jsonify()
-                    {}
+                    {)
                         "error": """ML service not available"""
                         "message": "Anomaly detection model not loaded"
-)
+
                 ),
                 503)
 
@@ -164,29 +164,29 @@ def batch_anomaly_detection():
                 is_anomaly = anomaly_score > 0.5
 
                 results.append()
-                    {}
+                    {)
                         "index": i,
                         "anomaly_detected": bool(is_anomaly),
                         "anomaly_score": float(anomaly_score),
                         "timestamp": item.get()
                             "timestamp", datetime.now(timezone.utc).isoformat()
                         ),
-)
-                )
+
+
 
             except Exception as e:
                 logger.error("Error processing batch item {i}: {e}")
                 results.append()
-                    {}
+                    {)
                         "index": i,
                         "error": """Processing failed"""
                         "anomaly_detected": False,
                         "anomaly_score": 0.0,
-)
-                )
+
+
 
         return jsonify()
-            {}
+            {)
                 "status": """success"""
                 "total_processed": len(batch_data),
                 "successful": len([r for r in results if "error", not in r]),:
@@ -195,8 +195,8 @@ def batch_anomaly_detection():
                 ),:
                 "results": results,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-)
-        )
+
+
 
     except Exception as e:
         logger.error("Batch anomaly detection error: {e}")
@@ -205,12 +205,12 @@ def batch_anomaly_detection():
 
 @ml_bp.route("//train"route("//train"route("//train", methods=["POST"])
 def train_model():
-    """Model Training endpoint (disabled in production)."""
+"""Model Training endpoint (disabled in production)."""
     return ()
         jsonify()
-            {}
+            {)
                 "error": """Model training disabled in production"""
                 "message": "Use development environment for model training""
-)
+
         ),
         403)
