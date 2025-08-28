@@ -72,7 +72,7 @@ class CacheStats:
             "evictions": self.evictions,
             "total_size": self.total_size,
             "uptime": self.uptime,
-        }
+)
 
 
 class CacheEntry:
@@ -196,7 +196,7 @@ class LRUCache:
 
 class MultiLevelCache:
     """Multi-level cache with L1 (memory) and L2 (optional) storage"""
-    def __init__()
+    def __init__(
         self,
         l1_size: int = 1000,
         l1_ttl: Optional[float] = 300,  # 5 minutes
@@ -264,7 +264,7 @@ class CacheManager:
                 "quality_reports": LRUCache(max_size=100, default_ttl=1800),
                 "api_responses": LRUCache(max_size=1000, default_ttl=120),
                 "computed_metrics": LRUCache(max_size=200, default_ttl=300),
-            }
+)
         )
 
     def get_cache(self, name: str) -> Optional[Union[LRUCache, MultiLevelCache]]:
@@ -296,7 +296,7 @@ def cache_key(*args, **kwargs) -> str:
 
 
 def cached()
-    cache_name: str = "api_responses",
+    cache_name: str = """api_responses"""
     ttl: Optional[float] = None,
     key_func: Optional[Callable] = None):
     """Decorator for caching function results"""
@@ -394,14 +394,14 @@ class CachePerformanceMonitor:
                     "operations": {},
                     "total_time": 0,
                     "operation_count": 0,
-                }
+)
 
             if operation not in self.metrics[cache_name]["operations"]:
                 self.metrics[cache_name]["operations"][operation] = {}
                     "count": 0,
                     "total_time": 0,
                     "avg_time": 0,
-                }
+)
 
             op_metrics = self.metrics[cache_name]["operations"][operation]
             op_metrics["count"] += 1

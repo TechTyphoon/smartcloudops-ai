@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Enhanced Data Pipeline - Production-ready data processing and versioning
 Phase 2A Week 3: Data Pipeline Automation with quality monitoring and versioning
 """
@@ -49,33 +49,33 @@ except ImportError as e:
             return MockDataFrame(self.data)
 
     pd = type()
-        "MockPandas",
+        """MockPandas"""
         (),
         {}
             "DataFrame": MockDataFrame,
-            "read_csv": lambda x: MockDataFrame(),
-            "read_parquet": lambda x: MockDataFrame(),
-            "read_excel": lambda x: MockDataFrame(),
-            "read_json": lambda x: MockDataFrame(),
+            "read_csv": lambda x: MockDataFrame()
+            "read_parquet": lambda x: MockDataFrame()
+            "read_excel": lambda x: MockDataFrame()
+            "read_json": lambda x: MockDataFrame()
             "util": type()
-                "util",
+                """util"""
                 (),
                 {"hash_pandas_object": lambda x: type("hash", (), {"values": b"mock"})})(),
         })()
 
     np = type()
-        "MockNumPy",
+        """MockNumPy"""
         (),
         {}
             "random": type()
-                "random",
+                """random"""
                 (),
-                {"randn": lambda x: [0] * x, "choice": lambda a, x: ["A"] * x})(),
+                {"randn": lambda x: [0] * x, "choice": lambda a, x: ["A"] * x})()
             "number": object,
             "inf": float("inf"),
             "nan": float("nan"),
-            "mean": lambda x: 0,
-            "issubdtype": lambda a, b: False,
+            "mean": lambda x: 0
+            "issubdtype": lambda a, b: False
         })()
 
 
@@ -204,8 +204,8 @@ class DataPipelineManager:
         cursor = conn.cursor()
 
         # Data versions table
-        cursor.execute()
-    """
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS data_versions ()
                 version_id TEXT PRIMARY KEY,
                 dataset_name TEXT NOT NULL,
@@ -225,8 +225,8 @@ class DataPipelineManager:
         )
 
         # Quality reports table
-        cursor.execute()
-    """
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS quality_reports ()
                 report_id TEXT PRIMARY KEY,
                 dataset_name TEXT,
@@ -252,8 +252,8 @@ class DataPipelineManager:
         )
 
         # Pipeline runs table
-        cursor.execute()
-    """
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS pipeline_runs ()
                 run_id TEXT PRIMARY KEY,
                 pipeline_name TEXT,
@@ -279,10 +279,10 @@ class DataPipelineManager:
 
     # ===== DATA INGESTION =====
 
-    def ingest_data()
+    def ingest_data(
         self,
         data: Union[pd.DataFrame, str, Path],
-        dataset_name: str,
+        dataset_name: str
         source_metadata: Optional[Dict[str, Any]] = None,
         tags: Optional[List[str]] = None) -> DataVersion:
     """Ingest data with automatic versioning and quality assessment.
@@ -325,7 +325,7 @@ class DataPipelineManager:
             quality_report = self._assess_data_quality(df, dataset_name, version_id)
 
             # Create version metadata
-            version = DataVersion()
+            version = DataVersion(
                 version_id=version_id,
                 dataset_name=dataset_name,
                 created_at=timestamp,
@@ -374,9 +374,9 @@ class DataPipelineManager:
 
     # ===== DATA TRANSFORMATION =====
 
-    def transform_data()
+    def transform_data(
         self,
-        version_id: str,
+        version_id: str
         transformations: List[Dict[str, Any]],
         output_dataset_name: Optional[str] = None) -> DataVersion:
     """Apply transformations to data with full tracking.
@@ -476,7 +476,7 @@ class DataPipelineManager:
         else:
             raise ValueError(f"Unknown filter condition: {condition}")
 
-    def _apply_aggregation()
+    def _apply_aggregation(
         self, df: pd.DataFrame, params: Dict[str, Any]
     ) -> pd.DataFrame:
     """Apply aggregation transformation"""
@@ -488,7 +488,7 @@ class DataPipelineManager:
         else:
             return df.agg(agg_functions).to_frame().T
 
-    def _apply_feature_engineering()
+    def _apply_feature_engineering(
         self, df: pd.DataFrame, params: Dict[str, Any]
     ) -> pd.DataFrame:
     """Apply feature engineering transformations"""
@@ -516,7 +516,7 @@ class DataPipelineManager:
 
         return new_df
 
-    def _apply_normalization()
+    def _apply_normalization(
         self, df: pd.DataFrame, params: Dict[str, Any]
     ) -> pd.DataFrame:
     """Apply normalization transformations"""
@@ -537,7 +537,7 @@ class DataPipelineManager:
 
         return new_df
 
-    def _apply_outlier_removal()
+    def _apply_outlier_removal(
         self, df: pd.DataFrame, params: Dict[str, Any]
     ) -> pd.DataFrame:
     """Apply outlier removal"""
@@ -568,7 +568,7 @@ class DataPipelineManager:
 
     # ===== DATA QUALITY ASSESSMENT =====
 
-    def _assess_data_quality()
+    def _assess_data_quality(
         self, df: pd.DataFrame, dataset_name: str, version_id: str
     ) -> QualityReport:
     """Comprehensive data quality assessment"""
@@ -606,7 +606,7 @@ class DataPipelineManager:
         missing_values = {
             k: int(v) if isinstance(v, np.integer) else v
             for k, v in df.isnull().sum().to_dict().items()
-        }
+)
         duplicate_rows = int(df.duplicated().sum()
         outliers = self._detect_outliers(df)
         schema_violations = self._check_schema_violations(df)
@@ -628,7 +628,7 @@ class DataPipelineManager:
             issues_found.append(f"Outliers detected in {len(outliers)} columns")
             recommendations.append("Review outlier handling strategy")
 
-        return QualityReport()
+        return QualityReport(
             dataset_name=dataset_name,
             version_id=version_id,
             timestamp=timestamp,
@@ -820,7 +820,7 @@ class DataPipelineManager:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
+        cursor.execute(
             "SELECT * FROM data_versions WHERE version_id = ?", (version_id)
         )
         row = cursor.fetchone()
@@ -829,7 +829,7 @@ class DataPipelineManager:
         if not row:
             raise ValueError(f"Data version not found: {version_id}")
 
-        return DataVersion()
+        return DataVersion(
             version_id=row[0],
             dataset_name=row[1],
             created_at=datetime.fromisoformat(row[2]),
@@ -857,8 +857,8 @@ class DataPipelineManager:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "SELECT version_id FROM data_versions WHERE dataset_name = ? ORDER BY created_at DESC LIMIT 1",
+        cursor.execute(
+            """SELECT version_id FROM data_versions WHERE dataset_name = ? ORDER BY created_at DESC LIMIT 1"""
             (dataset_name))
         row = cursor.fetchone()
         conn.close()
@@ -873,12 +873,12 @@ class DataPipelineManager:
         cursor = conn.cursor()
 
         if dataset_name:
-            cursor.execute()
-                "SELECT version_id FROM data_versions WHERE dataset_name = ? ORDER BY created_at DESC",
+            cursor.execute(
+            """SELECT version_id FROM data_versions WHERE dataset_name = ? ORDER BY created_at DESC"""
                 (dataset_name))
         else:
-            cursor.execute()
-    """SELECT version_id FROM data_versions ORDER BY created_at DESC"""
+            cursor.execute(
+            """SELECT version_id FROM data_versions ORDER BY created_at DESC"""
             )
 
         version_ids = [row[0] for row in cursor.fetchall()]
@@ -893,7 +893,7 @@ class DataPipelineManager:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
+        cursor.execute(
             "SELECT * FROM quality_reports WHERE version_id = ?", (version_id)
         )
         row = cursor.fetchone()
@@ -902,7 +902,7 @@ class DataPipelineManager:
         if not row:
             raise ValueError(f"Quality report not found for version: {version_id}")
 
-        return QualityReport()
+        return QualityReport(
             dataset_name=row[1],
             version_id=row[2],
             timestamp=datetime.fromisoformat(row[3]),
@@ -927,14 +927,14 @@ class DataPipelineManager:
     """Start a new pipeline run"""
         run_id = f"run_{int(datetime.now(timezone.utc).timestamp()}_{pipeline_name}"
 
-        self.current_run = PipelineRun()
+        self.current_run = PipelineRun(
             run_id=run_id,
             pipeline_name=pipeline_name,
             started_at=datetime.now(timezone.utc),
             ended_at=None,
             duration_seconds=None,
             stage=stage,
-            status="running",
+            status="""running"""
             input_version_id=None,
             output_version_id=None,
             processed_records=0,
@@ -945,9 +945,9 @@ class DataPipelineManager:
 
         logger.info(f"Pipeline run started: {run_id}")
 
-    def _end_pipeline_run()
+    def _end_pipeline_run(
         self,
-        stage: PipelineStage,
+        stage: PipelineStage
         input_version_id: Optional[str] = None,
         output_version_id: Optional[str] = None):
     """End the current pipeline run"""
@@ -1013,14 +1013,14 @@ class DataPipelineManager:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO data_versions 
             (version_id, dataset_name, created_at, data_hash, source_hash, row_count, 
              column_count, file_size_bytes, quality_score, quality_status, 
              transformation_log, metadata, tags)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        """
             ()
                 version.version_id,
                 version.dataset_name,
@@ -1046,15 +1046,15 @@ class DataPipelineManager:
 
         report_id = f"qr_{report.version_id}_{int(report.timestamp.timestamp()}"
 
-        cursor.execute()
-            "
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO quality_reports 
             (report_id, dataset_name, version_id, timestamp, overall_score, overall_status,
              completeness_score, consistency_score, accuracy_score, timeliness_score, validity_score,
              missing_values, duplicate_rows, outliers, schema_violations, data_drift_detected,
              issues_found, recommendations)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        """
             ()
                 report_id,
                 report.dataset_name,
@@ -1087,13 +1087,13 @@ class DataPipelineManager:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO pipeline_runs 
             (run_id, pipeline_name, started_at, ended_at, duration_seconds, stage, status,
              input_version_id, output_version_id, processed_records, error_count, warnings, logs, configuration)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        """
             ()
                 run.run_id,
                 run.pipeline_name,

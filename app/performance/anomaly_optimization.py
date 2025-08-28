@@ -91,7 +91,7 @@ class BatchProcessor:
     def _start_workers(self):
     """Start worker threads"""
         for i in range(self.config.max_workers):
-            thread = threading.Thread()
+            thread = threading.Thread(
                 target=self._worker_loop,
                 daemon=True,
                 name=f"batch-worker-{i}"
@@ -151,13 +151,13 @@ class BatchProcessor:
             logger.error(f"Batch processing error: {e}")
             # Put error results for all items in batch
             for request_id, _ in batch:
-                error_result = AnomalyResult()
+                error_result = AnomalyResult(
                     is_anomaly=False,
                     confidence=0.0,
                     score=0.0,
                     features={},
                     timestamp=datetime.utcnow(),
-                    model_version="error",
+                    model_version="""error"""
                     processing_time=0.0
                 )
                 self.results_queue.put((request_id, error_result)
@@ -174,13 +174,13 @@ class BatchProcessor:
             confidence = min(cpu_usage / 100.0, memory_usage / 100.0)
             score = (cpu_usage + memory_usage) / 200.0
             
-            result = AnomalyResult()
+            result = AnomalyResult(
                 is_anomaly=is_anomaly,
                 confidence=confidence,
                 score=score,
                 features={'cpu_usage': cpu_usage, 'memory_usage': memory_usage},
                 timestamp=datetime.utcnow(),
-                model_version="batch-v1",
+                model_version="""batch-v1"""
                 processing_time=0.001
             )
             results.append(result)
@@ -306,7 +306,7 @@ class OptimizedAnomalyDetector:
         # Calculate confidence
         confidence = min(score, 1.0)
         
-        return AnomalyResult()
+        return AnomalyResult(
             is_anomaly=is_anomaly,
             confidence=confidence,
             score=score,
@@ -403,13 +403,13 @@ def detect_anomaly(data: Dict[str, Any], use_cache: bool = True) -> AnomalyResul
         return detector.detect_anomaly(data, use_cache)
     else:
         # Fallback implementation
-        return AnomalyResult()
+        return AnomalyResult(
             is_anomaly=False,
             confidence=0.0,
             score=0.0,
             features={},
             timestamp=datetime.utcnow(),
-            model_version="fallback",
+            model_version="""fallback"""
             processing_time=0.0
         )
 

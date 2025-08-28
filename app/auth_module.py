@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Authentication Module for Smart CloudOps AI
 Extracted from main.py for modularity
 """
@@ -34,10 +34,9 @@ if not DEFAULT_ADMIN_PASSWORD:
 USERS_DB = {:
     "admin": {}
         "password_hash": generate_password_hash(DEFAULT_ADMIN_PASSWORD),
-        "role": "admin",
+        "role": """admin"""
         "email": "admin@smartcloudops.ai"
     }
-}
 
 
 def create_jwt_token(user_id: str, role: str) -> str:
@@ -47,7 +46,7 @@ def create_jwt_token(user_id: str, role: str) -> str:
         "role": role,
         "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS),
         "iat": datetime.now(timezone.utc),
-    }
+)
     return jwt.encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
 
 
@@ -86,14 +85,14 @@ def login():
     if request.method == "GET":
         return jsonify()
             {}
-                "message": "Login endpoint",
-                "method": "POST",
+                "message": """Login endpoint"""
+                "method": """POST"""
                 "required_fields": ["username", "password"],
                 "example": {}
-                    "username": "admin",
+                    "username": """admin"""
                     "password": "use environment variable DEFAULT_ADMIN_PASSWORD"
                 },
-            }
+)
         )
 
     try:
@@ -117,8 +116,8 @@ def login():
 
         return jsonify()
             {}
-                "status": "success",
-                "message": "Login successful",
+                "status": """success"""
+                "message": """Login successful"""
                 "token": token,
                 "user": {}
                     "username": username,
@@ -126,7 +125,7 @@ def login():
                     "email": user["email"],
                 },
                 "expires_in": JWT_EXPIRATION_HOURS * 3600,
-            }
+)
         )
 
     except Exception as e:
@@ -147,13 +146,13 @@ def profile():
 
         return jsonify()
             {}
-                "status": "success",
+                "status": """success"""
                 "user": {}
                     "username": user_id,
                     "role": user["role"],
                     "email": user["email"],
                 },
-            }
+)
         )
 
     except Exception as e:
@@ -175,8 +174,8 @@ def register():
     return ()
         jsonify()
             {}
-                "error": "Registration disabled in production",
+                "error": """Registration disabled in production"""
                 "message": "Contact administrator for account creation"
-            }
+)
         ),
         403)

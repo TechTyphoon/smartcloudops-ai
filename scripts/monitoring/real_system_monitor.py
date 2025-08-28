@@ -84,11 +84,11 @@ def get_real_docker_stats():
     try:
         result = subprocess.run(
             [
-                "docker",
-                "stats",
-                "--no-stream",
-                "--format",
-                f"table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}",
+                """docker"""
+                """stats"""
+                """--no-stream"""
+                """--format"""
+                f"""table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}"""
             ],
             capture_output=True,
             text=True,
@@ -160,11 +160,11 @@ if __name__ == "__main__":
     print("📊 Real System Metrics:")
     print(f"  CPU Usage: {real_metrics['cpu']['usage_percentf']}%")
     print(
-        f"  Memory Usage: {real_metrics['memory']['usage_percent']}% (
+        f"  Memory Usage: {real_metrics['memory']['usage_percent']}% ")
             {real_metrics['memory']['used_gbf']:.1f}GB/{real_metrics['memory']['total_gb']:.1f}GB)"
     )
     print(
-        f"  Disk Usage: {real_metrics['disk']['usage_percentf']}% (
+        f"  Disk Usage: {real_metrics['disk']['usage_percentf']}% ")
             {real_metrics['disk']['used_gb']:.1f}GB/{real_metrics['disk']['total_gbf']:.1f}GB)"
     )
     print(f"  Load Average: {real_metrics['cpu']['load_average']['1min']}")

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 MLOps API Endpoints for Smart CloudOps AI
 Phase 2A Week 4: MLOps API Integration
 Provides comprehensive MLOps experiment tracking, model registry, and data pipeline endpoints
@@ -49,10 +49,10 @@ def validate_security(data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     validation_result = security_validation.validate_input(data)
     if not validation_result["is_valid"]:
         return {}
-            "status": "error",
-            "error": f"Security validation failed: {validation_result['issues']}",
+            "status": """error"""
+            "error": f"""Security validation failed: {validation_result['issues']}"""
             "data": None,
-        }
+)
     return None
 
 
@@ -74,16 +74,16 @@ def get_experiments():
         per_page = min(int(request.args.get("per_page", 20), 100)
         status = request.args.get("status")
 
-        experiments, pagination = mlops_service.get_experiments()
+        experiments, pagination = mlops_service.get_experiments(
             page=page, per_page=per_page, status=status
         )
 
         return jsonify()
             {}
-                "status": "success",
+                "status": """success"""
                 "data": {"experiments": experiments, "pagination": pagination},
                 "error": None,
-            }
+)
         )
 
     except Exception as e:
@@ -117,14 +117,14 @@ def create_experiment():
                 return ()
                     jsonify()
                         {}
-                            "status": "error",
-                            "error": f"Missing required field: {field}",
+                            "status": """error"""
+                            "error": f"""Missing required field: {field}"""
                             "data": None,
-                        }
+)
                     ),
                     400)
 
-        experiment = mlops_service.create_experiment()
+        experiment = mlops_service.create_experiment(
             name=data["name"],
             description=data["description"],
             tags=data.get("tags", []))
@@ -151,7 +151,7 @@ def start_experiment_run(experiment_id):
         if security_error:
             return jsonify(security_error), 400
 
-        run = mlops_service.start_experiment_run()
+        run = mlops_service.start_experiment_run(
             experiment_id=experiment_id,
             run_name=data.get("run_name"),
             parameters=data.get("parameters", {}),
@@ -188,14 +188,14 @@ def log_metric(experiment_id, run_id):
             return ()
                 jsonify()
                     {}
-                        "status": "error",
-                        "error": "Missing required fields: key, value",
+                        "status": """error"""
+                        "error": """Missing required fields: key, value"""
                         "data": None,
-                    }
+)
                 ),
                 400)
 
-        result = mlops_service.log_metric()
+        result = mlops_service.log_metric(
             run_id=run_id, key=data["key"], value=data["value"], step=data.get("step")
         )
 
@@ -232,14 +232,14 @@ def log_parameter(experiment_id, run_id):
             return ()
                 jsonify()
                     {}
-                        "status": "error",
-                        "error": "Missing required fields: key, value",
+                        "status": """error"""
+                        "error": """Missing required fields: key, value"""
                         "data": None,
-                    }
+)
                 ),
                 400)
 
-        result = mlops_service.log_parameter()
+        result = mlops_service.log_parameter(
             run_id=run_id, key=data["key"], value=data["value"]
         )
 
@@ -265,7 +265,7 @@ def end_run(experiment_id, run_id):
         if security_error:
             return jsonify(security_error), 400
 
-        result = mlops_service.end_run()
+        result = mlops_service.end_run(
             run_id=run_id, status=data.get("status", "FINISHED")
         )
 
@@ -294,16 +294,16 @@ def get_models():
         per_page = min(int(request.args.get("per_page", 20), 100)
         status = request.args.get("status")
 
-        models, pagination = mlops_service.get_models()
+        models, pagination = mlops_service.get_models(
             page=page, per_page=per_page, status=status
         )
 
         return jsonify()
             {}
-                "status": "success",
+                "status": """success"""
                 "data": {"models": models, "pagination": pagination},
                 "error": None,
-            }
+)
         )
 
     except Exception as e:
@@ -337,14 +337,14 @@ def register_model():
                 return ()
                     jsonify()
                         {}
-                            "status": "error",
-                            "error": f"Missing required field: {field}",
+                            "status": """error"""
+                            "error": f"""Missing required field: {field}"""
                             "data": None,
-                        }
+)
                     ),
                     400)
 
-        model = mlops_service.register_model()
+        model = mlops_service.register_model(
             name=data["name"],
             version=data["version"],
             model_path=data["model_path"],
@@ -372,10 +372,10 @@ def update_model_status(model_id):
             return ()
                 jsonify()
                     {}
-                        "status": "error",
-                        "error": "Missing required field: status",
+                        "status": """error"""
+                        "error": """Missing required field: status"""
                         "data": None,
-                    }
+)
                 ),
                 400)
 
@@ -384,7 +384,7 @@ def update_model_status(model_id):
         if security_error:
             return jsonify(security_error), 400
 
-        result = mlops_service.update_model_status()
+        result = mlops_service.update_model_status(
             model_id=model_id, status=data["status"]
         )
 
@@ -413,16 +413,16 @@ def get_data_versions():
         per_page = min(int(request.args.get("per_page", 20), 100)
         dataset_name = request.args.get("dataset_name")
 
-        versions, pagination = mlops_service.get_data_versions()
+        versions, pagination = mlops_service.get_data_versions(
             dataset_name=dataset_name, page=page, per_page=per_page
         )
 
         return jsonify()
             {}
-                "status": "success",
+                "status": """success"""
                 "data": {"versions": versions, "pagination": pagination},
                 "error": None,
-            }
+)
         )
 
     except Exception as e:
@@ -444,10 +444,10 @@ def get_data_quality_report(version_id):
             return ()
                 jsonify()
                     {}
-                        "status": "error",
-                        "error": "Quality report not found",
+                        "status": """error"""
+                        "error": """Quality report not found"""
                         "data": None,
-                    }
+)
                 ),
                 404)
 
@@ -484,14 +484,14 @@ def create_data_transformation():
                 return ()
                     jsonify()
                         {}
-                            "status": "error",
-                            "error": f"Missing required field: {field}",
+                            "status": """error"""
+                            "error": f"""Missing required field: {field}"""
                             "data": None,
-                        }
+)
                     ),
                     400)
 
-        result = mlops_service.create_data_transformation()
+        result = mlops_service.create_data_transformation(
             source_version_id=data["source_version_id"],
             transformations=data["transformations"],
             target_dataset_name=data.get("target_dataset_name"))
@@ -611,10 +611,10 @@ def health_check():
             return ()
                 jsonify()
                     {}
-                        "status": "error",
-                        "error": "MLOps service unavailable",
+                        "status": """error"""
+                        "error": """MLOps service unavailable"""
                         "data": None,
-                    }
+)
                 ),
                 503)
 
@@ -623,9 +623,9 @@ def health_check():
 
         return jsonify()
             {}
-                "status": "success",
+                "status": """success"""
                 "data": {}
-                    "service": "healthy",
+                    "service": """healthy"""
                     "components": {}
                         "experiment_tracker": stats.get("experiments", {}).get()
                             "total", 0
@@ -638,10 +638,10 @@ def health_check():
                         >= 0,
                         "mlflow": "mlflow_experiments" in stats,
                     },
-                    "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
+                    "timestamp": datetime.now(timezone.utc).isoformat() + """Z"""
                 },
                 "error": None,
-            }
+)
         )
 
     except Exception as e:

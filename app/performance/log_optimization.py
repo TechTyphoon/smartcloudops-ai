@@ -184,7 +184,7 @@ class AsyncLogWriter:
                 self.running = True
                 
                 for i in range(self.config.async_workers):
-                    thread = threading.Thread()
+                    thread = threading.Thread(
                         target=self._worker_loop,
                         daemon=True,
                         name=f"log-worker-{i}"
@@ -267,7 +267,7 @@ class LogManager:
     def _start_cleanup_thread(self):
     """Start cleanup thread"""
         self.running = True
-        self.cleanup_thread = threading.Thread()
+        self.cleanup_thread = threading.Thread(
             target=self._cleanup_loop,
             daemon=True,
             name="log-cleanup"

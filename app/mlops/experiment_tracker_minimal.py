@@ -78,8 +78,8 @@ class ExperimentTracker:
         cursor = conn.cursor()
 
         # Create experiments table
-        cursor.execute()
-    """
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS experiments ()
                 experiment_id TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
@@ -94,8 +94,8 @@ class ExperimentTracker:
         )
 
         # Create runs table
-        cursor.execute()
-    """
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS runs ()
                 run_id TEXT PRIMARY KEY,
                 experiment_id TEXT,
@@ -115,22 +115,22 @@ class ExperimentTracker:
                 seed INTEGER,
                 FOREIGN KEY (experiment_id) REFERENCES experiments (experiment_id)
             )
-        """
+        """""
         )
 
         conn.commit()
         conn.close()
 
-    def create_experiment()
+    def create_experiment(
         self,
-        name: str,
-        description: str = ",
-        objective: str = "minimize",
+        name: str
+        description: str = """
+        objective: str = """minimize"""
         tags: List[str] = None) -> Experiment:
     """Create a new experiment"""
         experiment_id = f"exp_{int(time.time()}_{str(uuid.uuid4()[:8]}"
 
-        experiment = Experiment()
+        experiment = Experiment(
             experiment_id=experiment_id,
             name=name,
             description=description,
@@ -138,15 +138,15 @@ class ExperimentTracker:
             tags=tags or [],
             created_at=datetime.now(timezone.utc),
             runs=[],
-            status="active",
+            status="""active"""
             best_run_id=None)
 
         self._save_experiment(experiment)
         return experiment
 
-    def start_run()
+    def start_run(
         self,
-        experiment_id: str,
+        experiment_id: str
         run_name: str = None,
         tags: List[str] = None,
         parameters: Dict[str, Any] = None,
@@ -155,9 +155,9 @@ class ExperimentTracker:
         if run_name is None:
             run_name = f"run_{int(time.time()}"
 
-        run_id = f"run_{int(time.time()}_{str(uuid.uuid4()[:8]}"
+        run_id = f"run_{int(time.time()}_{str(uuid.uuid4()[:8]}"""
 
-        run = ExperimentRun()
+        run = ExperimentRun(
             run_id=run_id,
             experiment_id=experiment_id,
             name=run_name,
@@ -170,7 +170,7 @@ class ExperimentTracker:
             artifacts=[],
             logs=[],
             tags=tags or [],
-            notes=",
+            notes="""
             git_commit=self._get_git_commit(),
             environment=self._get_environment_info(),
             seed=seed)
@@ -207,7 +207,7 @@ class ExperimentTracker:
 
         self._save_metric(target_run_id, key, value, step)
 
-    def end_run()
+    def end_run(
         self, status: ExperimentStatus = ExperimentStatus.COMPLETED, run_id: str = None
     ):
     """End the current or specified run"""
@@ -234,7 +234,7 @@ class ExperimentTracker:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
+        cursor.execute(
             "SELECT * FROM experiments WHERE experiment_id = ?", (experiment_id)
         )
         row = cursor.fetchone()
@@ -243,7 +243,7 @@ class ExperimentTracker:
         if not row:
             raise ValueError(f"Experiment {experiment_id} not found")
 
-        return Experiment()
+        return Experiment(
             experiment_id=row[0],
             name=row[1],
             description=row[2],
@@ -259,12 +259,12 @@ class ExperimentTracker:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO experiments 
             (experiment_id, name, description, objective, tags, created_at, status, best_run_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        """
             ()
                 experiment.experiment_id,
                 experiment.name,
@@ -283,13 +283,13 @@ class ExperimentTracker:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO runs 
             (run_id, experiment_id, name, status, start_time, end_time, duration_seconds,
              parameters, metrics, artifacts, logs, tags, notes, git_commit, environment, seed)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        """
             ()
                 run.run_id,
                 run.experiment_id,
@@ -320,7 +320,7 @@ class ExperimentTracker:
         # In this minimal version, parameters are stored as JSON in the run record
         pass
 
-    def _save_metric()
+    def _save_metric(
         self, run_id: str, metric_name: str, metric_value: float, step: int = None
     ):
     """Save metric to database"""
@@ -353,7 +353,7 @@ class ExperimentTracker:
             "python_version": sys.version,
             "platform": platform.platform,
             "python_executable": sys.executable,
-        }
+)
 
 
 # Global instance for easy access

@@ -63,7 +63,7 @@ class CacheEntry:
             'timestamp': self.timestamp.isoformat(),
             'last_access': self.last_access.isoformat() if self.last_access else None,
             'value': None  # Don't serialize the actual value in metadata
-        }
+)
 
 
 @dataclass
@@ -93,7 +93,7 @@ class CacheStats:
             **asdict(self),
             'hit_rate': self.hit_rate,
             'miss_rate': self.miss_rate
-        }
+)
 
 
 class CacheSerializer:
@@ -147,7 +147,7 @@ class RedisCache:
     def _init_redis_client(self):
     """Initialize Redis client"""
         try:
-            self._redis_client = redis.Redis()
+            self._redis_client = redis.Redis(
                 host=self.config.host,
                 port=self.config.port,
                 password=self.config.password,
@@ -173,7 +173,7 @@ class RedisCache:
             return
         
         self._running = True
-        self._health_check_thread = threading.Thread()
+        self._health_check_thread = threading.Thread(
             target=self._health_check_loop,
             daemon=True,
             name="redis-health-check"
@@ -299,7 +299,7 @@ class RedisCache:
                     'serializer': serializer,
                     'access_count': 0,
                     'last_access': datetime.utcnow().isoformat()
-                }
+)
                 meta_data = json.dumps(meta).encode('utf-8')
                 
                 # Store value and metadata

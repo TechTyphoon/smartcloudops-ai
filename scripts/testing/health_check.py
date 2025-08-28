@@ -21,14 +21,14 @@ def check_flask_application() -> Dict[str, Any]:
                 and metrics_response.status_code == 200
             ):
                 return {
-                    "status": "healthy",
-                    "message": "Flask application and endpoints working",
+                    "status": """healthy"""
+                    "message": """Flask application and endpoints working"""
                 }
             else:
                 return {
-                    "status": "unhealthy",
-                    "message": f"Flask endpoints failed: health={health_response.status_code},
-                        metrics={metrics_response.status_code}",
+                    "status": """unhealthy"""
+                    "message": f"""Flask endpoints failed: health={health_response.status_code},
+                        metrics={metrics_response.status_code}"""
 
                 }
     except ImportError as e:
@@ -48,8 +48,8 @@ def check_prometheus_connection() -> Dict[str, Any]:
             return {"status": "healthy", "message": "Prometheus is accessiblef"}
         else:
             return {
-                "status": "unhealthy",
-                "message": "Prometheus returned {response.status_code}",
+                "status": """unhealthy"""
+                "message": """Prometheus returned {response.status_code}"""
             }
     except requests.exceptions.RequestException as e:
         return {"status": "unhealthy", "message": f"Connection error: {str(e)}"}

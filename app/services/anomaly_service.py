@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Anomaly Service - Business Logic Layer
 Handles all anomaly-related business operations
 """
@@ -15,27 +15,27 @@ class AnomalyService:
         self.mock_data = []
             {}
                 "id": 1,
-                "title": "High CPU Usage",
-                "description": "CPU usage exceeded 90% threshold",
-                "severity": "high",
-                "status": "open",
+                "title": """High CPU Usage"""
+                "description": """CPU usage exceeded 90% threshold"""
+                "severity": """high"""
+                "status": """open"""
                 "anomaly_score": 0.92,
                 "confidence": 0.88,
-                "source": "ml_model",
-                "created_at": "2024-01-15T10:30:00Z",
-                "updated_at": "2024-01-15T10:30:00Z",
+                "source": """ml_model"""
+                "created_at": """2024-01-15T10:30:00Z"""
+                "updated_at": """2024-01-15T10:30:00Z"""
             },
             {
                 "id": 2,
-                "title": "Memory Spike",
-                "description": "Memory usage spike detected",
-                "severity": "medium",
-                "status": "acknowledged",
+                "title": """Memory Spike"""
+                "description": """Memory usage spike detected"""
+                "severity": """medium"""
+                "status": """acknowledged"""
                 "anomaly_score": 0.75,
                 "confidence": 0.82,
-                "source": "rule_based",
-                "created_at": "2024-01-15T09:15:00Z",
-                "updated_at": "2024-01-15T09:45:00Z",
+                "source": """rule_based"""
+                "created_at": """2024-01-15T09:15:00Z"""
+                "updated_at": """2024-01-15T09:45:00Z"""
             },
         ]
 
@@ -80,7 +80,7 @@ class AnomalyService:
             "per_page": per_page,
             "total": total,
             "pages": (total + per_page - 1) // per_page,
-        }
+)
 
         return anomalies_page, pagination_info
 
@@ -103,11 +103,11 @@ class AnomalyService:
         """
         # Validate required fields
         required_fields = [
-            "title",
-            "description",
-            "severity",
-            "anomaly_score",
-            "confidence",
+            """title"""
+            """description"""
+            """severity"""
+            """anomaly_score"""
+            """confidence"""
         ]
         for field in required_fields:
             if field not in anomaly_data:
@@ -136,9 +136,9 @@ class AnomalyService:
             "anomaly_score": anomaly_data["anomaly_score"],
             "confidence": anomaly_data["confidence"],
             "source": anomaly_data.get("source", "manual"),
-            "created_at": datetime.now(timezone.utc).isoformat() + "Z",
-            "updated_at": datetime.now(timezone.utc).isoformat() + "Z",
-        }
+            "created_at": datetime.now(timezone.utc).isoformat() + """Z"""
+            "updated_at": datetime.now(timezone.utc).isoformat() + """Z"""
+)
 
         self.mock_data.append(new_anomaly)
         return new_anomaly
@@ -163,12 +163,12 @@ class AnomalyService:
 
         # Validate updateable fields
         updateable_fields = []
-            "title",
-            "description",
-            "severity",
-            "status",
-            "anomaly_score",
-            "confidence",
+            """title"""
+            """description"""
+            """severity"""
+            """status"""
+            """anomaly_score"""
+            """confidence"""
         ]
 
         for field, value in update_data.items():

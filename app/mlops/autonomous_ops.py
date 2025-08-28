@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Autonomous Operations Engine - Minimal Working Version
 Intelligent automation for anomaly remediation
 """
@@ -35,7 +35,7 @@ class PolicyRule:
         if self.created_at is None:
             self.created_at = datetime.now()
 
-    def evaluate()
+    def evaluate(
         self, anomaly_info: Dict[str, Any], system_state: Dict[str, Any]
     ) -> bool:
     """Evaluate if this policy rule applies to the given anomaly and system state."""
@@ -89,9 +89,9 @@ class AutonomousOperationsEngine:
     """Load default automation policies."""
         policies = []
             # Critical anomalies - full automation
-            PolicyRule()
-                rule_id="critical_auto",
-                name="Critical Anomaly Auto-Remediation",
+            PolicyRule(
+                rule_id="""critical_auto"""
+                name="""Critical Anomaly Auto-Remediation"""
                 conditions={}
                     "severity": ["critical"],
                     "min_confidence": 0.9,
@@ -100,9 +100,9 @@ class AutonomousOperationsEngine:
                 automation_level=AutomationLevel.FULL_AUTO,
                 priority=1),
             # High severity - semi-automation
-            PolicyRule()
-                rule_id="high_semi_auto",
-                name="High Severity Semi-Automation",
+            PolicyRule(
+                rule_id="""high_semi_auto"""
+                name="""High Severity Semi-Automation"""
                 conditions={}
                     "severity": ["high"],
                     "min_confidence": 0.8,
@@ -111,23 +111,23 @@ class AutonomousOperationsEngine:
                 automation_level=AutomationLevel.SEMI_AUTO,
                 priority=2),
             # Medium severity - adaptive automation
-            PolicyRule()
-                rule_id="medium_adaptive",
-                name="Medium Severity Adaptive Automation",
+            PolicyRule(
+                rule_id="""medium_adaptive"""
+                name="""Medium Severity Adaptive Automation"""
                 conditions={"severity": ["medium"], "min_confidence": 0.6},
                 automation_level=AutomationLevel.ADAPTIVE,
                 priority=3),
             # Low severity - manual intervention
-            PolicyRule()
-                rule_id="low_manual",
-                name="Low Severity Manual Intervention",
+            PolicyRule(
+                rule_id="""low_manual"""
+                name="""Low Severity Manual Intervention"""
                 conditions={"severity": ["low"]},
                 automation_level=AutomationLevel.MANUAL,
                 priority=4),
             # Business hours policy
-            PolicyRule()
-                rule_id="business_hours",
-                name="Business Hours Automation",
+            PolicyRule(
+                rule_id="""business_hours"""
+                name="""Business Hours Automation"""
                 conditions={}
                     "time_window": {"start": 9, "end": 17},
                     "severity": ["high", "critical"],
@@ -148,7 +148,7 @@ class AutonomousOperationsEngine:
         self.system_policies = [p for p in self.system_policies if p.rule_id != rule_id]
         logger.info(f"Removed automation policy: {rule_id}")
 
-    def evaluate_automation_level()
+    def evaluate_automation_level(
         self, anomaly_info: Dict[str, Any], system_state: Dict[str, Any]
     ) -> Tuple[AutomationLevel, PolicyRule]:
     """Evaluate automation level based on policies."""
@@ -161,9 +161,9 @@ class AutonomousOperationsEngine:
 
         if not applicable_policies:
             # Default to manual intervention
-            default_policy = PolicyRule()
-                rule_id="default_manual",
-                name="Default Manual Intervention",
+            default_policy = PolicyRule(
+                rule_id="""default_manual"""
+                name="""Default Manual Intervention"""
                 conditions={},
                 automation_level=AutomationLevel.MANUAL,
                 priority=10)
@@ -186,12 +186,12 @@ class AutonomousOperationsEngine:
             # Mock anomaly data for demonstration
             anomaly_info = {
                 "id": anomaly_id,
-                "severity": "high",
-                "description": f"Anomaly {anomaly_id}",
+                "severity": """high"""
+                "description": f"""Anomaly {anomaly_id}"""
                 "confidence": 0.85,
-                "source": "ml_model",
+                "source": """ml_model"""
                 "metrics": {"cpu_usage": 85, "memory_usage": 78},
-            }
+)
 
             # Get current system state
             system_state = await self._get_system_state()
@@ -204,10 +204,10 @@ class AutonomousOperationsEngine:
             # Mock recommendations
             recommendations = []
                 {}
-                    "action_type": "scale_up",
+                    "action_type": """scale_up"""
                     "confidence": 0.9,
-                    "description": "Scale up resources to handle load",
-                }
+                    "description": """Scale up resources to handle load"""
+)
             ]
 
             # Execute based on automation level
@@ -250,27 +250,27 @@ class AutonomousOperationsEngine:
             "response_time": 150.0,
             "active_connections": 342,
             "timestamp": datetime.now().isoformat(),
-        }
+)
 
-    async def _handle_manual_intervention()
+    async def _handle_manual_intervention(
         self, anomaly: Dict[str, Any], recommendations: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
     """Handle manual intervention."""
         self.automation_stats["manual_interventions"] += 1
 
         return {}
-            "automation_level": "manual",
-            "action": "manual_intervention_required",
+            "automation_level": """manual"""
+            "action": """manual_intervention_required"""
             "recommendations": recommendations,
-            "message": "Manual intervention required. Recommendations provided.",
+            "message": """Manual intervention required. Recommendations provided."""
             "next_steps": []
-                "Review anomaly details",
-                "Evaluate recommendations",
-                "Execute manual remediation if needed",
+                """Review anomaly details"""
+                """Evaluate recommendations"""
+                """Execute manual remediation if needed"""
             ],
-        }
+)
 
-    async def _handle_semi_automation()
+    async def _handle_semi_automation(
         self,
         anomaly: Dict[str, Any],
         recommendations: List[Dict[str, Any]],
@@ -284,15 +284,15 @@ class AutonomousOperationsEngine:
 
         # In real implementation, would create pending remediation for approval
         return {}
-            "automation_level": "semi_auto",
-            "action": "pending_approval",
+            "automation_level": """semi_auto"""
+            "action": """pending_approval"""
             "recommendation": best_recommendation,
             "policy": policy.name,
-            "message": "Semi-automated remediation prepared. Awaiting approval.",
+            "message": """Semi-automated remediation prepared. Awaiting approval."""
             "approval_required": True,
-        }
+)
 
-    async def _handle_full_automation()
+    async def _handle_full_automation(
         self, anomaly: Dict[str, Any], recommendations: List[Dict[str, Any]]
     ) -> Dict[str, Any]:
     """Handle full automation."""
@@ -306,8 +306,8 @@ class AutonomousOperationsEngine:
         success = best_recommendation.get("confidence", 0) > 0.8
 
         return {}
-            "automation_level": "full_auto",
-            "action": "remediation_executed",
+            "automation_level": """full_auto"""
+            "action": """remediation_executed"""
             "recommendation": best_recommendation,
             "success": success,
             "message": ()
@@ -315,9 +315,9 @@ class AutonomousOperationsEngine:
                 if success
                 else "Automated remediation failed."
             ),
-        }
+)
 
-    async def _handle_adaptive_automation()
+    async def _handle_adaptive_automation(
         self,
         anomaly: Dict[str, Any],
         recommendations: List[Dict[str, Any]],
@@ -376,7 +376,7 @@ class AutonomousOperationsEngine:
                 "priority": policy.priority,
                 "enabled": policy.enabled,
                 "created_at": policy.created_at.isoformat(),
-            }
+)
             for policy in self.system_policies
         ]
 
@@ -386,18 +386,18 @@ class PolicyManager:
     def __init__(self, ops_engine: AutonomousOperationsEngine):
         self.ops_engine = ops_engine
 
-    def create_policy()
+    def create_policy(
         self,
-        name: str,
+        name: str
         conditions: Dict[str, Any],
-        automation_level: str,
+        automation_level: str
         priority: int = 5) -> str:
     """Create a new automation policy."""
         rule_id = f"custom_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
         automation_level_enum = AutomationLevel(automation_level)
 
-        policy = PolicyRule()
+        policy = PolicyRule(
             rule_id=rule_id,
             name=name,
             conditions=conditions,

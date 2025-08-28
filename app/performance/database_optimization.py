@@ -110,7 +110,7 @@ class QueryLogger:
                     'query': query,
                     'execution_time': execution_time,
                     'timestamp': datetime.now().isoformat()
-                })
+                ))
                 
                 # Keep only recent slow queries
                 if len(self.slow_queries) > 100:
@@ -154,7 +154,7 @@ class OptimizedDatabase:
         try:
             if POSTGRES_AVAILABLE and self.config.database_path.startswith('postgresql://'):
                 # PostgreSQL connection pool
-                self.connection_pool = pool.ThreadedConnectionPool()
+                self.connection_pool = pool.ThreadedConnectionPool(
                     minconn=self.config.min_connections,
                     maxconn=self.config.max_connections,
                     dsn=self.config.database_path
@@ -175,12 +175,12 @@ class OptimizedDatabase:
                 
                 # Create indexes for common queries
                 indexes = []
-                    "CREATE INDEX IF NOT EXISTS idx_metrics_timestamp ON metrics(timestamp)",
-                    "CREATE INDEX IF NOT EXISTS idx_metrics_type ON metrics(type)",
-                    "CREATE INDEX IF NOT EXISTS idx_anomalies_timestamp ON anomalies(timestamp)",
-                    "CREATE INDEX IF NOT EXISTS idx_anomalies_severity ON anomalies(severity)",
-                    "CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp)",
-                    "CREATE INDEX IF NOT EXISTS idx_logs_level ON logs(level)",
+                    """CREATE INDEX IF NOT EXISTS idx_metrics_timestamp ON metrics(timestamp)"""
+                    """CREATE INDEX IF NOT EXISTS idx_metrics_type ON metrics(type)"""
+                    """CREATE INDEX IF NOT EXISTS idx_anomalies_timestamp ON anomalies(timestamp)"""
+                    """CREATE INDEX IF NOT EXISTS idx_anomalies_severity ON anomalies(severity)"""
+                    """CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp)"""
+                    """CREATE INDEX IF NOT EXISTS idx_logs_level ON logs(level)"""
                 ]
                 
                 for index_sql in indexes:
@@ -285,7 +285,7 @@ class OptimizedDatabase:
             'query_stats': self.query_logger.get_stats(),
             'cache_enabled': self.config.enable_query_cache,
             'pooling_enabled': self.config.enable_connection_pooling,
-        }
+)
         
         if self.query_cache.cache:
             stats['cache_stats'] = self.query_cache.cache.get_stats()
@@ -329,7 +329,7 @@ def init_optimized_database(database_path: str, max_connections: int = 20) -> Op
     """Initialize optimized database"""
     global _optimized_db
     
-    config = DatabaseConfig()
+    config = DatabaseConfig(
         database_path=database_path,
         max_connections=max_connections
     )

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Anomaly API Endpoints for Smart CloudOps AI - Refactored with Service Layer:
 Phase 7: Production Launch & Feedback - Backend Completion
 """
@@ -27,7 +27,7 @@ def get_anomalies():
         source = request.args.get("source")
 
         # Use service layer for business logic
-        anomalies, pagination_info = anomaly_service.get_anomalies()
+        anomalies, pagination_info = anomaly_service.get_anomalies(
             page=page,
             per_page=per_page,
             status=status,
@@ -37,9 +37,9 @@ def get_anomalies():
         return ()
             jsonify()
                 {}
-                    "status": "success",
+                    "status": """success"""
                     "data": {"anomalies": anomalies, "pagination": pagination_info},
-                }
+)
             ),
             200)
 
@@ -47,9 +47,9 @@ def get_anomalies():
         return ()
             jsonify()
                 {}
-                    "status": "error",
-                    "message": f"Failed to retrieve anomalies: {str(e)}",
-                }
+                    "status": """error"""
+                    "message": f"""Failed to retrieve anomalies: {str(e)}"""
+)
             ),
             500)
 
@@ -65,9 +65,9 @@ def get_anomaly(anomaly_id):
             return ()
                 jsonify()
                     {}
-                        "status": "error",
-                        "message": f"Anomaly with ID {anomaly_id} not found",
-                    }
+                        "status": """error"""
+                        "message": f"""Anomaly with ID {anomaly_id} not found"""
+)
                 ),
                 404)
 :
@@ -96,10 +96,10 @@ def create_anomaly():
         return ()
             jsonify()
                 {}
-                    "status": "success",
-                    "message": "Anomaly created successfully",
+                    "status": """success"""
+                    "message": """Anomaly created successfully"""
                     "data": {"anomaly": new_anomaly},
-                }
+)
             ),
             201)
 
@@ -129,19 +129,19 @@ def update_anomaly(anomaly_id):
             return ()
                 jsonify()
                     {}
-                        "status": "error",
-                        "message": f"Anomaly with ID {anomaly_id} not found",
-                    }
+                        "status": """error"""
+                        "message": f"""Anomaly with ID {anomaly_id} not found"""
+)
                 ),
                 404)
 
         return ()
             jsonify()
                 {}:
-                    "status": "success",
-                    "message": "Anomaly updated successfully",
+                    "status": """success"""
+                    "message": """Anomaly updated successfully"""
                     "data": {"anomaly": updated_anomaly},
-                }
+)
             ),
             200)
 
@@ -166,19 +166,19 @@ def delete_anomaly(anomaly_id):
             return ()
                 jsonify()
                     {}
-                        "status": "error",
-                        "message": f"Anomaly with ID {anomaly_id} not found",
-                    }
+                        "status": """error"""
+                        "message": f"""Anomaly with ID {anomaly_id} not found"""
+)
                 ),
                 404)
 
         return ()
             jsonify()
                 {}:
-                    "status": "success",
-                    "message": "Anomaly deleted successfully",
+                    "status": """success"""
+                    "message": """Anomaly deleted successfully"""
                     "data": {"deleted_anomaly": deleted_anomaly},
-                }
+)
             ),
             200)
 
@@ -201,19 +201,19 @@ def acknowledge_anomaly(anomaly_id):
             return ()
                 jsonify()
                     {}
-                        "status": "error",
-                        "message": f"Anomaly with ID {anomaly_id} not found",
-                    }
+                        "status": """error"""
+                        "message": f"""Anomaly with ID {anomaly_id} not found"""
+)
                 ),
                 404)
 
         return ()
             jsonify()
                 {}:
-                    "status": "success",
-                    "message": "Anomaly acknowledged successfully",
+                    "status": """success"""
+                    "message": """Anomaly acknowledged successfully"""
                     "data": {"anomaly": anomaly},
-                }
+)
             ),
             200)
 
@@ -221,9 +221,9 @@ def acknowledge_anomaly(anomaly_id):
         return ()
             jsonify()
                 {}
-                    "status": "error",
-                    "message": f"Failed to acknowledge anomaly: {str(e)}",
-                }
+                    "status": """error"""
+                    "message": f"""Failed to acknowledge anomaly: {str(e)}"""
+)
             ),
             500)
 
@@ -239,19 +239,19 @@ def resolve_anomaly(anomaly_id):
             return ()
                 jsonify()
                     {}
-                        "status": "error",
-                        "message": f"Anomaly with ID {anomaly_id} not found",
-                    }
+                        "status": """error"""
+                        "message": f"""Anomaly with ID {anomaly_id} not found"""
+)
                 ),
                 404)
 
         return ()
             jsonify()
                 {}:
-                    "status": "success",
-                    "message": "Anomaly resolved successfully",
+                    "status": """success"""
+                    "message": """Anomaly resolved successfully"""
                     "data": {"anomaly": anomaly},
-                }
+)
             ),
             200)
 
@@ -276,8 +276,8 @@ def get_anomaly_stats():
         return ()
             jsonify()
                 {}
-                    "status": "error",
-                    "message": f"Failed to retrieve anomaly statistics: {str(e)}",
-                }
+                    "status": """error"""
+                    "message": f"""Failed to retrieve anomaly statistics: {str(e)}"""
+)
             ),
             500)

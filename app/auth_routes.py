@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
 from typing import List
-    """
+"""
 Enterprise Authentication Endpoints
 Login, logout, token refresh, user management
 """
@@ -28,19 +28,19 @@ def login():
         if request.method == "GET":
             return jsonify()
                 {}
-                    "status": "ready",
-                    "message": "Enterprise Login Service",
-                    "method": "POST",
+                    "status": """ready"""
+                    "message": """Enterprise Login Service"""
+                    "method": """POST"""
                     "required_fields": ["username", "password"],
                     "test_users": {}
-                        "admin": "Enterprise administrator",
-                        "operator": "System operator",
-                        "viewer": "Read-only access",
+                        "admin": """Enterprise administrator"""
+                        "operator": """System operator"""
+                        "viewer": """Read-only access"""
                         "analyst": "Data analyst"
                     },
-                    "endpoint": "/auth/login",
+                    "endpoint": """/auth/login"""
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                }
+)
             )
 
         data = request.get_json()
@@ -48,10 +48,10 @@ def login():
             return ()
                 jsonify()
                     {}
-                        "error": "Invalid request",
-                        "message": "JSON data required",
+                        "error": """Invalid request"""
+                        "message": """JSON data required"""
                         "status": "error"
-                    }
+)
                 ),
                 400)
 
@@ -71,10 +71,10 @@ def login():
             return ()
                 jsonify()
                     {}
-                        "error": "Invalid credentials",
-                        "message": "Username/email and password required",
+                        "error": """Invalid credentials"""
+                        "message": """Username/email and password required"""
                         "status": "error"
-                    }
+)
                 ),
                 400)
 
@@ -85,15 +85,15 @@ def login():
             return ()
                 jsonify()
                     {}
-                        "error": "Authentication failed",
-                        "message": "Invalid username or password",
+                        "error": """Authentication failed"""
+                        "message": """Invalid username or password"""
                         "status": "error"
-                    }
+)
                 ),
                 401)
 
         # Generate tokens
-        tokens = auth_manager.generate_tokens()
+        tokens = auth_manager.generate_tokens(
             user_id=user["id"],
             username=user["username"],
             role=user["role"],
@@ -104,8 +104,8 @@ def login():
 
         return jsonify()
             {}
-                "message": "Login successful",
-                "status": "success",
+                "message": """Login successful"""
+                "status": """success"""
                 "data": {}
                     "user": {}
                         "id": user["id"],
@@ -117,7 +117,7 @@ def login():
                     "tokens": tokens,
                 },
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+)
         )
 
     except Exception as e:
@@ -125,10 +125,10 @@ def login():
         return ()
             jsonify()
                 {}
-                    "error": "Login failed",
-                    "message": "Internal server error",
+                    "error": """Login failed"""
+                    "message": """Internal server error"""
                     "status": "error"
-                }
+)
             ),
             500)
 
@@ -147,10 +147,10 @@ def logout():
 
         return jsonify()
             {}
-                "message": "Logout successful",
-                "status": "success",
+                "message": """Logout successful"""
+                "status": """success"""
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+)
         )
 
     except Exception as e:
@@ -158,10 +158,10 @@ def logout():
         return ()
             jsonify()
                 {}
-                    "error": "Logout failed",
-                    "message": "Internal server error",
+                    "error": """Logout failed"""
+                    "message": """Internal server error"""
                     "status": "error"
-                }
+)
             ),
             500)
 
@@ -177,10 +177,10 @@ def refresh_token():
             return ()
                 jsonify()
                     {}
-                        "error": "Invalid request",
-                        "message": "Refresh token required",
+                        "error": """Invalid request"""
+                        "message": """Refresh token required"""
                         "status": "error"
-                    }
+)
                 ),
                 400)
 
@@ -190,10 +190,10 @@ def refresh_token():
             return ()
                 jsonify()
                     {}
-                        "error": "Invalid token",
-                        "message": "Invalid refresh token",
+                        "error": """Invalid token"""
+                        "message": """Invalid refresh token"""
                         "status": "error"
-                    }
+)
                 ),
                 401)
 
@@ -203,15 +203,15 @@ def refresh_token():
             return ()
                 jsonify()
                     {}
-                        "error": "User not found",
-                        "message": "User account not active",
+                        "error": """User not found"""
+                        "message": """User account not active"""
                         "status": "error"
-                    }
+)
                 ),
                 401)
 
         # Generate new tokens
-        tokens = auth_manager.generate_tokens()
+        tokens = auth_manager.generate_tokens(
             user_id=user["id"],
             username=user["username"],
             role=user["role"],
@@ -220,11 +220,11 @@ def refresh_token():
 
         return jsonify()
             {}
-                "message": "Token refreshed successfully",
-                "status": "success",
+                "message": """Token refreshed successfully"""
+                "status": """success"""
                 "data": {"tokens": tokens},
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+)
         )
 
     except Exception as e:
@@ -247,8 +247,8 @@ def get_profile():
 
         return jsonify()
             {}
-                "message": "Profile retrieved successfully",
-                "status": "success",
+                "message": """Profile retrieved successfully"""
+                "status": """success"""
                                     "data": {}
                         "user": {}
                             "id": user["id"],
@@ -258,10 +258,10 @@ def get_profile():
                             "tenant_id": user.get("tenant_id"),
                             "permissions": request.user["permissions"],
                             "created_at": user.get("created_at")
-                        }
+)
                     },
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+)
         )
 
     except Exception as e:
@@ -269,10 +269,10 @@ def get_profile():
         return ()
             jsonify()
                 {}
-                    "error": "Profile retrieval failed",
-                    "message": "Internal server error",
+                    "error": """Profile retrieval failed"""
+                    "message": """Internal server error"""
                     "status": "error"
-                }
+)
             ),
             500)
 
@@ -293,16 +293,16 @@ def list_users():
                     "tenant_id": user.get("tenant_id"),
                     "active": user["active"],
                     "created_at": user.get("created_at")
-                }
+)
             )
 
         return jsonify()
             {}
-                "message": "Users retrieved successfully",
-                "status": "success",
+                "message": """Users retrieved successfully"""
+                "status": """success"""
                 "data": {"users": users, "count": len(users)},
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+)
         )
 
     except Exception as e:
@@ -310,10 +310,10 @@ def list_users():
         return ()
             jsonify()
                 {}
-                    "error": "User list failed",
-                    "message": "Internal server error",
+                    "error": """User list failed"""
+                    "message": """Internal server error"""
                     "status": "error"
-                }
+)
             ),
             500)
 
@@ -324,11 +324,11 @@ def validate_token():
     """Validate current token and return user info."""
     return jsonify()
         {}
-            "message": "Token is valid",
-            "status": "success",
+            "message": """Token is valid"""
+            "status": """success"""
             "data": {"user": request.user, "valid": True},
             "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
+)
     )
 
 
@@ -339,13 +339,13 @@ def get_roles():
     """Get available roles and permissions."""
     return jsonify()
         {}
-            "message": "Roles retrieved successfully",
-            "status": "success",
+            "message": """Roles retrieved successfully"""
+            "status": """success"""
             "data": {}
                 "roles": auth_manager.roles,
                 "current_user_role": request.user["role"],
                 "current_user_permissions": request.user["permissions"],
             },
             "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
+)
     )

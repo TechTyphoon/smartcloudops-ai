@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Knowledge Base and Recommendation Engine - Minimal Working Version
 Intelligent learning system for anomaly analysis and remediation recommendations
 """
@@ -53,7 +53,7 @@ class KnowledgeGraph:
         node_id = f"{node_type}_{self.node_counter}"
         self.node_counter += 1
 
-        node = KnowledgeNode()
+        node = KnowledgeNode(
             node_id=node_id,
             node_type=node_type,
             properties=properties,
@@ -65,18 +65,18 @@ class KnowledgeGraph:
 
         return node_id
 
-    def add_edge()
+    def add_edge(
         self,
-        source_id: str,
-        target_id: str,
-        relationship_type: str,
+        source_id: str
+        target_id: str
+        relationship_type: str
         weight: float = 1.0,
         confidence: float = 1.0):
     """Add an edge to the knowledge graph."""
         if source_id not in self.nodes or target_id not in self.nodes:
             raise ValueError("Source or target node not found")
 
-        edge = KnowledgeEdge()
+        edge = KnowledgeEdge(
             source_id=source_id,
             target_id=target_id,
             relationship_type=relationship_type,
@@ -87,7 +87,7 @@ class KnowledgeGraph:
         self.edges[source_id].append(edge)
         logger.debug(f"Added edge: {source_id} -[{relationship_type}]-> {target_id}")
 
-    def get_related_nodes()
+    def get_related_nodes(
         self, node_id: str, relationship_type: str = None
     ) -> List[KnowledgeNode]:
     """Get nodes related to a given node."""
@@ -102,7 +102,7 @@ class KnowledgeGraph:
 
         return related_nodes
 
-    def find_similar_nodes()
+    def find_similar_nodes(
         self, node_id: str, similarity_threshold: float = 0.7
     ) -> List[Tuple[KnowledgeNode, float]]:
     """Find similar nodes based on properties."""
@@ -122,7 +122,7 @@ class KnowledgeGraph:
         similar_nodes.sort(key=lambda x: x[1], reverse=True)
         return similar_nodes
 
-    def _calculate_node_similarity()
+    def _calculate_node_similarity(
         self, node1: KnowledgeNode, node2: KnowledgeNode
     ) -> float:
     """Calculate similarity between two nodes."""
@@ -197,7 +197,7 @@ class RecommendationEngine:
     """Recommendation engine for remediation actions."""
     def __init__(self, knowledge_graph: KnowledgeGraph):
         self.knowledge_graph = knowledge_graph
-        self.recommendation_model = RandomForestRegressor()
+        self.recommendation_model = RandomForestRegressor(
             n_estimators=100, random_state=42
         )
         self.is_trained = False
@@ -210,17 +210,17 @@ class RecommendationEngine:
             mock_data = []
                 {}
                     "anomaly": {}
-                        "severity": "high",
-                        "source": "cpu_alert",
-                        "description": "High CPU usage",
+                        "severity": """high"""
+                        "source": """cpu_alert"""
+                        "description": """High CPU usage"""
                     },
                     "remediation": {"action_type": "scale_up", "success": True},
                 },
                 {}
                     "anomaly": {}
-                        "severity": "medium",
-                        "source": "memory_alert",
-                        "description": "Memory usage spike",
+                        "severity": """medium"""
+                        "source": """memory_alert"""
+                        "description": """Memory usage spike"""
                     },
                     "remediation": {"action_type": "restart_service", "success": True},
                 },
@@ -258,26 +258,26 @@ class RecommendationEngine:
 
         if metrics.get("cpu_usage", 0) > 80:
             return {}
-                "type": "high_cpu_usage",
-                "description": "High CPU utilization causing performance issues",
+                "type": """high_cpu_usage"""
+                "description": """High CPU utilization causing performance issues"""
                 "confidence": 0.8,
-            }
+)
         elif metrics.get("memory_usage", 0) > 85:
             return {}
-                "type": "high_memory_usage",
-                "description": "High memory utilization causing system slowdown",
+                "type": """high_memory_usage"""
+                "description": """High memory utilization causing system slowdown"""
                 "confidence": 0.8,
-            }
+)
         elif metrics.get("error_rate", 0) > 5:
             return {}
-                "type": "high_error_rate",
-                "description": "High error rate indicating application issues",
+                "type": """high_error_rate"""
+                "description": """High error rate indicating application issues"""
                 "confidence": 0.9,
-            }
+)
 
         return None
 
-    def get_recommendations()
+    def get_recommendations(
         self, anomaly_info: Dict[str, Any], limit: int = 5
     ) -> List[Dict[str, Any]]:
     """Get remediation recommendations for an anomaly."""
@@ -289,7 +289,7 @@ class RecommendationEngine:
             "source": anomaly_info.get("source", "unknown"),
             "description": anomaly_info.get("description", "),
             "metrics_pattern": anomaly_info.get("metrics", {}),
-        }
+)
 
         # Create temporary node for similarity search
         temp_node_id = self.knowledge_graph.add_node("anomaly", anomaly_props)
@@ -317,8 +317,8 @@ class RecommendationEngine:
                                 "execution_time", 0
                             ),
                             "source_anomaly": similar_anomaly.properties,
-                            "reasoning": f"Similar anomaly resolved with {remediation.properties['action_type']}",
-                        }
+                            "reasoning": f"""Similar anomaly resolved with {remediation.properties['action_type']}"""
+)
                         recommendations.append(recommendation)
 
             # Sort by confidence and remove duplicates
@@ -370,7 +370,7 @@ class RecommendationEngine:
                         "restart_service": 3,
                         "cleanup_disk": 4,
                         "custom": 5,
-                    }
+)
                     target = action_encoding.get()
                         best_remediation.properties.get("action_type", "custom"), 5
                     )
@@ -423,9 +423,9 @@ class RecommendationEngine:
             return "unknown"
 
         # Create temporary node for feature extraction
-        temp_node = KnowledgeNode()
-            node_id="temp",
-            node_type="anomaly",
+        temp_node = KnowledgeNode(
+            node_id="""temp"""
+            node_type="""anomaly"""
             properties=anomaly_info,
             created_at=datetime.now(),
             updated_at=datetime.now())
@@ -435,12 +435,12 @@ class RecommendationEngine:
 
         # Decode prediction
         action_decoding = {
-            1: "scale_up",
-            2: "scale_down",
-            3: "restart_service",
-            4: "cleanup_disk",
-            5: "custom",
-        }
+            1: """scale_up"""
+            2: """scale_down"""
+            3: """restart_service"""
+            4: """cleanup_disk"""
+            5: """custom"""
+)
 
         return action_decoding.get(int(round(prediction), "custom")
 
@@ -457,7 +457,7 @@ class KnowledgeBaseManager:
         self.recommendation_engine.build_knowledge_from_data()
         self.recommendation_engine.train_recommendation_model()
 
-    def get_recommendations()
+    def get_recommendations(
         self, anomaly_info: Dict[str, Any], limit: int = 5
     ) -> List[Dict[str, Any]]:
     """Get remediation recommendations."""
@@ -467,7 +467,7 @@ class KnowledgeBaseManager:
     """Predict remediation action."""
         return self.recommendation_engine.predict_remediation(anomaly_info)
 
-    def add_experience()
+    def add_experience(
         self, anomaly_info: Dict[str, Any], remediation_action: str, success: bool
     ):
     """Add new experience to knowledge base."""
@@ -479,7 +479,7 @@ class KnowledgeBaseManager:
             "action_type": remediation_action,
             "success": success,
             "timestamp": datetime.now().isoformat(),
-        }
+)
         remediation_node_id = self.knowledge_graph.add_node()
             "remediation", remediation_props
         )
@@ -518,4 +518,4 @@ class KnowledgeBaseManager:
             "node_types": dict(node_types),
             "edge_types": dict(edge_types),
             "model_trained": self.recommendation_engine.is_trained,
-        }
+)

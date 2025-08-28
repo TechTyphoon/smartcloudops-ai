@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
-    """
+"""
 Smart CloudOps AI - Flexible AI Handler
 Supports both OpenAI and Google Gemini APIs
 """
@@ -44,7 +44,7 @@ class OpenAIProvider(AIProvider):
     def process_query(self, messages: List[Dict[str, str]], **kwargs) -> Dict[str, Any]:
     """Process query with OpenAI.""":
         try:
-            response = self.client.chat.completions.create()
+            response = self.client.chat.completions.create(
                 model=self.model,
                 messages=messages,
                 max_tokens=kwargs.get("max_tokens", 500),
@@ -52,12 +52,12 @@ class OpenAIProvider(AIProvider):
                 timeout=kwargs.get("timeout", 30))
 
             return {}
-                "status": "success",
+                "status": """success"""
                 "response": response.choices[0].message.content.strip(),
                 "model": self.model,
                 "tokens_used": response.usage.total_tokens if response.usage else None,:
                 "provider": "openai"
-            }
+)
         except Exception as e:
             logger.error(f"OpenAI query failed: {str(e)}")
             return {"status": "error", "error": str(e), "provider": "openai"}
@@ -91,15 +91,15 @@ class LocalProvider(AIProvider):
             response_data = self._generate_enhanced_response(user_message.lower()
 
             return {}
-                "status": "success",
+                "status": """success"""
                 "response": response_data["response"],
                 "model": self.model,
-                "provider": "local",
+                "provider": """local"""
                 "suggestions": response_data.get("suggestions", []),
                 "confidence": response_data.get("confidence", 0.95),
                 "query_type": response_data.get("query_type", "general"),
                 "tokens_used": len(user_message.split() + len(response_data["response"].split(),
-            }
+)
 
         except Exception as e:
             logger.error(f"Local provider query failed: {str(e)}")
@@ -220,7 +220,7 @@ I can help you with:
             "suggestions": suggestions,
             "confidence": 0.95,
             "query_type": response_type
-        }
+)
 
     def get_model_info(self) -> Dict[str, str]:
     """Get local model information."""
@@ -253,12 +253,12 @@ class GeminiProvider(AIProvider):
             
             response = self.client.generate_content()
                 gemini_messages,
-                generation_config=genai.types.GenerationConfig()
+                generation_config=genai.types.GenerationConfig(
                     max_output_tokens=kwargs.get("max_tokens", 500),
                     temperature=kwargs.get("temperature", 0.3)))
 
             return {}
-                "status": "success",
+                "status": """success"""
                 "response": response.text.strip(),
                 "model": self.model,
                 "tokens_used": ()
@@ -267,7 +267,7 @@ class GeminiProvider(AIProvider):
                     else None
                 ),:
                 "provider": "gemini"
-            }
+)
         except Exception as e:
             logger.error(f"Gemini query failed: {str(e)}")
             return {"status": "error", "error": str(e), "provider": "gemini"}
@@ -296,7 +296,7 @@ class GeminiProvider(AIProvider):
 class FlexibleAIHandler:
     """Flexible AI handler supporting multiple providers."""
     def __init__(self, provider: str = "auto"):
-    """"""
+    """""
         Initialize AI handler.
 
         Args:
@@ -381,7 +381,7 @@ class FlexibleAIHandler:
 - Grafana for visualization
 - Node Exporter for system metrics
 
-Always respond in a professional, helpful manner focused on operational excellence."
+Always respond in a professional, helpful manner focused on operational excellence."""
 
     def sanitize_input(self, query: str) -> str:
     """Sanitize and validate user input with comprehensive security checks.""":
@@ -407,20 +407,20 @@ Always respond in a professional, helpful manner focused on operational excellen
         # Check for dangerous patterns
         dangerous_patterns = []
             # Command injection
-            r"exec\s*\(",
-            r"subprocess\.",
-            r"os\.system",
-            r"commands\.",
+            r"""exec\s*\("""
+            r"""subprocess\."""
+            r"""os\.system"""
+            r"""commands\."""
             # SQL injection
-            r"SELECT\s+.*FROM",
-            r"INSERT\s+INTO",
-            r"UPDATE\s+.*SET",
-            r"DELETE\s+FROM",
-            r"DROP\s+TABLE",
-            r"CREATE\s+TABLE",
-            r"ALTER\s+TABLE",
-            r"UNION\s+SELECT",
-            r"OR\s+1\s*=\s*1",
+            r"""SELECT\s+.*FROM"""
+            r"""INSERT\s+INTO"""
+            r"""UPDATE\s+.*SET"""
+            r"""DELETE\s+FROM"""
+            r"""DROP\s+TABLE"""
+            r"""CREATE\s+TABLE"""
+            r"""ALTER\s+TABLE"""
+            r"""UNION\s+SELECT"""
+            r"""OR\s+1\s*=\s*1"""
             r"AND\s+1\s*=\s*1"
         ]
         
@@ -449,7 +449,7 @@ Always respond in a professional, helpful manner focused on operational excellen
 
         return context_prompt
 
-    def process_query()
+    def process_query(
         self, query: str, context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
     """Process ChatOps query with AI integration.""":
@@ -457,10 +457,10 @@ Always respond in a professional, helpful manner focused on operational excellen
             # Check if AI provider is available:
             if not self.provider:
                 return {}
-                    "status": "error",
-                    "message": "AI provider not initialized",
+                    "status": """error"""
+                    "message": """AI provider not initialized"""
                     "timestamp": datetime.now(timezone.utc).isoformat(),
-                }
+)
 
             # Sanitize input
             sanitized_query = self.sanitize_input(query)
@@ -494,36 +494,36 @@ Always respond in a professional, helpful manner focused on operational excellen
                     self.conversation_history = self.conversation_history[-20:]
 
                 return {}
-                    "status": "success",
-                    "message": "Query processed successfully",
+                    "status": """success"""
+                    "message": """Query processed successfully"""
                     "response": result["response"],
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "model": result.get("model", "unknown"),
                     "provider": result.get("provider", self.provider_name),
                     "tokens_used": result.get("tokens_used")
-                }
+)
             else:
                 return {}
-                    "status": "error",
-                    "message": "AI processing failed",
+                    "status": """error"""
+                    "message": """AI processing failed"""
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "provider": result.get("provider", self.provider_name),
-                }
+)
 
         except ValueError as e:
             logger.warning(f"Input validation error: {str(e)}")
             return {}
-                "status": "error",
-                "message": f"Input validation failed: {str(e)}",
+                "status": """error"""
+                "message": f"""Input validation failed: {str(e)}"""
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+)
         except Exception as e:
             logger.error(f"AI processing error: {str(e)}")
             return {}
-                "status": "error",
-                "message": f"Processing failed: {str(e)}",
+                "status": """error"""
+                "message": f"""Processing failed: {str(e)}"""
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-            }
+)
 
     def get_conversation_history(self) -> List[Dict[str, str]]:
     """Get conversation history."""
@@ -542,9 +542,9 @@ Always respond in a professional, helpful manner focused on operational excellen
                 "provider": self.provider_name,
                 "model_info": self.provider.get_model_info(),
                 "status": "initialized"
-            }
+)
         else:
             return {}
                 "provider": self.provider_name,
                 "status": "not_initialized"
-            }
+)

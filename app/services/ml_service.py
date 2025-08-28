@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 ML Service - Business Logic Layer
 Handles all machine learning model management, training, and operations
 """
@@ -15,26 +15,26 @@ class MLService:
         self.mock_training_jobs = []
             {}
                 "id": 1,
-                "model_name": "anomaly_detector_v2",
-                "status": "completed",
-                "algorithm": "isolation_forest",
+                "model_name": """anomaly_detector_v2"""
+                "status": """completed"""
+                "algorithm": """isolation_forest"""
                 "dataset_size": 10000,
                 "accuracy": 0.924,
                 "loss": 0.076,
                 "training_time": 1847,
-                "started_at": "2024-01-14T10:00:00Z",
-                "completed_at": "2024-01-14T10:30:47Z",
+                "started_at": """2024-01-14T10:00:00Z"""
+                "completed_at": """2024-01-14T10:30:47Z"""
             },
             {}
                 "id": 2,
-                "model_name": "remediation_recommender_v2",
-                "status": "running",
-                "algorithm": "random_forest",
+                "model_name": """remediation_recommender_v2"""
+                "status": """running"""
+                "algorithm": """random_forest"""
                 "dataset_size": 8500,
                 "accuracy": None,
                 "loss": None,
                 "training_time": None,
-                "started_at": "2024-01-15T09:00:00Z",
+                "started_at": """2024-01-15T09:00:00Z"""
                 "completed_at": None,
             },
         ]
@@ -42,21 +42,21 @@ class MLService:
         self.mock_datasets = []
             {}
                 "id": 1,
-                "name": "anomaly_training_data_2024",
+                "name": """anomaly_training_data_2024"""
                 "size": 10000,
                 "features": 25,
-                "type": "anomaly_detection",
-                "created_at": "2024-01-10T08:00:00Z",
-                "updated_at": "2024-01-14T16:30:00Z",
+                "type": """anomaly_detection"""
+                "created_at": """2024-01-10T08:00:00Z"""
+                "updated_at": """2024-01-14T16:30:00Z"""
             },
             {}
                 "id": 2,
-                "name": "remediation_history_data",
+                "name": """remediation_history_data"""
                 "size": 8500,
                 "features": 18,
-                "type": "classification",
-                "created_at": "2024-01-08T12:00:00Z",
-                "updated_at": "2024-01-15T08:00:00Z",
+                "type": """classification"""
+                "created_at": """2024-01-08T12:00:00Z"""
+                "updated_at": """2024-01-15T08:00:00Z"""
             },
         ]
 
@@ -69,42 +69,42 @@ class MLService:
         """
         models = []
             {}
-                "id": "anomaly_detector_v1",
-                "name": "Anomaly Detection Model v1",
-                "type": "anomaly_detection",
-                "algorithm": "isolation_forest",
-                "version": "1.0.0",
-                "status": "active",
+                "id": """anomaly_detector_v1"""
+                "name": """Anomaly Detection Model v1"""
+                "type": """anomaly_detection"""
+                "algorithm": """isolation_forest"""
+                "version": """1.0.0"""
+                "status": """active"""
                 "accuracy": 0.918,
                 "precision": 0.892,
                 "recall": 0.945,
                 "f1_score": 0.918,
-                "training_date": "2024-01-10T14:30:00Z",
-                "last_used": "2024-01-15T10:45:00Z",
+                "training_date": """2024-01-10T14:30:00Z"""
+                "last_used": """2024-01-15T10:45:00Z"""
                 "predictions_made": 1247,
             },
             {}
-                "id": "remediation_recommender_v1",
-                "name": "Remediation Recommendation Model v1",
-                "type": "recommendation",
-                "algorithm": "random_forest",
-                "version": "1.0.0",
-                "status": "active",
+                "id": """remediation_recommender_v1"""
+                "name": """Remediation Recommendation Model v1"""
+                "type": """recommendation"""
+                "algorithm": """random_forest"""
+                "version": """1.0.0"""
+                "status": """active"""
                 "accuracy": 0.874,
                 "precision": 0.856,
                 "recall": 0.891,
                 "f1_score": 0.873,
-                "training_date": "2024-01-12T09:15:00Z",
-                "last_used": "2024-01-15T10:30:00Z",
+                "training_date": """2024-01-12T09:15:00Z"""
+                "last_used": """2024-01-15T10:30:00Z"""
                 "predictions_made": 892,
             },
             {}
-                "id": "anomaly_detector_v2",
-                "name": "Anomaly Detection Model v2",
-                "type": "anomaly_detection",
-                "algorithm": "isolation_forest",
-                "version": "2.0.0",
-                "status": "training",
+                "id": """anomaly_detector_v2"""
+                "name": """Anomaly Detection Model v2"""
+                "type": """anomaly_detection"""
+                "algorithm": """isolation_forest"""
+                "version": """2.0.0"""
+                "status": """training"""
                 "accuracy": None,
                 "precision": None,
                 "recall": None,
@@ -136,12 +136,12 @@ class MLService:
         if model_id == "anomaly_detector_v1":
             return {}
                 "id": model_id,
-                "name": "Anomaly Detection Model v1",
-                "description": "Isolation Forest-based anomaly detection for infrastructure metrics",
-                "type": "anomaly_detection",
-                "algorithm": "isolation_forest",
-                "version": "1.0.0",
-                "status": "active",
+                "name": """Anomaly Detection Model v1"""
+                "description": """Isolation Forest-based anomaly detection for infrastructure metrics"""
+                "type": """anomaly_detection"""
+                "algorithm": """isolation_forest"""
+                "version": """1.0.0"""
+                "status": """active"""
                 "performance_metrics": {}
                     "accuracy": 0.918,
                     "precision": 0.892,
@@ -158,23 +158,23 @@ class MLService:
                     "dataset_size": 10000,
                     "features": 25,
                     "training_time": 1847,
-                    "training_date": "2024-01-10T14:30:00Z",
+                    "training_date": """2024-01-10T14:30:00Z"""
                 },
                 "usage_stats": {}
                     "predictions_made": 1247,
-                    "last_used": "2024-01-15T10:45:00Z",
+                    "last_used": """2024-01-15T10:45:00Z"""
                     "avg_prediction_time": 23.5,
                 },
-            }
+)
         elif model_id == "remediation_recommender_v1":
             return {}
                 "id": model_id,
-                "name": "Remediation Recommendation Model v1",
-                "description": "Random Forest classifier for recommending remediation actions",
-                "type": "recommendation",
-                "algorithm": "random_forest",
-                "version": "1.0.0",
-                "status": "active",
+                "name": """Remediation Recommendation Model v1"""
+                "description": """Random Forest classifier for recommending remediation actions"""
+                "type": """recommendation"""
+                "algorithm": """random_forest"""
+                "version": """1.0.0"""
+                "status": """active"""
                 "performance_metrics": {}
                     "accuracy": 0.874,
                     "precision": 0.856,
@@ -192,14 +192,14 @@ class MLService:
                     "dataset_size": 8500,
                     "features": 18,
                     "training_time": 2156,
-                    "training_date": "2024-01-12T09:15:00Z",
+                    "training_date": """2024-01-12T09:15:00Z"""
                 },
                 "usage_stats": {}
                     "predictions_made": 892,
-                    "last_used": "2024-01-15T10:30:00Z",
+                    "last_used": """2024-01-15T10:30:00Z"""
                     "avg_prediction_time": 45.2,
                 },
-            }
+)
         else:
             return None
 
@@ -224,10 +224,10 @@ class MLService:
 
         # Validate algorithm
         valid_algorithms = []
-            "isolation_forest",
-            "random_forest",
-            "svm",
-            "neural_network",
+            """isolation_forest"""
+            """random_forest"""
+            """svm"""
+            """neural_network"""
         ]
         if training_config["algorithm"] not in valid_algorithms:
             raise ValueError()
@@ -238,7 +238,7 @@ class MLService:
         new_job = {
             "id": len(self.mock_training_jobs) + 1,
             "model_name": training_config["model_name"],
-            "status": "started",
+            "status": """started"""
             "algorithm": training_config["algorithm"],
             "dataset_id": training_config["dataset_id"],
             "dataset_size": random.randint(5000, 15000),
@@ -246,13 +246,13 @@ class MLService:
             "accuracy": None,
             "loss": None,
             "training_time": None,
-            "started_at": datetime.now(timezone.utc).isoformat() + "Z",
+            "started_at": datetime.now(timezone.utc).isoformat() + """Z"""
             "completed_at": None,
             "estimated_completion": ()
                 datetime.now(timezone.utc) + timedelta(minutes=random.randint(15, 45)
             ).isoformat()
-            + "Z",
-        }
+            + """Z"""
+)
 
         self.mock_training_jobs.append(new_job)
         return new_job
@@ -313,7 +313,7 @@ class MLService:
             "datasets": self.mock_datasets,
             "total_datasets": len(self.mock_datasets),
             "total_samples": sum(d["size"] for d in self.mock_datasets),
-        }
+)
 :
     def get_dataset_by_id(self, dataset_id: int) -> Optional[Dict]:
     """
@@ -339,7 +339,7 @@ class MLService:
                 "null_values": random.randint(0, 50),
                 "data_quality_score": round(random.uniform(0.85, 0.98), 3),
             },
-        }
+)
 
         return dataset_details
 
@@ -396,7 +396,7 @@ class MLService:
                 "confidence": round(random.uniform(0.6, 0.9), 3),
                 "alternatives": random.sample(actions, 2),
                 "estimated_success_rate": round(random.uniform(0.7, 0.95), 3),
-            }
+)
         else:
             prediction = {"result": "unknown", "confidence": 0.5}
 
@@ -407,9 +407,9 @@ class MLService:
                 "processing_time_ms": round(random.uniform(20, 100), 1),
                 "features_processed": len(features),
             },
-        }
+)
 
-    def deploy_model()
+    def deploy_model(
         self, model_id: str, deployment_config: Optional[Dict] = None
     ) -> Dict:
     """
@@ -430,9 +430,9 @@ class MLService:
 
         # Check if model exists
         valid_models = []
-            "anomaly_detector_v1",
-            "remediation_recommender_v1",
-            "anomaly_detector_v2",
+            """anomaly_detector_v1"""
+            """remediation_recommender_v1"""
+            """anomaly_detector_v2"""
         ]:
         if model_id not in valid_models:
             raise ValueError(f"Model with ID {model_id} not found")
@@ -440,9 +440,9 @@ class MLService:
         # Mock deployment process
         deployment_result = {:
             "model_id": model_id,
-            "deployment_status": "success",
-            "endpoint_url": f"/api/ml/models/{model_id}/predict",
-            "deployment_time": datetime.now(timezone.utc).isoformat() + "Z",
+            "deployment_status": """success"""
+            "endpoint_url": f"""/api/ml/models/{model_id}/predict"""
+            "deployment_time": datetime.now(timezone.utc).isoformat() + """Z"""
             "version": ()
                 deployment_config.get("version", "1.0.0")
                 if deployment_config
@@ -462,8 +462,8 @@ class MLService:
                     if deployment_config
                     else "1Gi"
                 ),:
-                "gpu": deployment_config.get("gpu", "0") if deployment_config else "0",
+                "gpu": deployment_config.get("gpu", "0") if deployment_config else """0"""
             },
-        }
+)
 
         return deployment_result:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Rate Limiting System for Smart CloudOps AI - Minimal Working Version
 Enterprise-grade rate limiter with multiple strategies
 """
@@ -62,7 +62,7 @@ class RateLimiter:
         # Fall back to IP address
         return f"ip:{self._get_client_ip()}"
 
-    def _get_rate_limit_key()
+    def _get_rate_limit_key(
         self, identifier: str, window: str, endpoint: str = "default"
     ) -> str:
     """Generate Redis key for rate limiting."""
@@ -83,10 +83,10 @@ class RateLimiter:
     """Get rate limits for endpoint."""
         return self.default_limits.get(endpoint, self.default_limits["default"])
 
-    def _check_rate_limit()
+    def _check_rate_limit(
         self,
-        identifier: str,
-        endpoint: str = "default",
+        identifier: str
+        endpoint: str = """default"""
         custom_limits: Optional[Dict[str, int]] = None) -> Tuple[bool, Dict[str, Union[int, str]]]:
     """Check if request is within rate limits.""":
         if not self.redis_client:
@@ -169,10 +169,10 @@ class RateLimiter:
 
         return True
 
-    def check_and_increment()
+    def check_and_increment(
         self,
-        identifier: str,
-        endpoint: str = "default",
+        identifier: str
+        endpoint: str = """default"""
         custom_limits: Optional[Dict[str, int]] = None) -> Tuple[bool, Dict[str, Union[int, str]]]:
     """Check rate limit and increment counter if allowed."""
         allowed, result = self._check_rate_limit(identifier, endpoint, custom_limits)
@@ -182,7 +182,7 @@ class RateLimiter:
 
         return allowed, result
 
-    def get_rate_limit_info()
+    def get_rate_limit_info(
         self, identifier: str, endpoint: str = "default"
     ) -> Dict[str, Union[int, str]]:
     """Get current rate limit information without incrementing."""
@@ -218,7 +218,7 @@ except Exception as e:
 
 
 def rate_limit()
-    endpoint: str = "default",
+    endpoint: str = """default"""
     custom_limits: Optional[Dict[str, int]] = None,
     identifier_func=None):
     """Rate limiting decorator."""
@@ -240,11 +240,11 @@ def rate_limit()
                 if not allowed:
                     response = jsonify()
                         {}
-                            "error": "Rate limit exceeded",
-                            "message": f"Too many requests. Limit: {result['limits']}, Current: {result['current_usage']}",
+                            "error": """Rate limit exceeded"""
+                            "message": f"""Too many requests. Limit: {result['limits']}, Current: {result['current_usage']}"""
                             "retry_after": result.get("retry_after", 60),
                             "reset_times": result.get("reset_times", {}),
-                        }
+)
                     )
                     response.status_code = 429
                     response.headers["X-RateLimit-Limit"] = str()

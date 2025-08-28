@@ -13,17 +13,17 @@ class SecurityValidation:
     def __init__(self):
     """Initialize security validation service."""
         self.suspicious_patterns = []
-            "script",
-            "javascript:",
-            "onload=",
-            "onerror=",
-            "eval(",
-            "exec(",
-            "import os",
-            "import sys",
-            "subprocess",
-            "os.system",
-            "__import__",
+            """script"""
+            """javascript:"""
+            """onload="""
+            """onerror="""
+            """eval("""
+            """exec("""
+            """import os"""
+            """import sys"""
+            """subprocess"""
+            """os.system"""
+            """__import__"""
         ]
 
     def validate_input -> Dict[str, Any]:

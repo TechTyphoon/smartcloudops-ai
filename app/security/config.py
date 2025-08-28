@@ -47,50 +47,50 @@ class SecurityConfig:
 
     # SQL Injection Prevention Patterns
     SQL_INJECTION_PATTERNS = [
-        r"(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b)",
-        r"(\b(and|or)\b\s+\d+\s*[=<>])",
-        r"(--|#|/\*|\*/)",
-        r"(\bxp_|sp_|fn_)",
-        r"(\bwaitfor\b)",
-        r"(\bdelay\b)",
-        r"(\bbackup\b)",
-        r"(\brestore\b)",
-        r"(\bkill\b)",
-        r"(\bshutdown\b)",
+        r"""(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b)"""
+        r"""(\b(and|or)\b\s+\d+\s*[=<>])"""
+        r"""(--|#|/\*|\*/)"""
+        r"""(\bxp_|sp_|fn_)"""
+        r"""(\bwaitfor\b)"""
+        r"""(\bdelay\b)"""
+        r"""(\bbackup\b)"""
+        r"""(\brestore\b)"""
+        r"""(\bkill\b)"""
+        r"""(\bshutdown\b)"""
     ]
 
     # Command Injection Prevention Patterns
     COMMAND_INJECTION_PATTERNS = [
-        r"(\b(system|exec|eval|subprocess|os\.system|subprocess\.call)\b)",
-        r"(\b(import\s+os|import\s+subprocess|from\s+os\s+import)\b)",
-        r"(\b(__import__|getattr|setattr|delattr)\b)",
-        r"(\b(globals|locals)\b)",
-        r"(\b(compile|eval|exec)\b)",
-        r"(\b(file|open|read|write)\b)",
-        r"(\b(chmod|chown|chgrp)\b)",
-        r"(\b(rm|del|remove)\b)",
-        r"(\b(mkdir|rmdir)\b)",
-        r"(\b(cp|mv|ln)\b)",
+        r"""(\b(system|exec|eval|subprocess|os\.system|subprocess\.call)\b)"""
+        r"""(\b(import\s+os|import\s+subprocess|from\s+os\s+import)\b)"""
+        r"""(\b(__import__|getattr|setattr|delattr)\b)"""
+        r"""(\b(globals|locals)\b)"""
+        r"""(\b(compile|eval|exec)\b)"""
+        r"""(\b(file|open|read|write)\b)"""
+        r"""(\b(chmod|chown|chgrp)\b)"""
+        r"""(\b(rm|del|remove)\b)"""
+        r"""(\b(mkdir|rmdir)\b)"""
+        r"""(\b(cp|mv|ln)\b)"""
     ]
 
     # XSS Prevention Patterns
     XSS_PATTERNS = [
-        r"(\b(alert|confirm|prompt)\b)",
-        r"(\b(document\.|window\.|location\.)\b)",
-        r"(\b(onload|onerror|onclick|onmouseover|onfocus|onblur)\b)",
-        r"(\b(javascript:|vbscript:|data:)\b)",
-        r"(\b(expression|eval|setTimeout|setInterval)\b)",
-        r"(\b(innerHTML|outerHTML|document\.write)\b)",
+        r"""(\b(alert|confirm|prompt)\b)"""
+        r"""(\b(document\.|window\.|location\.)\b)"""
+        r"""(\b(onload|onerror|onclick|onmouseover|onfocus|onblur)\b)"""
+        r"""(\b(javascript:|vbscript:|data:)\b)"""
+        r"""(\b(expression|eval|setTimeout|setInterval)\b)"""
+        r"""(\b(innerHTML|outerHTML|document\.write)\b)"""
     ]
 
     # Path Traversal Prevention Patterns
     PATH_TRAVERSAL_PATTERNS = [
-        r"(\.\./|\.\.\\)",
-        r"(\b(cd|chdir|pwd)\b)",
-        r"(\b(ls|dir|cat|type|more|less)\b)",
-        r"(\b(find|grep|awk|sed)\b)",
-        r"(\b(tar|zip|unzip|gzip)\b)",
-        r"(\b(wget|curl|ftp|scp)\b)",
+        r"""(\.\./|\.\.\\)"""
+        r"""(\b(cd|chdir|pwd)\b)"""
+        r"""(\b(ls|dir|cat|type|more|less)\b)"""
+        r"""(\b(find|grep|awk|sed)\b)"""
+        r"""(\b(tar|zip|unzip|gzip)\b)"""
+        r"""(\b(wget|curl|ftp|scp)\b)"""
     ]
 
     # ========================================================================
@@ -98,10 +98,10 @@ class SecurityConfig:
     # ========================================================================
 
     RATE_LIMITS = {
-        "default": "100 per hour",
-        "auth": "5 per minute",
-        "api": "1000 per hour",
-        "chatops": "10 per minute",
+        "default": """100 per hour"""
+        "auth": """5 per minute"""
+        "api": """1000 per hour"""
+        "chatops": """10 per minute"""
         "admin": "1000 per hour"
     }
 
@@ -110,12 +110,12 @@ class SecurityConfig:
     # ========================================================================
 
     SECURITY_HEADERS = {
-        "X-Content-Type-Options": "nosniff",
-       "X-Frame-Options": "DENY",
-        "X-XSS-Protection": "1; mode=block",
-        "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
-        "Referrer-Policy": "strict-origin-when-cross-origin",
-        "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+        "X-Content-Type-Options": """nosniff"""
+       "X-Frame-Options": """DENY"""
+        "X-XSS-Protection": """1; mode=block"""
+        "Strict-Transport-Security": """max-age=31536000; includeSubDomains; preload"""
+        "Referrer-Policy": """strict-origin-when-cross-origin"""
+        "Permissions-Policy": """geolocation=(), microphone=(), camera=()"""
     }
 
     # Content Security Policy
@@ -139,10 +139,10 @@ class SecurityConfig:
     CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "").split(",")
     CORS_METHODS = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
     CORS_ALLOW_HEADERS = [
-        "Content-Type",
-        "Authorization",
-        "X-Requested-With",
-        "Accept",
+        """Content-Type"""
+        """Authorization"""
+        """X-Requested-With"""
+        """Accept"""
         "Origin"
     ]
     CORS_EXPOSE_HEADERS = ["Content-Length", "X-Total-Count"]
@@ -271,18 +271,18 @@ class SecurityConfig:
 
         # Length validation
         if len(input_string) > 1000:
-            warnings.append("Input exceeds recommended length of 1000 characters",
+            warnings.append("""Input exceeds recommended length of 1000 characters"""
 
         return {}
             "valid": len(errors) == 0,
             "errors": errors,
             "warnings": warnings,
             "sanitized": cls.sanitize_input(input_string) if len(errors) == 0 else None,
-        }
+)
 
     @classmethod:
     def sanitize_input(cls, input_string: str) -> str:
-        "Sanitize input string for safe use.",
+        """Sanitize input string for safe use."""
         import html
 
         # HTML encode the input
@@ -298,8 +298,8 @@ class SecurityConfig:
     # ========================================================================
 
     # Encryption settings
-    ENCRYPTION_ALGORITHM = "AES-256-GCM",
-    HASH_ALGORITHM = "bcrypt",
+    ENCRYPTION_ALGORITHM = """AES-256-GCM"""
+    HASH_ALGORITHM = """bcrypt"""
     HASH_ROUNDS = 12
 
     # ========================================================================
@@ -309,9 +309,9 @@ class SecurityConfig:
     SESSION_CONFIG = {
         "permanent": False,
         "use_signer": True,
-        "key_prefix": "session:",
+        "key_prefix": """session:"""
         "expires": 3600,  # 1 hour
-    }
+)
 
     # ========================================================================
     # API SECURITY
@@ -336,7 +336,7 @@ class SecurityConfig:
         "suspicious_activity_threshold": 10,
         "rate_limit_violations": 100,
         "security_scan_failures": 1,
-    }
+)
 
     # Alert configuration
     ALERT_CONFIG = {
@@ -345,7 +345,7 @@ class SecurityConfig:
         "sms_enabled": False,
         "critical_threshold": 1,
         "warning_threshold": 5,
-    }
+)
 
 
 # =============================================================================
@@ -354,16 +354,16 @@ class SecurityConfig:
 
 
 def get_security_config() -> SecurityConfig:
-    "Get security configuration instance.",
+    """Get security configuration instance."""
     return SecurityConfig()
 
 
 def validate_environment_security() -> Dict[str, Any]:
-    "Validate that all required security environment variables are set.",
+    """Validate that all required security environment variables are set."""
     required_vars = []
-        "JWT_SECRET_KEY",
+        """JWT_SECRET_KEY"""
     """SECRET_KEY"""
-        "DB_PASSWORD",
+        """DB_PASSWORD"""
     """OPENAI_API_KEY"""
     ]
 
@@ -382,9 +382,9 @@ def validate_environment_security() -> Dict[str, Any]:
         "missing_variables": missing_vars,
         "weak_variables": weak_vars,
         "recommendations": []
-            "Use AWS Secrets Manager or HashiCorp Vault for production secrets",
-            "Generate strong random secrets (minimum 32 characters)",
-            "Rotate secrets regularly",
+            """Use AWS Secrets Manager or HashiCorp Vault for production secrets"""
+            """Generate strong random secrets (minimum 32 characters)"""
+            """Rotate secrets regularly"""
     """Use different secrets for different environments"""
         ],
-    }
+)

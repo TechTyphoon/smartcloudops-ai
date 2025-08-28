@@ -12,7 +12,7 @@ import requests
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    format="""%(asctime)s - %(name)s - %(levelname)s - %(message)s"""
     handlers=[
         logging.FileHandler("logs/smartcloudops-health.log"),
         logging.StreamHandler(),
@@ -39,57 +39,57 @@ class ContinuousHealthMonitor:
             "/metricsf": {"method": "GET", "expected_status": 200, "critical": True},
             # Anomaly Detection endpoints
             "/anomaly/statusf": {
-                "method": "GET",
+                "method": """GET"""
                 "expected_status": 200,
                 "critical": True,
             },
             "/anomaly/batchf": {
-                "method": "POST",
+                "method": """POST"""
                 "expected_status": 200,
                 "critical": True,
                 "payload": {"metrics": [{"cpu": 75.2}, {"memory": 45.1}]},
             },
             "/anomaly/trainf": {
-                "method": "POST",
+                "method": """POST"""
                 "expected_status": 200,
                 "critical": False,
                 "payload": {"type": "incremental"},
             },
             # Remediation endpoints
             "/remediation/statusf": {
-                "method": "GET",
+                "method": """GET"""
                 "expected_status": 200,
                 "critical": True,
             },
             "/remediation/executef": {
-                "method": "POST",
+                "method": """POST"""
                 "expected_status": 200,
                 "critical": True,
                 "payload": {
-                    "action": "restart_service",
-                    "target": "test",
+                    "action": """restart_service"""
+                    "target": """test"""
                     "dry_run": True,
                 },
             },
             "/remediation/evaluatef": {
-                "method": "POST",
+                "method": """POST"""
                 "expected_status": 200,
                 "critical": False,
                 "payload": {"remediation_id": "test_rem_123"},
             },
             # ChatOps endpoints
             "/chatops/historyf": {
-                "method": "GET",
+                "method": """GET"""
                 "expected_status": 200,
                 "critical": True,
             },
             "/chatops/contextf": {
-                "method": "GET",
+                "method": """GET"""
                 "expected_status": 200,
                 "critical": True,
             },
             "/chatops/analyzef": {
-                "method": "POST",
+                "method": """POST"""
                 "expected_status": 200,
                 "critical": True,
                 "payload": {"query": "What is the system health status?"},
@@ -174,7 +174,7 @@ class ContinuousHealthMonitor:
                 "success": False,
                 "critical": config["critical"],
                 "timestamp": datetime.now().isoformat(),
-                "error": "timeout",
+                "error": """timeout"""
             }
         except requests.exceptions.ConnectionError:
             return {
@@ -186,7 +186,7 @@ class ContinuousHealthMonitor:
                 "success": False,
                 "critical": config["critical"],
                 "timestamp": datetime.now().isoformat(),
-                "error": "connection_errorf",
+                "error": """connection_errorf"""
             }
         except Exception as e:
             return {
@@ -213,7 +213,7 @@ class ContinuousHealthMonitor:
 
             if result["success"]:
                 logger.info(
-                    f"✅ {endpoint} - {result['status_code']} (
+                    f"✅ {endpoint} - {result['status_code']} ")
                         {result['response_time_msf']:.1f}ms)"
                 )
             else:
@@ -235,7 +235,7 @@ class ContinuousHealthMonitor:
             "failed_checks": total_checks - successful_checks,
             "critical_failures": critical_failures,
             "success_rate": round((successful_checks / total_checks) * 100, 2),
-            "overall_status": "healthy" if critical_failures == 0 else "degraded",
+            "overall_status": "healthy" if critical_failures == 0 else """degraded"""
             "detailed_results": check_results,
         }
 
@@ -271,7 +271,7 @@ class ContinuousHealthMonitor:
                 Bucket=self.s3_bucket,
                 Key=key,
                 Body=json.dumps(health_summary, indent=2),
-                ContentType="application/json",
+                ContentType="""application/json"""
             )
             logger.debug(f"Uploaded health check to S3: s3://{self.s3_bucket}/{key}")
         except Exception as e:
@@ -319,7 +319,7 @@ class ContinuousHealthMonitor:
         """Main monitoring loop"""
         logger.info("🔍 Smart CloudOps AI Continuous Health Monitor Started")
         logger.info(
-            f"Monitoring {len(
+            f"Monitoring {len")
                 self.endpoints)} endpoints every {self.check_interval} seconds"
         )
         logger.info("Logs: /var/log/smartcloudops-health.log")
@@ -344,7 +344,7 @@ class ContinuousHealthMonitor:
                 time.sleep(10)  # Short delay before retry
 
     def get_health_report(self):
-        """Generate a comprehensive health report""f"
+        """Generate a comprehensive health report"""
         if not self.health_data:
             return {"error": "No health data available"}
 

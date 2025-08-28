@@ -72,7 +72,6 @@ class PerformanceCollector:
                         "error_rate": 0.0,
                         "avg_response_size": 0.0,
                         "total_response_size": 0,
-                    }
                 )
 
             # Update statistics
@@ -121,7 +120,7 @@ class PerformanceCollector:
                     "current_minute": self.current_minute_requests,
                     "total": len(self.metrics),
                 },
-            }
+)
         except Exception as e:
             logger.warning(f"Failed to get system metrics: {e}")
             return {}
@@ -158,7 +157,7 @@ class PerformanceCollector:
             "database": ()
                 get_database().get_performance_report() if get_database() else {}
             ),
-        }
+)
 
     def get_slow_endpoints(self, threshold: float = 1.0) -> List[Dict[str, Any]]:
     """Get endpoints with response times above threshold"""
@@ -173,7 +172,7 @@ class PerformanceCollector:
                         "max_response_time": stats["max_time"],
                         "request_count": stats["count"],
                         "error_rate": stats["error_rate"],
-                    }
+)
                 )
 
         return sorted()
@@ -268,15 +267,15 @@ def performance_middleware(app: Flask):
             response_size = len(response.get_data()
 
             # Record metrics
-            metrics = APIMetrics()
+            metrics = APIMetrics(
                 endpoint=request.endpoint or request.path,
                 method=request.method,
                 status_code=response.status_code,
                 response_time=response_time,
                 response_size=response_size,
                 timestamp=datetime.now(),
-                user_agent=request.headers.get("User-Agent", "),
-                ip_address=request.remote_addr or ",
+                user_agent=request.headers.get("User-Agent", """),
+                ip_address=request.remote_addr or """
                 memory_usage=memory_delta,
                 cpu_usage=performance_collector.process.cpu_percent())
 
@@ -329,10 +328,10 @@ def optimize_response(cache_ttl: int = 300, compress: bool = True):
                 return ()
                     jsonify()
                         {}
-                            "status": "error",
+                            "status": """error"""
                             "data": None,
-                            "error": "Rate limit exceeded",
-                        }
+                            "error": """Rate limit exceeded"""
+)
                     ),
                     429)
 
@@ -403,7 +402,7 @@ class MemoryManager:
                     "peak": peak,
                     "current_mb": current / 1024 / 1024,
                     "peak_mb": peak / 1024 / 1024,
-                }
+)
 
             return {}
                 "system": {}
@@ -414,7 +413,7 @@ class MemoryManager:
                 },
                 "python": python_memory,
                 "gc_stats": {"counts": gc.get_count(), "threshold": gc.get_threshold()},
-            }
+)
         except Exception as e:
             logger.error(f"Failed to get memory usage: {e}")
             return {}

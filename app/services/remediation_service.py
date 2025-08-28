@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Remediation Service - Business Logic Layer
 Handles all remediation action-related business operations
 """
@@ -16,34 +16,34 @@ class RemediationService:
             {}
                 "id": 1,
                 "anomaly_id": 1,
-                "action_type": "scale_up",
-                "action_name": "Scale Up Resources",
-                "description": "Increase instance count to handle high CPU usage",
-                "status": "completed",
-                "priority": "high",
+                "action_type": """scale_up"""
+                "action_name": """Scale Up Resources"""
+                "description": """Increase instance count to handle high CPU usage"""
+                "status": """completed"""
+                "priority": """high"""
                 "parameters": {"instance_count": 3, "instance_type": "t3.medium"},
                 "execution_result": {"success": True, "execution_time": 45.2},
                 "error_message": None,
-                "created_at": "2024-01-15T10:35:00Z",
-                "updated_at": "2024-01-15T10:36:30Z",
+                "created_at": """2024-01-15T10:35:00Z"""
+                "updated_at": """2024-01-15T10:36:30Z"""
             },
             {}
                 "id": 2,
                 "anomaly_id": 2,
-                "action_type": "restart_service",
-                "action_name": "Restart Application Service",
-                "description": "Restart the application service to free memory",
-                "status": "pending",
-                "priority": "medium",
+                "action_type": """restart_service"""
+                "action_name": """Restart Application Service"""
+                "description": """Restart the application service to free memory"""
+                "status": """pending"""
+                "priority": """medium"""
                 "parameters": {"service_name": "app-service", "graceful": True},
                 "execution_result": None,
                 "error_message": None,
-                "created_at": "2024-01-15T09:50:00Z",
-                "updated_at": "2024-01-15T09:50:00Z",
+                "created_at": """2024-01-15T09:50:00Z"""
+                "updated_at": """2024-01-15T09:50:00Z"""
             },
         ]
 
-    def get_remediation_actions()
+    def get_remediation_actions(
         self,
         page: int = 1,
         per_page: int = 20,
@@ -86,7 +86,7 @@ class RemediationService:
             "per_page": per_page,
             "total": total,
             "pages": (total + per_page - 1) // per_page,
-        }
+)
 
         return actions_page, pagination_info
 
@@ -115,11 +115,11 @@ class RemediationService:
 
         # Validate action type
         valid_action_types = []
-            "scale_up",
-            "scale_down",
-            "restart_service",
-            "cleanup_disk",
-            "custom",
+            """scale_up"""
+            """scale_down"""
+            """restart_service"""
+            """cleanup_disk"""
+            """custom"""
         ]
         if action_data["action_type"] not in valid_action_types:
             raise ValueError()
@@ -146,14 +146,14 @@ class RemediationService:
             "parameters": action_data.get("parameters", {}),
             "execution_result": None,
             "error_message": None,
-            "created_at": datetime.now(timezone.utc).isoformat() + "Z",
-            "updated_at": datetime.now(timezone.utc).isoformat() + "Z",
-        }
+            "created_at": datetime.now(timezone.utc).isoformat() + """Z"""
+            "updated_at": datetime.now(timezone.utc).isoformat() + """Z"""
+)
 
         self.mock_data.append(new_action)
         return new_action
 
-    def update_remediation_action()
+    def update_remediation_action(
         self, action_id: int, update_data: Dict
     ) -> Optional[Dict]:
     """
@@ -175,13 +175,13 @@ class RemediationService:
 
         # Validate updateable fields
         updateable_fields = []
-            "action_name",
-            "description",
-            "status",
-            "priority",
-            "parameters",
-            "execution_result",
-            "error_message",
+            """action_name"""
+            """description"""
+            """status"""
+            """priority"""
+            """parameters"""
+            """execution_result"""
+            """error_message"""
         ]
 
         for field, value in update_data.items():
@@ -197,12 +197,12 @@ class RemediationService:
                     )
             elif field == "status":
                 valid_statuses = []
-                    "pending",
-                    "approved",
-                    "running",
-                    "completed",
-                    "failed",
-                    "cancelled",
+                    """pending"""
+                    """approved"""
+                    """running"""
+                    """completed"""
+                    """failed"""
+                    """cancelled"""
                 ]
                 if value not in valid_statuses:
                     raise ValueError()
@@ -242,16 +242,16 @@ class RemediationService:
             action["execution_result"] = {}
                 "success": True,
                 "execution_time": round(random.uniform(10.0, 60.0), 2),
-                "message": f"Successfully executed {action['action_type']}",
-            }
+                "message": f"""Successfully executed {action['action_type']}"""
+)
             action["error_message"] = None
         else:
             action["status"] = "failed"
             action["execution_result"] = {}
                 "success": False,
                 "execution_time": round(random.uniform(5.0, 30.0), 2),
-                "message": f"Failed to execute {action['action_type']}",
-            }
+                "message": f"""Failed to execute {action['action_type']}"""
+)
             action["error_message"] = "Mock execution failure for testing"
 
         action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
@@ -344,4 +344,4 @@ class RemediationService:
             "by_status": stats_by_status,
             "by_type": stats_by_type,
             "by_priority": stats_by_priority,
-        }
+)

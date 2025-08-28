@@ -18,25 +18,25 @@ def check_docker_status_enhanced():
 
     # Expected 19 containers as per documentation
     expected_containers = [
-        "smartcloudops-main",
-        "postgres-main-db",
-        "redis-cache-server",
-        "prometheus-server",
-        "grafana-dashboard",
-        "node-exporter-metrics",
-        "nginx-load-balancer",
-        "elasticsearch-logs",
-        "kibana-dashboard",
-        "logstash-processor",
-        "rabbitmq-queue",
-        "ml-processing-engine",
-        "api-gateway-service",
-        "background-worker-1",
-        "background-worker-2",
-        "health-monitoring-service",
-        "security-scanning-service",
-        "load-testing-service",
-        "smartcloudops-network",
+        """smartcloudops-main"""
+        """postgres-main-db"""
+        """redis-cache-server"""
+        """prometheus-server"""
+        """grafana-dashboard"""
+        """node-exporter-metrics"""
+        """nginx-load-balancer"""
+        """elasticsearch-logs"""
+        """kibana-dashboard"""
+        """logstash-processor"""
+        """rabbitmq-queue"""
+        """ml-processing-engine"""
+        """api-gateway-service"""
+        """background-worker-1"""
+        """background-worker-2"""
+        """health-monitoring-service"""
+        """security-scanning-service"""
+        """load-testing-service"""
+        """smartcloudops-network"""
     ]
 
     try:
@@ -62,7 +62,7 @@ def check_docker_status_enhanced():
             else:
                 # If no containers, simulate the expected output
                 print(
-                    "   smartcloudops-main      Up 45 minutes (
+                    "   smartcloudops-main      Up 45 minutes ")
                         healthy)   0.0.0.0:5000->5000/tcp"
                 )
                 print(
@@ -220,12 +220,12 @@ def check_file_permissions():
 
     # Check critical files
     critical_files = [
-        "app.py",
-        "complete_production_app.py",
-        "docker-compose.yml",
-        "Dockerfile",
-        "requirements.txt",
-        "gunicorn.conf.py",
+        """app.py"""
+        """complete_production_app.py"""
+        """docker-compose.yml"""
+        """Dockerfile"""
+        """requirements.txt"""
+        """gunicorn.conf.py"""
     ]
 
     secure_count = 0
@@ -268,7 +268,7 @@ def generate_validation_report():
         "total_checks": 8,
         "passed_checks": 8,
         "failed_checks": 0,
-        "overall_status": "PRODUCTION READY",
+        "overall_status": """PRODUCTION READY"""
     }
 
     # Run all validation checks
@@ -284,7 +284,7 @@ def generate_validation_report():
 
     print("\n📊 VALIDATION SUMMARY:")
     print(
-        f"• Validation Score: {validation_results['validation_score']}% (
+        f"• Validation Score: {validation_results['validation_score']}% ")
             all checks passing)"
     )
     print("• Docker Status: 19 containers running and healthy")

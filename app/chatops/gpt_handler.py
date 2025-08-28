@@ -92,12 +92,12 @@ class GPTHandler:
 
         # SQL Injection prevention patterns
         sql_patterns = [
-            r"(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b)",
-            r"(\b(and|or)\b\s+\d+\s*[=<>])",
-            r"(--|#|/\*|\*/)",
-            r"(\bxp_|sp_|fn_)",
-            r"(\bwaitfor\b)",
-            r"(\bdelay\b)",
+            r"""(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b)"""
+            r"""(\b(and|or)\b\s+\d+\s*[=<>])"""
+            r"""(--|#|/\*|\*/)"""
+            r"""(\bxp_|sp_|fn_)"""
+            r"""(\bwaitfor\b)"""
+            r"""(\bdelay\b)"""
         ]
 
         for pattern in sql_patterns:
@@ -106,12 +106,12 @@ class GPTHandler:
 
         # Command injection prevention
         command_patterns = [
-            r"(\b(system|exec|eval|subprocess|os\.system|subprocess\.call)\b)",
-            r"(\b(import\s+os|import\s+subprocess|from\s+os\s+import)\b)",
-            r"(\b(__import__|getattr|setattr|delattr)\b)",
-            r"(\b(globals|locals)\b)",
-            r"(\b(compile|eval|exec)\b)",
-            r"(\b(file|open|read|write)\b)",
+            r"""(\b(system|exec|eval|subprocess|os\.system|subprocess\.call)\b)"""
+            r"""(\b(import\s+os|import\s+subprocess|from\s+os\s+import)\b)"""
+            r"""(\b(__import__|getattr|setattr|delattr)\b)"""
+            r"""(\b(globals|locals)\b)"""
+            r"""(\b(compile|eval|exec)\b)"""
+            r"""(\b(file|open|read|write)\b)"""
         ]
 
         for pattern in command_patterns:
@@ -120,9 +120,9 @@ class GPTHandler:
 
         # Path traversal prevention
         path_patterns = [
-            r"(\.\./|\.\.\\)",
-            r"(\b(cd|chdir|pwd)\b)",
-            r"(\b(ls|dir|cat|type|more|less)\b)",
+            r"""(\.\./|\.\.\\)"""
+            r"""(\b(cd|chdir|pwd)\b)"""
+            r"""(\b(ls|dir|cat|type|more|less)\b)"""
         ]
 
         for pattern in path_patterns:
@@ -131,10 +131,10 @@ class GPTHandler:
 
         # Additional dangerous patterns
         dangerous_patterns = [
-            r"(\b(alert|confirm|prompt)\b)",
-            r"(\b(document\.|window\.|location\.)\b)",
-            r"(\b(onload|onerror|onclick|onmouseover)\b)",
-            r"(\b(javascript:|vbscript:|data:)\b)",
+            r"""(\b(alert|confirm|prompt)\b)"""
+            r"""(\b(document\.|window\.|location\.)\b)"""
+            r"""(\b(onload|onerror|onclick|onmouseover)\b)"""
+            r"""(\b(javascript:|vbscript:|data:)\b)"""
         ]
 
         for pattern in dangerous_patterns:
@@ -177,8 +177,8 @@ class GPTHandler:
             # Check if GPT client is available:
             if not self.client:
                 return {
-                    "status": "error",
-                    "error": "GPT functionality not available",
+                    "status": """error"""
+                    "error": """GPT functionality not available"""
                     "message": (
     """OpenAI API key not configured. Please set OPENAI_API_KEY """
     """environment variable."""
@@ -210,7 +210,7 @@ class GPTHandler:
 
             # Call OpenAI API with timeout and error handling
             response = self.client.chat.completions.create(
-                model="gpt-3.5-turbo",
+                model="""gpt-3.5-turbo"""
                 messages=messages,
                 max_tokens=500,
                 temperature=0.3,
@@ -240,28 +240,28 @@ class GPTHandler:
             logger.info(f"Successfully processed query: {sanitized_query[:50]}...")
 
             return {
-                "status": "success",
+                "status": """success"""
                 "response": gpt_response,
                 "query": sanitized_query,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-                "model": "gpt-3.5-turbo",
+                "model": """gpt-3.5-turbo"""
                 "tokens_used": response.usage.total_tokens if response.usage else None,
             }
 :
         except ValueError as e:
             logger.warning(f"Input validation error: {str(e)}")
             return {
-                "status": "error",
-                "error": "Invalid input",
+                "status": """error"""
+                "error": """Invalid input"""
                 "message": str(e),
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         except Exception as e:
             logger.error(f"GPT processing error: {str(e)}")
             return {
-                "status": "error",
-                "error": "Processing failed",
-                "message": "Unable to process query at this time",
+                "status": """error"""
+                "error": """Processing failed"""
+                "message": """Unable to process query at this time"""
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 

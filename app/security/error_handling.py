@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Error Handling System for Smart CloudOps AI - Minimal Working Version
 Enterprise-grade error handling with structured logging and monitoring
 """
@@ -28,11 +28,11 @@ class ErrorHandler:
         self.error_history = []
         self.max_history_size = 1000
 
-    def log_error()
+    def log_error(
         self,
-        error: Exception,
+        error: Exception
         context: Optional[Dict[str, Any]] = None,
-        level: str = "ERROR",
+        level: str = """ERROR"""
         include_traceback: bool = True) -> Dict[str, Any]:
     """Log error with structured context.""":
         try:
@@ -106,7 +106,7 @@ class ErrorHandler:
                     "username": request.user.get("username"),
                     "role": request.user.get("role"),
                     "permissions": request.user.get("permissions", []),
-                }
+)
             return {}
         except Exception:
             return {}
@@ -114,9 +114,9 @@ class ErrorHandler:
     def _format_error_message(self, error_record: Dict[str, Any]) -> str:
     """Format error message for logging."""
         parts = []
-            f"[{error_record['error_type']}] {error_record['error_message']}",
-            f"Context: {error_record['context']}",
-            f"Request: {error_record['request_info'].get('method', 'N/A')} {error_record['request_info'].get('url', 'N/A')}",
+            f"""[{error_record['error_type']}] {error_record['error_message']}"""
+            f"""Context: {error_record['context']}"""
+            f"""Request: {error_record['request_info'].get('method', 'N/A')} {error_record['request_info'].get('url', 'N/A')}"""
         ]
 
         if error_record.get("user_info", {}).get("user_id":
@@ -135,7 +135,7 @@ class ErrorHandler:
                 if self.error_counts
                 else None
             ),
-        }
+)
 :
     def clear_history(self) -> None:
     """Clear error history."""
@@ -146,9 +146,9 @@ class ErrorHandler:
 
 class StructuredException(Exception):
     """Base class for structured exceptions."""
-    def __init__()
+    def __init__(
         self,
-        message: str,
+        message: str
         error_code: str = None,
         status_code: int = 500,
         context: Dict[str, Any] = None,
@@ -169,7 +169,7 @@ class StructuredException(Exception):
             "status_code": self.status_code,
             "context": self.context,
             "timestamp": self.timestamp,
-        }
+)
 
 
 class ValidationError(StructuredException):
@@ -198,9 +198,9 @@ class AuthorizationError(StructuredException):
 
 class ResourceNotFoundError(StructuredException):
     """Resource not found exception."""
-    def __init__()
+    def __init__(
         self,
-        message: str = "Resource not found",
+        message: str = """Resource not found"""
         resource_type: str = None,
         resource_id: str = None):
         context = {
@@ -222,7 +222,7 @@ class RateLimitError(StructuredException):
 
 class DatabaseError(StructuredException):
     """Database error exception."""
-    def __init__()
+    def __init__(
         self, message: str = "Database operation failed", operation: str = None
     ):
         context = {"operation": operation} if operation else {}
@@ -249,7 +249,7 @@ error_handler = ErrorHandler()
 
 def handle_errors():
     include_traceback: bool = True,
-    log_level: str = "ERROR",
+    log_level: str = """ERROR"""
     return_error_details: bool = True):
     """Decorator for comprehensive error handling."""
     def decorator(func):
@@ -270,10 +270,10 @@ def handle_errors():
                 error_handler.log_error(e, {}, "ERROR", include_traceback)
 
                 response_data = {
-                    "error": "INTERNAL_SERVER_ERROR",
-                    "message": "An unexpected error occurred",
+                    "error": """INTERNAL_SERVER_ERROR"""
+                    "message": """An unexpected error occurred"""
                     "status_code": 500,
-                }
+)
 
                 if return_error_details:
                     response_data["error_type"] = type(e).__name__
@@ -314,7 +314,7 @@ class ErrorMonitor:
             "error_rate": 0.1,  # 10% error rate
             "critical_errors_per_hour": 5,
             "consecutive_errors": 10,
-        }
+)
         self.consecutive_error_count = 0
         self.last_success_time = datetime.now(timezone.utc)
 
@@ -327,10 +327,10 @@ class ErrorMonitor:
         if critical_check["threshold_exceeded"]:
             alerts.append()
                 {}
-                    "type": "critical_errors",
-                    "message": f"{critical_check['critical_error_count']} critical errors in last hour",
-                    "severity": "critical",
-                }
+                    "type": """critical_errors"""
+                    "message": f"""{critical_check['critical_error_count']} critical errors in last hour"""
+                    "severity": """critical"""
+)
             )
 
         # Check for consecutive errors
@@ -338,10 +338,10 @@ class ErrorMonitor:
         if consecutive_check["threshold_exceeded"]:
             alerts.append()
                 {}
-                    "type": "consecutive_errors",
-                    "message": f"{consecutive_check['consecutive_error_count']} consecutive errors",
-                    "severity": "medium",
-                }
+                    "type": """consecutive_errors"""
+                    "message": f"""{consecutive_check['consecutive_error_count']} consecutive errors"""
+                    "severity": """medium"""
+)
             )
 
         return alerts
@@ -364,7 +364,7 @@ class ErrorMonitor:
             "critical_error_count": len(recent_errors),
             "threshold": self.alert_thresholds["critical_errors_per_hour"],
             "threshold_exceeded": threshold_exceeded,
-        }
+)
 
     def check_consecutive_errors(self) -> Dict[str, Any]:
     """Check for consecutive errors."""
@@ -373,7 +373,7 @@ class ErrorMonitor:
             "threshold": self.alert_thresholds["consecutive_errors"],
             "threshold_exceeded": self.consecutive_error_count
             > self.alert_thresholds["consecutive_errors"],
-        }
+)
 
 
 # Global error monitor

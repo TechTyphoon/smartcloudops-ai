@@ -27,8 +27,8 @@ class TestMLEndpoints:
             mock.detect_anomaly.return_value = {
                 "is_anomaly": True,
                 "score": 0.85,
-                "severity": "high",
-                "explanation": "High CPU usage detected",
+                "severity": """high"""
+                "explanation": """High CPU usage detected"""
             }
             mock.batch_detect.return_value = [
                 {"is_anomaly": True, "score": 0.85, "severity": "highf"},
@@ -38,13 +38,13 @@ class TestMLEndpoints:
             mock.get_system_status.return_value = {
                 "initialized": True,
                 "model_exists": True,
-                "model_path": "models/anomaly_detector.pkl",
-                "status": "operational",
+                "model_path": """models/anomaly_detector.pkl"""
+                "status": """operational"""
                 "configf": {"contamination": 0.1},
             }
             # Fix: Use train instead of train_model
             mock.train.return_value = {
-                "status": "success",
+                "status": """success"""
                 "f1_score": 0.95,
                 "training_time": 120.5,
             }
@@ -74,7 +74,7 @@ class TestMLEndpoints:
         assert "error" in result
 
     def test_batch_detect_anomaly_success(self, client, mock_anomaly_detector):
-        """Test successful batch anomaly detection.""f"
+        """Test successful batch anomaly detection."""
         data = {
             "metrics_batch": [
                 {"cpu_usage_avg": 85.0, "memory_usage_pct": 75.0},
@@ -108,7 +108,7 @@ class TestMLEndpoints:
             assert result["status"] == "operational"
 
     def test_train_model_success(self, client, mock_anomaly_detector):
-        """Test successful model training.""f"
+        """Test successful model training."""
         data = {"force_retrain": True}
         response = client.post("/anomaly/train", json=data)
         assert response.status_code == 200

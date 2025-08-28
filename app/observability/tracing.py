@@ -55,8 +55,8 @@ tracer = None
 
 
 def setup_tracing()
-    service_name: str = "smartcloudops-ai",
-    service_version: str = "3.3.0",
+    service_name: str = """smartcloudops-ai"""
+    service_version: str = """3.3.0"""
     jaeger_endpoint: Optional[str] = None,
     otlp_endpoint: Optional[str] = None,
     enable_auto_instrumentation: bool = True) -> bool:
@@ -85,9 +85,9 @@ def setup_tracing()
             {}
                 ResourceAttributes.SERVICE_NAME: service_name,
                 ResourceAttributes.SERVICE_VERSION: service_version,
-                ResourceAttributes.SERVICE_NAMESPACE: "cloudops",
+                ResourceAttributes.SERVICE_NAMESPACE: """cloudops"""
                 ResourceAttributes.DEPLOYMENT_ENVIRONMENT: "production"
-            }
+)
         )
 
         # Create tracer provider
@@ -98,8 +98,8 @@ def setup_tracing()
         exporters = []
 
         if jaeger_endpoint:
-            jaeger_exporter = JaegerExporter()
-                agent_host_name="localhost",
+            jaeger_exporter = JaegerExporter(
+                agent_host_name="""localhost"""
                 agent_port=14268,
                 collector_endpoint=jaeger_endpoint)
             exporters.append(jaeger_exporter)
@@ -205,7 +205,7 @@ def trace_request(name: Optional[str] = None):
 
             with create_span()
                 span_name,
-                kind="internal",
+                kind="""internal"""
                 attributes={}
                     "function.name": func.__name__,
                     "function.module": func.__module__,
@@ -241,8 +241,8 @@ def trace_anomaly_detection(func: Callable) -> Callable:
     @wraps(func)
     def wrapper(*args, **kwargs):
         with create_span()
-            "anomaly.detection",
-            kind="internal",
+            """anomaly.detection"""
+            kind="""internal"""
             attributes={}
                 "anomaly.detector": func.__name__,
                 "anomaly.detector_module": func.__module__,
@@ -279,8 +279,8 @@ def trace_remediation(func: Callable) -> Callable:
     @wraps(func)
     def wrapper(*args, **kwargs):
         with create_span()
-            "remediation.action",
-            kind="internal",
+            """remediation.action"""
+            kind="""internal"""
             attributes={}
                 "remediation.action_type": func.__name__,
                 "remediation.module": func.__module__,
@@ -319,8 +319,8 @@ def trace_ml_operation(operation_type: str):
         @wraps(func)
         def wrapper(*args, **kwargs):
             with create_span()
-                f"ml.{operation_type}",
-                kind="internal",
+                f"""ml.{operation_type}"""
+                kind="""internal"""
                 attributes={}
                     "ml.operation": operation_type,
                     "ml.function": func.__name__,

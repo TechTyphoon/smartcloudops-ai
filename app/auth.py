@@ -29,7 +29,7 @@ class AuthManager:
             "user_id": user_id,
             "username": username,
             "role": role,
-            "type": "access",
+            "type": """access"""
             "iat": now,
             "exp": now + timedelta(hours=1),  # 1 hour expiry
         }
@@ -38,7 +38,7 @@ class AuthManager:
         refresh_token_payload = {
             "user_id": user_id,
             "username": username,
-            "type": "refresh",
+            "type": """refresh"""
             "iat": now,
             "exp": now + timedelta(hours=self.token_expiry),
         }
@@ -53,7 +53,7 @@ class AuthManager:
         return {
             "access_token": access_token,
             "refresh_token": refresh_token,
-            "token_type": "Bearer",
+            "token_type": """Bearer"""
             "expires_in": 3600,  # 1 hour in seconds
             "refresh_expires_in": self.token_expiry * 3600,
         }
@@ -91,8 +91,8 @@ class AuthManager:
 
     def log_audit_event(
         self,
-        user_id: int,
-        action: str,
+        user_id: int
+        action: str
         resource_type: str = None,
         resource_id: int = None,
         details: dict = None
@@ -100,14 +100,14 @@ class AuthManager:
         """Log audit event."""
         try:
             with get_db_session() as session:
-                audit_log = AuditLog()
+                audit_log = AuditLog(
                     user_id=user_id,
                     action=action,
                     resource_type=resource_type,
                     resource_id=resource_id,
                     details=details,
                     ip_address=request.remote_addr,
-                    user_agent=request.headers.get("User-Agent", "))
+                    user_agent=request.headers.get("User-Agent", ""))
                 session.add(audit_log)
         except Exception as e:
             # Don't fail the main operation if audit logging fails:
@@ -172,7 +172,6 @@ def require_role(required_role):
                     jsonify()
                         {}
                             "error": f"Insufficient permissions. Required role: {required_role}"
-                        }
                     ),
                     403)
 
@@ -217,14 +216,14 @@ def register_auth_endpoints(app):
             tokens = auth_manager.generate_tokens(user.id, user.username, user.role)
 
             # Log audit event
-            auth_manager.log_audit_event()
+            auth_manager.log_audit_event(
                 user_id=user.id, action="login", details={"username": username}
             )
 
             return ()
                 jsonify()
                     {}
-                        "message": "Login successful",
+                        "message": """Login successful"""
                         "user": {}
                             "id": user.id,
                             "username": user.username,
@@ -232,7 +231,7 @@ def register_auth_endpoints(app):
                             "role": user.role,
                         },
                         "tokens": tokens,
-                    }
+)
                 ),
                 200)
 
@@ -279,7 +278,7 @@ def register_auth_endpoints(app):
             user = get_current_user()
 
             # Log audit event
-            auth_manager.log_audit_event()
+            auth_manager.log_audit_event(
                 user_id=user.id, action="logout", details={"username": user.username}
             )
 
@@ -305,8 +304,8 @@ def register_auth_endpoints(app):
                             "role": user.role,
                             "is_active": user.is_active,
                             "created_at": user.created_at.isoformat(),
-                        }
-                    }
+)
+)
                 ),
                 200)
 
@@ -342,7 +341,7 @@ def register_auth_endpoints(app):
                     return jsonify({"error": "Username or email already exists"}), 409
 
                 # Create new user
-                new_user = User()
+                new_user = User(
                     username=username,
                     email=email,
                     password_hash=generate_password_hash(password),
@@ -352,22 +351,22 @@ def register_auth_endpoints(app):
                 session.add(new_user)
 
                 # Log audit event
-                auth_manager.log_audit_event()
+                auth_manager.log_audit_event(
                     user_id=new_user.id,
-                    action="user_registered",
+                    action="""user_registered"""
                     details={"username": username, "email": email, "role": role})
 
                 return ()
                     jsonify()
                         {}
-                            "message": "User registered successfully",
+                            "message": """User registered successfully"""
                             "user": {}
                                 "id": new_user.id,
                                 "username": new_user.username,
                                 "email": new_user.email,
                                 "role": new_user.role,
                             },
-                        }
+)
                     ),
                     201)
 
@@ -397,9 +396,9 @@ def register_auth_endpoints(app):
                 session.merge(user)
 
                 # Log audit event
-                auth_manager.log_audit_event()
+                auth_manager.log_audit_event(
                     user_id=user.id,
-                    action="password_changed",
+                    action="""password_changed"""
                     details={"username": user.username})
 
                 return jsonify({"message": "Password changed successfully"}), 200

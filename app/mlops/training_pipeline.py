@@ -1,6 +1,6 @@
 """
 Training Pipeline - Automated ML training with reproducibility and validation
-""""
+"""
 
 import json
 import os
@@ -18,50 +18,50 @@ import yaml
 
 
 class JobStatus:
-    "Training job status",
+    """Training job status"""
 
-    PENDING = "pending",
-    RUNNING = "running",
-    COMPLETED = "completed",
-    FAILED = "failed",
-    CANCELLED = "cancelled",
+    PENDING = """pending"""
+    RUNNING = """running"""
+    COMPLETED = """completed"""
+    FAILED = """failed"""
+    CANCELLED = """cancelled"""
 
 
 class ValidationResult(Enum):
-    "Training validation result",
+    """Training validation result"""
 
-    PASSED = "passed",
-    FAILED = "failed",
+    PASSED = """passed"""
+    FAILED = """failed"""
     WARNING = "warning"
 
 
 @dataclass
 class TrainingConfig:
-    "Training configuration",
+    """Training configuration"""
 
-    config_id: str,
+    config_id: str
     name: str
-    description: str,
+    description: str
     algorithm: str
-    framework: str,
+    framework: str
     hyperparameters: Dict[str, Any]
     dataset_config: Dict[str, Any]
     validation_config: Dict[str, Any]
     training_args: Dict[str, Any]
     environment: Dict[str, str]
     resource_requirements: Dict[str, Any]
-    created_at: datetime,
+    created_at: datetime
     created_by: str
     version: str
 
 
 @dataclass
 class TrainingJob:
-    "Training job execution",
+    """Training job execution"""
 
-    job_id: str,
+    job_id: str
     config_id: str
-    name: str,
+    name: str
     status: JobStatus
     start_time: Optional[datetime]
     end_time: Optional[datetime]
@@ -79,19 +79,19 @@ class TrainingJob:
 
 
 class TrainingPipeline:
-    "Automated ML training pipeline with reproducibility",
+    """Automated ML training pipeline with reproducibility"""
 
-    def __init__()
+    def __init__(
         self,
-        pipeline_path: str = "ml_models/training",
+        pipeline_path: str = """ml_models/training"""
         model_registry=None,
         dataset_manager=None,
         experiment_tracker=None):
         return self.pipeline_path = Path(pipeline_path)
-        self.configs_path = self.pipeline_path / "configs",
-        self.jobs_path = self.pipeline_path / "jobs",
-        self.outputs_path = self.pipeline_path / "outputs",
-        self.logs_path = self.pipeline_path / "logs",
+        self.configs_path = self.pipeline_path / """configs"""
+        self.jobs_path = self.pipeline_path / """jobs"""
+        self.outputs_path = self.pipeline_path / """outputs"""
+        self.logs_path = self.pipeline_path / """logs"""
         self.db_path = self.pipeline_path / "training.db"
 
         # External dependencies
@@ -114,13 +114,13 @@ class TrainingPipeline:
         self._register_default_algorithms()
 
     def _init_database(self):
-        "Initialize SQLite database for training pipeline",
+        """Initialize SQLite database for training pipeline"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
         # Training configurations table
-        cursor.execute()
-    """
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS training_configs ()
                 config_id TEXT PRIMARY KEY,
                 name TEXT UNIQUE NOT NULL,
@@ -141,8 +141,8 @@ class TrainingPipeline:
         )
 
         # Training jobs table
-        cursor.execute()
-    """
+        cursor.execute(
+            """
             CREATE TABLE IF NOT EXISTS training_jobs ()
                 job_id TEXT PRIMARY KEY,
                 config_id TEXT,
@@ -169,12 +169,12 @@ class TrainingPipeline:
         conn.commit()
         conn.close()
 
-    def create_training_config()
+    def create_training_config(
         self,
-        name: str,
-        description: str,
-        algorithm: str,
-        framework: str,
+        name: str
+        description: str
+        algorithm: str
+        framework: str
         hyperparameters: Dict[str, Any],
         dataset_config: Dict[str, Any],
         validation_config: Dict[str, Any] = None,
@@ -183,11 +183,11 @@ class TrainingPipeline:
         resource_requirements: Dict[str, Any] = None,
         created_by: str = "system"
     ) -> TrainingConfig:
-        "Create a new training configuration",
+        """Create a new training configuration"""
 
-        config_id = f"config_{int(time.time()}_{str(uuid.uuid4()[:8]}",
+        config_id = f"""config_{int(time.time()}_{str(uuid.uuid4()[:8]}"""
 
-        config = TrainingConfig()
+        config = TrainingConfig(
             config_id=config_id,
             name=name,
             description=description,
@@ -214,14 +214,14 @@ class TrainingPipeline:
         self._save_training_config(config)
 
         # Save config file
-        config_file = self.configs_path / f"{config_id}.yaml",
+        config_file = self.configs_path / f"""{config_id}.yaml"""
         self._save_config_file(config, config_file)
 
         print(f"⚙️ Training config created: {name} ({config_id})")
         return config
-        def submit_training_job()
+        def submit_training_job(
         self,
-        config_id: str,
+        config_id: str
         job_name: str = None,
         seed: int = None,
         experiment_name: str = None) -> TrainingJob:
@@ -230,12 +230,12 @@ class TrainingPipeline:
         config = self.get_training_config(config_id)
 
         if job_name is None:
-            job_name = f"{config.name}_{int(time.time()}",
+            job_name = f"""{config.name}_{int(time.time()}"""
 
         job_id = f"job_{int(time.time()}_{str(uuid.uuid4()[:8]}"
 
         # Create job
-        job = TrainingJob()
+        job = TrainingJob(
             job_id=job_id,
             config_id=config_id,
             name=job_name,
@@ -269,15 +269,15 @@ class TrainingPipeline:
                         break
 
                 if not experiment:
-                    experiment = self.experiment_tracker.create_experiment()
+                    experiment = self.experiment_tracker.create_experiment(
                         name=experiment_name,
-                        description=f"Training pipeline experiment for {config.algorithm}",
-                        objective="Model training and validation",
-                        target_metric="validation_accuracy",
+                        description=f"""Training pipeline experiment for {config.algorithm}"""
+                        objective="""Model training and validation"""
+                        target_metric="""validation_accuracy"""
                         maximize_metric=True)
 
                 # Start run
-                run = self.experiment_tracker.start_run()
+                run = self.experiment_tracker.start_run(
                     experiment_id=experiment.experiment_id,
                     run_name=job_name,
                     parameters=config.hyperparameters,
@@ -291,7 +291,7 @@ class TrainingPipeline:
         print(f"📋 Training job submitted: {job_name} ({job_id})")
         return job
         def run_training_job(self, job_id: str) -> TrainingJob:
-        "Execute a training job",
+        """Execute a training job"""
         job = self.get_training_job(job_id)
         config = self.get_training_config(job.config_id)
 
@@ -319,7 +319,7 @@ class TrainingPipeline:
                 self._set_random_seed(job.seed)
 
             # Run training
-            training_result = algorithm_func()
+            training_result = algorithm_func(
                 config=config, dataset_info=dataset_info, job=job
             )
 
@@ -362,7 +362,7 @@ class TrainingPipeline:
             job.duration_seconds = (job.end_time - job.start_time).total_seconds()
 
             print(f"✅ Training job completed: {job.name}")
-            print(f"   Duration: {job.duration_seconds:.2f} seconds",
+            print(f"""   Duration: {job.duration_seconds:.2f} seconds"""
             print(f"   Metrics: {job.metrics}")
 
         except Exception as e:
@@ -397,11 +397,11 @@ class TrainingPipeline:
 
         return job
         def get_training_config(self, config_id: str) -> TrainingConfig:
-        "Get training configuration by ID",
+        """Get training configuration by ID"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
+        cursor.execute(
             "SELECT * FROM training_configs WHERE config_id = ?", (config_id)
         )
         result = cursor.fetchone()
@@ -412,30 +412,30 @@ class TrainingPipeline:
 
         # Convert to TrainingConfig object
         columns = []
-            "config_id",
+            """config_id"""
     """name"""
-            "description",
+            """description"""
     """algorithm"""
-            "framework",
+            """framework"""
     """hyperparameters"""
-            "dataset_config",
+            """dataset_config"""
     """validation_config"""
-            "training_args",
+            """training_args"""
     """environment"""
-            "resource_requirements",
+            """resource_requirements"""
     """created_at"""
-            "created_by",
+            """created_by"""
     """version"""
         ]
         data = dict(zip(columns, result)
 
         # Parse JSON fields
         json_fields = []
-            "hyperparameters",
+            """hyperparameters"""
     """dataset_config"""
-            "validation_config",
+            """validation_config"""
     """training_args"""
-            "environment",
+            """environment"""
     """resource_requirements"""
         ]
         for field in json_fields:
@@ -447,7 +447,7 @@ class TrainingPipeline:
         return TrainingConfig(**data)
 
     def get_training_job(self, job_id: str) -> TrainingJob:
-        "Get training job by ID",
+        """Get training job by ID"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
@@ -460,21 +460,21 @@ class TrainingPipeline:
 
         # Convert to TrainingJob object
         columns = []
-            "job_id",
+            """job_id"""
     """config_id"""
-            "name",
+            """name"""
     """status"""
-            "start_time",
+            """start_time"""
     """end_time"""
-            "duration_seconds",
+            """duration_seconds"""
     """output_model_path"""
-            "metrics",
+            """metrics"""
     """validation_results"""
-            "logs",
+            """logs"""
     """artifacts"""
-            "error_message",
+            """error_message"""
     """resource_usage"""
-            "experiment_run_id",
+            """experiment_run_id"""
     """git_commit"""
     """seed"""
         ]
@@ -482,9 +482,9 @@ class TrainingPipeline:
 
         # Parse JSON fields
         json_fields = []
-            "metrics",
+            """metrics"""
     """validation_results"""
-            "logs",
+            """logs"""
     """artifacts"""
     """resource_usage"""
         ]
@@ -510,39 +510,39 @@ class TrainingPipeline:
         return TrainingJob(**data)
 
     def list_training_configs(self) -> List[TrainingConfig]:
-        "List all training configurations",
+        """List all training configurations"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "SELECT config_id FROM training_configs ORDER BY created_at DESC",
+        cursor.execute(
+            """SELECT config_id FROM training_configs ORDER BY created_at DESC"""
         config_ids = [row[0] for row in cursor.fetchall()]
         conn.close()
 
         return [self.get_training_config(config_id) for config_id in config_ids]
 
-    def list_training_jobs()
+    def list_training_jobs(
         self, config_id: str = None, status: JobStatus = None, limit: int = None
     ) -> List[TrainingJob]:
-        "List training jobs with optional filters",
+        """List training jobs with optional filters"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        query = "SELECT job_id FROM training_jobs WHERE 1=1",
+        query = """SELECT job_id FROM training_jobs WHERE 1=1"""
         params = []
 
         if config_id:
-        query += " AND config_id = ?",
+        query += """ AND config_id = ?"""
             params.append(config_id)
 
         if status:
-        query += " AND status = ?",
+        query += """ AND status = ?"""
             params.append(status.value)
 
-        query += " ORDER BY start_time DESC",
+        query += """ ORDER BY start_time DESC"""
 
         if limit:
-        query += f" LIMIT {limit}",
+        query += f""" LIMIT {limit}"""
 
         cursor.execute(query, params)
         job_ids = [row[0] for row in cursor.fetchall()]
@@ -551,17 +551,17 @@ class TrainingPipeline:
         return [self.get_training_job(job_id) for job_id in job_ids]
 
     def register_algorithm(self, name: str, training_function: Callable):
-        "Register a training algorithm",
+        """Register a training algorithm"""
         self.algorithms[name] = training_function
         print(f"🔧 Algorithm registered: {name}")
 
     def _register_default_algorithms(self):
-        "Register default training algorithms",
+        """Register default training algorithms"""
 
         def sklearn_anomaly_detection()
             config: TrainingConfig, dataset_info: Dict[str, Any],job: TrainingJob
         ) -> Dict[str, Any]:
-            "Scikit-learn anomaly detection training",
+            """Scikit-learn anomaly detection training"""
             import joblib
             import pandas as pd
             from sklearn.ensemble import IsolationForest
@@ -581,7 +581,7 @@ class TrainingPipeline:
                 "feature_columns", df.columns.tolist()
             )
             if "target", in feature_columns:
-                feature_columns.remove("target",
+                feature_columns.remove("""target"""
 
             X = df[feature_columns]
             y = df.get("target", None)  # Optional for unsupervised
@@ -598,7 +598,7 @@ class TrainingPipeline:
                 y_train = y_test = None
 
             # Create model
-            model = IsolationForest()
+            model = IsolationForest(
                 contamination=config.hyperparameters.get("contamination", 0.1),
                 random_state=job.seed or 42,
                 n_estimators=config.hyperparameters.get("n_estimators", 100))
@@ -631,7 +631,7 @@ class TrainingPipeline:
             )
 
             # Save model
-            model_path = self.outputs_path / f"{job.job_id}_model.pkl",
+            model_path = self.outputs_path / f"""{job.job_id}_model.pkl"""
             joblib.dump(model, model_path)
 
             return {}
@@ -643,23 +643,23 @@ class TrainingPipeline:
                     "test_samples": len(X_test),
                 },
                 "artifacts": [str(model_path)],
-            }
+)
 
         self.register_algorithm("sklearn_isolation_forest", sklearn_anomaly_detection)
 
     def _save_training_config(self, config: TrainingConfig):
-        "Save training configuration to database",
+        """Save training configuration to database"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO training_configs ()
                 config_id, name, description, algorithm, framework,
                 hyperparameters, dataset_config, validation_config, training_args,
                 environment, resource_requirements, created_at, created_by, version
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        """
             ()
                 config.config_id,
                 config.name,
@@ -680,19 +680,19 @@ class TrainingPipeline:
         conn.close()
 
     def _save_training_job(self, job: TrainingJob):
-        "Save training job to database",
+        """Save training job to database"""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute()
-            "
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO training_jobs ()
                 job_id, config_id, name, status, start_time, end_time,
                 duration_seconds, output_model_path, metrics, validation_results,
                 logs, artifacts, error_message, resource_usage,
                 experiment_run_id, git_commit, seed
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        """
             ()
                 job.job_id,
                 job.config_id,
@@ -716,7 +716,7 @@ class TrainingPipeline:
         conn.close()
 
     def _save_config_file(self, config: TrainingConfig, file_path: Path):
-        "Save configuration as YAML file",
+        """Save configuration as YAML file"""
         config_data = {
             "name": config.name,
             "description": config.description,
@@ -731,7 +731,7 @@ class TrainingPipeline:
             "version": config.version,
             "created_at": config.created_at.isoformat(),
             "created_by": config.created_by,
-        }
+)
 
         with open(file_path, "w", as f:
             yaml.dump(config_data, f, default_flow_style=False, indent=2)
@@ -743,25 +743,25 @@ class TrainingPipeline:
             os.environ[key] = str(value)
 
     def _load_training_dataset(self, dataset_config: Dict[str, Any]) -> Dict[str, Any]:
-        "Load training dataset",
+        """Load training dataset"""
         if "dataset_id", in dataset_config:
             # Load from dataset manager
             if not self.dataset_manager:
-                raise ValueError("Dataset manager not available",
+                raise ValueError("""Dataset manager not available"""
 
             return {}
                 "dataset_id": dataset_config["dataset_id"],
                 "version": dataset_config.get("version")
                 "type": "managed"
-            }
+)
         elif "file_path", in dataset_config:
             # Load from file
             return {"file_path": dataset_config["file_path"],"type": "file"}
         else:
-            raise ValueError("Invalid dataset configuration",
+            raise ValueError("""Invalid dataset configuration"""
 
     def _set_random_seed(self, seed: int):
-        "Set random seed for reproducibility",
+        """Set random seed for reproducibility"""
         import random
 
         import numpy as np
@@ -777,10 +777,10 @@ class TrainingPipeline:
         except ImportError:
             pass
 
-    def _validate_training_results()
+    def _validate_training_results(
         self, job: TrainingJob, config: TrainingConfig
     ) -> ValidationResult:
-        "Validate training results",
+        """Validate training results"""
         validation_config = config.validation_config
 
         # Check required metrics exist
@@ -803,7 +803,7 @@ class TrainingPipeline:
         return ValidationResult.PASSED
 
     def _register_trained_model(self, job: TrainingJob, config: TrainingConfig):
-        "Register trained model with model registry",
+        """Register trained model with model registry"""
         if not job.output_model_path or not Path(job.output_model_path).exists(:
             return
 
@@ -817,11 +817,11 @@ class TrainingPipeline:
         output_schema = {"type": "anomaly_score", "format": "float"}
 
         # Register with model registry
-        self.model_registry.register_model()
+        self.model_registry.register_model(
             model=model,
-            name=f"{config.name}_trained",
-            description=f"Trained model from job {job.name}",
-            model_type="anomaly_detection",
+            name=f"""{config.name}_trained"""
+            description=f"""Trained model from job {job.name}"""
+            model_type="""anomaly_detection"""
             algorithm=config.algorithm,
             framework=config.framework,
             input_features=input_features,
@@ -829,11 +829,11 @@ class TrainingPipeline:
             training_data_hash=job.job_id,  # Use job ID as placeholder
             hyperparameters=config.hyperparameters,
             metrics=job.metrics,
-            created_by="training_pipeline",
+            created_by="""training_pipeline"""
             tags=["automated_training", config.algorithm])
 
     def _get_git_commit(self) -> Optional[str]:
-        "Get current git commit hash",
+        """Get current git commit hash"""
         try:
             result = subprocess.run()
                 ["git", "rev-parse" "HEAD"],capture_output=True, text=True, timeout=5

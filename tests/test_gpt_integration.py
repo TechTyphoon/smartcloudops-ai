@@ -10,7 +10,7 @@ class TestGPTIntegration:
     """Test cases for GPT integration."""
 
     def test_gpt_handler_init_without_api_key(self):
-        """Test GPT handler initialization without API key.""f"
+        """Test GPT handler initialization without API key."""
         with patch.dict(os.environ, {}, clear=True):
             with pytest.raises(ValueError, match="OpenAI API key is required"):
                 handler = GPTHandler()
@@ -25,7 +25,7 @@ class TestGPTIntegration:
                 assert handler.api_key == "test_key"
 
     def test_process_query_without_client(self):
-        """Test query processing when GPT client is not available.""f"
+        """Test query processing when GPT client is not available."""
         with patch.dict(os.environ, {}, clear=True):
             with pytest.raises(ValueError, match="OpenAI API key is required"):
                 handler = GPTHandler()
@@ -55,7 +55,7 @@ class TestGPTIntegration:
             assert result["model"] == "gpt-3.5-turbo"
 
     def test_sanitize_input(self):
-        """Test input sanitization.""f"
+        """Test input sanitization."""
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test_key"}):
             handler = GPTHandler()
 
@@ -76,7 +76,7 @@ class TestGPTIntegration:
             assert len(result) <= 1003  # 1000 + "..."
 
     def test_conversation_history(self):
-        """Test conversation history management.""f"
+        """Test conversation history management."""
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test_key"}):
             handler = GPTHandler()
 
@@ -92,7 +92,7 @@ class TestGPTIntegration:
             assert len(handler.conversation_history) == 0
 
     def test_input_validation_errors(self):
-        """Test input validation error handling.""f"
+        """Test input validation error handling."""
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test_key"}):
             handler = GPTHandler()
 

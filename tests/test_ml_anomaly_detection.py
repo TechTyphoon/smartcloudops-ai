@@ -25,17 +25,17 @@ class TestDataProcessor:
         ) as mock_config:
             mock_config.return_value = {
                 "data": {
-                    "prometheus_url": "http://localhost:9090",
+                    "prometheus_url": """http://localhost:9090"""
                     "lookback_hours": 168,
                     "feature_window": 60,
                 },
                 "features": [
-                    "cpu_usage_avg",
-                    "cpu_usage_max",
-                    "memory_usage_pct",
-                    "disk_usage_pct",
-                    "network_bytes_total",
-                    "request_rate",
+                    """cpu_usage_avg"""
+                    """cpu_usage_max"""
+                    """memory_usage_pct"""
+                    """disk_usage_pct"""
+                    """network_bytes_total"""
+                    """request_rate"""
                 ],
             }
 
@@ -56,7 +56,7 @@ class TestDataProcessor:
         assert "memory_usage_pct" in data.columns
 
     def test_data_preprocessing(self):
-        """Test data preprocessing.""f"
+        """Test data preprocessing."""
         processor = DataProcessor()
 
         # Create test data
@@ -74,7 +74,7 @@ class TestDataProcessor:
         assert not processed_data.isnull().any().any()
 
     def test_data_validation(self):
-        """Test data validation.""f"
+        """Test data validation."""
         processor = DataProcessor()
 
         # Valid data (with enough points)
@@ -105,7 +105,7 @@ class TestModelTrainer:
         assert len(trainer.feature_columns) == 0
 
     def test_feature_preparation(self):
-        """Test feature preparation.""f"
+        """Test feature preparation."""
         trainer = AnomalyModelTrainer()
 
         # Create test data with mixed types
@@ -133,7 +133,7 @@ class TestModelTrainer:
         assert hasattr(model, "predict")
 
     def test_model_training(self):
-        """Test model training functionality.""f"
+        """Test model training functionality."""
         trainer = AnomalyModelTrainer()
 
         # Create test data
@@ -231,7 +231,7 @@ class TestInferenceEngine:
         assert anomaly_score > normal_score
 
     def test_anomaly_explanation(self):
-        """Test anomaly explanation generation.""f"
+        """Test anomaly explanation generation."""
         engine = AnomalyInferenceEngine()
 
         metrics = {
@@ -260,7 +260,7 @@ class TestAnomalyDetector:
         assert not detector.is_initialized
 
     def test_metrics_validation(self):
-        """Test metrics validation.""f"
+        """Test metrics validation."""
         detector = AnomalyDetector()
 
         # Valid metrics
@@ -312,7 +312,7 @@ class TestIntegration:
     """Integration tests for the complete ML pipeline."""
 
     def test_complete_pipeline(self):
-        """Test the complete ML pipeline from data to inference.""f"
+        """Test the complete ML pipeline from data to inference."""
         # Initialize detector
         detector = AnomalyDetector()
 
@@ -339,7 +339,7 @@ class TestIntegration:
             assert "explanation" in result
 
     def test_batch_processing(self):
-        """Test batch anomaly detection.""f"
+        """Test batch anomaly detection."""
         detector = AnomalyDetector()
 
         batch_metrics = [
