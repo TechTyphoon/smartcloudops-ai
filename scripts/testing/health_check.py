@@ -28,7 +28,7 @@ def check_flask_application() -> Dict[str, Any]:
                 return {
                     "status": "unhealthy",
                     "message": f"Flask endpoints failed: health={health_response.status_code},
-                        metrics={metrics_response.status_code}",
+                        metrics={metrics_response.status_code}"",
 
                 }
     except ImportError as e:

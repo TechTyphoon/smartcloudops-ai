@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-    """
+"""
 SmartCloudOps AI - Main Application Entry Point
 Phase 2C Week 1: Performance & Scaling - Refactored with Factory Pattern
-"""
+"""Module documentation."""
 import logging
 from flask import Flask, jsonify, request
 import os
@@ -11,7 +11,7 @@ from pathlib import Path
 
 # Add current directory to Python path
 current_dir = Path.parent
-sys.path.insert(0, str(current_dir)
+sys.path.insert(0, str(current_dir))
 
 # Configure logging
 logging.basicConfig()

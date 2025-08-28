@@ -1,6 +1,6 @@
 """
 Model Monitor - Production model performance monitoring and drift detection
-"""
+"""Module documentation."""
 
 import json
 import logging
@@ -133,8 +133,8 @@ class ModelMonitor:
                 confidence_distribution TEXT,
                 feature_importance_drift TEXT,
                 data_quality_score REAL
-            )
-        """)
+
+        """
 
         # Model alerts table
         cursor.execute("""
@@ -150,8 +150,8 @@ class ModelMonitor:
                 acknowledged BOOLEAN DEFAULT 0,
                 resolved BOOLEAN DEFAULT 0,
                 resolution_notes TEXT
-            )
-        """)
+
+        """
 
         # Model health status table
         cursor.execute("""
@@ -161,8 +161,8 @@ class ModelMonitor:
                 health_status TEXT,
                 last_updated TIMESTAMP,
                 PRIMARY KEY (model_id, model_version)
-            )
-        """)
+
+        """
 
         # Prediction logs table
         cursor.execute("""
@@ -176,8 +176,8 @@ class ModelMonitor:
                 confidence REAL,
                 prediction_time_ms REAL,
                 error_message TEXT
-            )
-        """)
+
+        """
 
         conn.commit()
         conn.close()
@@ -236,7 +236,7 @@ class ModelMonitor:
             INSERT INTO prediction_logs (
                 log_id, model_id, model_version, timestamp, input_features,
                 prediction, confidence, prediction_time_ms, error_message
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?
         """, (
             log_id,
             model_id,
@@ -247,7 +247,7 @@ class ModelMonitor:
             confidence,
             prediction_time_ms,
             error_message
-        ))
+        )
 
         conn.commit()
         conn.close()
@@ -312,7 +312,7 @@ class ModelMonitor:
             confidence_distribution=confidence_distribution,
             feature_importance_drift=feature_importance_drift,
             data_quality_score=data_quality_score
-        )
+
 
         # Save metrics
         self._save_metrics(metrics)
@@ -334,8 +334,8 @@ class ModelMonitor:
                     {}
                         "error_rate": metrics.error_rate,
                         "threshold": self.monitoring_config["error_rate_threshold"],
-                    })
-            )
+                    )
+
 
         # Slow response time alert
         if metrics.avg_prediction_time_ms > self.monitoring_config["response_time_threshold_ms"]:
@@ -349,8 +349,8 @@ class ModelMonitor:
                     {}
                         "avg_time_ms": metrics.avg_prediction_time_ms,
                         "threshold": self.monitoring_config["response_time_threshold_ms"],
-                    })
-            )
+                    )
+
 
         # Data drift alert
         if metrics.drift_score is not None and metrics.drift_score > self.monitoring_config["drift_threshold"]:
@@ -364,8 +364,8 @@ class ModelMonitor:
                     {}
                         "drift_score": metrics.drift_score,
                         "threshold": self.monitoring_config["drift_threshold"],
-                    })
-            )
+                    )
+
 
         # High outlier rate alert
         if metrics.outlier_rate > self.monitoring_config["outlier_rate_threshold"]:
@@ -379,8 +379,8 @@ class ModelMonitor:
                     {}
                         "outlier_rate": metrics.outlier_rate,
                         "threshold": self.monitoring_config["outlier_rate_threshold"],
-                    })
-            )
+                    )
+
 
         # Low data quality alert
         if metrics.data_quality_score < self.monitoring_config["data_quality_threshold"]:
@@ -394,8 +394,8 @@ class ModelMonitor:
                     {}
                         "quality_score": metrics.data_quality_score,
                         "threshold": self.monitoring_config["data_quality_threshold"],
-                    })
-            )
+                    )
+
 
         # Save alerts
         for alert in alerts:
@@ -435,8 +435,8 @@ class ModelMonitor:
             SELECT * FROM model_metrics 
             WHERE model_id = ? AND model_version = ? AND timestamp >= ?
             ORDER BY timestamp DESC
-        ",
-            (model_id, model_version, start_time))
+        "",
+            (model_id, model_version, start_time)
 
         results = cursor.fetchall()
         conn.close()
@@ -464,20 +464,20 @@ class ModelMonitor:
                         "feature_importance_drift",
     """data_quality_score"""
                     ],
-                    result)
-            )
+                    result
+
 
             # Parse JSON fields
             data["confidence_distribution"] = ()
                 json.loads(data["confidence_distribution"])
                 if data["confidence_distribution"]
                 else {}
-            )
+
             data["feature_importance_drift"] = ()
                 json.loads(data["feature_importance_drift"])
                 if data["feature_importance_drift"]
                 else {}
-            )
+
 
             # Parse timestamp
             data["timestamp"] = datetime.fromisoformat(data["timestamp"])
@@ -539,8 +539,8 @@ class ModelMonitor:
     """resolved"""
     """resolution_notes"""
                     ],
-                    result)
-            )
+                    result
+
 
             # Parse JSON and other fields
             data["details"] = json.loads(data["details"]) if data["details"] else {}
@@ -576,7 +576,7 @@ class ModelMonitor:
                         # Log monitoring activity
                         self.logger.info()
                             f"Monitored {model_id} v{model_version}: {len(alerts)} alerts, health: {health.value}"
-                        )
+
 
                         # Update last check time
                         monitor_config["last_check"] = now
@@ -602,8 +602,8 @@ class ModelMonitor:
             SELECT * FROM prediction_logs 
             WHERE model_id = ? AND model_version = ? AND timestamp >= ? AND timestamp <= ?
             ORDER BY timestamp DESC
-        ",
-            (model_id, model_version, start_time, end_time))
+        "",
+            (model_id, model_version, start_time, end_time)
 
         results = cursor.fetchall()
         conn.close()
@@ -624,8 +624,8 @@ class ModelMonitor:
     """prediction_time_ms"""
     """error_message"""
                     ],
-                    result)
-            )
+                    result
+
 
             # Parse JSON fields
             if data["input_features"]:
@@ -653,7 +653,7 @@ class ModelMonitor:
             outlier_rate=0.0,
             confidence_distribution={},
             feature_importance_drift={},
-            data_quality_score=1.0)
+            data_quality_score=1.0
 
     def _calculate_confidence_distribution(self, confidences: List[float]) -> Dict[str, float]:
         "Calculate confidence distribution",
@@ -679,7 +679,7 @@ class ModelMonitor:
         total_checks = len(predictions)
 
         for pred in predictions:
-            input_features = pred.get("input_features", {})
+            input_features = pred.get("input_features", {)
 
             # Check for missing values
             if not input_features or not any(input_features.values()):
@@ -771,13 +771,13 @@ class ModelMonitor:
             timestamp=datetime.now(),
             acknowledged=False,
             resolved=False,
-            resolution_notes=None)
+            resolution_notes=None
 
     def _save_metrics(self, metrics: ModelPerformanceMetrics):
         "Save metrics to database",
         metric_id = ()
             f"metric_{metrics.model_id}_{int(metrics.timestamp.timestamp() * 1000)}"
-        )
+
 
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -789,8 +789,8 @@ class ModelMonitor:
                 avg_prediction_time_ms, error_rate, accuracy, precision, recall,
                 f1_score, drift_score, outlier_rate, confidence_distribution,
                 feature_importance_drift, data_quality_score
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+        "",
             ()
                 metric_id,
                 metrics.model_id,
@@ -807,7 +807,7 @@ class ModelMonitor:
                 metrics.outlier_rate,
                 json.dumps(metrics.confidence_distribution),
                 json.dumps(metrics.feature_importance_drift),
-                metrics.data_quality_score))
+                metrics.data_quality_score)
 
         conn.commit()
         conn.close()
@@ -822,8 +822,8 @@ class ModelMonitor:
             INSERT INTO model_alerts ()
                 alert_id, model_id, model_version, alert_type, severity,
                 message, details, timestamp, acknowledged, resolved, resolution_notes
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+        "",
             ()
                 alert.alert_id,
                 alert.model_id,
@@ -835,7 +835,7 @@ class ModelMonitor:
                 alert.timestamp,
                 alert.acknowledged,
                 alert.resolved,
-                alert.resolution_notes))
+                alert.resolution_notes)
 
         conn.commit()
         conn.close()
@@ -849,8 +849,8 @@ class ModelMonitor:
             "
             INSERT OR REPLACE INTO model_health ()
                 model_id, model_version, health_status, last_updated
-            ) VALUES (?, ?, ?, ?)
-        ",
+            ) VALUES (?, ?, ?, ?
+        "",
             (model_id, model_version, health.value, datetime.now())
 
         conn.commit()

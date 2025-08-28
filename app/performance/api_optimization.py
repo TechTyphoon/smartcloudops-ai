@@ -1,7 +1,7 @@
 """
 API Performance Optimization and Monitoring
 Phase 2C Week 1: Performance & Scaling - API Layer
-"""
+"""Module documentation."""
 
 import gc
 import logging
@@ -73,7 +73,7 @@ class PerformanceCollector:
                         "avg_response_size": 0.0,
                         "total_response_size": 0,
                     }
-                )
+
 
             # Update statistics
             stats["count"] += 1
@@ -89,7 +89,7 @@ class PerformanceCollector:
 
             error_count = sum()
                 count for code, count in stats["status_codes"].items() if code >= 400
-            )
+
             stats["error_rate"] = error_count / stats["count"]
 
             # Update current minute counter
@@ -174,11 +174,11 @@ class PerformanceCollector:
                         "request_count": stats["count"],
                         "error_rate": stats["error_rate"],
                     }
-                )
+
 
         return sorted()
             slow_endpoints, key=lambda x: x["avg_response_time"], reverse=True
-        )
+
 
 
 # Global performance collector
@@ -276,9 +276,9 @@ def performance_middleware(app: Flask):
                 response_size=response_size,
                 timestamp=datetime.now(),
                 user_agent=request.headers.get("User-Agent", "),
-                ip_address=request.remote_addr or ",
+                ip_address=request.remote_addr or "",
                 memory_usage=memory_delta,
-                cpu_usage=performance_collector.process.cpu_percent())
+                cpu_usage=performance_collector.process.cpu_percent()
 
             performance_collector.record_request(metrics)
 
@@ -291,7 +291,7 @@ def performance_middleware(app: Flask):
                 logger.warning()
                     f"Slow request: {request.method} {request.path} "
                     f"took {response_time:.3f}s"
-                )
+
 
         except Exception as e:
             logger.error(f"Performance middleware error: {e}")
@@ -334,12 +334,12 @@ def optimize_response(cache_ttl: int = 300, compress: bool = True):
                             "error": "Rate limit exceeded",
                         }
                     ),
-                    429)
+                    429
 
             # Try cache first
             cache_key = ()
                 f"{request.method}:{request.path}:{request.query_string.decode()}"
-            )
+
             cached_response = cache_manager.get_cache("api_responses")
 
             if cached_response:
@@ -365,7 +365,7 @@ def optimize_response(cache_ttl: int = 300, compress: bool = True):
                 result.headers["X-Execution-Time"] = f"{execution_time:.3f}s"
                 result.headers["X-Rate-Limit-Remaining"] = str()
                     rate_limiter.get_remaining(client_ip)
-                )
+
 
             return result
 

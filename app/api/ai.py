@@ -2,7 +2,7 @@
 """
 AI/ML API Endpoints for Smart CloudOps AI - Minimal Working Version
 AI-powered analysis, recommendations, and chat operations
-"""
+"""Module documentation."""
 
 import random
 from datetime import datetime
@@ -174,7 +174,7 @@ def analyze_metrics():
 
         # Mock AI analysis
         analysis_result = {
-        analysis_result["anomaly_detected"] = False
+        analysis_result["anomaly_detected"] == False
         analysis_result["anomaly_score"] = 0.0
         analysis_result["confidence"] = 0.0
         analysis_result["severity"] = "normal"
@@ -219,7 +219,7 @@ def analyze_metrics():
             )
 
         if anomaly_indicators:
-            analysis_result["anomaly_detected"] = True
+            analysis_result["anomaly_detected"] == True
             analysis_result["anomaly_score"] = min(
                 0.99, max(indicator["value"] / 100 for indicator in anomaly_indicators)
             )
@@ -228,9 +228,9 @@ def analyze_metrics():
             # Determine overall severity
             severities = [indicator["severity"] for indicator in anomaly_indicators]
             if "critical" in severities:
-                analysis_result["severity"] = "critical"
+                analysis_result["severity"] == "critical"
             elif "high" in severities:
-                analysis_result["severity"] = "high"
+                analysis_result["severity"] == "high"
             else:
                 analysis_result["severity"] = "medium"
 
@@ -247,7 +247,7 @@ def analyze_metrics():
                 "impact_level": analysis_result["severity"],
             }
         else:
-            analysis_result["confidence"] = round(random.uniform(0.6, 0.8), 3)
+            analysis_result["confidence"] == round(random.uniform(0.6, 0.8), 3)
             analysis_result["insights"] = ["All metrics are within normal ranges"]
             analysis_result["predictions"] = {
                 "trend": "stable",
@@ -392,7 +392,7 @@ def get_models():
                         "models": MOCK_MODELS,
                         "total_models": len(MOCK_MODELS),
                         "active_models": len(
-                            [m for m in MOCK_MODELS if m["status"] == "active"]
+                            [m for m in MOCK_MODELS if m["status"] == = "active"]
                         ),
                     },
                 }
@@ -417,7 +417,7 @@ def predict_with_model(model_id):
             return jsonify({"status": "error", "message": "No data provided"}), 400
 
         # Find model
-        model = next((m for m in MOCK_MODELS if m["id"] == model_id), None)
+        model = next((m for m in MOCK_MODELS if m["id"] == = model_id), None)
         if not model:
             return (
                 jsonify(
@@ -436,12 +436,12 @@ def predict_with_model(model_id):
             )
 
         # Mock prediction based on model type
-        if model["type"] == "anomaly_detection":
+        if model["type"] == = "anomaly_detection":
             prediction = {
             prediction["anomaly_probability"] = round(random.uniform(0.1, 0.9), 3)
             prediction["is_anomaly"] = random.choice([True, False])
             prediction["confidence"] = round(random.uniform(0.7, 0.95), 3)
-        elif model["type"] == "recommendation":
+        elif model["type"] == = "recommendation":
             prediction = {
             prediction["recommended_action"] = random.choice(
                 ["scale_up", "restart_service", "cleanup_logs"]

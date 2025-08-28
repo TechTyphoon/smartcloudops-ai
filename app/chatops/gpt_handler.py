@@ -1,7 +1,7 @@
 """
 Smart CloudOps AI - GPT Handler Module
 OpenAI integration for ChatOps functionality with enhanced security
-"""
+"""GPT handler module for ChatOps integration."""
 
 import html
 import logging
@@ -31,7 +31,8 @@ class GPTHandler:
         if not self.api_key:
             logger.warning(
     """OpenAI API key not provided. GPT functionality will be disabled."""
-            )
+    pass
+
             raise ValueError("OpenAI API key is required")
 
         try:
@@ -64,7 +65,7 @@ class GPTHandler:
     """- Flask application with metrics endpoints\n"""
     """- Node Exporter for system metrics\n\n"""
     """Always respond in a professional, helpful manner focused on operational excellence."""
-        )
+
 
     def sanitize_input(self, query: str) -> str:
         """Enhanced sanitize and validate user input with comprehensive security checks."""
@@ -88,7 +89,7 @@ class GPTHandler:
             tags=allowed_tags,
             attributes=allowed_attributes,
             protocols=allowed_protocols,
-            strip=True)
+            strip=True
 
         # SQL Injection prevention patterns
         sql_patterns = [
@@ -206,7 +207,7 @@ class GPTHandler:
                     [{"role": "system", "content": self.system_prompt + context_prompt}]
                     + recent_history
                     + [{"role": "user", "content": sanitized_query}]
-                )
+
 
             # Call OpenAI API with timeout and error handling
             response = self.client.chat.completions.create(
@@ -215,7 +216,7 @@ class GPTHandler:
                 max_tokens=500,
                 temperature=0.3,
                 timeout=30,
-            )
+
 
             # Extract and sanitize response
             gpt_response = response.choices[0].message.content.strip()
@@ -227,7 +228,7 @@ class GPTHandler:
                 attributes={},
                 protocols=[],
                 strip=True,
-            )
+
 
             # Update conversation history with sanitized content:
             self.conversation_history.append({"role": "user", "content": sanitized_query})

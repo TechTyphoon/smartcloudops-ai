@@ -1,6 +1,6 @@
 """
 OpenTelemetry Distributed Tracing
-"""
+"""Module documentation."""
 
 import time
 from contextlib import contextmanager
@@ -88,7 +88,7 @@ def setup_tracing()
                 ResourceAttributes.SERVICE_NAMESPACE: "cloudops",
                 ResourceAttributes.DEPLOYMENT_ENVIRONMENT: "production"
             }
-        )
+
 
         # Create tracer provider
         trace.set_tracer_provider(TracerProvider(resource=resource)
@@ -101,7 +101,7 @@ def setup_tracing()
             jaeger_exporter = JaegerExporter()
                 agent_host_name="localhost",
                 agent_port=14268,
-                collector_endpoint=jaeger_endpoint)
+                collector_endpoint=jaeger_endpoint
             exporters.append(jaeger_exporter)
             logger.info(f"Jaeger tracing configured: {jaeger_endpoint}")
 
@@ -176,7 +176,7 @@ def create_span()
     if kind:
         span_kwargs["kind"] = getattr()
             trace.SpanKind, kind.upper(), trace.SpanKind.INTERNAL
-        )
+
 
     with current_tracer.start_span(name, **span_kwargs) as span:
         if attributes:
@@ -211,7 +211,7 @@ def trace_request(name: Optional[str] = None):
                     "function.module": func.__module__,
                     "function.args_count": len(args),
                     "function.kwargs_count": len(kwargs),
-                }) as span:
+                ) as span:
                 start_time = time.time()
 
                 try:
@@ -221,7 +221,7 @@ def trace_request(name: Optional[str] = None):
                     span.set_attribute("function.success", True)
                     span.set_attribute()
                         "function.duration_ms", (time.time() - start_time) * 1000
-                    )
+
 
                     return result
                 except Exception as e:
@@ -246,7 +246,7 @@ def trace_anomaly_detection(func: Callable) -> Callable:
             attributes={}
                 "anomaly.detector": func.__name__,
                 "anomaly.detector_module": func.__module__,
-            }) as span:
+            ) as span:
             start_time = time.time()
 
             try:
@@ -257,7 +257,7 @@ def trace_anomaly_detection(func: Callable) -> Callable:
                     if "anomalies_found" in result:
                         span.set_attribute()
                             "anomaly.count", len(result["anomalies_found"])
-                        )
+
                     if "severity" in result:
                         span.set_attribute("anomaly.max_severity", result["severity"])
                     if "confidence" in result:
@@ -265,7 +265,7 @@ def trace_anomaly_detection(func: Callable) -> Callable:
 
                 span.set_attribute()
                     "anomaly.detection_duration_ms", (time.time() - start_time) * 1000
-                )
+
                 span.set_status(trace.Status(trace.StatusCode.OK)
 
                 return result
@@ -284,7 +284,7 @@ def trace_remediation(func: Callable) -> Callable:
             attributes={}
                 "remediation.action_type": func.__name__,
                 "remediation.module": func.__module__,
-            }) as span:
+            ) as span:
             start_time = time.time()
 
             try:
@@ -299,11 +299,11 @@ def trace_remediation(func: Callable) -> Callable:
                     if "target_resources" in result:
                         span.set_attribute()
                             "remediation.target_count", len(result["target_resources"])
-                        )
+
 
                 span.set_attribute()
                     "remediation.duration_ms", (time.time() - start_time) * 1000
-                )
+
                 span.set_status(trace.Status(trace.StatusCode.OK)
 
                 return result
@@ -325,7 +325,7 @@ def trace_ml_operation(operation_type: str):
                     "ml.operation": operation_type,
                     "ml.function": func.__name__,
                     "ml.module": func.__module__,
-                }) as span:
+                ) as span:
                 start_time = time.time()
 
                 try:
@@ -340,11 +340,11 @@ def trace_ml_operation(operation_type: str):
                         if "predictions" in result:
                             span.set_attribute()
                                 "ml.prediction_count", len(result["predictions"])
-                            )
+
 
                     span.set_attribute()
                         "ml.duration_ms", (time.time() - start_time) * 1000
-                    )
+
                     span.set_status(trace.Status(trace.StatusCode.OK)
 
                     return result

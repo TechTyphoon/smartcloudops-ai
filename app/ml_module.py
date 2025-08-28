@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
-    """
+"""
 ML Module for Smart CloudOps AI
 Extracted from main.py for modularity
 """
@@ -35,22 +35,21 @@ if ML_AVAILABLE:
         ML_AVAILABLE = False
 
 
-@ml_bp.route("//anomaly"route("//anomaly"route("//anomaly", methods=["GET", "POST"])
+@ml_bp.route("/anomaly", methods=["GET", "POST"])
 def anomaly_detection():
-    "ML Anomaly Detection endpoint.",
+    """ML Anomaly Detection endpoint."""
     if request.method == "GET":
-        return jsonify()
-            {}
+        return jsonify({
                 "status": "success",
                 "message": "ML Anomaly Detection Service",
                 "ml_available": ML_AVAILABLE,
                 "model_path": ML_MODEL_PATH,
                 "feature_count": ML_FEATURE_COUNT,
-                "endpoints": {}
+                "endpoints": {
                     "detect": "POST /ml/anomaly",
                     "status": "GET /ml/status",
                     "batch": "POST /ml/batch"
-                },
+                }
             }
         )
 

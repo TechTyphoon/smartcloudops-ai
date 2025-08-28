@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
+"""
+Smart CloudOps AI - ChatOps Utilities 
+Advanced context management, system state caching, and intelligent query processing
+"""
 import sys
 import time
 from collections import deque
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Tuple
-    """
-Smart CloudOps AI - ChatOps Utilities 
-Advanced context management, system state caching, and intelligent query processing
-"""
 import functools
 import logging
 import os
 
 # Add the project root to Python path
-sys.path.insert, "..", "..")
+sys.path.insert, "..", ".."
 
 logger = logging.getLogger(__name__)
 
@@ -94,12 +94,12 @@ class AdvancedContextManager:
             # Add to history
             self.system_state_history.append()
                 {"timestamp": current_time.isoformat(), "context": context}
-            )
+
 
             return context
         except Exception as e:
             logger.error("Error gathering system context: {e}")
-            return self.context_cache.get("system_context", {})
+            return self.context_cache.get("system_context", {)
 
     def _get_system_health(self) -> Dict[str, Any]:
     """Get current system health status."""
@@ -181,7 +181,7 @@ class AdvancedContextManager:
         summary_parts = []
 
         # System health
-        health = context.get("system_health", {})
+        health = context.get("system_health", {)
         if health.get("status") == "healthy":
             summary_parts.append("✅ System is healthy")
         else:
@@ -202,7 +202,7 @@ class AdvancedContextManager:
             summary_parts.append("✅ No active alerts")
 
         # Remediation status
-        remediation = context.get("remediation_status", {})
+        remediation = context.get("remediation_status", {)
         if remediation.get("status") == "operational":
             summary_parts.append("✅ Auto-remediation operational")
         else:
@@ -285,6 +285,7 @@ class IntelligentQueryProcessor:
 
 class ConversationManager:
     """Enhanced conversation management for Phase 5."""
+    pass
     def __init__(self, max_history: int = 50):
     """Initialize conversation manager."""
         self.max_history = max_history
@@ -366,6 +367,7 @@ class SystemContextGatherer:
 
 class LogRetriever:
     """Enhanced log retriever for Phase 5."""
+    pass
     def __init__(self, log_dir: str = "logs"):
     """Initialize log retriever."""
         self.log_dir = log_dir
@@ -397,7 +399,7 @@ class LogRetriever:
                         "source": "chatops",
                         "user_id": "test_user",
                     }
-                )
+
 
             # Filter by level if specified:
             if level:

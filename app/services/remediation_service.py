@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-    """
+"""
 Remediation Service - Business Logic Layer
 Handles all remediation action-related business operations
-"""
+"""Module documentation."""
 import random
 from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional, Tuple

@@ -1,6 +1,6 @@
 """
 Training Pipeline - Automated ML training with reproducibility and validation
-""""
+"""Module documentation."""
 
 import json
 import os
@@ -659,7 +659,7 @@ class TrainingPipeline:
                 hyperparameters, dataset_config, validation_config, training_args,
                 environment, resource_requirements, created_at, created_by, version
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        "",
             ()
                 config.config_id,
                 config.name,
@@ -692,7 +692,7 @@ class TrainingPipeline:
                 logs, artifacts, error_message, resource_usage,
                 experiment_run_id, git_commit, seed
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        "",
             ()
                 job.job_id,
                 job.config_id,

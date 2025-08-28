@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
 from typing import List
-    """
+"""Authentication routes module."""
 Enterprise Authentication Endpoints
 Login, logout, token refresh, user management
 """
@@ -12,7 +12,7 @@ from app.auth import
     authenticate_user,
     get_user_by_id,
     require_admin,
-    require_auth)
+    require_auth
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ def login():
                     "endpoint": "/auth/login",
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
-            )
+
 
         data = request.get_json()
         if not data:
@@ -53,7 +53,7 @@ def login():
                         "status": "error"
                     }
                 ),
-                400)
+                400
 
         username = data.get("username", ").strip()
         email = data.get("email", ").strip()
@@ -76,7 +76,7 @@ def login():
                         "status": "error"
                     }
                 ),
-                400)
+                400
 
         # Authenticate user
         user = authenticate_user(username, password)
@@ -90,7 +90,7 @@ def login():
                         "status": "error"
                     }
                 ),
-                401)
+                401
 
         # Generate tokens
         tokens = auth_manager.generate_tokens()
@@ -98,9 +98,9 @@ def login():
             username=user["username"],
             role=user["role"],
             tenant_id=user.get("tenant_id")
-        )
 
-        logger.info(f"Successful login for user: {username} (role: {user['role']})")
+
+        logger.info(f"Successful login for user: {username} (role: {user['role'])")
 
         return jsonify()
             {}
@@ -118,7 +118,7 @@ def login():
                 },
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-        )
+
 
     except Exception as e:
         logger.error("Login error: {e}")
@@ -130,7 +130,7 @@ def login():
                     "status": "error"
                 }
             ),
-            500)
+            500
 
 
 @auth_bp.route("/logout", methods=["POST"])
@@ -151,7 +151,7 @@ def logout():
                 "status": "success",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-        )
+
 
     except Exception as e:
         logger.error("Logout error: {e}")
@@ -163,7 +163,7 @@ def logout():
                     "status": "error"
                 }
             ),
-            500)
+            500
 
 
 @auth_bp.route("/refresh", methods=["POST"])
@@ -182,7 +182,7 @@ def refresh_token():
                         "status": "error"
                     }
                 ),
-                400)
+                400
 
         # Verify refresh token
         payload = auth_manager.verify_token(refresh_token)
@@ -195,7 +195,7 @@ def refresh_token():
                         "status": "error"
                     }
                 ),
-                401)
+                401
 
         # Get user info
         user = get_user_by_id(payload["user_id"])
@@ -208,7 +208,7 @@ def refresh_token():
                         "status": "error"
                     }
                 ),
-                401)
+                401
 
         # Generate new tokens
         tokens = auth_manager.generate_tokens()
@@ -216,7 +216,7 @@ def refresh_token():
             username=user["username"],
             role=user["role"],
             tenant_id=user.get("tenant_id")
-        )
+
 
         return jsonify()
             {}
@@ -225,7 +225,7 @@ def refresh_token():
                 "data": {"tokens": tokens},
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-        )
+
 
     except Exception as e:
         logger.error(f"Token refresh error: {e}")
@@ -233,7 +233,7 @@ def refresh_token():
             jsonify()
                 {"error": "Token refresh failed", "message": str(e), "status": "error"}
             ),
-            401)
+            401
 
 
 @auth_bp.route("/profile", methods=["GET"])
@@ -262,7 +262,7 @@ def get_profile():
                     },
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-        )
+
 
     except Exception as e:
         logger.error(f"Profile retrieval error: {e}")
@@ -274,7 +274,7 @@ def get_profile():
                     "status": "error"
                 }
             ),
-            500)
+            500
 
 
 @auth_bp.route("/users", methods=["GET"])
@@ -294,7 +294,7 @@ def list_users():
                     "active": user["active"],
                     "created_at": user.get("created_at")
                 }
-            )
+
 
         return jsonify()
             {}
@@ -303,7 +303,7 @@ def list_users():
                 "data": {"users": users, "count": len(users)},
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-        )
+
 
     except Exception as e:
         logger.error(f"User list error: {e}")
@@ -315,7 +315,7 @@ def list_users():
                     "status": "error"
                 }
             ),
-            500)
+            500
 
 
 @auth_bp.route("/validate", methods=["GET"])
@@ -329,7 +329,7 @@ def validate_token():
             "data": {"user": request.user, "valid": True},
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
-    )
+
 
 
 # Enterprise roles and permissions info
@@ -348,4 +348,4 @@ def get_roles():
             },
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
-    )
+

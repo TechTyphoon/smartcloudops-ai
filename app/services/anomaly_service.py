@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-    """
+"""
 Anomaly Service - Business Logic Layer
 Handles all anomaly-related business operations
-"""
+"""Module documentation."""
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
 

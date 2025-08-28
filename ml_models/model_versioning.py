@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""
+"""Module documentation."""
 GOD MODE: Advanced ML Model Versioning System
 Enterprise-grade model lifecycle management with A/B testing,
     rollbacks,
@@ -225,7 +225,7 @@ class ModelVersioningSystem:
 
                  checksum, status, parent_version, tags, deployment_config)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
+            """",
                 (
                     model_version.version_id,
                     model_version.model_name,
@@ -287,7 +287,7 @@ class ModelVersioningSystem:
     def evaluate_model_performance(
         self, version_id: str, X_test: np.ndarray, y_test: np.ndarray, model: Any = None
     ) -> Dict[str, float]:
-        """Evaluate model performance and store metrics""f"
+        """Evaluate model performance and store metrics"""
 
         if model is None:
             model, _ = self.load_model_version(version_id)
@@ -344,7 +344,7 @@ class ModelVersioningSystem:
                         (version_id, timestamp, metric_name, metric_value, dataset_size,
                          inference_latency_ms, memory_usage_mb, cpu_usage_percent)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
+                    """",
                         (
                             version_id,
                             datetime.now().isoformat(),
@@ -367,7 +367,7 @@ class ModelVersioningSystem:
     ) -> str:
         """Deploy model version to environment"""
 
-        deployment_id = f"deploy_{version_id}_{environment}_{datetime.now(
+        deployment_id = f"deploy_{version_id}_{environment}_{datetime.now("
             ).strftime('%Y%m%d_%H%M%S')}"
 
         with sqlite3.connect(self.db_path) as conn:
@@ -378,7 +378,7 @@ class ModelVersioningSystem:
                 (
                     deployment_id, version_id, environment, deployed_at, deployed_by, status, traffic_percentage)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-            """,
+            """",
                 (
                     deployment_id,
                     version_id,
@@ -418,7 +418,7 @@ class ModelVersioningSystem:
                 UPDATE model_deployments
                 SET status = 'rolled_back', rollback_version = ?
                 WHERE deployment_id = ?
-            """,
+            """",
                 (rollback_version_id, deployment_id),
             )
 
@@ -475,7 +475,7 @@ class ModelVersioningSystem:
                 SELECT * FROM model_performance
                 WHERE version_id = ? AND timestamp >= ?
                 ORDER BY timestamp DESC
-            """,
+            """",
                 (version_id, cutoff_date.isoformat()),
             )
 
@@ -559,7 +559,7 @@ class ModelVersioningSystem:
                 """
                 SELECT model_name, created_at FROM model_versions
                 ORDER BY created_at DESC LIMIT 5
-            ""f"
+            """
             ).fetchall()
 
         return {

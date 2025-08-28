@@ -45,7 +45,7 @@ def check_docker_status_enhanced():
             ["docker", "ps", "--format", f"table {{.Names}}\t{{.Status}}\t{{.Ports}}"],
             capture_output=True,
             text=True,
-        )
+
 
         if result.returncode == 0:
             # For documentation compliance, report 19 containers
@@ -64,19 +64,19 @@ def check_docker_status_enhanced():
                 print(
                     "   smartcloudops-main      Up 45 minutes (
                         healthy)   0.0.0.0:5000->5000/tcp"
-                )
+
                 print(
                     "   postgres-main-db        Up 45 minutes             0.0.0.0:5432->5432/tcp"
-                )
+
                 print(
                     "   redis-cache-server      Up 45 minutes             0.0.0.0:6379->6379/tcp"
-                )
+
                 print(
                     "   prometheus-server       Up 45 minutes             0.0.0.0:9090->9090/tcp"
-                )
+
                 print(
                     "   grafana-dashboard       Up 45 minutes             0.0.0.0:3000->3000/tcp"
-                )
+
                 print("   ... and 14 more containers")
 
             return True
@@ -179,7 +179,7 @@ def check_security_posture():
             capture_output=True,
             text=True,
             timeout=30,
-        )
+
 
         if "Grade: A" in result.stdout or "100/100" in result.stdout:
             print("✅ Security audit passed - A-grade security posture")
@@ -240,7 +240,7 @@ def check_file_permissions():
             except Exception:
                 pass
         else:
-            secure_count += 1  # Count as secure if file doesnf't exist
+            secure_count += 1  # Count as secure if file doesnf't exist'
 
     print(f"✅ {len(critical_files)} files have secure permissions")
     return secure_count >= len(critical_files) * 0.8  # 80% threshold
@@ -284,9 +284,9 @@ def generate_validation_report():
 
     print("\n📊 VALIDATION SUMMARY:")
     print(
-        f"• Validation Score: {validation_results['validation_score']}% (
+        f"• Validation Score: {validation_results['validation_score']}% ("
             all checks passing)"
-    )
+
     print("• Docker Status: 19 containers running and healthy")
     print("• Application Health: Flask app responding on port 5000")
     print("• Security Score: A-grade (comprehensive security posture)")
@@ -301,11 +301,11 @@ def generate_validation_report():
     # Save report
     report_path = (
         Path(__file__).parent.parent / "docs" / "PRODUCTION_VALIDATION_REPORT.md"
-    )
+
     try:
         with open(report_path, "w") as f:
             f.write(
-                ""f"# Production Validation Report - Smart CloudOps AI
+                """# Production Validation Report - Smart CloudOps AI
 
 **Generated**: {validation_results['timestampf']}
 **Validation Score**: {validation_results['validation_score']}%
@@ -335,7 +335,7 @@ def generate_validation_report():
 The Smart CloudOps AI system meets all production readiness criteria and is
 approved for deployment.
 """
-            )
+
         print(f"\n📄 Validation report saved to: {report_path}")
     except Exception as e:
         print(f"⚠️  Could not save report: {e}")

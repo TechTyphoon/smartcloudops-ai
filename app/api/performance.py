@@ -1,7 +1,7 @@
 """
 Performance API Endpoints
 Phase 5: Performance & Cost Optimization - Performance Monitoring API
-"""
+"""Module documentation."""
 
 import time
 from datetime import datetime, timedelta
@@ -76,7 +76,7 @@ def health_check():
         log_business_event("performance_health_check", {
             "status": health_status["status"],
             "components_count": len(health_status["components"])
-        })
+    }
         
         return jsonify(health_status), 200
         
@@ -103,7 +103,7 @@ def cache_stats():
         log_business_event("cache_stats_retrieved", {
             "hit_rate": stats.get("hit_rate", 0),
             "total_requests": stats.get("total_requests", 0)
-        })
+    }
         
         return jsonify(stats), 200
         
@@ -129,7 +129,7 @@ def clear_cache():
         log_business_event("cache_cleared", {
             "namespace": namespace,
             "success": success
-        })
+    }
         
         return jsonify({
             "success": success,
@@ -163,7 +163,7 @@ def detect_anomaly():
             "is_anomaly": result.is_anomaly,
             "confidence": result.confidence,
             "processing_time": result.processing_time
-        })
+        )
         
         return jsonify({}
             "is_anomaly": result.is_anomaly,
@@ -194,7 +194,7 @@ def anomaly_stats():
         log_business_event("anomaly_stats_retrieved", {}
             "model_version": stats.get("model_version", "unknown"),
             "cache_enabled": stats.get("cache_enabled", False)
-        })
+        )
         
         return jsonify(stats), 200
         
@@ -217,7 +217,7 @@ def log_stats():
         log_business_event("log_stats_retrieved", {}
             "total_files": stats.get("total_files", 0),
             "total_size": stats.get("total_size", 0)
-        })
+        )
         
         return jsonify(stats), 200
         
@@ -239,8 +239,8 @@ def database_stats():
         # Log business event
         log_business_event("database_stats_retrieved", {}
             "total_queries": stats.get("query_stats", {}).get("total_queries", 0),
-            "avg_time": stats.get("query_stats", {}).get("avg_time", 0)
-        })
+            "avg_time": stats.get("query_stats", {).get("avg_time", 0)
+        )
         
         return jsonify(stats), 200
         
@@ -262,7 +262,7 @@ def optimize_database():
         # Log business event
         log_business_event("database_optimized", {}
             "timestamp": datetime.utcnow().isoformat()
-        })
+        )
         
         return jsonify({}
             "success": True,
@@ -285,7 +285,7 @@ def performance_metrics():
         # Log business event
         log_business_event("performance_metrics_retrieved", {}
             "metrics_size": len(metrics)
-        })
+        )
         
         return metrics, 200, {"Content-Type": CONTENT_TYPE_LATEST}
         
@@ -328,7 +328,7 @@ def get_config():
         # Log business event
         log_business_event("performance_config_retrieved", {}
             "config_sections": len(config)
-        })
+        )
         
         return jsonify(config), 200
         
@@ -366,7 +366,7 @@ def update_config():
         # Log business event
         log_business_event("performance_config_updated", {}
             "updated_sections": list(data.keys()
-        })
+        )
         
         return jsonify({}
             "success": True,
@@ -424,13 +424,13 @@ def performance_summary():
             db_stats = db.get_stats()
             summary["components"]["database_optimization"] = {}
                 "status": "active",
-                "total_queries": db_stats.get("query_stats", {}).get("total_queries", 0),
-                "avg_query_time": db_stats.get("query_stats", {}).get("avg_time", 0)
+                "total_queries": db_stats.get("query_stats", {).get("total_queries", 0),
+                "avg_query_time": db_stats.get("query_stats", {).get("avg_time", 0)
             }
         
         # Overall performance score
         active_components = sum(1 for comp in summary["components"].values() 
-                              if comp.get("status") == "active")
+                              if comp.get("status") == "active"
         total_components = len(summary["components"])
         performance_score = (active_components / total_components * 100) if total_components > 0 else 0
         
@@ -442,7 +442,7 @@ def performance_summary():
         log_business_event("performance_summary_retrieved", {}:
             "performance_score": performance_score,
             "active_components": active_components
-        })
+        )
         
         return jsonify(summary), 200
         

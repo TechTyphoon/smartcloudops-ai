@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-    """
+"""
 Authentication Module for Smart CloudOps AI
 Extracted from main.py for modularity
-"""
+"""Module documentation."""
 import logging
 import os
 from datetime import datetime, timedelta, timezone
@@ -37,7 +37,7 @@ USERS_DB = {:
         "role": "admin",
         "email": "admin@smartcloudops.ai"
     }
-}
+
 
 
 def create_jwt_token(user_id: str, role: str) -> str:

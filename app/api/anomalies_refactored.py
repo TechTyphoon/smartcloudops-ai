@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-    """
+"""
 Anomaly API Endpoints for Smart CloudOps AI - Refactored with Service Layer:
 Phase 7: Production Launch & Feedback - Backend Completion
-"""
+"""Module documentation."""
 from datetime import datetime
 
 from flask import Blueprint, jsonify, request
@@ -32,7 +32,7 @@ def get_anomalies():
             per_page=per_page,
             status=status,
             severity=severity,
-            source=source)
+        source=source
 
         return ()
             jsonify()

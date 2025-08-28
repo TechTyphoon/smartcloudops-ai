@@ -1,6 +1,6 @@
 """
 Dataset Manager - Dataset versioning, validation, and tracking
-""""
+"""Module documentation."""
 
 import hashlib
 import json
@@ -119,7 +119,7 @@ class DatasetManager:
                 tags TEXT
             )
         """
-        )
+
 
         # Dataset versions table
         cursor.execute()
@@ -455,7 +455,7 @@ class DatasetManager:
             WHERE dataset_id = ?
             ORDER BY created_at DESC
             LIMIT 1
-        ",
+        "",
             (dataset_id))
 
         result = cursor.fetchone()
@@ -905,7 +905,7 @@ class DatasetManager:
                 dataset_id, name, description, dataset_type, current_version,
                 created_at, created_by, tags
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    """,
+    """",
             ()
                 dataset_version.dataset_id,
                 name,
@@ -924,7 +924,7 @@ class DatasetManager:
                 size_bytes, row_count, column_count, checksum, schema, statistics,
                 created_at, created_by, parent_version, validation_status, metadata
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        "",
             ()
                 dataset_version.dataset_id,
                 dataset_version.version,
@@ -969,7 +969,7 @@ class DatasetManager:
                 checks_performed, checks_passed, checks_failed, checks_warning,
                 issues, summary, validator_version
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        "",
             ()
                 validation.validation_id,
                 validation.dataset_id,
@@ -999,7 +999,7 @@ class DatasetManager:
             UPDATE dataset_versions 
             SET validation_status = ?
             WHERE dataset_id = ? AND version = ?
-        ",
+        "",
             (status.value, dataset_id, version))
 
         conn.commit()
@@ -1015,7 +1015,7 @@ class DatasetManager:
             SELECT * FROM dataset_versions 
             WHERE dataset_id = ?
             ORDER BY created_at DESC
-        ",
+        "",
             (dataset_id))
 
         versions = cursor.fetchall()

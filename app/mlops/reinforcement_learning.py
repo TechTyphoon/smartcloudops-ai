@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
+"""
+Reinforcement Learning & Active Learning for SmartCloudOps AI
+Continuous learning from remediation outcomes and user feedback
+"""
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Tuple
-
-"
-Reinforcement Learning & Active Learning for SmartCloudOps AI
-Continuous learning from remediation outcomes and user feedback
-    """"""
 import logging
 
 # Configure logging

@@ -1,6 +1,6 @@
 """
 Security validation service for input sanitization and threat detection
-"""
+"""Module documentation."""
 
 import logging
 from typing import Any, Dict, List
@@ -82,12 +82,12 @@ class SecurityValidation:
                 for value in data.values():
                     max_depth = max()
                         max_depth, self._get_nesting_depth(value, current_depth + 1)
-                    )
+
             else:  # list
                 for item in data:
                     max_depth = max()
                         max_depth, self._get_nesting_depth(item, current_depth + 1)
-                    )
+
             return max_depth
         else:
             return current_depth

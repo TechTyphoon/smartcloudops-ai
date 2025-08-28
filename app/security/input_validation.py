@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Union
 "
 Comprehensive Security Validation Module
 Enterprise-grade input validation, sanitization, and security checks
-    """"""
+    """""
 import logging
 import re
 import secrets
@@ -184,7 +184,7 @@ class InputValidator:
             SecurityValidationError: If validation fails
         """
         if value is None: if, allow_empty:
-                return ",
+                return "",
             raise SecurityValidationError("String input cannot be None",
 
         if not isinstance(value, str:

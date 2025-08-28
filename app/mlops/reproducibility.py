@@ -1,6 +1,6 @@
 """
 Reproducibility Manager - Environment snapshots and reproducible ML workflows
-""""
+"""Module documentation."""
 
 import hashlib
 import importlib.metadata
@@ -144,7 +144,7 @@ class ReproducibilityManager:
     def create_snapshot()
         self,
         name: str,
-        description: str = ",
+        description: str = "",
         created_by: str = "system",
         include_env_vars: bool = False,
         exclude_patterns: List[str] = None) -> EnvironmentSnapshot:
@@ -396,7 +396,7 @@ class ReproducibilityManager:
                 SELECT * FROM reproducibility_reports 
                 WHERE target_snapshot_id = ? OR current_snapshot_id = ?
                 ORDER BY timestamp DESC
-            ",
+            "",
                 (snapshot_id, snapshot_id))
         else:
             cursor.execute()
@@ -999,7 +999,7 @@ name = "pypi"
                 platform_info, packages, environment_variables, git_info, system_info,
                 hash_signature, conda_environment, docker_info, jupyter_kernels, cuda_info
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        "",
             ()
                 snapshot.snapshot_id,
                 snapshot.name,
@@ -1032,7 +1032,7 @@ name = "pypi"
                 report_id, target_snapshot_id, current_snapshot_id, timestamp,
                 is_reproducible, differences, recommendations, risk_level, compatibility_score
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        "",
             ()
                 report.report_id,
                 report.target_snapshot_id,

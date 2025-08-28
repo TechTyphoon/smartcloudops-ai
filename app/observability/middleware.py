@@ -1,6 +1,6 @@
 """
 Flask Middleware for Observability Integration
-""""
+"""Module documentation."""
 
 import time
 

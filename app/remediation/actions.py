@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-from datetime import datetime
-
-"
+"""
 Smart CloudOps AI - Action Manager 
 Executes AWS SSM-based remediation actions
-    """"""
+"""
+from datetime import datetime
 import logging
 import os
 from typing import Any, Dict, List

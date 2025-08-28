@@ -1,7 +1,7 @@
 """
 Database Optimization and Query Performance Enhancement
 Phase 5: Performance & Cost Optimization - Database Optimization
-"""
+"""Module documentation."""
 
 import os
 import time
@@ -110,7 +110,7 @@ class QueryLogger:
                     'query': query,
                     'execution_time': execution_time,
                     'timestamp': datetime.now().isoformat()
-                })
+                }
                 
                 # Keep only recent slow queries
                 if len(self.slow_queries) > 100:
@@ -158,7 +158,7 @@ class OptimizedDatabase:
                     minconn=self.config.min_connections,
                     maxconn=self.config.max_connections,
                     dsn=self.config.database_path
-                )
+
                 logger.info("✅ PostgreSQL connection pool initialized")
             else:
                 # SQLite doesn't need connection pooling, but we can implement a simple one
@@ -332,7 +332,7 @@ def init_optimized_database(database_path: str, max_connections: int = 20) -> Op
     config = DatabaseConfig()
         database_path=database_path,
         max_connections=max_connections
-    )
+
     
     with _db_lock:
         if _optimized_db is None:

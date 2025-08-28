@@ -2,7 +2,7 @@
 
 
 def test_chatops_analyze_endpoint(client: FlaskClient):
-    """Test /chatops/analyze endpoint with trivial query.""f"
+    """Test /chatops/analyze endpoint with trivial query."""
     test_query = {"query": "show system status"}
 
     response = client.post(
@@ -115,7 +115,7 @@ def test_chatops_analyze_methods(client: FlaskClient):
 
 
 def test_chatops_analyze_response_time(client: FlaskClient):
-    """Test /chatops/analyze endpoint responds within reasonable time.""f"
+    """Test /chatops/analyze endpoint responds within reasonable time."""
 
     test_query = {"query": "show system status"}
 
@@ -131,7 +131,7 @@ def test_chatops_analyze_response_time(client: FlaskClient):
 
 
 def test_chatops_analyze_data_structure(client: FlaskClient):
-    """Test /chatops/analyze response data has expected structure.""f"
+    """Test /chatops/analyze response data has expected structure."""
     test_query = {"query": "show system status"}
 
     response = client.post(

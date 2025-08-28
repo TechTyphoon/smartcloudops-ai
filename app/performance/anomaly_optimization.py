@@ -1,7 +1,7 @@
 """
 Optimized Anomaly Detection for Performance Enhancement
 Phase 5: Performance & Cost Optimization - Anomaly Detection Optimization
-"""
+"""Module documentation."""
 
 import os
 import time
@@ -95,7 +95,7 @@ class BatchProcessor:
                 target=self._worker_loop,
                 daemon=True,
                 name=f"batch-worker-{i}"
-            )
+
             thread.start()
     
     def _worker_loop(self):
@@ -159,7 +159,7 @@ class BatchProcessor:
                     timestamp=datetime.utcnow(),
                     model_version="error",
                     processing_time=0.0
-                )
+
                 self.results_queue.put((request_id, error_result)
     
     def _detect_anomalies_batch(self, data_list: List[Dict[str, Any]]) -> List[AnomalyResult]:
@@ -182,7 +182,7 @@ class BatchProcessor:
                 timestamp=datetime.utcnow(),
                 model_version="batch-v1",
                 processing_time=0.001
-            )
+
             results.append(result)
         
         return results
@@ -251,7 +251,7 @@ class OptimizedAnomalyDetector:
                 asdict(result), 
                 self.config.prediction_ttl, 
     """anomaly_predictions"""
-            )
+
         
         return result
     
@@ -267,7 +267,7 @@ class OptimizedAnomalyDetector:
             self.detect_anomaly, 
             data, 
             use_cache
-        )
+
     
     def _detect_anomaly_batch(self, data: Dict[str, Any]) -> AnomalyResult:
     """Detect anomaly using batch processing"""
@@ -314,7 +314,7 @@ class OptimizedAnomalyDetector:
             timestamp=datetime.utcnow(),
             model_version=self.model_version,
             processing_time=0.0  # Will be set by caller
-        )
+
     
     def _extract_features(self, data: Dict[str, Any]) -> Dict[str, float]:
     """Extract features from data"""
@@ -411,7 +411,7 @@ def detect_anomaly(data: Dict[str, Any], use_cache: bool = True) -> AnomalyResul
             timestamp=datetime.utcnow(),
             model_version="fallback",
             processing_time=0.0
-        )
+
 
 
 # Decorator for caching anomaly detection results

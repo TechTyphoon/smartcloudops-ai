@@ -1,7 +1,7 @@
 """
 Enhanced OpenTelemetry Configuration
 Phase 4: Observability & Operability - Distributed tracing and metrics
-"""
+"""Module documentation."""
 
 import os
 from typing import Optional
@@ -69,7 +69,7 @@ class OpenTelemetryConfig:
             "deployment.environment": environment,
             "host.name": os.getenv("HOSTNAME", "unknown"),
             "process.pid": str(os.getpid(),
-        })
+        )
 
         # Setup tracing
         if enable_tracing:
@@ -111,7 +111,7 @@ class OpenTelemetryConfig:
         if jaeger_endpoint:
             jaeger_exporter = JaegerExporter()
                 agent_host_name=jaeger_endpoint.split(":")[0],
-                agent_port=int(jaeger_endpoint.split(":")[1]) if ":" in jaeger_endpoint else 6831)
+                agent_port=int(jaeger_endpoint.split(":")[1]) if ":" in jaeger_endpoint else 6831
             jaeger_processor = BatchSpanProcessor(jaeger_exporter)
             processors.append(jaeger_processor)
 
@@ -141,7 +141,7 @@ class OpenTelemetryConfig:
         if console_export:
             console_reader = PeriodicExportingMetricReader()
                 ConsoleMetricExporter(),
-                export_interval_millis=5000)
+                export_interval_millis=5000
             readers.append(console_reader)
 
         # OTLP exporter
@@ -149,7 +149,7 @@ class OpenTelemetryConfig:
             otlp_exporter = OTLPMetricExporter(endpoint=otlp_endpoint)
             otlp_reader = PeriodicExportingMetricReader()
                 otlp_exporter,
-                export_interval_millis=10000)
+                export_interval_millis=10000
             readers.append(otlp_reader)
 
         if readers:
@@ -163,7 +163,7 @@ class OpenTelemetryConfig:
         # LoggingInstrumentor().instrument()
         #     set_logging_format=True,
         #     log_level=os.getenv("LOG_LEVEL", "INFO"),
-        # )
+        #
         pass
 
     def _setup_propagators(self) -> None:
@@ -262,7 +262,7 @@ def setup_opentelemetry()
         jaeger_endpoint=jaeger_endpoint,
         otlp_endpoint=otlp_endpoint,
         console_export=console_export,
-        **kwargs)
+        **kwargs
 
     # Instrument Flask if provided
     if app:

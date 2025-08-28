@@ -179,7 +179,7 @@ class SecurityConfig:
         if len(password) < cls.PASSWORD_MIN_LENGTH:
             errors.append(
                 f"Password must be at least {cls.PASSWORD_MIN_LENGTH} characters long"
-            )
+
 
         if cls.PASSWORD_REQUIRE_UPPERCASE and not re.search(r"[A-Z]", password):
             errors.append("Password must contain at least one uppercase letter")
@@ -246,28 +246,28 @@ class SecurityConfig:
             if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
     """Input contains potentially unsafe SQL content: {pattern}"""
-                )
+
 
         # Check for command injection patterns
         for pattern in cls.COMMAND_INJECTION_PATTERNS:
             if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
     """Input contains potentially unsafe command content: {pattern}"""
-                )
+
 
         # Check for XSS patterns
         for pattern in cls.XSS_PATTERNS:
             if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
     """Input contains potentially unsafe JavaScript content: {pattern}"""
-                )
+
 
         # Check for path traversal patterns
         for pattern in cls.PATH_TRAVERSAL_PATTERNS:
             if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
     """Input contains potentially unsafe path content: {pattern}"""
-                )
+
 
         # Length validation
         if len(input_string) > 1000:

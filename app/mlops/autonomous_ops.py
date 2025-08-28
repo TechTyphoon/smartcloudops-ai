@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-    """
+"""
 Autonomous Operations Engine - Minimal Working Version
 Intelligent automation for anomaly remediation
-"""
+"""Module documentation."""
 import logging
 from dataclasses import dataclass
 from datetime import datetime
@@ -37,7 +37,7 @@ class PolicyRule:
 
     def evaluate()
         self, anomaly_info: Dict[str, Any], system_state: Dict[str, Any]
-    ) -> bool:
+     -> bool:
     """Evaluate if this policy rule applies to the given anomaly and system state."""
         # Check severity condition - ensure anomaly severity matches required levels
         if "severity" in self.conditions:

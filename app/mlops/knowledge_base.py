@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-    """
+"""
 Knowledge Base and Recommendation Engine - Minimal Working Version
 Intelligent learning system for anomaly analysis and remediation recommendations
-"""
+"""Module documentation."""
 import json
 import logging
 from collections import defaultdict

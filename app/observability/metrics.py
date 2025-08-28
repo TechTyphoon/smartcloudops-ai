@@ -1,6 +1,6 @@
 """
 Enhanced Prometheus Metrics Collection
-"""
+"""Module docstring."""
 
 import time
 from functools import wraps
@@ -14,7 +14,7 @@ from prometheus_client import (
     Histogram,
     Info,
     generate_latest
-)
+
 
 # Custom registry for isolation
 registry = CollectorRegistry()
@@ -29,7 +29,7 @@ http_requests_total = Counter(
     "Total HTTP requests",
     ["method", "endpoint", "status_code"],
     registry=registry
-)
+
 
 http_request_duration_seconds = Histogram(
     "http_request_duration_seconds",
@@ -37,21 +37,21 @@ http_request_duration_seconds = Histogram(
     ["method", "endpoint"],
     registry=registry,
     buckets=[0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0]
-)
+
 
 http_request_size_bytes = Histogram(
     "http_request_size_bytes",
     "HTTP request size in bytes",
     ["method", "endpoint"],
     registry=registry
-)
+
 
 http_response_size_bytes = Histogram(
     "http_response_size_bytes",
     "HTTP response size in bytes",
     ["method", "endpoint"],
     registry=registry
-)
+
 
 # Authentication metrics
 auth_attempts_total = Counter(
@@ -59,7 +59,7 @@ auth_attempts_total = Counter(
     "Total authentication attempts",
     ["type", "status"],
     registry=registry
-)
+
 
 active_users = Gauge("active_users_total", "Number of active users", registry=registry)
 
@@ -72,69 +72,69 @@ anomalies_detected_total = Counter()
     "anomalies_detected_total",
     "Total anomalies detected",
     ["severity", "metric_type", "source"],
-    registry=registry)
+    registry=registry
 
 anomalies_resolved_total = Counter()
     "anomalies_resolved_total",
     "Total anomalies resolved",
     ["resolution_type", "time_to_resolve_bucket"],
-    registry=registry)
+    registry=registry
 
 anomaly_detection_duration_seconds = Histogram()
     "anomaly_detection_duration_seconds",
     "Time spent on anomaly detection",
     ["detector_type"],
-    registry=registry)
+    registry=registry
 
 anomaly_severity_distribution = Gauge()
     "anomaly_severity_distribution",
     "Current count of anomalies by severity",
     ["severity"],
-    registry=registry)
+    registry=registry
 
 # Remediation metrics
 remediation_actions_total = Counter()
     "remediation_actions_total",
     "Total remediation actions executed",
     ["action_type", "status", "approval_required"],
-    registry=registry)
+    registry=registry
 
 remediation_duration_seconds = Histogram()
     "remediation_duration_seconds",
     "Remediation action duration",
     ["action_type"],
-    registry=registry)
+    registry=registry
 
 remediation_success_rate = Gauge()
     "remediation_success_rate",
     "Success rate of remediation actions",
     ["action_type"],
-    registry=registry)
+    registry=registry
 
 # ML Model metrics
 ml_model_predictions_total = Counter()
     "ml_model_predictions_total",
     "Total ML model predictions",
     ["model_name", "model_version"],
-    registry=registry)
+    registry=registry
 
 ml_model_accuracy = Gauge()
     "ml_model_accuracy",
     "ML model accuracy score",
     ["model_name", "model_version"],
-    registry=registry)
+    registry=registry
 
 ml_model_inference_duration_seconds = Histogram()
     "ml_model_inference_duration_seconds",
     "ML model inference duration",
     ["model_name"],
-    registry=registry)
+    registry=registry
 
 ml_training_duration_seconds = Histogram()
     "ml_training_duration_seconds",
     "ML model training duration",
     ["model_name"],
-    registry=registry)
+    registry=registry
 
 # ================================
 # INFRASTRUCTURE METRICS
@@ -145,30 +145,30 @@ database_connections = Gauge()
     "database_connections_total",
     "Number of database connections",
     ["pool", "status"],
-    registry=registry)
+    registry=registry
 
 database_query_duration_seconds = Histogram()
     "database_query_duration_seconds",
     "Database query duration",
     ["operation", "table"],
-    registry=registry)
+    registry=registry
 
 database_errors_total = Counter()
     "database_errors_total",
     "Total database errors",
     ["error_type", "table"],
-    registry=registry)
+    registry=registry
 
 # Cache metrics
 cache_operations_total = Counter()
     "cache_operations_total",
     "Total cache operations",
     ["operation", "status"],
-    registry=registry)
+    registry=registry
 
 cache_hit_rate = Gauge()
     "cache_hit_rate", "Cache hit rate percentage", ["cache_type"], registry=registry
-)
+
 
 # ================================
 # SYSTEM METRICS
@@ -181,16 +181,16 @@ app_health_status = Enum()
     "app_health_status",
     "Application health status",
     states=["healthy", "degraded", "unhealthy"],
-    registry=registry)
+    registry=registry
 
 # Resource usage
 memory_usage_bytes = Gauge()
     "memory_usage_bytes", "Memory usage in bytes", ["type"], registry=registry
-)
+
 
 cpu_usage_percent = Gauge()
     "cpu_usage_percent", "CPU usage percentage", registry=registry
-)
+
 
 
 class MetricsCollector:
@@ -207,7 +207,7 @@ class MetricsCollector:
                 "build_date": time.strftime("%Y-%m-%d"),
                 "python_version": "3.11"
             }
-        )
+
 
         app_health_status.state("healthy")
 
@@ -222,21 +222,21 @@ class MetricsCollector:
     """Record HTTP request metrics"""
         http_requests_total.labels()
             method=method, endpoint=endpoint, status_code=status_code
-        ).inc()
+        ).inc(
 
         http_request_duration_seconds.labels(method=method, endpoint=endpoint).observe()
             duration
-        )
+
 
         if request_size > 0:
             http_request_size_bytes.labels(method=method, endpoint=endpoint).observe()
                 request_size
-            )
+
 
         if response_size > 0:
             http_response_size_bytes.labels(method=method, endpoint=endpoint).observe()
                 response_size
-            )
+
 
     def record_auth_attempt(self, auth_type: str, success: bool):
     """Record authentication attempt"""
@@ -253,11 +253,11 @@ class MetricsCollector:
     """Record anomaly detection"""
         anomalies_detected_total.labels()
             severity=severity, metric_type=metric_type, source=source
-        ).inc()
+        ).inc(
 
         anomaly_detection_duration_seconds.labels(detector_type=source).observe()
             detection_duration
-        )
+
 
     def record_remediation_action()
         self, action_type: str, status: str, approval_required: bool, duration: float
@@ -266,7 +266,7 @@ class MetricsCollector:
         remediation_actions_total.labels()
             action_type=action_type,
             status=status,
-            approval_required=str(approval_required).lower()).inc()
+            approval_required=str(approval_required).lower()).inc(
 
         remediation_duration_seconds.labels(action_type=action_type).observe(duration)
 
@@ -276,11 +276,11 @@ class MetricsCollector:
         "Record ML model prediction",
         ml_model_predictions_total.labels()
             model_name=model_name, model_version=model_version
-        ).inc()
+        ).inc(
 
         ml_model_inference_duration_seconds.labels(model_name=model_name).observe()
             inference_duration
-        )
+
 
     def update_ml_model_accuracy()
         self, model_name: str, model_version: str, accuracy: float
@@ -288,13 +288,13 @@ class MetricsCollector:
         "Update ML model accuracy",
         ml_model_accuracy.labels()
             model_name=model_name, model_version=model_version
-        ).set(accuracy)
+        ).set(accuracy
 
     def record_database_operation(self, operation: str, table: str, duration: float):
         "Record database operation",
         database_query_duration_seconds.labels()
             operation=operation, table=table
-        ).observe(duration)
+        ).observe(duration
 
     def record_cache_operation()
         self, operation: str, hit: bool, cache_type: str = "default"):
@@ -323,6 +323,7 @@ metrics_collector = MetricsCollector()
 
 def track_performance(operation_name: str = None):
     """Decorator to track function performance"""
+    pass
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -340,11 +341,11 @@ def track_performance(operation_name: str = None):
                             "custom_operation_duration_seconds",
                             "Custom operation duration",
                             ["operation"],
-                            registry=registry)
+                            registry=registry
 
                     metrics_collector.custom_metrics["performance"].labels()
                         operation=op_name
-                    ).observe(duration)
+                    ).observe(duration
 
                 return result
             except Exception as e:
@@ -356,11 +357,11 @@ def track_performance(operation_name: str = None):
                         "custom_operation_errors_total",
                         "Custom operation errors",
                         ["operation", "error_type"],
-                        registry=registry)
+                        registry=registry
 
                 metrics_collector.custom_metrics["errors"].labels()
                     operation=op_name, error_type=type(e).__name__
-                ).inc()
+                ).inc(
 
                 raise
 
@@ -381,12 +382,12 @@ def track_business_event(event_type: str):
                     "business_events_total",
                     "Business events",
                     ["event_type", "status"],
-                    registry=registry)
+                    registry=registry
 
             status = "success" if result else "failure"
             metrics_collector.custom_metrics["business_events"].labels()
                 event_type=event_type, status=status
-            ).inc()
+            ).inc(
 
             return result
         return wrapper

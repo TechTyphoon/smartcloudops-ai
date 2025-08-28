@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-    """
+"""
 Monitoring: Prometheus Metrics Module - Minimal Working Version
 Centralized metrics collection for application monitoring
-"""
+"""Module documentation."""
 import logging
 from flask import Flask, jsonify, request
 import threading

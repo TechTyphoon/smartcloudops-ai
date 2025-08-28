@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-    """
+"""
 Feedback Service - Business Logic Layer
 Handles all user feedback-related business operations
-"""
+"""Module documentation."""
 from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
 

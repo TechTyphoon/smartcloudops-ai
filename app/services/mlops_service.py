@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-    """
+"""
 MLOpsService - Business logic for MLOps operations
 Phase 2A: MLOps integration with service layer pattern
-"""
+"""Module documentation."""
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
