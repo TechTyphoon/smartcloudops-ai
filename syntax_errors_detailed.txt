@@ -1,0 +1,438 @@
+DETAILED SYNTAX ERROR REPORT
+================================================================================
+Total files with errors: 114
+================================================================================
+
+[Python] scripts/monitoring/real_system_monitor.py
+Error: SyntaxError at line 163: unterminated f-string literal (detected at line 163)
+----------------------------------------
+[Python] scripts/monitoring/uptime_monitor.py
+Error: SyntaxError at line 21: invalid syntax
+----------------------------------------
+[Python] scripts/monitoring/continuous_health_monitor.py
+Error: SyntaxError at line 216: unterminated f-string literal (detected at line 216)
+----------------------------------------
+[Python] scripts/security/validate_secrets.py
+Error: SyntaxError at line 12: unterminated string literal (detected at line 12)
+----------------------------------------
+[Python] scripts/testing/production_validation.py
+Error: SyntaxError at line 65: unterminated string literal (detected at line 65)
+----------------------------------------
+[Python] scripts/testing/health_check.py
+Error: SyntaxError at line 30: unterminated f-string literal (detected at line 30)
+----------------------------------------
+[Python] ml_models/model_versioning.py
+Error: SyntaxError at line 327: invalid syntax
+----------------------------------------
+[Python] tests/test_integration.py
+Error: SyntaxError at line 41: invalid syntax
+----------------------------------------
+[Python] tests/test_ml_anomaly_detection.py
+Error: SyntaxError at line 11: unexpected indent
+----------------------------------------
+[Python] tests/test_remediation.py
+Error: SyntaxError at line 26: invalid syntax
+----------------------------------------
+[Python] tests/test_gpt_integration.py
+Error: SyntaxError at line 19: invalid syntax
+----------------------------------------
+[Python] tests/test_ai_handler.py
+Error: SyntaxError at line 21: invalid syntax
+----------------------------------------
+[Python] tests/test_chatops.py
+Error: SyntaxError at line 10: unexpected indent
+----------------------------------------
+[Python] tests/test_ml_endpoints.py
+Error: SyntaxError at line 95: invalid syntax
+----------------------------------------
+[Python] tests/unit/test_ml_models.py
+Error: SyntaxError at line 49: invalid syntax
+----------------------------------------
+[Python] tests/unit/test_remediation_engine.py
+Error: SyntaxError at line 22: invalid syntax
+----------------------------------------
+[Python] tests/integration/test_api_endpoints.py
+Error: SyntaxError at line 37: invalid syntax
+----------------------------------------
+[Python] tests/backend/test_chatops.py
+Error: SyntaxError at line 34: invalid syntax
+----------------------------------------
+[Python] app/auth_routes.py
+Error: SyntaxError at line 4: unexpected indent
+----------------------------------------
+[Python] app/ml_module.py
+Error: SyntaxError at line 3: unexpected indent
+----------------------------------------
+[Python] app/chatops_module.py
+Error: SyntaxError at line 3: unexpected indent
+----------------------------------------
+[Python] app/main.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/auth_module.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/auth.py
+Error: SyntaxError at line 104: unexpected indent
+----------------------------------------
+[Python] app/monitoring/metrics.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/api/performance.py
+Error: SyntaxError at line 166: closing parenthesis '}' does not match opening parenthesis '(' on line 162
+----------------------------------------
+[Python] app/api/anomalies_refactored.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/api/ai.py
+Error: SyntaxError at line 177: cannot assign to subscript here. Maybe you meant '==' instead of '='?
+----------------------------------------
+[Python] app/api/mlops.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/mlops/dataset_manager.py
+Error: SyntaxError at line 3: unterminated string literal (detected at line 3)
+----------------------------------------
+[Python] app/mlops/reinforcement_learning.py
+Error: SyntaxError at line 6: unterminated string literal (detected at line 6)
+----------------------------------------
+[Python] app/mlops/data_pipeline.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/mlops/experiment_tracker.py
+Error: SyntaxError at line 94: unmatched ')'
+----------------------------------------
+[Python] app/mlops/model_registry.py
+Error: SyntaxError at line 96: unmatched ')'
+----------------------------------------
+[Python] app/mlops/training_pipeline.py
+Error: SyntaxError at line 3: unterminated string literal (detected at line 3)
+----------------------------------------
+[Python] app/mlops/model_monitor.py
+Error: SyntaxError at line 337: closing parenthesis '}' does not match opening parenthesis '(' on line 328
+----------------------------------------
+[Python] app/mlops/reproducibility.py
+Error: SyntaxError at line 3: unterminated string literal (detected at line 3)
+----------------------------------------
+[Python] app/mlops/knowledge_base.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/mlops/model_registry_minimal.py
+Error: SyntaxError at line 96: unmatched ')'
+----------------------------------------
+[Python] app/mlops/experiment_tracker_minimal.py
+Error: SyntaxError at line 94: unmatched ')'
+----------------------------------------
+[Python] app/mlops/autonomous_ops.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/mlops/data_pipeline_enhanced.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/analytics/real_time_dashboard.py
+Error: SyntaxError at line 5: unexpected indent
+----------------------------------------
+[Python] app/remediation/engine.py
+Error: SyntaxError at line 2: unterminated string literal (detected at line 2)
+----------------------------------------
+[Python] app/remediation/safety.py
+Error: SyntaxError at line 5: unterminated string literal (detected at line 5)
+----------------------------------------
+[Python] app/remediation/__init__.py
+Error: SyntaxError at line 1: unterminated triple-quoted string literal (detected at line 1)
+----------------------------------------
+[Python] app/remediation/notifications.py
+Error: SyntaxError at line 4: unterminated string literal (detected at line 4)
+----------------------------------------
+[Python] app/remediation/actions.py
+Error: SyntaxError at line 4: unterminated string literal (detected at line 4)
+----------------------------------------
+[Python] app/performance/anomaly_optimization.py
+Error: SyntaxError at line 98: unmatched ')'
+----------------------------------------
+[Python] app/performance/database_optimization.py
+Error: SyntaxError at line 113: closing parenthesis '}' does not match opening parenthesis '(' on line 109
+----------------------------------------
+[Python] app/performance/log_optimization.py
+Error: SyntaxError at line 59: expected an indented block after function definition on line 58
+----------------------------------------
+[Python] app/performance/redis_cache.py
+Error: SyntaxError at line 62: unexpected indent
+----------------------------------------
+[Python] app/performance/caching.py
+Error: SyntaxError at line 67: unexpected indent
+----------------------------------------
+[Python] app/performance/__init__.py
+Error: SyntaxError at line 12: unexpected indent
+----------------------------------------
+[Python] app/performance/api_optimization.py
+Error: SyntaxError at line 75: unmatched '}'
+----------------------------------------
+[Python] app/chatops/gpt_handler.py
+Error: SyntaxError at line 175: expected an indented block after function definition on line 172
+----------------------------------------
+[Python] app/chatops/ai_handler.py
+Error: SyntaxError at line 4: unexpected indent
+----------------------------------------
+[Python] app/chatops/utils.py
+Error: SyntaxError at line 7: unexpected indent
+----------------------------------------
+[Python] app/security/secrets_manager.py
+Error: SyntaxError at line 3: unterminated string literal (detected at line 3)
+----------------------------------------
+[Python] app/security/config.py
+Error: SyntaxError at line 281: closing parenthesis '}' does not match opening parenthesis '(' on line 274
+----------------------------------------
+[Python] app/security/input_validation.py
+Error: SyntaxError at line 4: unterminated string literal (detected at line 4)
+----------------------------------------
+[Python] app/security/error_handling.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/security/rate_limiting.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/security/caching.py
+Error: SyntaxError at line 4: unterminated string literal (detected at line 4)
+----------------------------------------
+[Python] app/services/ml_service.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/services/mlops_service.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/services/feedback_service.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/services/security_validation.py
+Error: SyntaxError at line 27: unmatched ']'
+----------------------------------------
+[Python] app/services/anomaly_service.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/services/ai_service.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/services/remediation_service.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/observability/opentelemetry_config.py
+Error: SyntaxError at line 46: unmatched ')'
+----------------------------------------
+[Python] app/observability/slos.py
+Error: SyntaxError at line 73: unmatched ')'
+----------------------------------------
+[Python] app/observability/metrics.py
+Error: SyntaxError at line 72: unexpected indent
+----------------------------------------
+[Python] app/observability/middleware.py
+Error: SyntaxError at line 3: unterminated string literal (detected at line 3)
+----------------------------------------
+[Python] app/observability/logging_config.py
+Error: SyntaxError at line 27: unmatched ')'
+----------------------------------------
+[Python] app/observability/tracing.py
+Error: SyntaxError at line 62: unmatched ')'
+----------------------------------------
+[Python] app/observability/enhanced_logging.py
+Error: SyntaxError at line 39: unmatched ')'
+----------------------------------------
+[Python] app/observability/dashboards.py
+Error: SyntaxError at line 2: unexpected indent
+----------------------------------------
+[Python] app/observability/__init__.py
+Error: SyntaxError at line 11: unexpected indent
+----------------------------------------
+[YAML] monitoring/grafana/grafana-deployment.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/monitoring/grafana/grafana-deployment.yaml", line 4, column 1
+but found another document
+  in "/workspace/monitoring/grafana/grafana-deployment.yaml", line 192, column 1
+----------------------------------------
+[YAML] monitoring/grafana/grafana-config.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/monitoring/grafana/grafana-config.yaml", line 4, column 1
+but found another document
+  in "/workspace/monitoring/grafana/grafana-config.yaml", line 144, column 1
+----------------------------------------
+[YAML] monitoring/logging/fluentd-deployment.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/monitoring/logging/fluentd-deployment.yaml", line 4, column 1
+but found another document
+  in "/workspace/monitoring/logging/fluentd-deployment.yaml", line 169, column 1
+----------------------------------------
+[YAML] monitoring/logging/elasticsearch-deployment.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/monitoring/logging/elasticsearch-deployment.yaml", line 4, column 1
+but found another document
+  in "/workspace/monitoring/logging/elasticsearch-deployment.yaml", line 211, column 1
+----------------------------------------
+[YAML] infrastructure/kubernetes/autoscaling.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/infrastructure/kubernetes/autoscaling.yaml", line 4, column 1
+but found another document
+  in "/workspace/infrastructure/kubernetes/autoscaling.yaml", line 65, column 1
+----------------------------------------
+[YAML] infrastructure/kubernetes/configmap.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/infrastructure/kubernetes/configmap.yaml", line 4, column 1
+but found another document
+  in "/workspace/infrastructure/kubernetes/configmap.yaml", line 67, column 1
+----------------------------------------
+[YAML] infrastructure/kubernetes/ingress.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/infrastructure/kubernetes/ingress.yaml", line 4, column 1
+but found another document
+  in "/workspace/infrastructure/kubernetes/ingress.yaml", line 93, column 1
+----------------------------------------
+[YAML] infrastructure/kubernetes/service.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/infrastructure/kubernetes/service.yaml", line 4, column 1
+but found another document
+  in "/workspace/infrastructure/kubernetes/service.yaml", line 34, column 1
+----------------------------------------
+[YAML] infrastructure/kubernetes/deployment.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/infrastructure/kubernetes/deployment.yaml", line 4, column 1
+but found another document
+  in "/workspace/infrastructure/kubernetes/deployment.yaml", line 233, column 1
+----------------------------------------
+[YAML] infrastructure/kubernetes/namespace.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/infrastructure/kubernetes/namespace.yaml", line 4, column 1
+but found another document
+  in "/workspace/infrastructure/kubernetes/namespace.yaml", line 17, column 1
+----------------------------------------
+[YAML] deploy/helm/smartcloudops-ai/templates/ingress.yaml
+Error: YAMLError: while parsing a flow node
+expected the node content, but found '-'
+  in "/workspace/deploy/helm/smartcloudops-ai/templates/ingress.yaml", line 1, column 3
+----------------------------------------
+[YAML] deploy/helm/smartcloudops-ai/templates/networkpolicy.yaml
+Error: YAMLError: while parsing a flow node
+expected the node content, but found '-'
+  in "/workspace/deploy/helm/smartcloudops-ai/templates/networkpolicy.yaml", line 1, column 3
+----------------------------------------
+[YAML] deploy/helm/smartcloudops-ai/templates/serviceaccount.yaml
+Error: YAMLError: while parsing a flow node
+expected the node content, but found '-'
+  in "/workspace/deploy/helm/smartcloudops-ai/templates/serviceaccount.yaml", line 1, column 3
+----------------------------------------
+[YAML] deploy/helm/smartcloudops-ai/templates/backend/hpa.yaml
+Error: YAMLError: while parsing a flow node
+expected the node content, but found '-'
+  in "/workspace/deploy/helm/smartcloudops-ai/templates/backend/hpa.yaml", line 1, column 3
+----------------------------------------
+[YAML] deploy/helm/smartcloudops-ai/templates/backend/configmap.yaml
+Error: YAMLError: while parsing a flow node
+expected the node content, but found '-'
+  in "/workspace/deploy/helm/smartcloudops-ai/templates/backend/configmap.yaml", line 1, column 3
+----------------------------------------
+[YAML] deploy/helm/smartcloudops-ai/templates/backend/secret.yaml
+Error: YAMLError: while parsing a flow node
+expected the node content, but found '-'
+  in "/workspace/deploy/helm/smartcloudops-ai/templates/backend/secret.yaml", line 1, column 3
+----------------------------------------
+[YAML] deploy/helm/smartcloudops-ai/templates/backend/service.yaml
+Error: YAMLError: while parsing a flow node
+expected the node content, but found '-'
+  in "/workspace/deploy/helm/smartcloudops-ai/templates/backend/service.yaml", line 1, column 3
+----------------------------------------
+[YAML] deploy/helm/smartcloudops-ai/templates/backend/deployment.yaml
+Error: YAMLError: while parsing a flow node
+expected the node content, but found '-'
+  in "/workspace/deploy/helm/smartcloudops-ai/templates/backend/deployment.yaml", line 1, column 3
+----------------------------------------
+[YAML] deploy/helm/smartcloudops-ai/templates/frontend/hpa.yaml
+Error: YAMLError: while parsing a flow node
+expected the node content, but found '-'
+  in "/workspace/deploy/helm/smartcloudops-ai/templates/frontend/hpa.yaml", line 1, column 3
+----------------------------------------
+[YAML] deploy/helm/smartcloudops-ai/templates/frontend/service.yaml
+Error: YAMLError: while parsing a flow node
+expected the node content, but found '-'
+  in "/workspace/deploy/helm/smartcloudops-ai/templates/frontend/service.yaml", line 1, column 3
+----------------------------------------
+[YAML] deploy/helm/smartcloudops-ai/templates/frontend/deployment.yaml
+Error: YAMLError: while parsing a flow node
+expected the node content, but found '-'
+  in "/workspace/deploy/helm/smartcloudops-ai/templates/frontend/deployment.yaml", line 1, column 3
+----------------------------------------
+[YAML] .github/workflows/quality-gates-strict.yml
+Error: YAMLError: while scanning a simple key
+  in "/workspace/.github/workflows/quality-gates-strict.yml", line 232, column 1
+could not find expected ':'
+  in "/workspace/.github/workflows/quality-gates-strict.yml", line 233, column 1
+----------------------------------------
+[YAML] .github/ISSUE_TEMPLATE/bug_report.yml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/.github/ISSUE_TEMPLATE/bug_report.yml", line 2, column 1
+but found another document
+  in "/workspace/.github/ISSUE_TEMPLATE/bug_report.yml", line 7, column 1
+----------------------------------------
+[YAML] .github/ISSUE_TEMPLATE/documentation.yml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/.github/ISSUE_TEMPLATE/documentation.yml", line 2, column 1
+but found another document
+  in "/workspace/.github/ISSUE_TEMPLATE/documentation.yml", line 7, column 1
+----------------------------------------
+[YAML] .github/ISSUE_TEMPLATE/feature_request.yml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/.github/ISSUE_TEMPLATE/feature_request.yml", line 2, column 1
+but found another document
+  in "/workspace/.github/ISSUE_TEMPLATE/feature_request.yml", line 7, column 1
+----------------------------------------
+[YAML] k8s/secret-template.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/k8s/secret-template.yaml", line 5, column 1
+but found another document
+  in "/workspace/k8s/secret-template.yaml", line 29, column 1
+----------------------------------------
+[YAML] k8s/monitoring.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/k8s/monitoring.yaml", line 2, column 1
+but found another document
+  in "/workspace/k8s/monitoring.yaml", line 137, column 1
+----------------------------------------
+[YAML] k8s/redis.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/k8s/redis.yaml", line 1, column 1
+but found another document
+  in "/workspace/k8s/redis.yaml", line 9, column 1
+----------------------------------------
+[YAML] k8s/frontend.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/k8s/frontend.yaml", line 1, column 1
+but found another document
+  in "/workspace/k8s/frontend.yaml", line 10, column 1
+----------------------------------------
+[YAML] k8s/app.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/k8s/app.yaml", line 1, column 1
+but found another document
+  in "/workspace/k8s/app.yaml", line 11, column 1
+----------------------------------------
+[YAML] k8s/postgresql.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/k8s/postgresql.yaml", line 1, column 1
+but found another document
+  in "/workspace/k8s/postgresql.yaml", line 10, column 1
+----------------------------------------
+[YAML] k8s/argocd-app.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/k8s/argocd-app.yaml", line 1, column 1
+but found another document
+  in "/workspace/k8s/argocd-app.yaml", line 49, column 1
+----------------------------------------
+[YAML] k8s/network-policies.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/k8s/network-policies.yaml", line 1, column 1
+but found another document
+  in "/workspace/k8s/network-policies.yaml", line 81, column 1
+----------------------------------------
+[YAML] k8s/namespace.yaml
+Error: YAMLError: expected a single document in the stream
+  in "/workspace/k8s/namespace.yaml", line 1, column 1
+but found another document
+  in "/workspace/k8s/namespace.yaml", line 9, column 1
+----------------------------------------
