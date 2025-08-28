@@ -1,0 +1,56 @@
+{
+  "timestamp": "2025-08-28T07:07:22.847907",
+  "total_files": 15,
+  "fixed_files": 3,
+  "remaining_files": 12,
+  "details": [
+    [
+      "app/mlops/dataset_manager.py",
+      "Line 3: unterminated string literal (detected at line 3)"
+    ],
+    [
+      "app/mlops/experiment_tracker_minimal.py",
+      "Line 94: unmatched ')'"
+    ],
+    [
+      "app/mlops/model_monitor.py",
+      "Line 337: closing parenthesis '}' does not match opening parenthesis '(' on line 328"
+    ],
+    [
+      "app/mlops/model_registry.py",
+      "Line 96: unmatched ')'"
+    ],
+    [
+      "app/mlops/reinforcement_learning.py",
+      "Line 6: unterminated string literal (detected at line 6)"
+    ],
+    [
+      "app/mlops/training_pipeline.py",
+      "Line 3: unterminated string literal (detected at line 3)"
+    ],
+    [
+      "app/security/caching.py",
+      "Line 4: unterminated string literal (detected at line 4)"
+    ],
+    [
+      "app/security/config.py",
+      "Line 281: closing parenthesis '}' does not match opening parenthesis '(' on line 274"
+    ],
+    [
+      "app/security/input_validation.py",
+      "Line 4: unterminated string literal (detected at line 4)"
+    ],
+    [
+      "app/security/secrets_manager.py",
+      "Line 3: unterminated string literal (detected at line 3)"
+    ],
+    [
+      "app/services/remediation_service.py",
+      "Line 2: unexpected indent"
+    ],
+    [
+      "app/services/security_validation.py",
+      "Line 27: unmatched ']'"
+    ]
+  ]
+}

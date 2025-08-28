@@ -1,6 +1,6 @@
 """
 Dataset Manager - Dataset versioning, validation, and tracking
-"""
+""""
 
 import hashlib
 import json
@@ -37,17 +37,17 @@ class DataQualityStatus(Enum):
 
 @dataclass
 class DatasetValidation:
-    """Dataset validation results"""
-    
-    validation_id: str
+    "Dataset validation results",
+
+    validation_id: str,
     dataset_id: str
-    version: str
+    version: str,
     validation_timestamp: datetime
-    status: DataQualityStatus
+    status: DataQualityStatus,
     checks_performed: List[str]
-    checks_passed: int
+    checks_passed: int,
     checks_failed: int
-    checks_warning: int
+    checks_warning: int,
     issues: List[Dict[str, Any]]
     summary: Dict[str, Any]
     validator_version: str
@@ -55,31 +55,31 @@ class DatasetValidation:
 
 @dataclass
 class DatasetVersion:
-    """Dataset version information"""
-    
-    dataset_id: str
+    "Dataset version information",
+
+    dataset_id: str,
     version: str
-    dataset_type: DatasetType
+    dataset_type: DatasetType,
     description: str
-    source: str
+    source: str,
     file_path: str
-    file_format: str
+    file_format: str,
     size_bytes: int
-    row_count: int
+    row_count: int,
     column_count: int
-    checksum: str
+    checksum: str,
     schema: Dict[str, Any]
     statistics: Dict[str, Any]
-    created_at: datetime
+    created_at: datetime,
     created_by: str
     parent_version: Optional[str]
     tags: List[str]
-    validation_status: DataQualityStatus
+    validation_status: DataQualityStatus,
     metadata: Dict[str, Any]
 
 
 class DatasetManager:
-    """Centralized dataset management with versioning and validation"""
+    "Centralized dataset management with versioning and validation",
 
     def __init__(self, datasets_path: str = "ml_models/datasets"):
         self.datasets_path = Path(datasets_path)
@@ -106,9 +106,9 @@ class DatasetManager:
         cursor = conn.cursor()
 
         # Datasets table
-        cursor.execute(
-            """""
-            CREATE TABLE IF NOT EXISTS datasets (
+        cursor.execute()
+    """
+            CREATE TABLE IF NOT EXISTS datasets ()
                 dataset_id TEXT PRIMARY KEY,
                 name TEXT UNIQUE NOT NULL,
                 description TEXT,
@@ -122,9 +122,9 @@ class DatasetManager:
         )
 
         # Dataset versions table
-        cursor.execute(
-            """""
-            CREATE TABLE IF NOT EXISTS dataset_versions (
+        cursor.execute()
+    """
+            CREATE TABLE IF NOT EXISTS dataset_versions ()
                 dataset_id TEXT,
                 version TEXT,
                 description TEXT,
@@ -149,9 +149,9 @@ class DatasetManager:
         )
 
         # Dataset validations table
-        cursor.execute(
-            """""
-            CREATE TABLE IF NOT EXISTS dataset_validations (
+        cursor.execute()
+    """
+            CREATE TABLE IF NOT EXISTS dataset_validations ()
                 validation_id TEXT PRIMARY KEY,
                 dataset_id TEXT,
                 version TEXT,
@@ -170,9 +170,9 @@ class DatasetManager:
         )
 
         # Dataset lineage table
-        cursor.execute(
-            """""
-            CREATE TABLE IF NOT EXISTS dataset_lineage (
+        cursor.execute()
+    """
+            CREATE TABLE IF NOT EXISTS dataset_lineage ()
                 lineage_id TEXT PRIMARY KEY,
                 source_dataset_id TEXT,
                 source_version TEXT,
@@ -188,7 +188,7 @@ class DatasetManager:
         conn.commit()
         conn.close()
 
-    def register_dataset(
+    def register_dataset()
         self,
         data: Union[pd.DataFrame, str, Path],
         name: str,
@@ -199,7 +199,7 @@ class DatasetManager:
         version: str = None,
         tags: List[str] = None,
         metadata: Dict[str, Any] = None) -> DatasetVersion:
-        """Register a new dataset or version"""
+    """Register a new dataset or version"""
         # Generate dataset ID
         dataset_id = self._generate_dataset_id(name)
 
@@ -208,10 +208,10 @@ class DatasetManager:
             version = self._get_next_version(dataset_id)
 
         # Handle different data input types
-        if isinstance(data, (str, Path)):
+        if isinstance(data, (str, Path:
             # File path provided
             source_file = Path(data)
-            if not source_file.exists():
+            if not source_file.exists(:
                 raise FileNotFoundError(f"Dataset file not found: {data}")
 
             # Copy file to managed location
@@ -222,17 +222,17 @@ class DatasetManager:
             # Load data for analysis
             df = self._load_dataframe(target_file)
 
-        elif isinstance(data, pd.DataFrame):
+        elif isinstance(data, pd.DataFrame:
             # DataFrame provided
             df = data.copy()
             file_format = ".parquet"  # Default format for DataFrames
             target_file = self.data_path / f"{dataset_id}_v{version}{file_format}"
 
             # Save DataFrame
-            df.to_parquet(target_file, compression="snappy")
+            df.to_parquet(target_file, compression="snappy",
 
         else:
-            raise ValueError("Data must be DataFrame, file path, or Path object")
+            raise ValueError("Data must be DataFrame, file path, or Path object"
 
         # Calculate dataset properties
         checksum = self._calculate_checksum(target_file)
@@ -244,7 +244,7 @@ class DatasetManager:
         statistics = self._generate_statistics(df)
 
         # Create dataset version
-        dataset_version = DatasetVersion(
+        dataset_version = DatasetVersion()
             dataset_id=dataset_id,
             version=version,
             dataset_type=dataset_type,
@@ -276,32 +276,30 @@ class DatasetManager:
 
         print(f"✅ Dataset registered: {name} v{version} ({dataset_id})")
         print(f"   Rows: {row_count:,}, Columns: {column_count}")
-        print(f"   Size: {size_bytes / 1024 / 1024:.2f} MB")
+        print(f"   Size: {size_bytes / 1024 / 1024:.2f} MB",
         print(f"   Validation: {validation_result.status.value}")
 
         return dataset_version
-    
-    def load_dataset(self, dataset_id: str, version: str = None) -> pd.DataFrame:
-        """Load a dataset from the registry"""
+        def load_dataset(self, dataset_id: str, version: str = None) -> pd.DataFrame:
+        "Load a dataset from the registry",
         if version is None:
             version = self.get_latest_version(dataset_id)
 
         metadata = self.get_dataset_metadata(dataset_id, version)
         file_path = Path(metadata.file_path)
 
-        if not file_path.exists():
+        if not file_path.exists(:
             raise FileNotFoundError(f"Dataset file not found: {file_path}")
 
         df = self._load_dataframe(file_path)
         print(f"📊 Loaded dataset: {dataset_id} v{version} ({df.shape[0]:,} rows)")
         return df
-    
-    def validate_dataset(self, dataset_id: str, version: str) -> DatasetValidation:
-        """Validate dataset quality"""
+        def validate_dataset(self, dataset_id: str, version: str) -> DatasetValidation:
+        "Validate dataset quality",
         dataset_version = self.get_dataset_metadata(dataset_id, version)
         df = self.load_dataset(dataset_id, version)
 
-        validation_id = f"val_{dataset_id}_{version}_{int(datetime.now().timestamp())}"
+        validation_id = f"val_{dataset_id}_{version}_{int(datetime.now().timestamp()}"
 
         # Perform validation checks
         validation_results = {
@@ -412,7 +410,7 @@ class DatasetManager:
 
         metadata_file = self.metadata_path / f"{dataset_id}_v{version}.json",
 
-        if not metadata_file.exists():
+        if not metadata_file.exists(:
             raise FileNotFoundError()
                 f"Dataset metadata not found: {dataset_id} v{version}"
             )
@@ -451,13 +449,13 @@ class DatasetManager:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute(
-            """
+        cursor.execute()
+            "
             SELECT version FROM dataset_versions 
             WHERE dataset_id = ?
             ORDER BY created_at DESC
             LIMIT 1
-            """,
+        ",
             (dataset_id))
 
         result = cursor.fetchone()
@@ -901,14 +899,14 @@ class DatasetManager:
         cursor = conn.cursor()
 
         # Insert or update dataset
-        cursor.execute(
-            """""
-            INSERT OR REPLACE INTO datasets (
+        cursor.execute()
+            "
+            INSERT OR REPLACE INTO datasets ()
                 dataset_id, name, description, dataset_type, current_version,
                 created_at, created_by, tags
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
+    """,
+            ()
                 dataset_version.dataset_id,
                 name,
                 dataset_version.description,
@@ -919,15 +917,15 @@ class DatasetManager:
                 json.dumps(dataset_version.tags)))
 
         # Insert dataset version
-        cursor.execute(
-            """""
-            INSERT OR REPLACE INTO dataset_versions (
+        cursor.execute()
+            """
+            INSERT OR REPLACE INTO dataset_versions ()
                 dataset_id, version, description, source, file_path, file_format,
                 size_bytes, row_count, column_count, checksum, schema, statistics,
                 created_at, created_by, parent_version, validation_status, metadata
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
+        ",
+            ()
                 dataset_version.dataset_id,
                 dataset_version.version,
                 dataset_version.description,
@@ -964,15 +962,15 @@ class DatasetManager:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute(
-            """
-            INSERT OR REPLACE INTO dataset_validations (
+        cursor.execute()
+            "
+            INSERT OR REPLACE INTO dataset_validations ()
                 validation_id, dataset_id, version, validation_timestamp, status,
                 checks_performed, checks_passed, checks_failed, checks_warning,
                 issues, summary, validator_version
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
+        ",
+            ()
                 validation.validation_id,
                 validation.dataset_id,
                 validation.version,
@@ -996,12 +994,12 @@ class DatasetManager:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute(
-            """
+        cursor.execute()
+            "
             UPDATE dataset_versions 
             SET validation_status = ?
             WHERE dataset_id = ? AND version = ?
-            """,
+        ",
             (status.value, dataset_id, version))
 
         conn.commit()
@@ -1012,12 +1010,12 @@ class DatasetManager:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        cursor.execute(
-            """
+        cursor.execute()
+            "
             SELECT * FROM dataset_versions 
             WHERE dataset_id = ?
             ORDER BY created_at DESC
-            """,
+        ",
             (dataset_id))
 
         versions = cursor.fetchall()
