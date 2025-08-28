@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-    """
+"""
 Grafana Dashboard Configurations - Minimal Working Version
 Pre-configured dashboards for SmartCloudOps AI monitoring
-"""
+"""Module documentation."""
 import json
 import os
 from typing import Any, Dict, List

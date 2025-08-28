@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
-    """
+"""
 ChatOps Module for Smart CloudOps AI
 Extracted from main.py for modularity
 """
@@ -50,7 +50,7 @@ def chatops_query():
                     "query": "POST /chatops/query",
                     "logs": "GET /chatops/logs",
                     "context": "GET /chatops/context"
-                },
+    )
             }
         )
 
@@ -207,7 +207,7 @@ def manage_conversation():
                 "endpoints": {}
                     "get_conversation": "GET /chatops/conversation",
                     "add_message": "POST /chatops/conversation"
-                },
+    )
             }
         )
 

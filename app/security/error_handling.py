@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-    """
+"""
 Error Handling System for Smart CloudOps AI - Minimal Working Version
 Enterprise-grade error handling with structured logging and monitoring
-"""
+"""Module documentation."""
 import logging
 import traceback
 from datetime import datetime, timedelta, timezone

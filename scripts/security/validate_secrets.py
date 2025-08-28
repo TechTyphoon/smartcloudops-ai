@@ -2,7 +2,7 @@
 """
 Security Validation Script for SmartCloudOps AI
 Checks for hardcoded secrets and validates environment configuration
-"""
+"""Module docstring."""
 
 import os
 import re

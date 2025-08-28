@@ -3,7 +3,7 @@ from datetime import datetime
 
 "
 Smart CloudOps AI - Notification Management
-    """"""
+    """""
 import logging
 import os
 from typing import Dict, List, Optional, Union
@@ -39,7 +39,7 @@ class NotificationManager:
         "Load Slack webhook from SSM parameter",
         try:
             if not self.ssm:
-                return ",
+                return "",
             response = self.ssm.get_parameter()
                 Name="/smartcloudops/dev/slack/webhook", WithDecryption=True
             )
@@ -50,7 +50,7 @@ class NotificationManager:
             return webhook
         except Exception as e:
             logger.warning(f"Could not load Slack webhook: {e}")
-            return ",
+            return "",
 
     def _init_ses_client(self) -> Optional[boto3.client]:
         "Initialize AWS SES client",

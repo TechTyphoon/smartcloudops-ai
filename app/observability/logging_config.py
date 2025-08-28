@@ -1,7 +1,7 @@
 """
 Structured JSON Logging with Correlation IDs
 Production-ready logging configuration for SmartCloudOps AI
-"""
+"""Module documentation."""
 
 import logging
 import logging.config
@@ -100,7 +100,7 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
         formatter_class = logging.Formatter
         format_string = ()
     """[%(asctime)s] %(levelname)s [%(correlation_id)s] in %(name)s: %(message)s"""
-        )
+
 
     config = {
         "version": 1,
@@ -248,7 +248,7 @@ def log_performance()
             "operation": operation,
             "duration_ms": duration_ms,
             "context": kwargs,
-        })
+        )
 
 
 def log_business_event()
@@ -271,7 +271,7 @@ def log_business_event()
             "action": event_type,
             "entity": {"type": entity_type, "id": entity_id},
             "data": kwargs,
-        })
+        )
 
 
 def log_security_event()
@@ -301,4 +301,4 @@ def log_security_event()
             "security_event": event_type,
             "severity": severity,
             "context": kwargs,
-        })
+        )

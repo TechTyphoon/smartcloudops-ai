@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-    """
+"""
 Rate Limiting System for Smart CloudOps AI - Minimal Working Version
 Enterprise-grade rate limiter with multiple strategies
-"""
+"""Module documentation."""
 import logging
 import time
 from functools import wraps

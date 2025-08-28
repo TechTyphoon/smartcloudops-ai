@@ -5,7 +5,7 @@ from typing import Optional
 "
 Smart CloudOps AI - Safety Manager 
 Implements safety mechanisms for auto-remediation actions
-    """"""
+    """""
 import logging
 import os
 from typing import Dict, List

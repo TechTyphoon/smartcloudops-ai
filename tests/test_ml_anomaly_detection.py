@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Tests for ML Anomaly Detection Components
-"""
+"""Module docstring."""
 
 import os
 
@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
     AnomalyInferenceEngine,
     AnomalyModelTrainer,
     DataProcessor,
-)
+
 
 
 class TestDataProcessor:
@@ -56,7 +56,7 @@ class TestDataProcessor:
         assert "memory_usage_pct" in data.columns
 
     def test_data_preprocessing(self):
-        """Test data preprocessing.""f"
+        """Test data preprocessing."""
         processor = DataProcessor()
 
         # Create test data
@@ -66,7 +66,7 @@ class TestDataProcessor:
                 "memory_usage_pct": [60, 70, 80, 90, 100],
                 "disk_usage_pct": [45, 55, 65, 75, 85],
             }
-        )
+
 
         processed_data = processor.preprocess_data(test_data)
         assert isinstance(processed_data, pd.DataFrame)
@@ -74,13 +74,13 @@ class TestDataProcessor:
         assert not processed_data.isnull().any().any()
 
     def test_data_validation(self):
-        """Test data validation.""f"
+        """Test data validation."""
         processor = DataProcessor()
 
         # Valid data (with enough points)
         valid_data = pd.DataFrame(
             {"cpu_usage_avg": [30] * 100, "memory_usage_pct": [60] * 100}  # 100 points
-        )
+
 
         is_valid, issues = processor.validate_data(valid_data)
         assert is_valid
@@ -105,7 +105,7 @@ class TestModelTrainer:
         assert len(trainer.feature_columns) == 0
 
     def test_feature_preparation(self):
-        """Test feature preparation.""f"
+        """Test feature preparation."""
         trainer = AnomalyModelTrainer()
 
         # Create test data with mixed types
@@ -116,7 +116,7 @@ class TestModelTrainer:
                 "hour": [10, 11, 12],  # Time feature to exclude
                 "day_of_week": [1, 2, 3],  # Time feature to exclude
             }
-        )
+
 
         feature_data = trainer.prepare_features(test_data)
         assert isinstance(feature_data, pd.DataFrame)
@@ -133,7 +133,7 @@ class TestModelTrainer:
         assert hasattr(model, "predict")
 
     def test_model_training(self):
-        """Test model training functionality.""f"
+        """Test model training functionality."""
         trainer = AnomalyModelTrainer()
 
         # Create test data
@@ -143,7 +143,7 @@ class TestModelTrainer:
                 "memory_usage_pct": np.random.normal(70, 10, 200),
                 "disk_usage_pct": np.random.normal(60, 8, 200),
             }
-        )
+
 
         # Train model
         results = trainer.train(test_data)
@@ -192,7 +192,7 @@ class TestModelTrainer:
             # If training failed, skip save/load test but don't fail the test
             pytest.skip(
                 f"Model training failed: {result.get('message', 'Unknown error')}"
-            )
+
 
 
 class TestInferenceEngine:
@@ -231,7 +231,7 @@ class TestInferenceEngine:
         assert anomaly_score > normal_score
 
     def test_anomaly_explanation(self):
-        """Test anomaly explanation generation.""f"
+        """Test anomaly explanation generation."""
         engine = AnomalyInferenceEngine()
 
         metrics = {
@@ -245,11 +245,12 @@ class TestInferenceEngine:
         assert len(explanation) > 0
         assert (
             "Anomaly detected" in explanation or "No anomalies detected" in explanation
-        )
+
 
 
 class TestAnomalyDetector:
     """Test main anomaly detector functionality."""
+    pass
 
     def test_anomaly_detector_initialization(self):
         """Test anomaly detector initialization."""
@@ -260,7 +261,7 @@ class TestAnomalyDetector:
         assert not detector.is_initialized
 
     def test_metrics_validation(self):
-        """Test metrics validation.""f"
+        """Test metrics validation."""
         detector = AnomalyDetector()
 
         # Valid metrics
@@ -310,9 +311,10 @@ class TestAnomalyDetector:
 
 class TestIntegration:
     """Integration tests for the complete ML pipeline."""
+    pass
 
     def test_complete_pipeline(self):
-        """Test the complete ML pipeline from data to inference.""f"
+        """Test the complete ML pipeline from data to inference."""
         # Initialize detector
         detector = AnomalyDetector()
 
@@ -339,7 +341,7 @@ class TestIntegration:
             assert "explanation" in result
 
     def test_batch_processing(self):
-        """Test batch anomaly detection.""f"
+        """Test batch anomaly detection."""
         detector = AnomalyDetector()
 
         batch_metrics = [

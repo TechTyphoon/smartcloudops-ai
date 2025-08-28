@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Smart CloudOps AI - Auto-Remediation Engine (Phase 4)
 Orchestrates anomaly detection, safety checks, and remediation actions
-    """"""
+"""
 import logging
 import os
 import sys

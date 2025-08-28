@@ -1,7 +1,7 @@
 """
 Experiment Tracker - ML experiment tracking and reproducibility
 Minimal working version for Phase 2 MLOps integration
-"""
+"""Module documentation."""
 
 import json
 import sqlite3
@@ -89,9 +89,9 @@ class ExperimentTracker:
                 created_at TEXT,
                 status TEXT,
                 best_run_id TEXT
-            )
+
         """
-        )
+
 
         # Create runs table
         cursor.execute()
@@ -114,9 +114,9 @@ class ExperimentTracker:
                 environment TEXT,
                 seed INTEGER,
                 FOREIGN KEY (experiment_id) REFERENCES experiments (experiment_id)
-            )
+
         """
-        )
+
 
         conn.commit()
         conn.close()
@@ -124,7 +124,7 @@ class ExperimentTracker:
     def create_experiment()
         self,
         name: str,
-        description: str = ",
+        description: str = "",
         objective: str = "minimize",
         tags: List[str] = None) -> Experiment:
     """Create a new experiment"""
@@ -139,7 +139,7 @@ class ExperimentTracker:
             created_at=datetime.now(timezone.utc),
             runs=[],
             status="active",
-            best_run_id=None)
+            best_run_id=None
 
         self._save_experiment(experiment)
         return experiment
@@ -170,10 +170,10 @@ class ExperimentTracker:
             artifacts=[],
             logs=[],
             tags=tags or [],
-            notes=",
+            notes="",
             git_commit=self._get_git_commit(),
             environment=self._get_environment_info(),
-            seed=seed)
+            seed=seed
 
         self.current_run = run
         self._save_run(run)
@@ -183,7 +183,7 @@ class ExperimentTracker:
     """Log a parameter for the current or specified run"""
         target_run_id = run_id or ()
             self.current_run.run_id if self.current_run else None
-        )
+
 
         if not target_run_id:
             raise ValueError("No active run. Start a run first.")
@@ -197,7 +197,7 @@ class ExperimentTracker:
     """Log a metric for the current or specified run"""
         target_run_id = run_id or ()
             self.current_run.run_id if self.current_run else None
-        )
+
 
         if not target_run_id:
             raise ValueError("No active run. Start a run first.")
@@ -213,7 +213,7 @@ class ExperimentTracker:
     """End the current or specified run"""
         target_run_id = run_id or ()
             self.current_run.run_id if self.current_run else None
-        )
+
 
         if not target_run_id:
             raise ValueError("No active run to end.")
@@ -223,7 +223,7 @@ class ExperimentTracker:
             self.current_run.end_time = datetime.now(timezone.utc)
             self.current_run.duration_seconds = ()
                 self.current_run.end_time - self.current_run.start_time
-            ).total_seconds()
+            ).total_seconds(
 
             self._update_run(self.current_run)
             self._update_best_run(self.current_run)
@@ -236,7 +236,7 @@ class ExperimentTracker:
 
         cursor.execute()
             "SELECT * FROM experiments WHERE experiment_id = ?", (experiment_id)
-        )
+
         row = cursor.fetchone()
         conn.close()
 
@@ -252,7 +252,7 @@ class ExperimentTracker:
             created_at=datetime.fromisoformat(row[5]),
             runs=[],  # Load runs separately if needed
             status=row[6],
-            best_run_id=row[7])
+            best_run_id=row[7]
 
     def _save_experiment(self, experiment: Experiment):
     """Save experiment to database"""
@@ -264,7 +264,7 @@ class ExperimentTracker:
             INSERT OR REPLACE INTO experiments 
             (experiment_id, name, description, objective, tags, created_at, status, best_run_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        "",
             ()
                 experiment.experiment_id,
                 experiment.name,
@@ -273,7 +273,7 @@ class ExperimentTracker:
                 json.dumps(experiment.tags),
                 experiment.created_at.isoformat(),
                 experiment.status,
-                experiment.best_run_id))
+                experiment.best_run_id)
 
         conn.commit()
         conn.close()
@@ -287,9 +287,9 @@ class ExperimentTracker:
             "
             INSERT OR REPLACE INTO runs 
             (run_id, experiment_id, name, status, start_time, end_time, duration_seconds,
-             parameters, metrics, artifacts, logs, tags, notes, git_commit, environment, seed)
+             parameters, metrics, artifacts, logs, tags, notes, git_commit, environment, seed
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        "",
             ()
                 run.run_id,
                 run.experiment_id,
@@ -306,7 +306,7 @@ class ExperimentTracker:
                 run.notes,
                 run.git_commit,
                 json.dumps(run.environment),
-                run.seed))
+                run.seed)
 
         conn.commit()
         conn.close()
@@ -339,7 +339,7 @@ class ExperimentTracker:
 
             result = subprocess.run
                 ["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd="."
-            )
+
             return result.stdout.strip() if result.returncode == 0 else None
         except Exception:
             return None

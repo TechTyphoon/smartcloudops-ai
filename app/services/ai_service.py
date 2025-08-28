@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-    """
+"""
 AI Service - Business Logic Layer
 Handles all AI/ML analysis, recommendations, and chat operations
-"""
+"""Module documentation."""
 import random
 from datetime import datetime
 from typing import Dict, List, Optional

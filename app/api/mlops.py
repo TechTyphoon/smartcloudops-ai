@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 MLOps API Endpoints for Smart CloudOps AI
 Phase 2A Week 4: MLOps API Integration
 Provides comprehensive MLOps experiment tracking, model registry, and data pipeline endpoints
@@ -34,7 +34,7 @@ def validate_service_availability():
     """Validate that MLOps service is available."""
     if not mlops_service:
         return ()
-            jsonify()
+    return jsonify({})
                 {"status": "error", "error": "MLOps service unavailable", "data": None}
             ),
             503)
@@ -115,7 +115,7 @@ def create_experiment():
         for field in required_fields:
             if field not in data:
                 return ()
-                    jsonify()
+    return jsonify({})
                         {}
                             "status": "error",
                             "error": f"Missing required field: {field}",
@@ -186,7 +186,7 @@ def log_metric(experiment_id, run_id):
         # Validate required fields
         if "key" not in data or "value" not in data:
             return ()
-                jsonify()
+    return jsonify({})
                     {}
                         "status": "error",
                         "error": "Missing required fields: key, value",
@@ -230,7 +230,7 @@ def log_parameter(experiment_id, run_id):
         # Validate required fields
         if "key" not in data or "value" not in data:
             return ()
-                jsonify()
+    return jsonify({})
                     {}
                         "status": "error",
                         "error": "Missing required fields: key, value",
@@ -335,7 +335,7 @@ def register_model():
         for field in required_fields:
             if field not in data:
                 return ()
-                    jsonify()
+    return jsonify({})
                         {}
                             "status": "error",
                             "error": f"Missing required field: {field}",
@@ -370,7 +370,7 @@ def update_model_status(model_id):
         data = request.get_json()
         if not data or "status" not in data:
             return ()
-                jsonify()
+    return jsonify({})
                     {}
                         "status": "error",
                         "error": "Missing required field: status",
@@ -442,7 +442,7 @@ def get_data_quality_report(version_id):
 
         if not report:
             return ()
-                jsonify()
+    return jsonify({})
                     {}
                         "status": "error",
                         "error": "Quality report not found",
@@ -482,7 +482,7 @@ def create_data_transformation():
         for field in required_fields:
             if field not in data:
                 return ()
-                    jsonify()
+    return jsonify({})
                         {}
                             "status": "error",
                             "error": f"Missing required field: {field}",
@@ -609,7 +609,7 @@ def health_check():
     try:
         if not mlops_service:
             return ()
-                jsonify()
+    return jsonify({})
                     {}
                         "status": "error",
                         "error": "MLOps service unavailable",

@@ -1,7 +1,7 @@
 """
 Model Registry - Centralized ML model versioning and lifecycle management
 Minimal working version for Phase 2 MLOps integration
-"""
+"""Module documentation."""
 
 import hashlib
 import json
@@ -91,9 +91,9 @@ class ModelRegistry:
                 size_bytes INTEGER,
                 checksum TEXT,
                 UNIQUE(name, version)
-            )
+
         """
-        )
+
 
         conn.commit()
         conn.close()
@@ -103,13 +103,13 @@ class ModelRegistry:
         model,
         name: str,
         version: str,
-        description: str = ",
+        description: str = "",
         model_type: str = "sklearn",
-        algorithm: str = ",
+        algorithm: str = "",
         framework: str = "scikit-learn",
         input_features: List[str] = None,
         output_schema: Dict[str, Any] = None,
-        training_data_hash: str = ",
+        training_data_hash: str = "",
         hyperparameters: Dict[str, Any] = None,
         metrics: Dict[str, float] = None,
         created_by: str = "system",
@@ -144,7 +144,7 @@ class ModelRegistry:
             status=ModelStatus.DEVELOPMENT,
             tags=tags or [],
             size_bytes=size_bytes,
-            checksum=checksum)
+            checksum=checksum
 
         self._save_metadata(metadata)
         return metadata
@@ -165,11 +165,11 @@ class ModelRegistry:
         if version == "latest":
             cursor.execute()
                 "SELECT * FROM models WHERE name = ? ORDER BY created_at DESC LIMIT 1",
-                (name))
+                (name)
         else:
             cursor.execute()
                 "SELECT * FROM models WHERE name = ? AND version = ?", (name, version)
-            )
+
 
         row = cursor.fetchone()
         conn.close()
@@ -203,7 +203,7 @@ class ModelRegistry:
 
         cursor.execute()
             "UPDATE models SET status = ? WHERE name = ? AND version = ?",
-            (status.value, name, version))
+            (status.value, name, version)
 
         conn.commit()
         conn.close()
@@ -225,7 +225,7 @@ class ModelRegistry:
             cursor = conn.cursor()
             cursor.execute()
                 "DELETE FROM models WHERE name = ? AND version = ?", (name, version)
-            )
+
             conn.commit()
             conn.close()
 
@@ -243,9 +243,9 @@ class ModelRegistry:
             INSERT OR REPLACE INTO models 
             (model_id, name, version, description, model_type, algorithm, framework,
              input_features, output_schema, training_data_hash, hyperparameters,
-             metrics, created_at, created_by, status, tags, size_bytes, checksum)
+             metrics, created_at, created_by, status, tags, size_bytes, checksum
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        "",
             ()
                 metadata.model_id,
                 metadata.name,
@@ -264,7 +264,7 @@ class ModelRegistry:
                 metadata.status.value,
                 json.dumps(metadata.tags),
                 metadata.size_bytes,
-                metadata.checksum))
+                metadata.checksum)
 
         conn.commit()
         conn.close()
@@ -289,7 +289,7 @@ class ModelRegistry:
             status=ModelStatus(row[14]),
             tags=json.loads(row[15]) if row[15] else [],
             size_bytes=row[16],
-            checksum=row[17])
+            checksum=row[17]
 
     def _calculate_checksum(self, file_path: Path) -> str:
     """Calculate SHA256 checksum of a file"""

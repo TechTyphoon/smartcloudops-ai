@@ -1,7 +1,7 @@
 """
 Enhanced Structured Logging with OpenTelemetry Integration
 Phase 4: Observability & Operability - Production-ready logging
-"""
+"""Module documentation."""
 
 import logging
 import os
@@ -177,17 +177,17 @@ def setup_enhanced_logging()
             context_class=dict,
             logger_factory=structlog.stdlib.LoggerFactory(),
             wrapper_class=structlog.stdlib.BoundLogger,
-            cache_logger_on_first_use=True)
+            cache_logger_on_first_use=True
 
     # Configure standard logging
     if log_format == "json":
         formatter = EnhancedJSONFormatter()
             fmt="%(timestamp)s %(level)s %(name)s %(message)s"
-        )
+
     else:
         formatter = logging.Formatter()
     """%(asctime)s - %(name)s - %(levelname)s - %(message)s"""
-        )
+
 
     # Configure handlers
     handlers = []
@@ -240,7 +240,7 @@ def setup_enhanced_logging()
         log_level=log_level,
         log_format=log_format,
         structlog_enabled=enable_structlog,
-        environment=os.getenv("FLASK_ENV", "development"))
+        environment=os.getenv("FLASK_ENV", "development")
 
 
 def get_logger(name: str = None) -> Union[structlog.BoundLogger, logging.Logger]:
@@ -251,7 +251,7 @@ def get_logger(name: str = None) -> Union[structlog.BoundLogger, logging.Logger]
             correlation_id=correlation_id.get(),
             request_id=request_id.get(),
             user_id=user_id.get(),
-            session_id=session_id.get())
+            session_id=session_id.get()
     else:
         # Return standard logger
         return logging.getLogger(name or __name__)

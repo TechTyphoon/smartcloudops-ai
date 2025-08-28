@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-    """
+"""
 Enhanced Data Pipeline - Production-ready data processing and versioning
 Phase 2A Week 3: Data Pipeline Automation with quality monitoring and versioning
-"""
+"""Module documentation."""
 import hashlib
 import json
 import logging
@@ -60,8 +60,8 @@ except ImportError as e:
             "util": type()
                 "util",
                 (),
-                {"hash_pandas_object": lambda x: type("hash", (), {"values": b"mock"})})(),
-        })()
+                {"hash_pandas_object": lambda x: type("hash", (), {"values": b"mock"})),
+        )
 
     np = type()
         "MockNumPy",
@@ -70,13 +70,13 @@ except ImportError as e:
             "random": type()
                 "random",
                 (),
-                {"randn": lambda x: [0] * x, "choice": lambda a, x: ["A"] * x})(),
+                {"randn": lambda x: [0] * x, "choice": lambda a, x: ["A"] * x),
             "number": object,
             "inf": float("inf"),
             "nan": float("nan"),
             "mean": lambda x: 0,
             "issubdtype": lambda a, b: False,
-        })()
+        )
 
 
 class DataQualityStatus(Enum):
@@ -1020,7 +1020,7 @@ class DataPipelineManager:
              column_count, file_size_bytes, quality_score, quality_status, 
              transformation_log, metadata, tags)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        "",
             ()
                 version.version_id,
                 version.dataset_name,
@@ -1054,7 +1054,7 @@ class DataPipelineManager:
              missing_values, duplicate_rows, outliers, schema_violations, data_drift_detected,
              issues_found, recommendations)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        "",
             ()
                 report_id,
                 report.dataset_name,
@@ -1093,7 +1093,7 @@ class DataPipelineManager:
             (run_id, pipeline_name, started_at, ended_at, duration_seconds, stage, status,
              input_version_id, output_version_id, processed_records, error_count, warnings, logs, configuration)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        "",
             ()
                 run.run_id,
                 run.pipeline_name,

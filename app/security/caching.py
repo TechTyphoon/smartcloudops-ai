@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, List, Optional
 "
 Caching System for Smart CloudOps AI
 Enterprise-grade caching with Redis backend, multiple strategies, and cache invalidation
-    """"""
+    """""
 import hashlib
 import logging
 

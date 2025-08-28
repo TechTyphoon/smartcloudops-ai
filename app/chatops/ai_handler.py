@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
-    """
+"""ChatOps module."""
 Smart CloudOps AI - Flexible AI Handler
 Supports both OpenAI and Google Gemini APIs
 """
@@ -26,6 +26,7 @@ class AIProvider(ABC):
     """Get information about the current model."""
 class OpenAIProvider(AIProvider):
     """OpenAI GPT provider implementation."""
+    pass
     def __init__(self):
         self.client = None
         self.model = "gpt-3.5-turbo"
@@ -49,7 +50,7 @@ class OpenAIProvider(AIProvider):
                 messages=messages,
                 max_tokens=kwargs.get("max_tokens", 500),
                 temperature=kwargs.get("temperature", 0.3),
-                timeout=kwargs.get("timeout", 30))
+                timeout=kwargs.get("timeout", 30)
 
             return {}
                 "status": "success",
@@ -69,6 +70,7 @@ class OpenAIProvider(AIProvider):
 
 class LocalProvider(AIProvider):
     """Local AI provider for testing and development."""
+    pass
     def __init__(self):
         self.model = "local-assistant"
 
@@ -229,6 +231,7 @@ I can help you with:
 
 class GeminiProvider(AIProvider):
     """Google Gemini provider implementation."""
+    pass
     def __init__(self):
         self.client = None
         self.model = "gemini-1.5-pro"
@@ -255,7 +258,7 @@ class GeminiProvider(AIProvider):
                 gemini_messages,
                 generation_config=genai.types.GenerationConfig()
                     max_output_tokens=kwargs.get("max_tokens", 500),
-                    temperature=kwargs.get("temperature", 0.3)))
+                    temperature=kwargs.get("temperature", 0.3))
 
             return {}
                 "status": "success",
@@ -295,8 +298,9 @@ class GeminiProvider(AIProvider):
 
 class FlexibleAIHandler:
     """Flexible AI handler supporting multiple providers."""
+    pass
     def __init__(self, provider: str = "auto"):
-    """"""
+    """""
         Initialize AI handler.
 
         Args:
@@ -395,7 +399,7 @@ Always respond in a professional, helpful manner focused on operational excellen
         sanitized = re.sub(r"<script[^>]*>.*?</script>", ", sanitized, flags=re.IGNORECASE | re.DOTALL)
         
         # Remove alert calls
-        sanitized = re.sub(r"alert\s*\([^)]*\)", ", sanitized, flags=re.IGNORECASE)
+        sanitized = re.sub(r"alert\s*\([^)]*\)", ", sanitized, flags=re.IGNORECASE
         
         # Remove other dangerous characters
         sanitized = re.sub(r'[<>"]', ", sanitized)

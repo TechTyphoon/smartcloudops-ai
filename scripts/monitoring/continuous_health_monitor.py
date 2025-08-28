@@ -2,7 +2,7 @@
 """
 Smart CloudOps AI - Continuous Health Monitor
 Parallel background verification of all production endpoints
-"""
+"""Module documentation."""
 
 import logging
 import os
@@ -213,7 +213,7 @@ class ContinuousHealthMonitor:
 
             if result["success"]:
                 logger.info(
-                    f"✅ {endpoint} - {result['status_code']} (
+                    f"✅ {endpoint} - {result['status_code']} ("
                         {result['response_time_msf']:.1f}ms)"
                 )
             else:
@@ -319,7 +319,7 @@ class ContinuousHealthMonitor:
         """Main monitoring loop"""
         logger.info("🔍 Smart CloudOps AI Continuous Health Monitor Started")
         logger.info(
-            f"Monitoring {len(
+            f"Monitoring {len("
                 self.endpoints)} endpoints every {self.check_interval} seconds"
         )
         logger.info("Logs: /var/log/smartcloudops-health.log")
@@ -344,7 +344,7 @@ class ContinuousHealthMonitor:
                 time.sleep(10)  # Short delay before retry
 
     def get_health_report(self):
-        """Generate a comprehensive health report""f"
+        """Generate a comprehensive health report"""
         if not self.health_data:
             return {"error": "No health data available"}
 
@@ -383,7 +383,7 @@ class ContinuousHealthMonitor:
 
 
 def main():
-    # Create log directory if it doesnf't exist
+    # Create log directory if it doesnf't exist'
     os.makedirs("/var/log", exist_ok=True)
 
     monitor = ContinuousHealthMonitor()

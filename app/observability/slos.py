@@ -1,7 +1,7 @@
 """
 Service Level Objectives (SLOs) Configuration
 Phase 4: Observability & Operability - Production SLOs and SLIs
-"""
+"""Module documentation."""
 
 import time
 from datetime import datetime, timedelta
@@ -70,7 +70,7 @@ class SLOManager:
             measurement_period=300,  # 5 minute measurement
             alert_threshold=99.5,  # Alert at 99.5%
             critical_threshold=99.0,  # Critical at 99.0%
-        )
+
         self.add_slo(api_availability_slo)
 
         # Database Availability SLO
@@ -83,7 +83,7 @@ class SLOManager:
             measurement_period=300,  # 5 minute measurement
             alert_threshold=99.9,  # Alert at 99.9%
             critical_threshold=99.5,  # Critical at 99.5%
-        )
+
         self.add_slo(db_availability_slo)
 
         # ================================
@@ -100,7 +100,7 @@ class SLOManager:
             measurement_period=300,  # 5 minute measurement
             alert_threshold=90.0,  # Alert at 90%
             critical_threshold=80.0,  # Critical at 80%
-        )
+
         self.add_slo(api_latency_slo)
 
         # Database Query Latency SLO
@@ -113,7 +113,7 @@ class SLOManager:
             measurement_period=300,  # 5 minute measurement
             alert_threshold=90.0,  # Alert at 90%
             critical_threshold=80.0,  # Critical at 80%
-        )
+
         self.add_slo(db_latency_slo)
 
         # ================================
@@ -130,7 +130,7 @@ class SLOManager:
             measurement_period=300,  # 5 minute measurement
             alert_threshold=99.0,  # Alert at 99.0%
             critical_threshold=98.0,  # Critical at 98.0%
-        )
+
         self.add_slo(api_error_slo)
 
         # ================================
@@ -147,7 +147,7 @@ class SLOManager:
             measurement_period=300,  # 5 minute measurement
             alert_threshold=80.0,  # Alert at 80%
             critical_threshold=70.0,  # Critical at 70%
-        )
+
         self.add_slo(throughput_slo)
 
         # ================================
@@ -164,7 +164,7 @@ class SLOManager:
             measurement_period=300,  # 5 minute measurement
             alert_threshold=85.0,  # Alert at 85%
             critical_threshold=90.0,  # Critical at 90%
-        )
+
         self.add_slo(saturation_slo)
 
         # Setup corresponding SLIs
@@ -186,7 +186,7 @@ class SLOManager:
                 sum(rate(http_requests_total[5m])
             ) * 100
             "",
-            slo_name="api_availability")
+            slo_name="api_availability"
         self.add_sli(api_availability_sli)
 
         # API Latency SLI
@@ -198,8 +198,8 @@ class SLOManager:
             labels=["method", "endpoint"],
             query="
             histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m]) by (le)
-            ",
-            slo_name="api_latency")
+            "",
+            slo_name="api_latency"
         self.add_sli(api_latency_sli)
 
         # API Error Rate SLI
@@ -216,7 +216,7 @@ class SLOManager:
                 sum(rate(http_requests_total[5m])
             ) * 100
             "",
-            slo_name="api_error_rate")
+            slo_name="api_error_rate"
         self.add_sli(api_error_sli)
 
         # Database Availability SLI
@@ -227,7 +227,7 @@ class SLOManager:
             metric_type="gauge",
             labels=[],
             query="pg_up",
-            slo_name="database_availability")
+            slo_name="database_availability"
         self.add_sli(db_availability_sli)
 
         # Resource Saturation SLI
@@ -242,7 +242,7 @@ class SLOManager:
                 1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])
             ) * 100
             "",
-            slo_name="resource_saturation")
+            slo_name="resource_saturation"
         self.add_sli(saturation_sli)
 
     def add_slo(self, slo: SLO) -> None:

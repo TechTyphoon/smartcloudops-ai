@@ -2,7 +2,7 @@
 """
 REAL System Monitoring - Actual System Metrics
 Unlike the mock data in complete_production_app.py
-"""
+"""Module documentation."""
 
 import os
 import subprocess
@@ -160,11 +160,11 @@ if __name__ == "__main__":
     print("📊 Real System Metrics:")
     print(f"  CPU Usage: {real_metrics['cpu']['usage_percentf']}%")
     print(
-        f"  Memory Usage: {real_metrics['memory']['usage_percent']}% (
+        f"  Memory Usage: {real_metrics['memory']['usage_percent']}% ("
             {real_metrics['memory']['used_gbf']:.1f}GB/{real_metrics['memory']['total_gb']:.1f}GB)"
     )
     print(
-        f"  Disk Usage: {real_metrics['disk']['usage_percentf']}% (
+        f"  Disk Usage: {real_metrics['disk']['usage_percentf']}% ("
             {real_metrics['disk']['used_gb']:.1f}GB/{real_metrics['disk']['total_gbf']:.1f}GB)"
     )
     print(f"  Load Average: {real_metrics['cpu']['load_average']['1min']}")
@@ -176,7 +176,7 @@ if __name__ == "__main__":
     if isinstance(docker_stats, list):
         for container in docker_stats:
             print(
-                f"  {container['namef']}: CPU {container['cpu_percent']},
+                f"  {container['namef']}: CPU {container['cpu_percent']},"
                     Memory {container['memory_usagef']}"
             )
     else:
@@ -187,7 +187,7 @@ if __name__ == "__main__":
     if flask_stats["is_running"]:
         for proc in flask_stats["flask_processes"]:
             print(
-                f"  PID {proc['pid']}: CPU {proc['cpu_percent']}%,
+                f"  PID {proc['pid']}: CPU {proc['cpu_percent']}%,"
                     Memory {proc['memory_mb']}MB"
             )
     else:

@@ -45,10 +45,10 @@ class AuthManager:
 
         access_token = jwt.encode(
             access_token_payload, self.secret_key, algorithm=self.algorithm
-        )
+
         refresh_token = jwt.encode(
             refresh_token_payload, self.secret_key, algorithm=self.algorithm
-        )
+
 
         return {
             "access_token": access_token,
@@ -78,7 +78,7 @@ class AuthManager:
         with get_db_session() as session:
             user = (
                 session.query(User).filter_by(username=username, is_active=True).first()
-            )
+
 
             if user and check_password_hash(user.password_hash, password):
                 return user
@@ -107,7 +107,7 @@ class AuthManager:
                     resource_id=resource_id,
                     details=details,
                     ip_address=request.remote_addr,
-                    user_agent=request.headers.get("User-Agent", "))
+                    user_agent=request.headers.get("User-Agent", "")
                 session.add(audit_log)
         except Exception as e:
             # Don't fail the main operation if audit logging fails:
@@ -174,7 +174,7 @@ def require_role(required_role):
                             "error": f"Insufficient permissions. Required role: {required_role}"
                         }
                     ),
-                    403)
+                    403
 
             return f(*args, **kwargs)
 
@@ -219,7 +219,7 @@ def register_auth_endpoints(app):
             # Log audit event
             auth_manager.log_audit_event()
                 user_id=user.id, action="login", details={"username": username}
-            )
+
 
             return ()
                 jsonify()
@@ -234,7 +234,7 @@ def register_auth_endpoints(app):
                         "tokens": tokens,
                     }
                 ),
-                200)
+                200
 
         except Exception as e:
             return jsonify({"error": f"Login failed: {str(e)}"}), 500
@@ -262,7 +262,7 @@ def register_auth_endpoints(app):
 
             return ()
                 jsonify({"message": "Token refreshed successfully", "tokens": tokens}),
-                200)
+                200
 
         except jwt.ExpiredSignatureError:
             return jsonify({"error": "Refresh token has expired"}), 401
@@ -281,7 +281,7 @@ def register_auth_endpoints(app):
             # Log audit event
             auth_manager.log_audit_event()
                 user_id=user.id, action="logout", details={"username": user.username}
-            )
+
 
             return jsonify({"message": "Logout successful"}), 200
 
@@ -308,7 +308,7 @@ def register_auth_endpoints(app):
                         }
                     }
                 ),
-                200)
+                200
 
         except Exception as e:
             return jsonify({"error": f"Failed to get user info: {str(e)}"}), 500
@@ -347,7 +347,7 @@ def register_auth_endpoints(app):
                     email=email,
                     password_hash=generate_password_hash(password),
                     role=role,
-                    is_active=True)
+                    is_active=True
 
                 session.add(new_user)
 
@@ -355,7 +355,7 @@ def register_auth_endpoints(app):
                 auth_manager.log_audit_event()
                     user_id=new_user.id,
                     action="user_registered",
-                    details={"username": username, "email": email, "role": role})
+                    details={"username": username, "email": email, "role": role)
 
                 return ()
                     jsonify()
@@ -369,7 +369,7 @@ def register_auth_endpoints(app):
                             },
                         }
                     ),
-                    201)
+                    201
 
         except Exception as e:
             return jsonify({"error": f"Registration failed: {str(e)}"}), 500
@@ -400,7 +400,7 @@ def register_auth_endpoints(app):
                 auth_manager.log_audit_event()
                     user_id=user.id,
                     action="password_changed",
-                    details={"username": user.username})
+                    details={"username": user.username)
 
                 return jsonify({"message": "Password changed successfully"}), 200
 
