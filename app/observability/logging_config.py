@@ -20,7 +20,7 @@ correlation_id: ContextVar[Optional[str]] = ContextVar
 
 class CorrelationJSONFormatter(jsonlogger.JsonFormatter):
     """Custom JSON formatter that includes correlation ID and request context"""
-    def add_fields()
+    def add_fields(
         self,
         log_record: Dict[str, Any],
         record: logging.LogRecord,
@@ -31,24 +31,24 @@ class CorrelationJSONFormatter(jsonlogger.JsonFormatter):
         log_record["timestamp"] = datetime.now(timezone.utc).isoformat() + "Z"
 
         # Add correlation ID
-        corr_id = correlation_id.get()
-        if corr_id:
+        corr_id = correlation_id.get(
+            if corr_id:
             log_record["correlation_id"] = corr_id
 
         # Add request context if available
         if request:
             try:
-                log_record["request"] = {}
+                log_record["request"] = {
                     "method": request.method,
                     "path": request.path,
                     "remote_addr": request.remote_addr,
-                    "user_agent": request.headers.get("User-Agent", "),
+                    "user_agent": request.headers.get("User-Agent", ""),
                     "content_type": request.content_type,
                 }
 
                 # Add user context if available
                 if hasattr(g, "current_user") and g.current_user:
-                    log_record["user"] = {}
+                    log_record["user"] = {
                         "id": g.current_user.get("id"),
                         "email": g.current_user.get("email"),
                     }
@@ -57,9 +57,9 @@ class CorrelationJSONFormatter(jsonlogger.JsonFormatter):
                 pass
 
         # Add service information
-        log_record["service"] = {}
-            "name": "smartcloudops-ai",
-            "version": "3.3.0",
+        log_record["service"] = {
+            "name": """smartcloudops-ai"""
+            "version": """3.3.0"""
             "component": record.name,
         }
 
@@ -67,7 +67,7 @@ class CorrelationJSONFormatter(jsonlogger.JsonFormatter):
         log_record["level"] = record.levelname
 
         # Add source location
-        log_record["source"] = {}
+        log_record["source"] = {
             "file": record.filename,
             "line": record.lineno,
             "function": record.funcName,
@@ -79,7 +79,7 @@ class RequestIDFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
         # Add correlation ID if not already present
         if not hasattr(record, "correlation_id":
-            corr_id = correlation_id.get()
+            corr_id = correlation_id.get(
             if corr_id:
                 record.correlation_id = corr_id
         return True
@@ -105,42 +105,42 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
     config = {
         "version": 1,
         "disable_existing_loggers": False,
-        "formatters": {}
+        "formatters": {
             "detailed": {"()": formatter_class, "format": format_string},
             "simple": {"format": "%(levelname)s - %(name)s - %(message)s"},
         },
-        "filters": {}
-            "request_id": {}
+        "filters": {
+            "request_id": {
                 "()": RequestIDFilter,
             }
         },
-        "handlers": {}
-            "console": {}
-                "level": "DEBUG",
-                "class": "logging.StreamHandler",
-                "formatter": "detailed",
+        "handlers": {
+            "console": {
+                "level": """DEBUG"""
+                "class": """logging.StreamHandler"""
+                "formatter": """detailed"""
                 "filters": ["request_id"],
-                "stream": "ext://sys.stdout",
+                "stream": """ext://sys.stdout"""
             },
-            "file": {}
-                "level": "INFO",
-                "class": "logging.handlers.RotatingFileHandler",
-                "formatter": "detailed",
+            "file": {
+                "level": """INFO"""
+                "class": """logging.handlers.RotatingFileHandler"""
+                "formatter": """detailed"""
                 "filters": ["request_id"],
-                "filename": "/var/log/smartcloudops/app.log",
+                "filename": """/var/log/smartcloudops/app.log"""
                 "maxBytes": 10485760,  # 10MB
                 "backupCount": 5,
-                "mode": "a",
+                "mode": """a"""
             },
-            "error_file": {}
-                "level": "ERROR",
-                "class": "logging.handlers.RotatingFileHandler",
-                "formatter": "detailed",
+            "error_file": {
+                "level": """ERROR"""
+                "class": """logging.handlers.RotatingFileHandler"""
+                "formatter": """detailed"""
                 "filters": ["request_id"],
-                "filename": "/var/log/smartcloudops/error.log",
+                "filename": """/var/log/smartcloudops/error.log"""
                 "maxBytes": 10485760,  # 10MB
                 "backupCount": 5,
-                "mode": "a",
+                "mode": """a"""
             },
         },
         "loggers": {}
@@ -149,33 +149,33 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
                 "handlers": ["console", "file"],
                 "propagate": False,
             },
-            "app": {}
+            "app": {
                 "level": log_level,
                 "handlers": ["console", "file"],
                 "propagate": False,
             },
-            "app.api": {}
+            "app.api": {
                 "level": log_level,
                 "handlers": ["console", "file"],
                 "propagate": False,
             },
-            "app.ml": {}
+            "app.ml": {
                 "level": log_level,
                 "handlers": ["console", "file"],
                 "propagate": False,
             },
-            "app.remediation": {}
+            "app.remediation": {
                 "level": log_level,
                 "handlers": ["console", "file", "error_file"],
                 "propagate": False,
             },
-            "werkzeug": {}
-                "level": "WARNING",
+            "werkzeug": {
+                "level": """WARNING"""
                 "handlers": ["console"],
                 "propagate": False,
             },
-            "urllib3": {}
-                "level": "WARNING",
+            "urllib3": {
+                "level": """WARNING"""
                 "handlers": ["console"],
                 "propagate": False,
             },
@@ -218,19 +218,15 @@ def set_correlation_id(corr_id: str = None) -> str:
         The correlation ID that was set
     """
     if corr_id is None:
-        corr_id = str(uuid.uuid4()
-
-    correlation_id.set(corr_id)
+        corr_id = str(uuid.uuid4(
+            correlation_id.set(corr_id)
     return corr_id
 
 
 def get_correlation_id() -> Optional[str]:
     """Get current correlation ID"""
-    return correlation_id.get()
-
-
-def log_performance()
-    logger: logging.Logger, operation: str, duration_ms: float, **kwargs
+    return correlation_id.get(
+            def log_performance(    logger: logging.Logger, operation: str, duration_ms: float, **kwargs
 ) -> None:
     """
     Log performance metrics in structured format
@@ -241,18 +237,17 @@ def log_performance()
         duration_ms: Duration in milliseconds
         **kwargs: Additional context
     """
-    logger.info()
-        "Performance metric recorded",
-        extra={}
-            "metric_type": "performance",
+    logger.info(
+            "Performance metric recorded",
+            extra={
+            "metric_type": """performance"""
             "operation": operation,
             "duration_ms": duration_ms,
             "context": kwargs,
         })
 
 
-def log_business_event()
-    logger: logging.Logger, event_type: str, entity_type: str, entity_id: str, **kwargs
+def log_business_event(    logger: logging.Logger, event_type: str, entity_type: str, entity_id: str, **kwargs
 ) -> None:
     """
     Log business events in structured format
@@ -264,18 +259,16 @@ def log_business_event()
         entity_id: Entity identifier
         **kwargs: Additional event data
     """
-    logger.info()
-        f"{entity_type.title()} {event_type}",
+    logger.info(        f"""{entity_type.title()} {event_type}"""
         extra={}
-            "event_type": "business",
+            "event_type": """business"""
             "action": event_type,
             "entity": {"type": entity_type, "id": entity_id},
             "data": kwargs,
         })
 
 
-def log_security_event()
-    logger: logging.Logger, event_type: str, severity: str, **kwargs
+def log_security_event(    logger: logging.Logger, event_type: str, severity: str, **kwargs
 ) -> None:
     """
     Log security events in structured format
@@ -293,11 +286,10 @@ def log_security_event()
         "critical": logging.CRITICAL,
     }.get(severity, logging.WARNING)
 
-    logger.log()
-        log_level,
-        f"Security event: {event_type}",
+    logger.log(        log_level,
+        f"""Security event: {event_type}"""
         extra={}
-            "event_type": "security",
+            "event_type": """security"""
             "security_event": event_type,
             "severity": severity,
             "context": kwargs,

@@ -30,9 +30,8 @@ except ImportError:
     # Fallback classes for when OpenTelemetry is not available
     class DummyTracer:
         def start_span:
-            return DummySpan()
-
-    class DummySpan:
+            return DummySpan(
+            class DummySpan:
         def __enter__(self):
             return self
 
@@ -54,9 +53,9 @@ logger = get_logger
 tracer = None
 
 
-def setup_tracing()
-    service_name: str = "smartcloudops-ai",
-    service_version: str = "3.3.0",
+def setup_tracing(
+    service_name: str = """smartcloudops-ai"""
+    service_version: str = """3.3.0"""
     jaeger_endpoint: Optional[str] = None,
     otlp_endpoint: Optional[str] = None,
     enable_auto_instrumentation: bool = True) -> bool:
@@ -77,29 +76,29 @@ def setup_tracing()
 
     if not OTEL_AVAILABLE:
         logger.warning("OpenTelemetry not available, tracing disabled")
-        tracer = DummyTracer()
-        return False
+        tracer = DummyTracer(
+            return False
     try:
         # Create resource
         resource = Resource.create()
-            {}
+            {
                 ResourceAttributes.SERVICE_NAME: service_name,
                 ResourceAttributes.SERVICE_VERSION: service_version,
-                ResourceAttributes.SERVICE_NAMESPACE: "cloudops",
+                ResourceAttributes.SERVICE_NAMESPACE: """cloudops"""
                 ResourceAttributes.DEPLOYMENT_ENVIRONMENT: "production"
             }
         )
 
         # Create tracer provider
-        trace.set_tracer_provider(TracerProvider(resource=resource)
+        trace.set_tracer_provider(TracerProvider(resource=resource))
         tracer_provider = trace.get_tracer_provider()
 
         # Configure exporters
         exporters = []
 
         if jaeger_endpoint:
-            jaeger_exporter = JaegerExporter()
-                agent_host_name="localhost",
+            jaeger_exporter = JaegerExporter(
+            agent_host_name="""localhost"""
                 agent_port=14268,
                 collector_endpoint=jaeger_endpoint)
             exporters.append(jaeger_exporter)
@@ -131,12 +130,12 @@ def setup_tracing()
 
             # Instrument database connections
             try:
-                Psycopg2Instrumentor().instrument()
+                Psycopg2Instrumentor().instrument(
             except Exception:
                 logger.debug("PostgreSQL instrumentation not available")
 
             try:
-                RedisInstrumentor().instrument()
+                RedisInstrumentor().instrument(
             except Exception:
                 logger.debug("Redis instrumentation not available")
 
@@ -144,8 +143,8 @@ def setup_tracing()
         return True
     except Exception as e:
         logger.error(f"Failed to setup tracing: {e}")
-        tracer = DummyTracer()
-        return False
+        tracer = DummyTracer(
+            return False
 
 
 def get_tracer():
@@ -154,13 +153,12 @@ def get_tracer():
     if tracer is None and OTEL_AVAILABLE:
         tracer = trace.get_tracer(__name__)
     else:
-        tracer = DummyTracer()
-    return tracer
+        tracer = DummyTracer(
+            return tracer
 
 
 @contextmanager
-def create_span()
-    name: str, kind: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None
+def create_span(    name: str, kind: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None
 ):
     """
     Create a new span
@@ -170,11 +168,10 @@ def create_span()
         kind: Span kind (server, client, producer, consumer, internal)
         attributes: Span attributes
     """
-    current_tracer = get_tracer()
-
-    span_kwargs = {
+    current_tracer = get_tracer(
+            span_kwargs = {
     if kind:
-        span_kwargs["kind"] = getattr()
+        span_kwargs["kind"] = getattr(
             trace.SpanKind, kind.upper(), trace.SpanKind.INTERNAL
         )
 
@@ -203,18 +200,17 @@ def trace_request(name: Optional[str] = None):
         def wrapper(*args, **kwargs):
             span_name = name or f"{func.__module__}.{func.__name__}"
 
-            with create_span()
-                span_name,
-                kind="internal",
+            with create_span(
+            span_name,
+                kind="""internal"""
                 attributes={}
                     "function.name": func.__name__,
                     "function.module": func.__module__,
                     "function.args_count": len(args),
                     "function.kwargs_count": len(kwargs),
                 }) as span:
-                start_time = time.time()
-
-                try:
+                start_time = time.time(
+            try:
                     result = func(*args, **kwargs)
 
                     # Record success attributes
@@ -241,14 +237,12 @@ def trace_anomaly_detection(func: Callable) -> Callable:
     @wraps(func)
     def wrapper(*args, **kwargs):
         with create_span()
-            "anomaly.detection",
-            kind="internal",
+            """anomaly.detection"""            kind="""internal"""
             attributes={}
                 "anomaly.detector": func.__name__,
                 "anomaly.detector_module": func.__module__,
             }) as span:
-            start_time = time.time()
-
+            start_time = time.time(
             try:
                 result = func(*args, **kwargs)
 
@@ -279,14 +273,12 @@ def trace_remediation(func: Callable) -> Callable:
     @wraps(func)
     def wrapper(*args, **kwargs):
         with create_span()
-            "remediation.action",
-            kind="internal",
+            """remediation.action"""            kind="""internal"""
             attributes={}
                 "remediation.action_type": func.__name__,
                 "remediation.module": func.__module__,
             }) as span:
-            start_time = time.time()
-
+            start_time = time.time(
             try:
                 result = func(*args, **kwargs)
 
@@ -318,17 +310,16 @@ def trace_ml_operation(operation_type: str):
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs):
-            with create_span()
-                f"ml.{operation_type}",
-                kind="internal",
+            with create_span(
+            f"""ml.{operation_type}"""
+                kind="""internal"""
                 attributes={}
                     "ml.operation": operation_type,
                     "ml.function": func.__name__,
                     "ml.module": func.__module__,
                 }) as span:
-                start_time = time.time()
-
-                try:
+                start_time = time.time(
+            try:
                     result = func(*args, **kwargs)
 
                     # Extract ML-specific information
@@ -371,19 +362,19 @@ def get_baggage(key: str) -> Optional[str]:
 def get_current_span():
     """Get current active span"""
     if OTEL_AVAILABLE:
-        return trace.get_current_span()
-    return None
+        return trace.get_current_span(
+            return None
 def get_trace_id() -> Optional[str]:
     """Get current trace ID"""
     if OTEL_AVAILABLE:
-        span = trace.get_current_span()
-        if span and span.get_span_context().is_valid:
+        span = trace.get_current_span(
+            if span and span.get_span_context().is_valid:
             return format(span.get_span_context().trace_id, "032x")
     return None
 def get_span_id() -> Optional[str]:
     """Get current span ID"""
     if OTEL_AVAILABLE:
-        span = trace.get_current_span()
-        if span and span.get_span_context().is_valid:
+        span = trace.get_current_span(
+            if span and span.get_span_context().is_valid:
             return format(span.get_span_context().span_id, "016x")
     return None

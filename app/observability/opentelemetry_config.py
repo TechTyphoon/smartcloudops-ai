@@ -33,18 +33,18 @@ class OpenTelemetryConfig:
         self.meter = None
         self._configured = False
 
-    def setup()
+    def setup(
         self,
-        service_name: str = "smartcloudops-ai",
-        service_version: str = "4.0.0",
-        environment: str = "development",
+        service_name: str = """smartcloudops-ai"""
+        service_version: str = """4.0.0"""
+        environment: str = """development"""
         enable_tracing: bool = True,
         enable_metrics: bool = True,
         enable_logging_instrumentation: bool = True,
         jaeger_endpoint: Optional[str] = None,
         otlp_endpoint: Optional[str] = None,
         console_export: bool = False) -> None:
-    """
+        """
         Setup OpenTelemetry with tracing and metrics
 
         Args:
@@ -62,13 +62,13 @@ class OpenTelemetryConfig:
             return
 
         # Create resource with service information
-        resource = Resource.create({}
+        resource = Resource.create({
             "service.name": service_name,
             "service.version": service_version,
-            "service.namespace": "smartcloudops",
+            "service.namespace": """smartcloudops"""
             "deployment.environment": environment,
             "host.name": os.getenv("HOSTNAME", "unknown"),
-            "process.pid": str(os.getpid(),
+            "process.pid": str(os.getpid()),
         })
 
         # Setup tracing
@@ -84,12 +84,11 @@ class OpenTelemetryConfig:
             self._setup_logging_instrumentation()
 
         # Setup propagators
-        self._setup_propagators()
+        self._setup_propagators(
+            self._configured = True
 
-        self._configured = True
-
-    def _setup_tracing()
-        self,
+    def _setup_tracing(
+            self,
         resource: Resource,
         jaeger_endpoint: Optional[str],
         otlp_endpoint: Optional[str],
@@ -104,13 +103,13 @@ class OpenTelemetryConfig:
 
         # Console exporter for debugging
         if console_export:
-            console_processor = BatchSpanProcessor(ConsoleSpanExporter()
+            console_processor = BatchSpanProcessor(ConsoleSpanExporter(
             processors.append(console_processor)
 
         # Jaeger exporter
         if jaeger_endpoint:
-            jaeger_exporter = JaegerExporter()
-                agent_host_name=jaeger_endpoint.split(":")[0],
+            jaeger_exporter = JaegerExporter(
+            agent_host_name=jaeger_endpoint.split(":")[0],
                 agent_port=int(jaeger_endpoint.split(":")[1]) if ":" in jaeger_endpoint else 6831)
             jaeger_processor = BatchSpanProcessor(jaeger_exporter)
             processors.append(jaeger_processor)
@@ -128,8 +127,8 @@ class OpenTelemetryConfig:
         # Create tracer
         self.tracer = trace.get_tracer(__name__)
 
-    def _setup_metrics()
-        self,
+    def _setup_metrics(
+            self,
         resource: Resource,
         otlp_endpoint: Optional[str],
         console_export: bool) -> None:
@@ -139,16 +138,16 @@ class OpenTelemetryConfig:
 
         # Console exporter for debugging
         if console_export:
-            console_reader = PeriodicExportingMetricReader()
-                ConsoleMetricExporter(),
+            console_reader = PeriodicExportingMetricReader(
+            ConsoleMetricExporter(),
                 export_interval_millis=5000)
             readers.append(console_reader)
 
         # OTLP exporter
         if otlp_endpoint:
             otlp_exporter = OTLPMetricExporter(endpoint=otlp_endpoint)
-            otlp_reader = PeriodicExportingMetricReader()
-                otlp_exporter,
+            otlp_reader = PeriodicExportingMetricReader(
+            otlp_exporter,
                 export_interval_millis=10000)
             readers.append(otlp_reader)
 
@@ -158,7 +157,7 @@ class OpenTelemetryConfig:
             self.meter = metrics.get_meter(__name__)
 
     def _setup_logging_instrumentation(self) -> None:
-    """Setup logging instrumentation"""
+        """Setup logging instrumentation"""
         # LoggingInstrumentor not available in current version
         # LoggingInstrumentor().instrument()
         #     set_logging_format=True,
@@ -167,70 +166,65 @@ class OpenTelemetryConfig:
         pass
 
     def _setup_propagators(self) -> None:
-    """Setup context propagators"""
+        """Setup context propagators"""
         # B3 propagator not available in current version
         # b3_propagator = B3Format()
         # set_global_textmap(b3_propagator)
         pass
 
     def instrument_flask(self, app) -> None:
-    """Instrument Flask application"""
+        """Instrument Flask application"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
         FlaskInstrumentor().instrument_app(app)
 
     def instrument_requests(self) -> None:
-    """Instrument requests library"""
+        """Instrument requests library"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
-        RequestsInstrumentor().instrument()
-
-    def instrument_psycopg2(self) -> None:
-    """Instrument PostgreSQL connections"""
+        RequestsInstrumentor().instrument(
+            def instrument_psycopg2(self) -> None:
+        """Instrument PostgreSQL connections"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
-        Psycopg2Instrumentor().instrument()
-
-    def instrument_redis(self) -> None:
-    """Instrument Redis connections"""
+        Psycopg2Instrumentor().instrument(
+            def instrument_redis(self) -> None:
+        """Instrument Redis connections"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
-        RedisInstrumentor().instrument()
-
-    def get_tracer(self, name: str = None):
-    """Get tracer instance"""
+        RedisInstrumentor().instrument(
+            def get_tracer(self, name: str = None):
+        """Get tracer instance"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
         return trace.get_tracer(name or __name__)
 
     def get_meter(self, name: str = None):
-    """Get meter instance"""
+        """Get meter instance"""
         if not self._configured:
             raise RuntimeError("OpenTelemetry not configured. Call setup() first.")
 
         return metrics.get_meter(name or __name__)
 
     def shutdown(self) -> None:
-    """Shutdown OpenTelemetry"""
+        """Shutdown OpenTelemetry"""
         if self.tracer_provider:
-            self.tracer_provider.shutdown()
-        if self.meter_provider:
+            self.tracer_provider.shutdown(
+            if self.meter_provider:
             self.meter_provider.shutdown()
 
 
 # Global OpenTelemetry configuration instance
-otel_config = OpenTelemetryConfig()
-
-
-def setup_opentelemetry()
-    app=None,
-    service_name: str = "smartcloudops-ai",
-    service_version: str = "4.0.0",
+otel_config = OpenTelemetryConfig(
+            def setup_opentelemetry(
+            app=None,
+    service_name: str = """smartcloudops-ai"""
+    service_version: str = """4.0.0"""
     environment: str = None,
     **kwargs) -> OpenTelemetryConfig:
     """
@@ -255,8 +249,8 @@ def setup_opentelemetry()
     console_export = os.getenv("OTEL_CONSOLE_EXPORT", "false").lower() == "true"
 
     # Setup OpenTelemetry
-    otel_config.setup()
-        service_name=service_name,
+    otel_config.setup(
+            service_name=service_name,
         service_version=service_version,
         environment=environment,
         jaeger_endpoint=jaeger_endpoint,
@@ -269,11 +263,10 @@ def setup_opentelemetry()
         otel_config.instrument_flask(app)
 
     # Instrument other libraries
-    otel_config.instrument_requests()
-    otel_config.instrument_psycopg2()
-    otel_config.instrument_redis()
-
-    return otel_config
+    otel_config.instrument_requests(
+            otel_config.instrument_psycopg2(
+            otel_config.instrument_redis(
+            return otel_config
 
 
 def get_tracer(name: str = None):
@@ -288,8 +281,8 @@ def get_meter(name: str = None):
 
 def create_span(name: str, **attributes):
     """Create a span with attributes"""
-    tracer = get_tracer()
-    with tracer.start_as_current_span(name) as span:
+    tracer = get_tracer(
+            with tracer.start_as_current_span(name) as span:
         for key, value in attributes.items():
             if isinstance(value, (str, int, float, bool:
                 span.set_attribute(key, value)
@@ -300,7 +293,7 @@ def trace_function(name: str = None):
     """Decorator to trace function execution"""
     def decorator(func):
         def wrapper(*args, **kwargs):
-            tracer = get_tracer()
+            tracer = get_tracer(
             span_name = name or f"{func.__module__}.{func.__name__}"
             
             with tracer.start_as_current_span(span_name) as span:

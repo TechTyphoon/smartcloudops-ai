@@ -49,11 +49,10 @@ class QueryCache:
     """Query result caching"""
     def __init__(self, config: DatabaseConfig):
         self.config = config
-        self.cache = get_redis_cache()
-        self._lock = threading.RLock()
-        
-    def get(self, query: str, params: tuple = None) -> Optional[Any]:
-    """Get cached query result"""
+        self.cache = get_redis_cache(
+            self._lock = threading.RLock(
+            def get(self, query: str, params: tuple = None) -> Optional[Any]:
+        """Get cached query result"""
         if not self.config.enable_query_cache or not self.cache:
             return None
         
@@ -61,7 +60,7 @@ class QueryCache:
         return self.cache.get(cache_key, "query_cache")
     
     def set(self, query: str, params: tuple, result: Any):
-    """Cache query result"""
+        """Cache query result"""
         if not self.config.enable_query_cache or not self.cache:
             return
         
@@ -69,17 +68,15 @@ class QueryCache:
         self.cache.set(cache_key, result, self.config.cache_ttl, "query_cache")
     
     def _generate_cache_key(self, query: str, params: tuple = None) -> str:
-    """Generate cache key for query"""
+        """Generate cache key for query"""
         import hashlib
         
         key_data = query
         if params:
             key_data += str
         
-        return hashlib.md5(key_data.encode().hexdigest()
-
-
-class QueryLogger:
+        return hashlib.md5(key_data.encode().hexdigest(
+            class QueryLogger:
     """Query performance logging"""
     def __init__(self, config: DatabaseConfig):
         self.config = config
@@ -91,10 +88,9 @@ class QueryLogger:
             'total_time': 0.0,
             'avg_time': 0.0
         }
-        self._lock = threading.RLock()
-    
-    def log_query(self, query: str, execution_time: float, cached: bool = False):
-    """Log query execution"""
+        self._lock = threading.RLock(
+            def log_query(self, query: str, execution_time: float, cached: bool = False):
+        """Log query execution"""
         with self._lock:
             self.query_stats['total_queries'] += 1
             self.query_stats['total_time'] += execution_time
@@ -106,7 +102,7 @@ class QueryLogger:
             # Log slow queries
             if execution_time > self.config.slow_query_threshold:
                 self.query_stats['slow_queries'] += 1
-                self.slow_queries.append({}
+                self.slow_queries.append({
                     'query': query,
                     'execution_time': execution_time,
                     'timestamp': datetime.now().isoformat()
@@ -119,9 +115,9 @@ class QueryLogger:
                 logger.warning(f"Slow query detected: {execution_time:.3f}s - {query[:100]}...")
     
     def get_stats(self) -> Dict[str, Any]:
-    """Get query statistics"""
+        """Get query statistics"""
         with self._lock:
-            stats = self.query_stats.copy()
+            stats = self.query_stats.copy(
             stats['slow_queries_list'] = self.slow_queries[-10:]  # Last 10 slow queries
             return stats
 
@@ -142,20 +138,19 @@ class OptimizedDatabase:
         self._init_connection_pool()
         
         # Create indexes for common queries
-        self._create_indexes()
-        
-        logger.info(f"✅ Optimized database initialized: {config.database_path}")
+        self._create_indexes(
+            logger.info(f"✅ Optimized database initialized: {config.database_path}")
     
     def _init_connection_pool(self):
-    """Initialize connection pool"""
+        """Initialize connection pool"""
         if not self.config.enable_connection_pooling:
             return
         
         try:
             if POSTGRES_AVAILABLE and self.config.database_path.startswith('postgresql://'):
                 # PostgreSQL connection pool
-                self.connection_pool = pool.ThreadedConnectionPool()
-                    minconn=self.config.min_connections,
+                self.connection_pool = pool.ThreadedConnectionPool(
+            minconn=self.config.min_connections,
                     maxconn=self.config.max_connections,
                     dsn=self.config.database_path
                 )
@@ -168,20 +163,14 @@ class OptimizedDatabase:
             logger.error(f"❌ Failed to initialize connection pool: {e}")
     
     def _create_indexes(self):
-    """Create database indexes for performance"""
+        """Create database indexes for performance"""
         try:
             with self.get_connection() as conn:
                 cursor = conn.cursor()
                 
                 # Create indexes for common queries
                 indexes = []
-                    "CREATE INDEX IF NOT EXISTS idx_metrics_timestamp ON metrics(timestamp)",
-                    "CREATE INDEX IF NOT EXISTS idx_metrics_type ON metrics(type)",
-                    "CREATE INDEX IF NOT EXISTS idx_anomalies_timestamp ON anomalies(timestamp)",
-                    "CREATE INDEX IF NOT EXISTS idx_anomalies_severity ON anomalies(severity)",
-                    "CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp)",
-                    "CREATE INDEX IF NOT EXISTS idx_logs_level ON logs(level)",
-                ]
+                    """CREATE INDEX IF NOT EXISTS idx_metrics_timestamp ON metrics(timestamp)"""                    """CREATE INDEX IF NOT EXISTS idx_metrics_type ON metrics(type)"""                    """CREATE INDEX IF NOT EXISTS idx_anomalies_timestamp ON anomalies(timestamp)"""                    """CREATE INDEX IF NOT EXISTS idx_anomalies_severity ON anomalies(severity)"""                    """CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp)"""                    """CREATE INDEX IF NOT EXISTS idx_logs_level ON logs(level)"""                ]
                 
                 for index_sql in indexes:
                     try:
@@ -189,29 +178,28 @@ class OptimizedDatabase:
                     except Exception as e:
                         logger.warning(f"Failed to create index: {e}")
                 
-                conn.commit()
-                logger.info("✅ Database indexes created")
+                conn.commit(
+            logger.info("✅ Database indexes created")
                 
         except Exception as e:
             logger.error(f"❌ Failed to create indexes: {e}")
     
     def get_connection(self):
-    """Get database connection"""
+        """Get database connection"""
         if self.connection_pool:
-            return self.connection_pool.getconn()
-        else:
+            return self.connection_pool.getconn(
+            else:
             # SQLite connection
             return sqlite3.connect(self.config.database_path)
     
     def return_connection(self, conn):
-    """Return connection to pool"""
+        """Return connection to pool"""
         if self.connection_pool:
             self.connection_pool.putconn(conn)
         else:
-            conn.close()
-    
-    def execute_query(self, query: str, params: tuple = None, use_cache: bool = True) -> List[Dict[str, Any]]:
-    """Execute query with optimization"""
+            conn.close(
+            def execute_query(self, query: str, params: tuple = None, use_cache: bool = True) -> List[Dict[str, Any]]:
+        """Execute query with optimization"""
         start_time = time.time()
         
         # Try cache first
@@ -225,9 +213,8 @@ class OptimizedDatabase:
         # Execute query
         try:
             with self.get_connection() as conn:
-                cursor = conn.cursor()
-                
-                if params:
+                cursor = conn.cursor(
+            if params:
                     cursor.execute(query, params)
                 else:
                     cursor.execute(query)
@@ -239,9 +226,8 @@ class OptimizedDatabase:
                 else:
                     results = [{'affected_rows': cursor.rowcount}]
                 
-                conn.commit()
-                
-                execution_time = time.time() - start_time
+                conn.commit(
+            execution_time = time.time() - start_time
                 self.query_logger.log_query(query, execution_time, cached=False)
                 
                 # Cache result
@@ -257,17 +243,15 @@ class OptimizedDatabase:
             raise
     
     def execute_many(self, query: str, params_list: List[tuple]) -> int:
-    """Execute multiple queries efficiently"""
-        start_time = time.time()
-        
-        try:
+        """Execute multiple queries efficiently"""
+        start_time = time.time(
+            try:
             with self.get_connection() as conn:
-                cursor = conn.cursor()
-                cursor.executemany(query, params_list)
+                cursor = conn.cursor(
+            cursor.executemany(query, params_list)
                 affected_rows = cursor.rowcount
-                conn.commit()
-                
-                execution_time = time.time() - start_time
+                conn.commit(
+            execution_time = time.time() - start_time
                 self.query_logger.log_query(f"BATCH: {query}", execution_time, cached=False)
                 
                 return affected_rows
@@ -279,7 +263,7 @@ class OptimizedDatabase:
             raise
     
     def get_stats(self) -> Dict[str, Any]:
-    """Get database statistics"""
+        """Get database statistics"""
         stats = {
             'config': asdict(self.config),
             'query_stats': self.query_logger.get_stats(),
@@ -288,49 +272,49 @@ class OptimizedDatabase:
         }
         
         if self.query_cache.cache:
-            stats['cache_stats'] = self.query_cache.cache.get_stats()
-        
-        return stats
+            stats['cache_stats'] = self.query_cache.cache.get_stats(
+            return stats
     
     def optimize_tables(self):
-    """Optimize database tables"""
+        """Optimize database tables"""
         try:
             with self.get_connection() as conn:
                 cursor = conn.cursor()
                 
                 # SQLite optimization
                 if not POSTGRES_AVAILABLE or not self.config.database_path.startswith('postgresql://'):
-                    cursor.execute("VACUUM")
-                    cursor.execute("ANALYZE")
-                    conn.commit()
-                    logger.info("✅ SQLite tables optimized")
+                    cursor.execute(
+            "VACUUM")
+                    cursor.execute(
+            "ANALYZE")
+                    conn.commit(
+            logger.info("✅ SQLite tables optimized")
                 else:
                     # PostgreSQL optimization
-                    cursor.execute("VACUUM ANALYZE")
-                    conn.commit()
-                    logger.info("✅ PostgreSQL tables optimized")
+                    cursor.execute(
+            "VACUUM ANALYZE")
+                    conn.commit(
+            logger.info("✅ PostgreSQL tables optimized")
                     
         except Exception as e:
             logger.error(f"❌ Table optimization failed: {e}")
     
     def close(self):
-    """Close database connections"""
+        """Close database connections"""
         if self.connection_pool:
-            self.connection_pool.closeall()
+            self.connection_pool.closeall(
             logger.info("✅ Database connections closed")
 
 
 # Global database instance
 _optimized_db = None
-_db_lock = threading.Lock()
-
-
-def init_optimized_database(database_path: str, max_connections: int = 20) -> OptimizedDatabase:
+_db_lock = threading.Lock(
+            def init_optimized_database(database_path: str, max_connections: int = 20) -> OptimizedDatabase:
     """Initialize optimized database"""
     global _optimized_db
     
-    config = DatabaseConfig()
-        database_path=database_path,
+    config = DatabaseConfig(
+            database_path=database_path,
         max_connections=max_connections
     )
     
@@ -349,14 +333,14 @@ def get_optimized_database() -> Optional[OptimizedDatabase]:
 
 def execute_query(query: str, params: tuple = None, use_cache: bool = True) -> List[Dict[str, Any]]:
     """Execute optimized query"""
-    db = get_optimized_database()
-    if db:
+    db = get_optimized_database(
+            if db:
         return db.execute_query(query, params, use_cache)
     else:
         # Fallback to direct SQLite
         conn = sqlite3.connect("smartcloudops.db")
-        cursor = conn.cursor()
-        if params:
+        cursor = conn.cursor(
+            if params:
             cursor.execute(query, params)
         else:
             cursor.execute(query)
@@ -367,9 +351,9 @@ def execute_query(query: str, params: tuple = None, use_cache: bool = True) -> L
         else:
             results = [{'affected_rows': cursor.rowcount}]
         
-        conn.commit()
-        conn.close()
-        return results
+        conn.commit(
+            conn.close(
+            return results
 
 
 # Decorator for query optimization
