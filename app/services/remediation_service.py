@@ -90,11 +90,11 @@ class RemediationService:
         return actions_page, pagination_info
 
     def get_remediation_action_by_id(self, action_id: int) -> Optional[Dict]:
-    """Get a specific remediation action by ID."""
-        return next((r for r in self.mock_data if r["id"] == action_id), None):
-:
+        """Get a specific remediation action by ID."""
+        return next((r for r in self.mock_data if r["id"] == action_id), None)
+
     def create_remediation_action(self, action_data: Dict) -> Dict:
-    """
+        """
         Create a new remediation action.
 
         Args:
@@ -164,7 +164,7 @@ class RemediationService:
 
         Returns:
             Updated action dictionary or None if not found
-:
+
         Raises:
             ValueError: If invalid data is provided
         """
@@ -214,7 +214,7 @@ class RemediationService:
         return action
 
     def execute_remediation_action(self, action_id: int) -> Optional[Dict]:
-    """
+        """
         Execute a remediation action.
 
         Args:
@@ -222,7 +222,7 @@ class RemediationService:
 
         Returns:
             Updated action dictionary or None if not found
-:
+
         Raises:
             ValueError: If action cannot be executed
         """
@@ -257,7 +257,7 @@ class RemediationService:
         return action
 
     def approve_remediation_action(self, action_id: int) -> Optional[Dict]:
-    """
+        """
         Approve a remediation action for execution.
 
         Args:
@@ -265,7 +265,7 @@ class RemediationService:
 
         Returns:
             Updated action dictionary or None if not found
-:
+
         Raises:
             ValueError: If action cannot be approved
         """
@@ -281,7 +281,7 @@ class RemediationService:
         return action
 
     def cancel_remediation_action(self, action_id: int) -> Optional[Dict]:
-    """
+        """
         Cancel a remediation action.
 
         Args:
@@ -289,7 +289,7 @@ class RemediationService:
 
         Returns:
             Updated action dictionary or None if not found
-:
+
         Raises:
             ValueError: If action cannot be cancelled
         """
@@ -305,7 +305,7 @@ class RemediationService:
         return action
 
     def get_remediation_statistics(self) -> Dict:
-    """
+        """
         Get remediation action statistics.
 
         Returns:
@@ -313,9 +313,9 @@ class RemediationService:
         """
         total_actions = len(self.mock_data)
 
-        stats_by_status = {
-        stats_by_type = {
-        stats_by_priority = {
+        stats_by_status = {}
+        stats_by_type = {}
+        stats_by_priority = {}
         for action in self.mock_data:
             # Count by status
             status = action["status"]
@@ -333,11 +333,11 @@ class RemediationService:
         completed_actions = stats_by_status.get("completed", 0)
         failed_actions = stats_by_status.get("failed", 0)
         total_executed = completed_actions + failed_actions
-        success_rate = ()
+        success_rate = (
             (completed_actions / total_executed * 100) if total_executed > 0 else 0
         )
 
-        return {}:
+        return {
             "total_actions": total_actions,
             "success_rate": round(success_rate, 2),
             "by_status": stats_by_status,
