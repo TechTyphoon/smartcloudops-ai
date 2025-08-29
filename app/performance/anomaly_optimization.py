@@ -32,9 +32,7 @@ except ImportError:
 
 from .redis_cache import get_redis_cache, cached
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 @dataclass
 class AnomalyConfig:
     """Anomaly detection configuration"""
@@ -151,8 +149,8 @@ class BatchProcessor:
             logger.error(f"Batch processing error: {e}")
             # Put error results for all items in batch
             for request_id, _ in batch:
-                error_result = AnomalyResult()
-                    is_anomaly=False,
+                error_result = AnomalyResult(
+    is_anomaly=False,
                     confidence=0.0,
                     score=0.0,
                     features={},
@@ -174,8 +172,8 @@ class BatchProcessor:
             confidence = min(cpu_usage / 100.0, memory_usage / 100.0)
             score = (cpu_usage + memory_usage) / 200.0
             
-            result = AnomalyResult()
-                is_anomaly=is_anomaly,
+            result = AnomalyResult(
+    is_anomaly=is_anomaly,
                 confidence=confidence,
                 score=score,
                 features={'cpu_usage': cpu_usage, 'memory_usage': memory_usage},
@@ -211,8 +209,8 @@ class OptimizedAnomalyDetector:
     """Optimized anomaly detection system"""
     def __init__(self, config: Optional[AnomalyConfig] = None):
         self.config = config or AnomalyConfig()
-        self.cache = get_redis_cache()
-        self.batch_processor = BatchProcessor(self.config) if self.config.enable_batching else None
+        self.cache = get_redis_cache(
+    self.batch_processor = BatchProcessor(self.config) if self.config.enable_batching else None
         self.model_version = f"v1-{int(time.time()}"
         self._lock = threading.RLock()
         
@@ -398,7 +396,7 @@ def get_anomaly_detector() -> Optional[OptimizedAnomalyDetector]:
 
 def detect_anomaly(data: Dict[str, Any], use_cache: bool = True) -> AnomalyResult:
     """Detect anomaly in data"""
-    detector = get_anomaly_detector()
+    detector = get_anomaly_detector(
     if detector:
         return detector.detect_anomaly(data, use_cache)
     else:

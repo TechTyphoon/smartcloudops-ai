@@ -58,8 +58,8 @@ class TestAnomalyDetector:
     def test_model_training(self, mock_isolation_forest, sample_data, mock_config):
         """Test model training functionality."""
         # Setup mock
-        mock_model = Mock()
-        mock_model.fit.return_value = mock_model
+        mock_model = Mock(
+    mock_model.fit.return_value = mock_model
         mock_isolation_forest.return_value = mock_model
 
         detector = AnomalyDetector(mock_config)
@@ -76,8 +76,8 @@ class TestAnomalyDetector:
     def test_anomaly_prediction(self, mock_isolation_forest, sample_data, mock_config):
         """Test anomaly prediction functionality."""
         # Setup mock
-        mock_model = Mock()
-        mock_model.fit.return_value = mock_model
+        mock_model = Mock(
+    mock_model.fit.return_value = mock_model
         mock_model.predict.return_value = np.array(
             [1, -1, 1, -1, 1]
         )  # Mix of normal and anomalies
@@ -105,8 +105,8 @@ class TestAnomalyDetector:
     def test_model_save_and_load(self, mock_isolation_forest, sample_data, mock_config):
         """Test model save and load functionality."""
         # Setup mock
-        mock_model = Mock()
-        mock_model.fit.return_value = mock_model
+        mock_model = Mock(
+    mock_model.fit.return_value = mock_model
         mock_isolation_forest.return_value = mock_model
 
         detector = AnomalyDetector(mock_config)
@@ -156,8 +156,8 @@ class TestAnomalyDetector:
     def test_model_evaluation(self, mock_isolation_forest, sample_data, mock_config):
         """Test model evaluation functionality."""
         # Setup mock
-        mock_model = Mock()
-        mock_model.fit.return_value = mock_model
+        mock_model = Mock(
+    mock_model.fit.return_value = mock_model
         mock_model.predict.return_value = np.array([1, -1, 1, -1, 1])
         mock_isolation_forest.return_value = mock_model
 
@@ -216,7 +216,7 @@ class TestModelVersioning:
         """Create mock configuration for versioning tests.""f"
         return {
             "MODEL_REGISTRY_PATH": "/tmp/model_registry",
-            "VERSION_FORMAT": "v{major}.{minor}.{patch}",
+            "VERSION_FORMAT": f"v{major}.{minor}.{patch}",
             "MAX_VERSIONS": 5,
         }
 
@@ -276,9 +276,8 @@ class TestMLModelsIntegration:
 
         # Setup mocks
         mock_joblib.dump.return_value = None
-        mock_joblib.load.return_value = Mock()
-
-        detector = AnomalyDetector(config)
+        mock_joblib.load.return_value = Mock(
+    detector = AnomalyDetector(config)
 
         # Test full pipeline
         train_result = detector.train_model(sample_data)
@@ -407,8 +406,8 @@ class TestMLModelsPerformance:
         }
 
         # Setup mock
-        mock_model = Mock()
-        mock_model.fit.return_value = mock_model
+        mock_model = Mock(
+    mock_model.fit.return_value = mock_model
         mock_isolation_forest.return_value = mock_model
 
         detector = AnomalyDetector(config)
@@ -432,8 +431,8 @@ class TestMLModelsPerformance:
         }
 
         # Setup mock
-        mock_model = Mock()
-        mock_model.fit.return_value = mock_model
+        mock_model = Mock(
+    mock_model.fit.return_value = mock_model
         mock_model.predict.return_value = np.ones(1000)
         mock_model.decision_function.return_value = np.random.random(1000)
         mock_isolation_forest.return_value = mock_model

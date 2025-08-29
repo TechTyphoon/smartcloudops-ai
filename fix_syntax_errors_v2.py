@@ -40,7 +40,7 @@ def fix_file(file_path):
         
         # Fix 3: Dictionary syntax errors - missing opening braces
         # Pattern: "key": value, without opening {
-        content = re.sub(r'(\s+)"([^"]+)":\s*([^,\n]+),?\n', r'\1{\n\1    "\2": \3,\n\1}', content)
+        content = re.sub(r'(\s+)"([^"]+)":\s*([^,\n]+),?\n', rf'\1{\n\1    "\2": \3,\n\1}', content)
         
         # Fix 4: Fix specific patterns found in the errors
         # Fix: "status": "healthy" if redis_cache._redis_client else "unavailable",

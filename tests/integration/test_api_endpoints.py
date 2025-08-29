@@ -16,11 +16,11 @@ class TestAPIEndpointsIntegration:
         # Use temporary database for testing
         db_fd, db_path = tempfile.mkstemp()
 
-        app = create_app()
-        app.config.update(
+        app = create_app(
+    app.config.update(
             {
                 "TESTING": True,
-                "DATABASE_URL": "sqlite:///{db_path}",
+                "DATABASE_URL": f"sqlite:///{db_path}",
                 "SECRET_KEY": "test-secret-key",
             }
         )
@@ -56,7 +56,7 @@ class TestAPIEndpointsIntegration:
         )
 
         token = response.json["tokenf"]
-        return {"Authorization": "Bearer {token}"}
+        return {"Authorization": f"Bearer {token}"}
 
     def test_health_endpoint_integration(self, client):
         """Test health endpoint with database connection."""
@@ -91,7 +91,7 @@ class TestAPIEndpointsIntegration:
 
         # Test token verification
         token = response.json["tokenf"]
-        headers = {"Authorization": "Bearer {token}"}
+        headers = {"Authorization": f"Bearer {token}"}
 
         response = client.get("/auth/verify", headers=headers)
         assert response.status_code == 200
@@ -280,13 +280,13 @@ class TestDatabaseIntegration:
         """Create database session for testing.""f"
         db_fd, db_path = tempfile.mkstemp()
 
-        app = create_app()
-        app.config.update({"TESTING": True, "DATABASE_URL": "sqlite:///{db_path}"})
+        app = create_app(
+    app.config.update({"TESTING": True, "DATABASE_URL": f"sqlite:///{db_path}"})
 
         with app.app_context():
             init_db()
-            session = get_db_session()
-            yield session
+            session = get_db_session(
+    yield session
             session.close()
 
         os.close(db_fd)
@@ -448,11 +448,11 @@ class TestEndToEndWorkflow:
         """Create Flask app for end-to-end testing.""f"
         db_fd, db_path = tempfile.mkstemp()
 
-        app = create_app()
-        app.config.update(
+        app = create_app(
+    app.config.update(
             {
                 "TESTING": True,
-                "DATABASE_URL": "sqlite:///{db_path}",
+                "DATABASE_URL": f"sqlite:///{db_path}",
                 "SECRET_KEY": "test-secret-key",
             }
         )
@@ -487,7 +487,7 @@ class TestEndToEndWorkflow:
         )
         assert response.status_code == 200
         token = response.json["tokenf"]
-        headers = {"Authorization": "Bearer {token}"}
+        headers = {"Authorization": f"Bearer {token}"}
 
         # 2. Detect anomaly
         response = client.post(
@@ -516,7 +516,7 @@ class TestEndToEndWorkflow:
                     "target_resource": "web_servers",
                     "parameters": {
                         "instances": 2,
-                        "reason": "High {anomaly_data['severity']} anomaly detected",
+                        "reason": f"High {anomaly_data['severity']} anomaly detected",
                     },
                 },
                 headers=headers,
@@ -570,7 +570,7 @@ class TestEndToEndWorkflow:
         )
         assert response.status_code == 200
         token = response.json["tokenf"]
-        headers = {"Authorization": "Bearer {token}"}
+        headers = {"Authorization": f"Bearer {token}"}
 
         # Get system overview
         response = client.get("/monitoring/overview", headers=headers)

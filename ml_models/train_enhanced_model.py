@@ -125,7 +125,7 @@ if __name__ == "__main__":
     # Create logs directory if it doesn't exist
     os.makedirs("logs", exist_ok=True)
 
-    success = main()
+    success = main(
     if success:
         print("\n🚀 Ready to proceed to Phase 4!")
     else:

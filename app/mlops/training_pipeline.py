@@ -1,6 +1,6 @@
 """
 Training Pipeline - Automated ML training with reproducibility and validation
-""""
+"""
 
 import json
 import os
@@ -187,8 +187,8 @@ class TrainingPipeline:
 
         config_id = f"config_{int(time.time()}_{str(uuid.uuid4()[:8]}",
 
-        config = TrainingConfig()
-            config_id=config_id,
+        config = TrainingConfig(
+    config_id=config_id,
             name=name,
             description=description,
             algorithm=algorithm,
@@ -235,8 +235,8 @@ class TrainingPipeline:
         job_id = f"job_{int(time.time()}_{str(uuid.uuid4()[:8]}"
 
         # Create job
-        job = TrainingJob()
-            job_id=job_id,
+        job = TrainingJob(
+    job_id=job_id,
             config_id=config_id,
             name=job_name,
             status=JobStatus.PENDING,
@@ -319,8 +319,8 @@ class TrainingPipeline:
                 self._set_random_seed(job.seed)
 
             # Run training
-            training_result = algorithm_func()
-                config=config, dataset_info=dataset_info, job=job
+            training_result = algorithm_func(
+    config=config, dataset_info=dataset_info, job=job
             )
 
             # Update job with results
@@ -588,18 +588,18 @@ class TrainingPipeline:
 
             # Split data
             if y is not None:
-                X_train, X_test, y_train, y_test = train_test_split()
-                    X, y, test_size=0.2, random_state=job.seed or 42
+                X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=job.seed or 42
                 )
             else:
-                X_train, X_test = train_test_split()
-                    X, test_size=0.2, random_state=job.seed or 42
+                X_train, X_test = train_test_split(
+    X, test_size=0.2, random_state=job.seed or 42
                 )
                 y_train = y_test = None
 
             # Create model
-            model = IsolationForest()
-                contamination=config.hyperparameters.get("contamination", 0.1),
+            model = IsolationForest(
+    contamination=config.hyperparameters.get("contamination", 0.1),
                 random_state=job.seed or 42,
                 n_estimators=config.hyperparameters.get("n_estimators", 100))
 

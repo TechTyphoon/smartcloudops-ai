@@ -230,7 +230,7 @@ class FlaskAppDeployer:
         # Basic health check
         try:
             response = requests.get(
-                "http://{self.instance_ip}:{self.app_port}/health", timeout=10
+                f"http://{self.instance_ip}:{self.app_port}/health", timeout=10
             )
             health_results["basic_health"] = response.status_code == 200
             print(f"  ✅ Basic health: {response.status_code}")

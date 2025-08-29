@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 ML Service - Business Logic Layer
 Handles all machine learning model management, training, and operations
 """
@@ -25,7 +25,7 @@ class MLService:
                 "started_at": "2024-01-14T10:00:00Z",
                 "completed_at": "2024-01-14T10:30:47Z",
             },
-            {}
+            {
                 "id": 2,
                 "model_name": "remediation_recommender_v2",
                 "status": "running",
@@ -49,7 +49,7 @@ class MLService:
                 "created_at": "2024-01-10T08:00:00Z",
                 "updated_at": "2024-01-14T16:30:00Z",
             },
-            {}
+            {
                 "id": 2,
                 "name": "remediation_history_data",
                 "size": 8500,
@@ -83,7 +83,7 @@ class MLService:
                 "last_used": "2024-01-15T10:45:00Z",
                 "predictions_made": 1247,
             },
-            {}
+            {
                 "id": "remediation_recommender_v1",
                 "name": "Remediation Recommendation Model v1",
                 "type": "recommendation",
@@ -98,7 +98,7 @@ class MLService:
                 "last_used": "2024-01-15T10:30:00Z",
                 "predictions_made": 892,
             },
-            {}
+            {
                 "id": "anomaly_detector_v2",
                 "name": "Anomaly Detection Model v2",
                 "type": "anomaly_detection",

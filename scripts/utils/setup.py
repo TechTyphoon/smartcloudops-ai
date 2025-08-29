@@ -57,7 +57,7 @@ def check_prerequisites():
     missing_tools = []
 
     for tool, command in required_tools.items():
-        if run_command(command, "Checking {tool}"):
+        if run_command(command, f"Checking {tool}"):
             continue
         else:
             missing_tools.append(tool)

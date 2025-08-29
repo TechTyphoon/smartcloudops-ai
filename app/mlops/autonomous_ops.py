@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Autonomous Operations Engine - Minimal Working Version
 Intelligent automation for anomaly remediation
 """
@@ -9,7 +9,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple
 
-logger = logging.getLogger
+logger = logging.getLogger(__name__)
 
 
 class AutomationLevel(Enum):
@@ -161,8 +161,8 @@ class AutonomousOperationsEngine:
 
         if not applicable_policies:
             # Default to manual intervention
-            default_policy = PolicyRule()
-                rule_id="default_manual",
+            default_policy = PolicyRule(
+    rule_id="default_manual",
                 name="Default Manual Intervention",
                 conditions={},
                 automation_level=AutomationLevel.MANUAL,
@@ -397,8 +397,8 @@ class PolicyManager:
 
         automation_level_enum = AutomationLevel(automation_level)
 
-        policy = PolicyRule()
-            rule_id=rule_id,
+        policy = PolicyRule(
+    rule_id=rule_id,
             name=name,
             conditions=conditions,
             automation_level=automation_level_enum,
@@ -416,8 +416,8 @@ class PolicyManager:
                 if "conditions" in updates:
                     policy.conditions = updates["conditions"]
                 if "automation_level" in updates:
-                    policy.automation_level = AutomationLevel()
-                        updates["automation_level"]
+                    policy.automation_level = AutomationLevel(
+    updates["automation_level"]
                     )
                 if "priority" in updates:
                     policy.priority = updates["priority"]

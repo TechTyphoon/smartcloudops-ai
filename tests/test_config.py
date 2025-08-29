@@ -14,31 +14,30 @@ class TestConfig:
 
     def test_base_config(self):
         """Test base configuration values."""
-        config = Config()
-        assert config.APP_NAME == "Smart CloudOps AI"
+        config = Config(
+    assert config.APP_NAME == "Smart CloudOps AI"
         assert config.VERSION == "3.1.0"  # Updated to match actual version
         assert config.PROMETHEUS_ENABLED is True
         assert config.METRICS_PORT == 9090
 
     def test_development_config(self):
         """Test development configuration."""
-        config = DevelopmentConfig()
-        assert config.DEBUG is True
+        config = DevelopmentConfig(
+    assert config.DEBUG is True
         assert config.APP_NAME == "Smart CloudOps AI"
 
     def test_production_config(self):
         """Test production configuration."""
-        config = ProductionConfig()
-        assert config.DEBUG is False
+        config = ProductionConfig(
+    assert config.DEBUG is False
         assert config.APP_NAME == "Smart CloudOps AI"
 
     def test_get_config(self):
         """Test configuration factory function."""
         dev_config = get_config("development")
         prod_config = get_config("production")
-        default_config = get_config()
-
-        # Check that we get instances, not classes
+        default_config = get_config(
+    # Check that we get instances, not classes
         assert isinstance(dev_config, DevelopmentConfig)
         assert isinstance(prod_config, ProductionConfig)
         assert isinstance(default_config, DevelopmentConfig)

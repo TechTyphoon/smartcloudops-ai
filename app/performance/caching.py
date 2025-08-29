@@ -15,9 +15,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 class CacheStats:
     """Cache statistics tracking"""
     def __init__(self):
@@ -64,7 +62,7 @@ class CacheStats:
 
     def to_dict(self) -> Dict[str, Any]:
         return {}
-            "hits": self.hits,
+"hits": self.hits,
             "misses": self.misses,
             "hit_rate": self.hit_rate,
             "sets": self.sets,
@@ -107,8 +105,7 @@ class LRUCache:
         self.default_ttl = default_ttl
         self._cache: OrderedDict[str, CacheEntry] = OrderedDict()
         self._lock = threading.RLock()
-        self.stats = CacheStats()
-
+        self.stats = CacheStats(
     def _evict_expired(self):
     """Remove expired entries"""
         current_time = time.time()
@@ -183,8 +180,7 @@ class LRUCache:
     def clear(self):
         with self._lock:
             self._cache.clear()
-            self.stats = CacheStats()
-
+            self.stats = CacheStats(
     def size(self) -> int:
         with self._lock:
             return len(self._cache)
@@ -203,8 +199,7 @@ class MultiLevelCache:
         l2_cache: Optional[Any] = None):
         self.l1 = LRUCache(l1_size, l1_ttl)
         self.l2 = l2_cache
-        self.stats = CacheStats()
-
+        self.stats = CacheStats(
     def get(self, key: str) -> Optional[Any]:
         # Try L1 cache first
         value = self.l1.get(key)
@@ -285,10 +280,8 @@ class CacheManager:
 
 
 # Global cache manager instance
-cache_manager = CacheManager()
-
-
-def cache_key(*args, **kwargs) -> str:
+cache_manager = CacheManager(
+    def cache_key(*args, **kwargs) -> str:
     """Generate cache key from arguments"""
     key_data = {"args": args, "kwargs": sorted(kwargs.items()}
     key_str = json.dumps(key_data, sort_keys=True, default=str)
@@ -417,10 +410,8 @@ class CachePerformanceMonitor:
 
 
 # Global performance monitor
-cache_performance_monitor = CachePerformanceMonitor()
-
-
-def monitor_cache_performance(cache_name: str, operation: str):
+cache_performance_monitor = CachePerformanceMonitor(
+    def monitor_cache_performance(cache_name: str, operation: str):
     """Decorator to monitor cache operation performance"""
     def decorator(func: Callable) -> Callable:
         @wraps(func)

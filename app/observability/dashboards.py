@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Grafana Dashboard Configurations - Minimal Working Version
 Pre-configured dashboards for SmartCloudOps AI monitoring
 """
@@ -8,10 +8,10 @@ import os
 from typing import Any, Dict, List
 
 
-def create_overview_dashboard -> Dict[str, Any]:
+def create_overview_dashboard() -> Dict[str, Any]:
     """Create main overview dashboard configuration."""
-    return {}
-        "dashboard": {}
+    return {
+        "dashboard": {
             "id": None,
             "title": "SmartCloudOps AI - Overview",
             "tags": ["smartcloudops", "overview"],
@@ -41,7 +41,7 @@ def create_overview_dashboard -> Dict[str, Any]:
                     },
                     "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
                 },
-                {}
+                {
                     "id": 2,
                     "title": "Active Users",
                     "type": "stat",
@@ -50,24 +50,24 @@ def create_overview_dashboard -> Dict[str, Any]:
                     ],
                     "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
                 },
-                {}
+                {
                     "id": 3,
                     "title": "HTTP Request Rate",
                     "type": "graph",
                     "targets": []
                         {}
                             "expr": "rate(flask_requests_total[5m])",
-                            "legendFormat": "{{method}} {{endpoint}}",
+                            "legendFormat": f"{{method}} {{endpoint}}",
                         },
-                        {}
+                        {
                             "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m])",
                             "legendFormat": "50th Percentile",
                         },
-                        {}
+                        {
                             "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])",
                             "legendFormat": "95th Percentile",
                         },
-                        {}
+                        {
                             "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])",
                             "legendFormat": "99th Percentile",
                         },
@@ -103,19 +103,19 @@ def create_anomaly_dashboard() -> Dict[str, Any]:
                     ],
                     "gridPos": {"h": 6, "w": 8, "x": 0, "y": 0},
                 },
-                {}
+                {
                     "id": 2,
                     "title": "Anomalies by Severity",
                     "type": "piechart",
                     "targets": []
                         {}
                             "expr": "sum by (severity) (increase(anomalies_detected_total[1h])",
-                            "legendFormat": "{{severity}}",
+                            "legendFormat": f"{{severity}}",
                         }
                     ],
                     "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0},
                 },
-                {}
+                {
                     "id": 3,
                     "title": "Detection Performance",
                     "type": "stat",
@@ -127,30 +127,30 @@ def create_anomaly_dashboard() -> Dict[str, Any]:
                     ],
                     "gridPos": {"h": 6, "w": 8, "x": 16, "y": 0},
                 },
-                {}
+                {
                     "id": 4,
                     "title": "Anomaly Detection Rate",
                     "type": "graph",
                     "targets": []
                         {}
                             "expr": "rate(ml_anomalies_detected[5m])",
-                            "legendFormat": "{{severity}} anomalies/sec",
+                            "legendFormat": f"{{severity}} anomalies/sec",
                         }
                     ],
                     "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
                 },
-                {}
+                {
                     "id": 5,
                     "title": "ML Model Performance",
                     "type": "graph",
                     "targets": []
                         {}
                             "expr": "ml_model_accuracy",
-                            "legendFormat": "{{model_name}} Accuracy",
+                            "legendFormat": f"{{model_name}} Accuracy",
                         },
-                        {}
+                        {
                             "expr": "ml_model_precision",
-                            "legendFormat": "{{model_name}} Precision",
+                            "legendFormat": f"{{model_name}} Precision",
                         },
                     ],
                     "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
@@ -184,7 +184,7 @@ def create_remediation_dashboard() -> Dict[str, Any]:
                     ],
                     "gridPos": {"h": 6, "w": 8, "x": 0, "y": 0},
                 },
-                {}
+                {
                     "id": 2,
                     "title": "Success Rate",
                     "type": "stat",
@@ -208,7 +208,7 @@ def create_remediation_dashboard() -> Dict[str, Any]:
                     },
                     "gridPos": {"h": 6, "w": 8, "x": 8, "y": 0},
                 },
-                {}
+                {
                     "id": 3,
                     "title": "Average Duration",
                     "type": "stat",
@@ -220,26 +220,26 @@ def create_remediation_dashboard() -> Dict[str, Any]:
                     ],
                     "gridPos": {"h": 6, "w": 8, "x": 16, "y": 0},
                 },
-                {}
+                {
                     "id": 4,
                     "title": "Actions by Type",
                     "type": "bargauge",
                     "targets": []
                         {}
                             "expr": "sum by (action_type) (increase(remediation_actions_total[1h])",
-                            "legendFormat": "{{action_type}}",
+                            "legendFormat": f"{{action_type}}",
                         }
                     ],
                     "gridPos": {"h": 8, "w": 12, "x": 0, "y": 6},
                 },
-                {}
+                {
                     "id": 5,
                     "title": "Action Status Distribution",
                     "type": "piechart",
                     "targets": []
                         {}
                             "expr": "sum by (status) (increase(remediation_actions_total[1h])",
-                            "legendFormat": "{{status}}",
+                            "legendFormat": f"{{status}}",
                         }
                     ],
                     "gridPos": {"h": 8, "w": 12, "x": 12, "y": 6},
@@ -266,11 +266,11 @@ def create_performance_dashboard() -> Dict[str, Any]:
                     "title": "Memory Usage",
                     "type": "graph",
                     "targets": []
-                        {"expr": "memory_usage_bytes", "legendFormat": "{{type}}"}
+                        {"expr": "memory_usage_bytes", "legendFormat": f"{{type}}"}
                     ],
                     "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
                 },
-                {}
+                {
                     "id": 2,
                     "title": "CPU Usage",
                     "type": "graph",
@@ -279,7 +279,7 @@ def create_performance_dashboard() -> Dict[str, Any]:
                     ],
                     "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
                 },
-                {}
+                {
                     "id": 3,
                     "title": "Database Performance",
                     "type": "graph",
@@ -288,25 +288,25 @@ def create_performance_dashboard() -> Dict[str, Any]:
                             "expr": "histogram_quantile(0.95, rate(database_query_duration_seconds_bucket[5m])",
                             "legendFormat": "95th Percentile Query Time",
                         },
-                        {}
+                        {
                             "expr": "database_connections_total",
                             "legendFormat": "Active Connections",
                         },
                     ],
                     "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
                 },
-                {}
+                {
                     "id": 4,
                     "title": "Cache Performance",
                     "type": "graph",
                     "targets": []
                         {}
                             "expr": "cache_hit_rate",
-                            "legendFormat": "Hit Rate % ({{cache_type}})",
+                            "legendFormat": f"Hit Rate % ({{cache_type}})",
                         },
-                        {}
+                        {
                             "expr": "cache_miss_rate",
-                            "legendFormat": "Miss Rate % ({{cache_type}})",
+                            "legendFormat": f"Miss Rate % ({{cache_type}})",
                         },
                     ],
                     "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
@@ -337,19 +337,19 @@ def create_business_dashboard() -> Dict[str, Any]:
                             "expr": "increase(anomalies_detected_total[24h])",
                             "legendFormat": "Anomalies Detected (24h)",
                         },
-                        {}
+                        {
                             "expr": "increase(remediation_success_total[24h])",
                             "legendFormat": "Successful Remediations (24h)",
                         },
                         {"expr": "active_users_total", "legendFormat": "Active Users"},
-                        {}
+                        {
                             "expr": "increase(ml_model_predictions_total[24h])",
                             "legendFormat": "ML Predictions (24h)",
                         },
                     ],
                     "gridPos": {"h": 6, "w": 24, "x": 0, "y": 0},
                 },
-                {}
+                {
                     "id": 2,
                     "title": "User Activity Trends",
                     "type": "graph",
@@ -358,14 +358,14 @@ def create_business_dashboard() -> Dict[str, Any]:
                             "expr": "rate(user_login_total[1h])",
                             "legendFormat": "Logins per hour",
                         },
-                        {}
+                        {
                             "expr": "active_users_total",
                             "legendFormat": "Active Users",
                         },
                     ],
                     "gridPos": {"h": 8, "w": 12, "x": 0, "y": 6},
                 },
-                {}
+                {
                     "id": 3,
                     "title": "System Effectiveness",
                     "type": "graph",
@@ -374,7 +374,7 @@ def create_business_dashboard() -> Dict[str, Any]:
                             "expr": "rate(anomalies_resolved_total[5m]) / rate(anomalies_detected_total[5m]) * 100",
                             "legendFormat": "Resolution Rate %",
                         },
-                        {}
+                        {
                             "expr": "rate(false_positive_total[5m]) / rate(anomalies_detected_total[5m]) * 100",
                             "legendFormat": "False Positive Rate %",
                         },
@@ -426,7 +426,7 @@ def create_alerting_rules() -> Dict[str, Any]:
                 "rules": []
                     {}
                         "alert": "HighAnomalyRate",
-                        "expr": 'rate(anomalies_detected_total{severity="high"}[5m]) > 0.1',
+                        "expr": f'rate(anomalies_detected_total{severity="high"}[5m]) > 0.1',
                         "for": "2m",
                         "labels": {"severity": "warning"},
                         "annotations": {}
@@ -434,9 +434,9 @@ def create_alerting_rules() -> Dict[str, Any]:
                             "description": "More than 0.1 high-severity anomalies per second detected over the last 5 minutes",
                         },
                     },
-                    {}
+                    {
                         "alert": "RemediationFailureRate",
-                        "expr": 'rate(remediation_actions_total{status="failure"}[5m]) / rate(remediation_actions_total[5m]) > 0.2',
+                        "expr": f'rate(remediation_actions_total{status="failure"}[5m]) / rate(remediation_actions_total[5m]) > 0.2',
                         "for": "5m",
                         "labels": {"severity": "critical"},
                         "annotations": {}
@@ -444,7 +444,7 @@ def create_alerting_rules() -> Dict[str, Any]:
                             "description": "More than 20% of remediation actions are failing",
                         },
                     },
-                    {}
+                    {
                         "alert": "HighResponseTime",
                         "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]) > 1.0",
                         "for": "3m",
@@ -454,7 +454,7 @@ def create_alerting_rules() -> Dict[str, Any]:
                             "description": "95th percentile response time is above 1 second",
                         },
                     },
-                    {}
+                    {
                         "alert": "ApplicationDown",
                         "expr": "app_health_status != 0",
                         "for": "1m",
@@ -478,22 +478,22 @@ def get_dashboard_list() -> List[Dict[str, str]]:
             "title": "SmartCloudOps AI - Overview",
             "description": "Main overview dashboard with system health and key metrics",
         },
-        {}
+        {
             "name": "anomaly_detection",
             "title": "SmartCloudOps AI - Anomaly Detection",
             "description": "Anomaly detection performance and ML model metrics",
         },
-        {}
+        {
             "name": "remediation",
             "title": "SmartCloudOps AI - Remediation",
             "description": "Automated remediation actions and success rates",
         },
-        {}
+        {
             "name": "performance",
             "title": "SmartCloudOps AI - Performance",
             "description": "System performance and infrastructure monitoring",
         },
-        {}
+        {
             "name": "business_metrics",
             "title": "SmartCloudOps AI - Business Metrics",
             "description": "Business KPIs and user activity metrics",

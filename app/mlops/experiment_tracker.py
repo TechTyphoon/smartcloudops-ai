@@ -127,10 +127,10 @@ class ExperimentTracker:
         description: str = ",
         objective: str = "minimize",
         tags: List[str] = None) -> Experiment:
-    """Create a new experiment"""
-        experiment_id = f"exp_{int(time.time()}_{str(uuid.uuid4()[:8]}"
+        """Create a new experiment"""
+        experiment_id = f"exp_{int(time.time())}_{str(uuid.uuid4()[:8])}"
 
-        experiment = Experiment()
+        experiment = Experiment(
             experiment_id=experiment_id,
             name=name,
             description=description,
@@ -157,8 +157,8 @@ class ExperimentTracker:
 
         run_id = f"run_{int(time.time()}_{str(uuid.uuid4()[:8]}"
 
-        run = ExperimentRun()
-            run_id=run_id,
+        run = ExperimentRun(
+    run_id=run_id,
             experiment_id=experiment_id,
             name=run_name,
             status=ExperimentStatus.RUNNING,
@@ -357,9 +357,7 @@ class ExperimentTracker:
 
 
 # Global instance for easy access
-experiment_tracker = ExperimentTracker()
-
-
-def get_experiment_tracker() -> ExperimentTracker:
+experiment_tracker = ExperimentTracker(
+    def get_experiment_tracker() -> ExperimentTracker:
     """Get the global experiment tracker instance."""
     return experiment_tracker

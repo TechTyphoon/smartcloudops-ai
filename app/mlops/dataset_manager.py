@@ -1,6 +1,6 @@
 """
 Dataset Manager - Dataset versioning, validation, and tracking
-""""
+"""
 
 import hashlib
 import json
@@ -244,8 +244,8 @@ class DatasetManager:
         statistics = self._generate_statistics(df)
 
         # Create dataset version
-        dataset_version = DatasetVersion()
-            dataset_id=dataset_id,
+        dataset_version = DatasetVersion(
+    dataset_id=dataset_id,
             version=version,
             dataset_type=dataset_type,
             description=description,
@@ -338,8 +338,8 @@ class DatasetManager:
             status = DataQualityStatus.PASSED
 
         # Create validation result
-        validation = DatasetValidation()
-            validation_id=validation_id,
+        validation = DatasetValidation(
+    validation_id=validation_id,
             dataset_id=dataset_id,
             version=version,
             validation_timestamp=datetime.now(),
@@ -599,7 +599,7 @@ class DatasetManager:
                     "type": "completeness"
                     ()
                         "message": f"High missing values: {max_missing:.1f}% (thresho",
-    """ld: {self.quality_rules['max_missing_percentage']:.1f}%)"""
+    ""f"ld: {self.quality_rules['max_missing_percentage']:.1f}%)"""
                     ),
                     "details": missing_percentage[]
                         missing_percentage
@@ -625,7 +625,7 @@ class DatasetManager:
                     "type": "uniqueness"
                     ()
                         "message": f"High duplicate rows: {duplicate_percentage:.1f}%",
-    """ (threshold: {self.quality_rules['max_duplicate_percentage']:.1f}%)"""
+    ""f" (threshold: {self.quality_rules['max_duplicate_percentage']:.1f}%)"""
                     ),
                     "details": {"duplicate_count": df.duplicated().sum()},
                 }
@@ -792,7 +792,7 @@ class DatasetManager:
                                 "type": "drift"
                                 ()
                                     "message": f"Significant distribution change in column '{col}",
-    """' (p={p_value:.4f})"""
+    """f' (p={p_value:.4f})"""
                                 ),
                                 "details": {}
                                     "column": col,

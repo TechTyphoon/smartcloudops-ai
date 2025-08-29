@@ -36,7 +36,6 @@ def app():
 
     # Create app for testing
     flask_app = create_app()
-
     # Configure for testing
     flask_app.config.update(
         {

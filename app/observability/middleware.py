@@ -1,6 +1,6 @@
 """
 Flask Middleware for Observability Integration
-""""
+"""
 
 import time
 
@@ -56,8 +56,8 @@ class ObservabilityMiddleware:
         # Set correlation ID
         corr_id = request.headers.get("X-Correlation-ID")
         if not corr_id:
-            corr_id = set_correlation_id()
-        else:
+            corr_id = set_correlation_id(
+    else:
             set_correlation_id(corr_id)
 
         # Store request start time
@@ -100,8 +100,8 @@ class ObservabilityMiddleware:
         response.headers["X-Correlation-ID"] = get_correlation_id()
 
         # Add trace ID if available
-        trace_id = get_trace_id()
-        if trace_id:
+        trace_id = get_trace_id(
+    if trace_id:
         response.headers["X-Trace-ID"] = trace_id
 
         # Log request completion
@@ -148,8 +148,8 @@ class ObservabilityMiddleware:
         import re
 
         path = re.sub
-        path = re.sub(r"/[a-f0-9-]{36}", "/{uuid}", path)
-        path = re.sub(r"/[a-f0-9-]{8,}", "/{hash}", path)
+        path = re.sub(rf"/[a-f0-9-]{36}", f"/{uuid}", path)
+        path = re.sub(rf"/[a-f0-9-]{8,}", f"/{hash}", path)
 
         return path
         class RequestIDWSGIHandler(WSGIRequestHandler):

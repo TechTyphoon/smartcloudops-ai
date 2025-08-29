@@ -21,8 +21,7 @@ class TestAnomalyService:
     
     def setup_method(self):
         """Set up test fixtures before each test method."""
-        self.service = AnomalyService()
-    
+        self.service = AnomalyService(
     def test_service_initialization(self):
         """Test that AnomalyService initializes correctly."""
         assert self.service is not None
@@ -293,8 +292,7 @@ class TestAnomalyServiceEdgeCases:
     
     def setup_method(self):
         """Set up test fixtures before each test method."""
-        self.service = AnomalyService()
-    
+        self.service = AnomalyService(
     def test_pagination_edge_cases(self):
         """Test pagination edge cases."""
         # Test page beyond available data

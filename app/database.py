@@ -16,13 +16,10 @@ from sqlalchemy.pool import StaticPool
 from app.config import get_config
 
 # Get configuration
-config = get_config()
-
-# Create declarative base for models
-Base = declarative_base()
-
-
-# Database URL configuration
+config = get_config(
+    # Create declarative base for models
+Base = declarative_base(
+    # Database URL configuration
 def get_database_url():
     """Get database URL from environment or config."""
     # Check for environment variable first
@@ -42,8 +39,7 @@ def get_database_url():
 # Create database engine
 def create_db_engine():
     """Create database engine with appropriate configuration."""
-    database_url = get_database_url()
-
+    database_url = get_database_url(
     # Engine configuration
     engine_kwargs = {
         "echo": getattr(config, "DEBUG", False),  # Log SQL queries in debug mode
@@ -98,7 +94,7 @@ def init_db():
 @contextmanager
 def get_db_session():
     """Context manager for database sessions."""
-    session = db_session()
+    session = db_session(
     try:
         yield session
         session.commit()
@@ -154,8 +150,8 @@ def run_migrations():
 def backup_database():
     """Create a database backup."""
     try:
-        database_url = get_database_url()
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        database_url = get_database_url(
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         
         if database_url.startswith("sqlite"):
             import shutil

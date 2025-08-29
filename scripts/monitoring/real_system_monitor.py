@@ -156,12 +156,12 @@ if __name__ == "__main__":
     print("=" * 50)
 
     # Real system metrics
-    real_metrics = get_real_system_metrics()
+    real_metrics = get_real_system_metrics(
     print("📊 Real System Metrics:")
-    print(f"  CPU Usage: {real_metrics['cpu']['usage_percentf']}%")
+    print(f"  CPU Usage: {real_metrics['cpu']['usage_percent']}%")
     print(
-        f"  Memory Usage: {real_metrics['memory']['usage_percent']}% (
-            {real_metrics['memory']['used_gbf']:.1f}GB/{real_metrics['memory']['total_gb']:.1f}GB)"
+        f"  Memory Usage: {real_metrics['memory']['usage_percent']}% ("
+        f"{real_metrics['memory']['used_gb']:.1f}GB/{real_metrics['memory']['total_gb']:.1f}GB)"
     )
     print(
         f"  Disk Usage: {real_metrics['disk']['usage_percentf']}% (
@@ -172,7 +172,7 @@ if __name__ == "__main__":
     print(f"  Uptime: {real_metrics['system']['uptime_hours']:.1f} hours")
 
     print("\n🐳 Docker Status:")
-    docker_stats = get_real_docker_stats()
+    docker_stats = get_real_docker_stats(
     if isinstance(docker_stats, list):
         for container in docker_stats:
             print(
@@ -183,7 +183,7 @@ if __name__ == "__main__":
         print(f"  {docker_stats}")
 
     print("\n🌐 Flask App Status:")
-    flask_stats = get_real_flask_app_stats()
+    flask_stats = get_real_flask_app_stats(
     if flask_stats["is_running"]:
         for proc in flask_stats["flask_processes"]:
             print(

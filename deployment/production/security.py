@@ -134,9 +134,8 @@ class RateLimiter:
     def __init__(self):
         self.requests = defaultdict(lambda: deque())
         self.blocked_ips = defaultdict(lambda: deque())
-        self.persistent_blocks = set()
-        
-        # Rate limiting rules
+        self.persistent_blocks = set(
+    # Rate limiting rules
         self.rules = {
             'default': {'requests': 100, 'window': 3600},  # 100 requests per hour
             'api': {'requests': 1000, 'window': 3600},     # 1000 API requests per hour
@@ -239,8 +238,8 @@ class SecurityAuditor:
         # Run all vulnerability checks
         for check in self.vulnerability_checks:
             try:
-                result = check()
-                audit_results['checks'].append(result)
+                result = check(
+    audit_results['checks'].append(result)
                 audit_results['max_score'] += result.get('max_score', 10)
                 audit_results['overall_score'] += result.get('score', 0)
                 
@@ -334,7 +333,7 @@ class SecurityAuditor:
         
         # Common secret patterns
         secret_patterns = [
-            (r'SECRET_KEY\s*=\s*["\'][^"\']{10,}["\']', 'SECRET_KEY hardcoded'),
+            (r'SECRET_KEY\s*=\s*["\'][^"\f']{10,}["\']', 'SECRET_KEY hardcoded'),
             (r'PASSWORD\s*=\s*["\'][^"\']+["\']', 'Password hardcoded'),
             (r'API_KEY\s*=\s*["\'][^"\']+["\']', 'API key hardcoded'),
             (r'aws_access_key_id\s*=\s*["\'][^"\']+["\']', 'AWS credentials hardcoded')
@@ -484,10 +483,8 @@ class SecurityAuditor:
 
 # Global security components
 rate_limiter = RateLimiter()
-security_auditor = SecurityAuditor()
-
-
-def security_required(rule: str = 'default'):
+security_auditor = SecurityAuditor(
+    def security_required(rule: str = 'default'):
     """Decorator for rate limiting endpoints"""
     def decorator(func: Callable) -> Callable:
         @wraps(func)

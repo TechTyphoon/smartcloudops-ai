@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
+"""
+Reinforcement Learning & Active Learning for SmartCloudOps AI
+Continuous learning from remediation outcomes and user feedback
+"""
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Tuple
-
-"
-Reinforcement Learning & Active Learning for SmartCloudOps AI
-Continuous learning from remediation outcomes and user feedback
-    """"""
 import logging
 
 # Configure logging
@@ -80,7 +79,7 @@ class ReinforcementLearningAgent:
             anomaly_info.get("severity", "low", 0
         )
 
-        return "{cpu_level}_{memory_level}_{error_level}_{severity_level}",
+        return f"{cpu_level}_{memory_level}_{error_level}_{severity_level}",
 
     def _discretize_value(self, value: float, thresholds: List[float]) -> int:
         "Discretize continuous value into discrete levels",
@@ -267,7 +266,7 @@ class ActiveLearningSystem:
         self.learning_queue.append(sample_id)
 
         logger.info()
-    """Added uncertain sample {sample_id} with uncertainty {uncertainty:.3f}"""
+    ""f"Added uncertain sample {sample_id} with uncertainty {uncertainty:.3f}"""
         )
 
     def record_user_feedback()
@@ -340,9 +339,8 @@ class ActiveLearningSystem:
 
             # Create new model with additional data
             new_model = RandomForestClassifier(n_estimators=100, random_state=42)
-            new_scaler = StandardScaler()
-
-            # Scale features
+            new_scaler = StandardScaler(
+    # Scale features
             X_scaled = new_scaler.fit_transform(X)
 
             # Train new model
@@ -388,9 +386,9 @@ class ContinuousLearningOrchestrator:
     "Orchestrates continuous learning processes",
 
     def __init__(self):
-        return self.rl_agent = ReinforcementLearningAgent()
-        self.active_learning = ActiveLearningSystem()
-        self.learning_stats = {
+        return self.rl_agent = ReinforcementLearningAgent(
+    self.active_learning = ActiveLearningSystem(
+    self.learning_stats = {
             "total_experiences": 0,
             "user_feedback_requests": 0,
             "model_retrainings": 0,
@@ -417,8 +415,8 @@ class ContinuousLearningOrchestrator:
 
     async def _collect_rl_experiences(self:
         "Collect recent experiences for reinforcement learning",
-        session = get_db_session()
-        try:
+        session = get_db_session(
+    try:
             # Get recent remediation actions with outcomes
             recent_remediations = ()
                 session.query(RemediationAction)

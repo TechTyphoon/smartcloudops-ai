@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
-from datetime import datetime
-from typing import Optional
-
-"
+"""
 Smart CloudOps AI - Safety Manager 
 Implements safety mechanisms for auto-remediation actions
-    """"""
+"""
+from datetime import datetime
+from typing import Optional
 import logging
 import os
 from typing import Dict, List
 
 import boto3
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 class SafetyManager:
     """
     Manages safety mechanisms for auto-remediation actions.
@@ -46,7 +43,7 @@ class SafetyManager:
 
         logger.info()
             "Safety manager initialized: max_actions_per_hour=",
-    """{max_actions_per_hour}, cooldown_minutes={cooldown_minutes}"""
+    ""f"{max_actions_per_hour}, cooldown_minutes={cooldown_minutes}"""
         )
 
     def check_safety_conditions()
@@ -94,7 +91,7 @@ class SafetyManager:
             logger.error(f"Error in safety check: {e}")
             return {}
                 "safe_to_proceed": False,
-                "reason": "Safety check error: {str(e)}",
+                "reason": f"Safety check error: {str(e)}",
                 "timestamp": datetime.now().isoformat(),
             }
 
@@ -112,14 +109,14 @@ class SafetyManager:
                 return {}
                     "safe": False,
                     "reason": "Cooldown period active. Wait ",
-    """{remaining_time.seconds // 60} more minutes"""
+    ""f"{remaining_time.seconds // 60} more minutes"""
                 }
 
             return {"safe": True, "reason": "Cooldown period passed"}
 
         except Exception as e:
             logger.error(f"Error checking cooldown: {e}")
-            return {"safe": False, "reason": "Cooldown check error: {str(e)}"}
+            return {"safe": False, "reason": f"Cooldown check error: {str(e)}"}
 
     def _check_rate_limit(self) -> Dict[str, any]:
         "Check if we're within the hourly action limit.",
@@ -138,20 +135,20 @@ class SafetyManager:
                 return {}
                     "safe": False,
                     "reason": ()
-                        "Rate limit exceeded. {current_count}/",
-                        "{self.max_actions_per_hour} actions in the last hour",
+                        f"Rate limit exceeded. {current_count}/",
+                        f"{self.max_actions_per_hour} actions in the last hour",
                 }
 
             return {}
                 "safe": True,
                 "reason": ()
-                    "Rate limit OK. {current_count}/",
-                    "{self.max_actions_per_hour} actions in the last hour",
+                    f"Rate limit OK. {current_count}/",
+                    f"{self.max_actions_per_hour} actions in the last hour",
             }
 
         except Exception as e:
             logger.error(f"Error checking rate limit: {e}")
-            return {"safe": False, "reason": "Rate limit check error: {str(e)}"}
+            return {"safe": False, "reason": f"Rate limit check error: {str(e)}"}
 
     def _check_approval_required()
         self, severity: str, actions: List[Dict]
@@ -170,8 +167,8 @@ class SafetyManager:
                 # In a real implementation, this would trigger a manual approval
                 # workflow
                 logger.warning()
-                    "Approval required for {severity} severity actions: ",
-    """{[a['action'] for a in actions]}"""
+                    f"Approval required for {severity} severity actions: ",
+    ""f"{[a['action'] for a in actions]}"""
                 )
                 return {}
                     "safe": True,  # Auto-approved for demo
@@ -189,7 +186,7 @@ class SafetyManager:
 
         except Exception as e:
             logger.error(f"Error checking approval: {e}")
-            return {"safe": False, "reason": "Approval check error: {str(e)}"}
+            return {"safe": False, "reason": f"Approval check error: {str(e)}"}
 
     def _get_approval_setting(self) -> bool:
         "Get approval setting from SSM parameter.",
@@ -228,7 +225,7 @@ class SafetyManager:
 
         except Exception as e:
             logger.error(f"Error checking action safety: {e}")
-            return {"safe": False, "reason": "Action safety check error: {str(e)}"}
+            return {"safe": False, "reason": f"Action safety check error: {str(e)}"}
 
     def record_action(self, action: Dict, severity: str):
         "Record an action for rate limiting and cooldown tracking.",
@@ -243,7 +240,7 @@ class SafetyManager:
             self.last_action_time = datetime.now()
 
             logger.info()
-    """Recorded action: {action.get('action')} with severity {severity}"""
+    ""f"Recorded action: {action.get('action')} with severity {severity}"""
             )
 
         except Exception as e:

@@ -54,8 +54,8 @@ class TestMLflowManagerEnhanced:
             'ENVIRONMENT': 'test',
             'APP_VERSION': '2.0.0'
         }):
-            manager = MLflowManager()
-            assert manager.tracking_uri == 'http://env:6000'
+            manager = MLflowManager(
+    assert manager.tracking_uri == 'http://env:6000'
             assert manager.registry_uri == 'sqlite:///env_test.db'
     
     def test_get_experiment_info(self):
@@ -337,18 +337,16 @@ class TestMLflowManagerGlobalInstance:
     
     def test_get_mlflow_manager(self):
         """Test getting global MLflow manager instance."""
-        manager1 = get_mlflow_manager()
-        manager2 = get_mlflow_manager()
-        
-        # Should return the same instance
+        manager1 = get_mlflow_manager(
+    manager2 = get_mlflow_manager(
+    # Should return the same instance
         assert manager1 is manager2
         assert isinstance(manager1, MLflowManager)
     
     def test_global_manager_configuration(self):
         """Test global manager has correct configuration."""
-        manager = get_mlflow_manager()
-        
-        assert manager.experiment_name == "smartcloudops-ai"
+        manager = get_mlflow_manager(
+    assert manager.experiment_name == "smartcloudops-ai"
         assert manager.enable_fallback_logging is True
 
 

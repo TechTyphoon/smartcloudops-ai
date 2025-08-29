@@ -21,8 +21,7 @@ class TestRemediationService:
     
     def setup_method(self):
         """Set up test fixtures before each test method."""
-        self.service = RemediationService()
-    
+        self.service = RemediationService(
     def test_service_initialization(self):
         """Test that RemediationService initializes correctly."""
         assert self.service is not None
@@ -309,8 +308,7 @@ class TestRemediationServiceEdgeCases:
     
     def setup_method(self):
         """Set up test fixtures before each test method."""
-        self.service = RemediationService()
-    
+        self.service = RemediationService(
     def test_pagination_edge_cases(self):
         """Test pagination edge cases."""
         # Test page beyond available data

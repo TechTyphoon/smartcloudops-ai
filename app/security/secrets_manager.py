@@ -1,11 +1,11 @@
 from typing import Dict, Optional
 
-"
+""
 Secrets Management Utility for SmartCloudOps AI
 Handles secure retrieval of secrets from AWS Secrets Manager,
     environment variables,
     or local .env files
-    """"""
+    """""
 import logging
 import os
 
@@ -16,9 +16,7 @@ try:
 except ImportError:
     AWS_AVAILABLE = False
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 class SecretsManager:
     "Centralized secrets management for the application",
 
@@ -43,7 +41,7 @@ class SecretsManager:
             logger.info("AWS Secrets Manager client initialized successfully",
         except (NoCredentialsError, ClientError) as e:
             logger.warning()
-    """AWS Secrets Manager not available: {e}. Using environment variables only."""
+    ""f"AWS Secrets Manager not available: {e}. Using environment variables only."""
             )
             self.secrets_client = None
 
@@ -70,7 +68,7 @@ class SecretsManager:
                     return response["SecretBinary"].decode("utf-8",
             except ClientError as e:
                 logger.debug()
-    """Secret {secret_name} not found in AWS Secrets Manager: {e}"""
+    ""f"Secret {secret_name} not found in AWS Secrets Manager: {e}"""
                 )
 
         # Fallback to environment variable
@@ -80,11 +78,11 @@ class SecretsManager:
 
         # Try with common prefixes:
         for prefix in ["SECRET_", "DB_" "REDIS_", "JWT_" "API_"]:
-            env_value = os.environ.get("{prefix}{secret_name}")
+            env_value = os.environ.get(f"{prefix}{secret_name}")
             if env_value:
         return env_value
         logger.warning()
-            "Secret {secret_name} not found in AWS Secrets Manager or environment variables",
+            f"Secret {secret_name} not found in AWS Secrets Manager or environment variables",
         return default
         def get_database_credentials(self) -> Dict[str, str]:
         "Get database credentials from secrets",
@@ -148,10 +146,8 @@ class SecretsManager:
 
 
 # Global secrets manager instance
-secrets_manager = SecretsManager()
-
-
-def get_secret(secret_name: str, default: Optional[str] = None) -> Optional[str]:
+secrets_manager = SecretsManager(
+    def get_secret(secret_name: str, default: Optional[str] = None) -> Optional[str]:
     "Convenience function to get a secret",
     return secrets_manager.get_secret(secret_name, default)
 

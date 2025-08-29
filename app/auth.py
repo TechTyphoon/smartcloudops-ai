@@ -25,7 +25,7 @@ class AuthManager:
         now = datetime.now(timezone.utc)
 
         # Access token (short-lived)
-        access_token_payload = {
+        access_token_payload = {}
             "user_id": user_id,
             "username": username,
             "role": role,
@@ -35,7 +35,7 @@ class AuthManager:
         }
 
         # Refresh token (long-lived)
-        refresh_token_payload = {
+        refresh_token_payload = {}
             "user_id": user_id,
             "username": username,
             "type": "refresh",
@@ -43,14 +43,14 @@ class AuthManager:
             "exp": now + timedelta(hours=self.token_expiry),
         }
 
-        access_token = jwt.encode(
+        access_token = jwt.encode()
             access_token_payload, self.secret_key, algorithm=self.algorithm
         )
-        refresh_token = jwt.encode(
+        refresh_token = jwt.encode()
             refresh_token_payload, self.secret_key, algorithm=self.algorithm
         )
 
-        return {
+        return {}
             "access_token": access_token,
             "refresh_token": refresh_token,
             "token_type": "Bearer",
@@ -76,7 +76,7 @@ class AuthManager:
     def authenticate_user(self, username: str, password: str):
         """Authenticate user with username and password."""
         with get_db_session() as session:
-            user = (
+            user = ()
                 session.query(User).filter_by(username=username, is_active=True).first()
             )
 
@@ -89,7 +89,7 @@ class AuthManager:
         with get_db_session() as session:
             return session.query(User).filter_by(id=user_id, is_active=True).first()
 
-    def log_audit_event(
+    def log_audit_event()
         self,
         user_id: int,
         action: str,
@@ -107,18 +107,16 @@ class AuthManager:
                     resource_id=resource_id,
                     details=details,
                     ip_address=request.remote_addr,
-                    user_agent=request.headers.get("User-Agent", "))
+                    user_agent=request.headers.get("User-Agent", ""))
                 session.add(audit_log)
         except Exception as e:
             # Don't fail the main operation if audit logging fails:
-            print("Audit logging failed: {e}")
+            print(f"Audit logging failed: {e}")
 
 
 # Global auth manager instance
 auth_manager = AuthManager()
-
-
-def require_auth(f):
+    def require_auth(f):
     """Decorator to require authentication."""
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -277,8 +275,7 @@ def register_auth_endpoints(app):
     """User logout endpoint."""
         try:
             user = get_current_user()
-
-            # Log audit event
+    # Log audit event
             auth_manager.log_audit_event()
                 user_id=user.id, action="logout", details={"username": user.username}
             )
@@ -294,8 +291,7 @@ def register_auth_endpoints(app):
     """Get current user information."""
         try:
             user = get_current_user()
-
-            return ()
+    return ()
                 jsonify()
                     {}
                         "user": {}
@@ -343,7 +339,7 @@ def register_auth_endpoints(app):
 
                 # Create new user
                 new_user = User()
-                    username=username,
+    username=username,
                     email=email,
                     password_hash=generate_password_hash(password),
                     role=role,
@@ -380,7 +376,7 @@ def register_auth_endpoints(app):
     """Change user password."""
         try:
             user = get_current_user()
-            data = request.get_json()
+    data = request.get_json()
             current_password = data.get("current_password")
             new_password = data.get("new_password")
 
@@ -388,7 +384,7 @@ def register_auth_endpoints(app):
                 return jsonify({"error": "Current and new password required"}), 400
 
             # Verify current password
-            if not check_password_hash(user.password_hash, current_password:
+            if not check_password_hash(user.password_hash, current_password:)
                 return jsonify({"error": "Current password is incorrect"}), 401
 
             with get_db_session() as session:
@@ -423,6 +419,6 @@ def is_admin(user):
     return user and user.role == "admin"
 :
 :
-def has_permission(user, required_role:
+def has_permission(user, required_role:)
     """Check if user has required role.""":
     return user and (user.role == required_role or user.role == "admin"):

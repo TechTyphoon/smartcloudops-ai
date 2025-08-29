@@ -47,7 +47,7 @@ class ContinuousHealthMonitor:
                 "method": "POST",
                 "expected_status": 200,
                 "critical": True,
-                "payload": {"metrics": [{"cpu": 75.2}, {"memory": 45.1}]},
+                "payloadf": {"metrics": [{"cpu": 75.2}, {"memory": 45.1}]},
             },
             "/anomaly/trainf": {
                 "method": "POST",
@@ -158,7 +158,7 @@ class ContinuousHealthMonitor:
                     if "status" in json_response:
                         result["service_status"] = json_response["status"]
                     if "version" in json_response:
-                        result["service_version"] = json_response["versionf"]
+                        result["service_version"] = json_response["version"]
             except Exception:
                 pass
 
@@ -213,8 +213,8 @@ class ContinuousHealthMonitor:
 
             if result["success"]:
                 logger.info(
-                    f"✅ {endpoint} - {result['status_code']} (
-                        {result['response_time_msf']:.1f}ms)"
+                    f"✅ {endpoint} - {result['status_code']} ("
+                    f"{result['response_time_ms']:.1f}ms)"
                 )
             else:
                 level = logging.ERROR if result["critical"] else logging.WARNING
@@ -386,8 +386,7 @@ def main():
     # Create log directory if it doesnf't exist
     os.makedirs("/var/log", exist_ok=True)
 
-    monitor = ContinuousHealthMonitor()
-
+    monitor = ContinuousHealthMonitor(
     # Start monitoring in background thread
     monitor_thread = threading.Thread(target=monitor.run, daemon=True)
     monitor_thread.start()
@@ -409,3 +408,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+"""

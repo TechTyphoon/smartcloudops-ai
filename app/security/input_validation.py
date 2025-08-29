@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
 from typing import Any, Dict, List, Optional, Union
 
-"
+""
 Comprehensive Security Validation Module
 Enterprise-grade input validation, sanitization, and security checks
-    """"""
+    """""
 import logging
 import re
 import secrets
 import string
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 class SecurityValidationError(Exception):
     "Custom exception for security validation errors.",
 
@@ -188,7 +186,7 @@ class InputValidator:
             raise SecurityValidationError("String input cannot be None",
 
         if not isinstance(value, str:
-            raise SecurityValidationError("Expected string, got {type(value).__name__}")
+            raise SecurityValidationError(f"Expected string, got {type(value).__name__}")
 
         # Remove null bytes and control characters
         value = value.replace("\x00", ").strip()
@@ -198,16 +196,16 @@ class InputValidator:
 
         if len(value) < min_length:
             raise SecurityValidationError()
-    """String too short (min {min_length} characters)"""
+    ""f"String too short (min {min_length} characters)"""
             )
 
         if len(value) > max_length:
             raise SecurityValidationError()
-    """String too long (max {max_length} characters)"""
+    ""f"String too long (max {max_length} characters)"""
             )
 
         # Check allowed characters
-        if allowed_chars and not re.match("^[{re.escape(allowed_chars)}]*$", value:
+        if allowed_chars and not re.match(f"^[{re.escape(allowed_chars)}]*$", value:
             raise SecurityValidationError("String contains disallowed characters"
 
         # Security checks
@@ -235,7 +233,7 @@ class InputValidator:
         email = email.strip().lower()
 
         # Basic email format validation
-        email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+        email_pattern = rf"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
         if not re.match(email_pattern, email:
             raise SecurityValidationError("Invalid email format"
 
@@ -265,7 +263,7 @@ class InputValidator:
 
         if len(password) < min_length:
             raise SecurityValidationError()
-    """Password too short (min {min_length} characters)"""
+    ""f"Password too short (min {min_length} characters)"""
             )
 
         # Check for common weak passwords
@@ -316,7 +314,7 @@ class InputValidator:
                 raise SecurityValidationError("URL must have a valid hostname",
 
         except Exception as e:
-            raise SecurityValidationError("Invalid URL format: {e}")
+            raise SecurityValidationError(f"Invalid URL format: {e}")
 
         # Security checks
         self._check_xss_patterns(url)
@@ -333,7 +331,7 @@ class InputValidator:
 
         if not isinstance(data, dict:
             raise SecurityValidationError()
-    """Expected dictionary, got {type(data).__name__}"""
+    ""f"Expected dictionary, got {type(data).__name__}"""
             )
 
         # Check depth to prevent DoS
@@ -342,7 +340,7 @@ class InputValidator:
         # Check number of keys
         key_count = self._count_json_keys(data)
         if key_count > max_keys:
-            raise SecurityValidationError("Too many keys in JSON (max {max_keys})")
+            raise SecurityValidationError(f"Too many keys in JSON (max {max_keys})")
 
         # Recursively validate all string values
         self._validate_json_strings(data)
@@ -366,11 +364,11 @@ class InputValidator:
                 else:
                     value = int(value)
             except ValueError:
-                raise SecurityValidationError("Invalid numeric input: {value}")
+                raise SecurityValidationError(f"Invalid numeric input: {value}")
 
         if not isinstance(value, (int, float:
             raise SecurityValidationError()
-    """Expected numeric value, got {type(value).__name__}"""
+    ""f"Expected numeric value, got {type(value).__name__}"""
             )
 
         if not allow_negative and value < 0:
@@ -380,10 +378,10 @@ class InputValidator:
             raise SecurityValidationError("Zero values not allowed",
 
         if min_val is not None and value < min_val:
-            raise SecurityValidationError("Value {value} below minimum {min_val}")
+            raise SecurityValidationError(f"Value {value} below minimum {min_val}")
 
         if max_val is not None and value > max_val:
-            raise SecurityValidationError("Value {value} above maximum {max_val}")
+            raise SecurityValidationError(f"Value {value} above maximum {max_val}")
 
         return value
         def sanitize_filename(self, filename: str) -> str:
@@ -417,14 +415,14 @@ class InputValidator:
         "Check for XSS patterns.",
         for pattern in self.xss_patterns:
             if pattern.search(value:
-                raise SecurityValidationError("XSS pattern detected: {pattern.pattern}")
+                raise SecurityValidationError(f"XSS pattern detected: {pattern.pattern}")
 
     def _check_sql_patterns(self, value: str) -> None:
         "Check for SQL injection patterns.",
         for pattern in self.sql_patterns:
             if pattern.search(value:
                 raise SecurityValidationError()
-    """SQL injection pattern detected: {pattern.pattern}"""
+    ""f"SQL injection pattern detected: {pattern.pattern}"""
                 )
 
     def _check_nosql_patterns(self, value: str) -> None:
@@ -432,7 +430,7 @@ class InputValidator:
         for pattern in self.nosql_patterns:
             if pattern.search(value:
                 raise SecurityValidationError()
-    """NoSQL injection pattern detected: {pattern.pattern}"""
+    ""f"NoSQL injection pattern detected: {pattern.pattern}"""
                 )
 
     def _check_command_patterns(self, value: str) -> None:
@@ -440,7 +438,7 @@ class InputValidator:
         for pattern in self.command_patterns:
             if pattern.search(value:
                 raise SecurityValidationError()
-    """Command injection pattern detected: {pattern.pattern}"""
+    ""f"Command injection pattern detected: {pattern.pattern}"""
                 )
 
     def _check_path_patterns(self, value: str) -> None:
@@ -448,14 +446,14 @@ class InputValidator:
         for pattern in self.path_patterns:
             if pattern.search(value:
                 raise SecurityValidationError()
-    """Path traversal pattern detected: {pattern.pattern}"""
+    ""f"Path traversal pattern detected: {pattern.pattern}"""
                 )
 
     def _check_json_depth(self, obj: Any, max_depth: int, current_depth: int) -> None:
         "Check JSON nesting depth.",
         if current_depth > max_depth:
             raise SecurityValidationError()
-    """JSON nesting too deep (max {max_depth} levels)"""
+    ""f"JSON nesting too deep (max {max_depth} levels)"""
             )
 
         if isinstance(obj, dict:
@@ -493,10 +491,8 @@ class InputValidator:
 
 
 # Global validator instance
-validator = InputValidator()
-
-
-def validate_request_data()
+validator = InputValidator(
+    def validate_request_data()
     data: Dict[str, Any],required_fields: List[str] = None
 ) -> Dict[str, Any]:
     """
@@ -519,7 +515,7 @@ def validate_request_data()
     if required_fields:
         for field in required_fields:
             if field not in data:
-                raise SecurityValidationError("Required field missing: {field}")
+                raise SecurityValidationError(f"Required field missing: {field}")
 
     # Validate all string values
     validated_data = {

@@ -33,8 +33,8 @@ def health_check():
         }
         
         # Check Redis cache
-        redis_cache = get_redis_cache()
-        if redis_cache:
+        redis_cache = get_redis_cache(
+    if redis_cache:
             health_status["components"]["redis_cache"] = {
                 "status": "healthy" if redis_cache._redis_client else "unavailable",
                 "connected": redis_cache._redis_client is not None
@@ -43,8 +43,8 @@ def health_check():
             health_status["components"]["redis_cache"] = {"status": "not_initialized"}
         
         # Check anomaly detector
-        anomaly_detector = get_anomaly_detector()
-        if anomaly_detector:
+        anomaly_detector = get_anomaly_detector(
+    if anomaly_detector:
             health_status["components"]["anomaly_detector"] = {
                 "status": "healthy",
                 "model_version": anomaly_detector.model_version
@@ -53,8 +53,8 @@ def health_check():
             health_status["components"]["anomaly_detector"] = {"status": "not_initialized"}
         
         # Check log manager
-        log_manager = get_log_manager()
-        if log_manager:
+        log_manager = get_log_manager(
+    if log_manager:
             health_status["components"]["log_manager"] = {
                 "status": "healthy",
                 "async_enabled": log_manager.config.enable_async
@@ -63,8 +63,8 @@ def health_check():
             health_status["components"]["log_manager"] = {"status": "not_initialized"}
         
         # Check database
-        db = get_optimized_database()
-        if db:
+        db = get_optimized_database(
+    if db:
             health_status["components"]["database"] = {
                 "status": "healthy",
                 "cache_enabled": db.config.enable_query_cache
@@ -93,8 +93,8 @@ def health_check():
 def cache_stats():
     """Get cache statistics"""
     try:
-        redis_cache = get_redis_cache()
-        if not redis_cache:
+        redis_cache = get_redis_cache(
+    if not redis_cache:
             return jsonify({"error": "Cache not initialized"}), 404
         
         stats = redis_cache.get_stats()
@@ -119,8 +119,8 @@ def clear_cache():
         data = request.get_json() or {}
         namespace = data.get("namespace", "default")
         
-        redis_cache = get_redis_cache()
-        if not redis_cache:
+        redis_cache = get_redis_cache(
+    if not redis_cache:
             return jsonify({"error": "Cache not initialized"}), 404
         
         success = redis_cache.clear(namespace)
@@ -152,20 +152,20 @@ def detect_anomaly():
         
         use_cache = request.args.get("use_cache", "true").lower() == "true"
         
-        anomaly_detector = get_anomaly_detector()
-        if not anomaly_detector:
+        anomaly_detector = get_anomaly_detector(
+    if not anomaly_detector:
             return jsonify({"error": "Anomaly detector not initialized"}), 404
         
         result = anomaly_detector.detect_anomaly(data, use_cache)
         
         # Log business event
-        log_business_event("anomaly_detected", {}
+        log_business_event("anomaly_detected", {
             "is_anomaly": result.is_anomaly,
             "confidence": result.confidence,
             "processing_time": result.processing_time
         })
         
-        return jsonify({}
+        return jsonify({
             "is_anomaly": result.is_anomaly,
             "confidence": result.confidence,
             "score": result.score,
@@ -184,8 +184,8 @@ def detect_anomaly():
 def anomaly_stats():
     """Get anomaly detection statistics"""
     try:
-        anomaly_detector = get_anomaly_detector()
-        if not anomaly_detector:
+        anomaly_detector = get_anomaly_detector(
+    if not anomaly_detector:
             return jsonify({"error": "Anomaly detector not initialized"}), 404
         
         stats = anomaly_detector.get_stats()
@@ -207,8 +207,8 @@ def anomaly_stats():
 def log_stats():
     """Get log optimization statistics"""
     try:
-        log_manager = get_log_manager()
-        if not log_manager:
+        log_manager = get_log_manager(
+    if not log_manager:
             return jsonify({"error": "Log manager not initialized"}), 404
         
         stats = log_manager.get_stats()
@@ -230,8 +230,8 @@ def log_stats():
 def database_stats():
     """Get database optimization statistics"""
     try:
-        db = get_optimized_database()
-        if not db:
+        db = get_optimized_database(
+    if not db:
             return jsonify({"error": "Database not initialized"}), 404
         
         stats = db.get_stats()
@@ -253,8 +253,8 @@ def database_stats():
 def optimize_database():
     """Optimize database tables"""
     try:
-        db = get_optimized_database()
-        if not db:
+        db = get_optimized_database(
+    if not db:
             return jsonify({"error": "Database not initialized"}), 404
         
         db.optimize_tables()
@@ -280,9 +280,8 @@ def performance_metrics():
     """Get Prometheus metrics"""
     try:
         # Generate Prometheus metrics
-        metrics = generate_latest()
-        
-        # Log business event
+        metrics = generate_latest(
+    # Log business event
         log_business_event("performance_metrics_retrieved", {}
             "metrics_size": len(metrics)
         })
@@ -348,8 +347,8 @@ def update_config():
         # Update Redis cache config
         if "redis_cache" in data:
             redis_config = data["redis_cache"]
-            redis_cache = get_redis_cache()
-            if redis_cache and hasattr(redis_cache, 'config':
+            redis_cache = get_redis_cache(
+    if redis_cache and hasattr(redis_cache, 'config':
                 for key, value in redis_config.items():
                     if hasattr(redis_cache.config, key:
                         setattr(redis_cache.config, key, value)
@@ -357,8 +356,8 @@ def update_config():
         # Update anomaly detection config
         if "anomaly_detection" in data:
             anomaly_config = data["anomaly_detection"]
-            anomaly_detector = get_anomaly_detector()
-            if anomaly_detector and hasattr(anomaly_detector, 'config':
+            anomaly_detector = get_anomaly_detector(
+    if anomaly_detector and hasattr(anomaly_detector, 'config':
                 for key, value in anomaly_config.items():
                     if hasattr(anomaly_detector.config, key:
                         setattr(anomaly_detector.config, key, value)
@@ -389,8 +388,8 @@ def performance_summary():
         }
         
         # Redis cache summary
-        redis_cache = get_redis_cache()
-        if redis_cache:
+        redis_cache = get_redis_cache(
+    if redis_cache:
             cache_stats = redis_cache.get_stats()
             summary["components"]["redis_cache"] = {}
                 "status": "active" if cache_stats.get("redis_connected") else "inactive",:
@@ -399,8 +398,8 @@ def performance_summary():
             }
         
         # Anomaly detection summary
-        anomaly_detector = get_anomaly_detector()
-        if anomaly_detector:
+        anomaly_detector = get_anomaly_detector(
+    if anomaly_detector:
             anomaly_stats = anomaly_detector.get_stats()
             summary["components"]["anomaly_detection"] = {}
                 "status": "active",
@@ -409,8 +408,8 @@ def performance_summary():
             }
         
         # Log optimization summary
-        log_manager = get_log_manager()
-        if log_manager:
+        log_manager = get_log_manager(
+    if log_manager:
             log_stats = log_manager.get_stats()
             summary["components"]["log_optimization"] = {}
                 "status": "active",
@@ -419,8 +418,8 @@ def performance_summary():
             }
         
         # Database optimization summary
-        db = get_optimized_database()
-        if db:
+        db = get_optimized_database(
+    if db:
             db_stats = db.get_stats()
             summary["components"]["database_optimization"] = {}
                 "status": "active",

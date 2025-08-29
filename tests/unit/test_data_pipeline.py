@@ -65,15 +65,14 @@ class TestDataPipelineManager:
     def test_global_instance(self):
         """Test global instance management."""
         manager1 = get_data_pipeline_manager()
-        manager2 = get_data_pipeline_manager()
-        
-        # Should return the same instance
-        assert manager1 is manager2
-        assert isinstance(manager1, DataPipelineManager)
+    manager2 = get_data_pipeline_manager()
+    # Should return the same instance
+assert manager1 is manager2
+assert isinstance(manager1, DataPipelineManager)
     
     # ===== DATA INGESTION TESTS =====
     
-    def test_ingest_simple_data(self):
+def test_ingest_simple_data(self):
         """Test ingesting simple dictionary data."""
         # Create mock data
         data_dict = {

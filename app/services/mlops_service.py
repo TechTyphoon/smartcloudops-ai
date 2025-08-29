@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 MLOpsService - Business logic for MLOps operations
 Phase 2A: MLOps integration with service layer pattern
 """
@@ -47,18 +47,14 @@ class MLOpsService:
         self.mlflow_manager = None
 :
         if EXPERIMENT_TRACKER_AVAILABLE:
-            self.experiment_tracker = get_experiment_tracker()
-
-        if MODEL_REGISTRY_AVAILABLE:
-            self.model_registry = get_model_registry()
-
-        if DATA_PIPELINE_AVAILABLE:
-            self.data_pipeline = get_data_pipeline_manager()
-
-        if MLFLOW_AVAILABLE:
-            self.mlflow_manager = get_mlflow_manager()
-
-        # Mock data for development (will be replaced with actual MLOps data)
+            self.experiment_tracker = get_experiment_tracker(
+    if MODEL_REGISTRY_AVAILABLE:
+            self.model_registry = get_model_registry(
+    if DATA_PIPELINE_AVAILABLE:
+            self.data_pipeline = get_data_pipeline_manager(
+    if MLFLOW_AVAILABLE:
+            self.mlflow_manager = get_mlflow_manager(
+    # Mock data for development (will be replaced with actual MLOps data)
         self.mock_experiments = []
             {}:
                 "id": "exp_1",
@@ -70,11 +66,11 @@ class MLOpsService:
                 "best_run_id": "run_1_3",
                 "objective": "minimize",
                 "tags": ["anomaly-detection", "production"],
-            },
-            {}
+                        },
+            {
                 "id": "exp_2",
                 "name": "anomaly_detection_v2",
-                "description": "Improved anomaly detection with feature engineering",:
+                "description": "Improved anomaly detection with feature engineering",
                 "status": "running",
                 "created_at": "2024-01-16T09:00:00Z",
                 "runs_count": 3,
@@ -98,7 +94,7 @@ class MLOpsService:
                 "created_by": "mlops_pipeline",
                 "size_mb": 2.5,
             },
-            {}
+            {
                 "id": "model_2",
                 "name": "anomaly_detector",
                 "version": "1.1.0",
@@ -615,8 +611,8 @@ class MLOpsService:
 
                 # Calculate average quality score:
                 if all_versions:
-                    avg_quality = sum()
-                        version.quality_score for version in all_versions
+                    avg_quality = sum(
+    version.quality_score for version in all_versions
                     ) / len(all_versions)
                     data_pipeline_stats["average_quality_score"] = round(avg_quality, 3)
 
@@ -670,27 +666,27 @@ class MLOpsService:
                 "type": "anomaly_detection",
                 "description": "Isolation Forest for anomaly detection",
             },
-            {}
+            {
                 "name": "one_class_svm",
                 "type": "anomaly_detection",
                 "description": "One-Class SVM for anomaly detection",
             },
-            {}
+            {
                 "name": "local_outlier_factor",
                 "type": "anomaly_detection",
                 "description": "Local Outlier Factor for anomaly detection",
             },
-            {}
+            {
                 "name": "random_forest",
                 "type": "classification",
                 "description": "Random Forest classifier",
             },
-            {}
+            {
                 "name": "gradient_boosting",
                 "type": "classification",
                 "description": "Gradient Boosting classifier",
             },
-            {}
+            {
                 "name": "neural_network",
                 "type": "deep_learning",
                 "description": "Neural network for various tasks",

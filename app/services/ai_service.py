@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 AI Service - Business Logic Layer
 Handles all AI/ML analysis, recommendations, and chat operations
 """
@@ -22,7 +22,7 @@ class AIService:
                 "accuracy": 0.92,
                 "last_trained": "2024-01-10T14:30:00Z",
             },
-            {}
+            {
                 "id": "remediation_recommender_v1",
                 "name": "Remediation Recommendation Model",
                 "type": "recommendation",
@@ -41,14 +41,14 @@ class AIService:
                 "estimated_impact": "high",
                 "execution_time": "2-5 minutes",
             },
-            {}
+            {
                 "action_type": "restart_service",
                 "confidence": 0.76,
                 "description": "Restart application service to clear memory leaks",
                 "estimated_impact": "medium",
                 "execution_time": "30-60 seconds",
             },
-            {}
+            {
                 "action_type": "cleanup_logs",
                 "confidence": 0.65,
                 "description": "Clean up old log files to free disk space",

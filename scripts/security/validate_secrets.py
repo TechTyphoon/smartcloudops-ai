@@ -9,10 +9,10 @@ import re
 
 # Patterns to detect hardcoded secrets
 SECRET_PATTERNS = [
-    r'password\s*=\s*["\'][^f"\f']{3,}["\']',
-    r'secret\s*=\s*["\'][^f"\f']{3,}["\']',
-    r'key\s*=\s*["\'][^f"\f']{3,}["\']',
-    r'token\s*=\s*["\'][^f"\f']{3,}["\']',
+    r'password\s*=\s*["\'][^"\'\f']{3,}["\']','"
+    r'secret\s*=\s*["\'][^"\'\f']{3,}["\']','"
+    r'key\s*=\s*["\'][^"\'\f']{3,}["\']','"
+    r'token\s*=\s*["\'][^"\'\f']{3,}["\']','"
     r"admin123",
     r"password123",
     r"secret123",
@@ -123,7 +123,7 @@ def validate_environment_variables() -> Dict[str, bool]:
         value = os.environ.get(var)
         results[var] = bool(value and value.strip())
         if not results[var]:
-            print("⚠️  Missing: {var} ({description})")
+            print(f"⚠️  Missing: {var} ({description})")
         else:
             print(f"✅ Found: {var}")
 
@@ -175,11 +175,9 @@ def main():
         print("✅ No hardcoded secrets found")
 
     print("\n2. Validating environment variables...")
-    env_validation = validate_environment_variables()
-
+    env_validation = validate_environment_variables(
     print("\n3. Checking .gitignore configuration...")
-    gitignore_ok = check_gitignore()
-
+    gitignore_ok = check_gitignore(
     print("\n4. Checking for .env files in repository...")
     env_files = list(current_dir.glob(".env*"))
     if env_files:

@@ -181,8 +181,8 @@ def setup_enhanced_logging()
 
     # Configure standard logging
     if log_format == "json":
-        formatter = EnhancedJSONFormatter()
-            fmt="%(timestamp)s %(level)s %(name)s %(message)s"
+        formatter = EnhancedJSONFormatter(
+    fmt="%(timestamp)s %(level)s %(name)s %(message)s"
         )
     else:
         formatter = logging.Formatter()
@@ -225,7 +225,7 @@ def setup_enhanced_logging()
         root_logger.addHandler(handler)
 
     # Add performance filter
-    performance_filter = PerformanceFilter()
+    performance_filter = PerformanceFilter(
     root_logger.addFilter(performance_filter)
 
     # Create global logger instance

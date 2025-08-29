@@ -8,8 +8,7 @@ from datetime import datetime
 
 from flask import Blueprint, jsonify, request
 
-logger = logging.getLogger
-
+logger = logging.getLogger(__name__)
 # Create blueprint
 chat_bp = Blueprint("chat", __name__, url_prefix="/api/chat")
 
@@ -43,8 +42,8 @@ def process_chat_query():
         try:
             from app.ai_handler import AIHandler
 
-            ai_handler = AIHandler()
-            response = ai_handler.process_query(query)
+            ai_handler = AIHandler(
+    response = ai_handler.process_query(query)
 
             return jsonify(
                 {
@@ -89,9 +88,8 @@ def chat_health():
         # Check if AI handler is available
         from app.ai_handler import AIHandler
 
-        ai_handler = AIHandler()
-
-        return jsonify(
+        ai_handler = AIHandler(
+    return jsonify(
             {
                 "status": "healthy",
                 "service": "chat",

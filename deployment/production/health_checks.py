@@ -222,9 +222,8 @@ class MLOpsServiceCheck(BaseHealthCheck):
             from app.services.mlops_service import MLOpsService
             
             # Create service instance
-            service = MLOpsService()
-            
-            # Test basic operations
+            service = MLOpsService(
+    # Test basic operations
             experiments_available = service.experiment_tracker is not None
             models_available = service.model_registry is not None
             data_pipeline_available = service.data_pipeline is not None
@@ -536,10 +535,8 @@ class HealthMonitor:
 
 
 # Global health monitor instance
-health_monitor = HealthMonitor()
-
-
-def add_api_endpoint_check(base_url: str):
+health_monitor = HealthMonitor(
+    def add_api_endpoint_check(base_url: str):
     """Add API endpoint check for specific URL"""
     health_monitor.add_check(APIEndpointCheck(base_url))
 

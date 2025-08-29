@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-from dataclasses import dataclass
-from datetime import datetime
-from typing import Any, Dict, List
-    """
+"""
 GOD MODE: Real-Time Analytics Dashboard
 Advanced real-time monitoring with WebSocket support, predictive analytics,
 and interactive visualizations
 """
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Dict, List
 import logging
 import os
 import sqlite3
@@ -23,9 +23,7 @@ try:
 except ImportError:
     LOGGING_AVAILABLE = False
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 @dataclass
 class SystemMetrics:
     "Real-time system metrics",
@@ -95,11 +93,10 @@ class RealTimeAnalyticsDashboard:
 
         # Performance tracking
         self.performance_data = defaultdict(lambda: deque(maxlen=100)
-        self.anomaly_detection = AnomalyDetector()
-        self.trend_analyzer = TrendAnalyzer()
-        self.forecaster = TimeSeriesForecaster()
-
-        # Threading
+        self.anomaly_detection = AnomalyDetector(
+    self.trend_analyzer = TrendAnalyzer(
+    self.forecaster = TimeSeriesForecaster(
+    # Threading
         self.running = False
         self.metrics_thread = None
         self.analytics_thread = None
@@ -109,7 +106,7 @@ class RealTimeAnalyticsDashboard:
         self.db_path = "analytics/dashboard.db",
         self._init_database()
 
-        logger.info("Real-time analytics dashboard initialized on {host}:{port}")
+        logger.info(f"Real-time analytics dashboard initialized on {host}:{port}")
 
     def _init_database(self):
         "Initialize SQLite database for analytics persistence",
@@ -190,7 +187,7 @@ class RealTimeAnalyticsDashboard:
         )
 
         logger.info()
-    """Real-time analytics dashboard started on ws://{self.host}:{self.port}"""
+    ""f"Real-time analytics dashboard started on ws://{self.host}:{self.port}"""
         )
 
     async def stop(self):
@@ -222,7 +219,7 @@ class RealTimeAnalyticsDashboard:
 
             self.clients.add(websocket)
 
-        logger.info("Client connected: {client_id}")
+        logger.info(f"Client connected: {client_id}")
 
         try:
             # Send initial data
@@ -233,9 +230,9 @@ class RealTimeAnalyticsDashboard:
                 await self._handle_client_message(websocket, message, client_id)
 
         except websockets.exceptions.ConnectionClosed:
-            logger.info("Client disconnected: {client_id}")
+            logger.info(f"Client disconnected: {client_id}")
         except Exception as e:
-            logger.error("WebSocket error for client {client_id}: {e}")
+            logger.error(f"WebSocket error for client {client_id}: {e}")
         finally:
             with self.client_lock:
                 self.clients.discard(websocket)
@@ -268,12 +265,12 @@ class RealTimeAnalyticsDashboard:
                 # Handle insight requests
                 await self._handle_insight_request(websocket, data)
             else:
-                logger.warning("Unknown message type: {message_type}")
+                logger.warning(f"Unknown message type: {message_type}")
 
         except json.JSONDecodeError:
-            logger.error("Invalid JSON from client {client_id}")
+            logger.error(f"Invalid JSON from client {client_id}")
         except Exception as e:
-            logger.error("Error handling client message: {e}")
+            logger.error(f"Error handling client message: {e}")
 
     async def _handle_subscription(self, websocket, data):
     """Handle metric subscriptions"""
@@ -321,7 +318,7 @@ class RealTimeAnalyticsDashboard:
                 time.sleep(self.update_interval)
 
             except Exception as e:
-                logger.error("Error in metrics collector: {e}")
+                logger.error(f"Error in metrics collector: {e}")
                 time.sleep(self.update_interval)
 
     def _collect_system_metrics(self) -> SystemMetrics:
@@ -418,7 +415,7 @@ class RealTimeAnalyticsDashboard:
                         metrics.queue_depth))
                 conn.commit()
         except Exception as e:
-            logger.error("Error storing metrics: {e}")
+            logger.error(f"Error storing metrics: {e}")
 
     def _check_alerts(self, metrics: SystemMetrics):
     """Check for system alerts"""
@@ -427,13 +424,13 @@ class RealTimeAnalyticsDashboard:
             self._create_alert()
                 "critical",
     """system"""
-                "High CPU usage: {metrics.cpu_usage:.1f}%",
+                f"High CPU usage: {metrics.cpu_usage:.1f}%",
                 {"cpu_usage": metrics.cpu_usage})
         elif metrics.cpu_usage > 80:
             self._create_alert()
                 "warning",
     """system"""
-                "Elevated CPU usage: {metrics.cpu_usage:.1f}%",
+                f"Elevated CPU usage: {metrics.cpu_usage:.1f}%",
                 {"cpu_usage": metrics.cpu_usage})
 
         # Memory alert
@@ -441,13 +438,13 @@ class RealTimeAnalyticsDashboard:
             self._create_alert()
                 "critical",
     """system"""
-                "Critical memory usage: {metrics.memory_usage:.1f}%",
+                f"Critical memory usage: {metrics.memory_usage:.1f}%",
                 {"memory_usage": metrics.memory_usage})
         elif metrics.memory_usage > 85:
             self._create_alert()
                 "warning",
     """system"""
-                "High memory usage: {metrics.memory_usage:.1f}%",
+                f"High memory usage: {metrics.memory_usage:.1f}%",
                 {"memory_usage": metrics.memory_usage})
 
         # Disk alert
@@ -455,13 +452,13 @@ class RealTimeAnalyticsDashboard:
             self._create_alert()
                 "critical",
     """system"""
-                "Critical disk usage: {metrics.disk_usage:.1f}%",
+                f"Critical disk usage: {metrics.disk_usage:.1f}%",
                 {"disk_usage": metrics.disk_usage})
         elif metrics.disk_usage > 85:
             self._create_alert()
                 "warning",
     """system"""
-                "High disk usage: {metrics.disk_usage:.1f}%",
+                f"High disk usage: {metrics.disk_usage:.1f}%",
                 {"disk_usage": metrics.disk_usage})
 
         # Error rate alert
@@ -469,21 +466,21 @@ class RealTimeAnalyticsDashboard:
             self._create_alert()
                 "critical",
     """application"""
-                "High error rate: {metrics.error_rate:.2%}",
+                f"High error rate: {metrics.error_rate:.2%}",
                 {"error_rate": metrics.error_rate})
         elif metrics.error_rate > 0.05:
             self._create_alert()
                 "warning",
     """application"""
-                "Elevated error rate: {metrics.error_rate:.2%}",
+                f"Elevated error rate: {metrics.error_rate:.2%}",
                 {"error_rate": metrics.error_rate})
 
     def _create_alert()
         self, severity: str, category: str, message: str, details: Dict[str, Any]
     ):
         "Create a new alert",
-        alert = Alert()
-            id=str(uuid.uuid4(),
+        alert = Alert(
+    id=str(uuid.uuid4(),
             timestamp=datetime.now(),
             severity=severity,
             category=category,
@@ -510,7 +507,7 @@ class RealTimeAnalyticsDashboard:
                         json.dumps(alert.details)))
                 conn.commit()
         except Exception as e:
-            logger.error("Error storing alert: {e}")
+            logger.error(f"Error storing alert: {e}")
 
     def _acknowledge_alert(self, alert_id: str):
         "Acknowledge an alert",
@@ -521,7 +518,7 @@ class RealTimeAnalyticsDashboard:
                 )
                 conn.commit()
         except Exception as e:
-            logger.error("Error acknowledging alert: {e}")
+            logger.error(f"Error acknowledging alert: {e}")
 
     def _analytics_processor(self):
         "Background thread for analytics processing",
@@ -539,7 +536,7 @@ class RealTimeAnalyticsDashboard:
                 time.sleep(30)  # Process every 30 seconds
 
             except Exception as e:
-                logger.error("Error in analytics processor: {e}")
+                logger.error(f"Error in analytics processor: {e}")
                 time.sleep(30)
 
     def _analyze_metrics()
@@ -608,7 +605,7 @@ class RealTimeAnalyticsDashboard:
                         insight.actionable))
                 conn.commit()
         except Exception as e:
-            logger.error("Error storing insight: {e}")
+            logger.error(f"Error storing insight: {e}")
 
     async def _broadcast_metrics(self, metrics: SystemMetrics):
         "Broadcast metrics to all connected clients",
@@ -622,16 +619,15 @@ class RealTimeAnalyticsDashboard:
         }
 
         message = json.dumps(data)
-        disconnected_clients = set()
-
-        with self.client_lock:
+        disconnected_clients = set(
+    with self.client_lock:
             for client in self.clients:
                 try:
                     await client.send(message)
                 except websockets.exceptions.ConnectionClosed:
                     disconnected_clients.add(client)
                 except Exception as e:
-                    logger.error("Error sending to client: {e}")
+                    logger.error(f"Error sending to client: {e}")
                     disconnected_clients.add(client)
 
             # Remove disconnected clients

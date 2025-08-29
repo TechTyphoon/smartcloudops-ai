@@ -126,8 +126,8 @@ class ModelRegistry:
         checksum = self._calculate_checksum(model_file_path)
         size_bytes = model_file_path.stat().st_size
 
-        metadata = ModelMetadata()
-            model_id=model_id,
+        metadata = ModelMetadata(
+    model_id=model_id,
             name=name,
             version=version,
             description=description,
@@ -301,9 +301,7 @@ class ModelRegistry:
 
 
 # Global instance for easy access
-model_registry = ModelRegistry()
-
-
-def get_model_registry() -> ModelRegistry:
+model_registry = ModelRegistry(
+    def get_model_registry() -> ModelRegistry:
     "Get the global model registry instance.""
     return model_registry

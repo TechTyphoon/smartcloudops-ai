@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Error Handling System for Smart CloudOps AI - Minimal Working Version
 Enterprise-grade error handling with structured logging and monitoring
 """
@@ -17,9 +17,7 @@ except ImportError:
     jsonify = lambda x: x
     current_app = None
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 class ErrorHandler:
     """Enterprise-grade error handler with structured logging.""":
     def __init__(self):
@@ -244,10 +242,8 @@ class ConfigurationError(StructuredException:
 
 
 # Global error handler instance
-error_handler = ErrorHandler()
-
-
-def handle_errors():
+error_handler = ErrorHandler(
+    def handle_errors():
     include_traceback: bool = True,
     log_level: str = "ERROR",
     return_error_details: bool = True):

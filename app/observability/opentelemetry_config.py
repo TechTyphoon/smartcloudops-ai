@@ -109,8 +109,8 @@ class OpenTelemetryConfig:
 
         # Jaeger exporter
         if jaeger_endpoint:
-            jaeger_exporter = JaegerExporter()
-                agent_host_name=jaeger_endpoint.split(":")[0],
+            jaeger_exporter = JaegerExporter(
+    agent_host_name=jaeger_endpoint.split(":")[0],
                 agent_port=int(jaeger_endpoint.split(":")[1]) if ":" in jaeger_endpoint else 6831)
             jaeger_processor = BatchSpanProcessor(jaeger_exporter)
             processors.append(jaeger_processor)
@@ -139,16 +139,16 @@ class OpenTelemetryConfig:
 
         # Console exporter for debugging
         if console_export:
-            console_reader = PeriodicExportingMetricReader()
-                ConsoleMetricExporter(),
+            console_reader = PeriodicExportingMetricReader(
+    ConsoleMetricExporter(),
                 export_interval_millis=5000)
             readers.append(console_reader)
 
         # OTLP exporter
         if otlp_endpoint:
             otlp_exporter = OTLPMetricExporter(endpoint=otlp_endpoint)
-            otlp_reader = PeriodicExportingMetricReader()
-                otlp_exporter,
+            otlp_reader = PeriodicExportingMetricReader(
+    otlp_exporter,
                 export_interval_millis=10000)
             readers.append(otlp_reader)
 
@@ -169,8 +169,8 @@ class OpenTelemetryConfig:
     def _setup_propagators(self) -> None:
     """Setup context propagators"""
         # B3 propagator not available in current version
-        # b3_propagator = B3Format()
-        # set_global_textmap(b3_propagator)
+        # b3_propagator = B3Format(
+    # set_global_textmap(b3_propagator)
         pass
 
     def instrument_flask(self, app) -> None:
@@ -224,10 +224,8 @@ class OpenTelemetryConfig:
 
 
 # Global OpenTelemetry configuration instance
-otel_config = OpenTelemetryConfig()
-
-
-def setup_opentelemetry()
+otel_config = OpenTelemetryConfig(
+    def setup_opentelemetry()
     app=None,
     service_name: str = "smartcloudops-ai",
     service_version: str = "4.0.0",
@@ -288,7 +286,7 @@ def get_meter(name: str = None):
 
 def create_span(name: str, **attributes):
     """Create a span with attributes"""
-    tracer = get_tracer()
+    tracer = get_tracer(
     with tracer.start_as_current_span(name) as span:
         for key, value in attributes.items():
             if isinstance(value, (str, int, float, bool:
@@ -300,8 +298,8 @@ def trace_function(name: str = None):
     """Decorator to trace function execution"""
     def decorator(func):
         def wrapper(*args, **kwargs):
-            tracer = get_tracer()
-            span_name = name or f"{func.__module__}.{func.__name__}"
+            tracer = get_tracer(
+    span_name = name or f"{func.__module__}.{func.__name__}"
             
             with tracer.start_as_current_span(span_name) as span:
                 # Add function attributes

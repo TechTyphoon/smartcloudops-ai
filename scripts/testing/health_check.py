@@ -27,8 +27,8 @@ def check_flask_application() -> Dict[str, Any]:
             else:
                 return {
                     "status": "unhealthy",
-                    "message": f"Flask endpoints failed: health={health_response.status_code},
-                        metrics={metrics_response.status_code}",
+                    "message": f"Flask endpoints failed: health={health_response.status_code}, "
+                              f"metrics={metrics_response.status_code}",
 
                 }
     except ImportError as e:
@@ -39,7 +39,7 @@ def check_flask_application() -> Dict[str, Any]:
 
 def check_prometheus_connection() -> Dict[str, Any]:
     """Check if Prometheus is accessible."""
-    config = get_config()
+    config = get_config(
     prometheus_url = f"http://localhost:{config.METRICS_PORT}"
 
     try:
@@ -49,7 +49,7 @@ def check_prometheus_connection() -> Dict[str, Any]:
         else:
             return {
                 "status": "unhealthy",
-                "message": "Prometheus returned {response.status_code}",
+                "message": f"Prometheus returned {response.status_code}",
             }
     except requests.exceptions.RequestException as e:
         return {"status": "unhealthy", "message": f"Connection error: {str(e)}"}
@@ -69,9 +69,8 @@ def run_health_checks() -> bool:
 
     for check_name, check_function in checks:
         print(f"Checking {check_name}...")
-        result = check_function()
-
-        if result["status"] == "healthy":
+        result = check_function(
+    if result["status"] == "healthy":
             print(f"✅ {check_name}: {result['messagef']}")
         else:
             print(f"❌ {check_name}: {result['message']}")
@@ -87,5 +86,5 @@ def run_health_checks() -> bool:
 
 
 if __name__ == "__main__":
-    success = run_health_checks()
+    success = run_health_checks(
     sys.exit(0 if success else 1)

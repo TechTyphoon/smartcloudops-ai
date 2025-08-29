@@ -17,9 +17,8 @@ from prometheus_client import (
 )
 
 # Custom registry for isolation
-registry = CollectorRegistry()
-
-# ================================
+registry = CollectorRegistry(
+    # ================================
 # CORE APPLICATION METRICS
 # ================================
 
@@ -68,69 +67,69 @@ active_users = Gauge("active_users_total", "Number of active users", registry=re
 # ================================
 
 # Anomaly detection metrics
-anomalies_detected_total = Counter()
+anomalies_detected_total = Counter(
     "anomalies_detected_total",
     "Total anomalies detected",
     ["severity", "metric_type", "source"],
     registry=registry)
 
-anomalies_resolved_total = Counter()
+anomalies_resolved_total = Counter(
     "anomalies_resolved_total",
     "Total anomalies resolved",
     ["resolution_type", "time_to_resolve_bucket"],
     registry=registry)
 
-anomaly_detection_duration_seconds = Histogram()
+anomaly_detection_duration_seconds = Histogram(
     "anomaly_detection_duration_seconds",
     "Time spent on anomaly detection",
     ["detector_type"],
     registry=registry)
 
-anomaly_severity_distribution = Gauge()
+anomaly_severity_distribution = Gauge(
     "anomaly_severity_distribution",
     "Current count of anomalies by severity",
     ["severity"],
     registry=registry)
 
 # Remediation metrics
-remediation_actions_total = Counter()
+remediation_actions_total = Counter(
     "remediation_actions_total",
     "Total remediation actions executed",
     ["action_type", "status", "approval_required"],
     registry=registry)
 
-remediation_duration_seconds = Histogram()
+remediation_duration_seconds = Histogram(
     "remediation_duration_seconds",
     "Remediation action duration",
     ["action_type"],
     registry=registry)
 
-remediation_success_rate = Gauge()
+remediation_success_rate = Gauge(
     "remediation_success_rate",
     "Success rate of remediation actions",
     ["action_type"],
     registry=registry)
 
 # ML Model metrics
-ml_model_predictions_total = Counter()
+ml_model_predictions_total = Counter(
     "ml_model_predictions_total",
     "Total ML model predictions",
     ["model_name", "model_version"],
     registry=registry)
 
-ml_model_accuracy = Gauge()
+ml_model_accuracy = Gauge(
     "ml_model_accuracy",
     "ML model accuracy score",
     ["model_name", "model_version"],
     registry=registry)
 
-ml_model_inference_duration_seconds = Histogram()
+ml_model_inference_duration_seconds = Histogram(
     "ml_model_inference_duration_seconds",
     "ML model inference duration",
     ["model_name"],
     registry=registry)
 
-ml_training_duration_seconds = Histogram()
+ml_training_duration_seconds = Histogram(
     "ml_training_duration_seconds",
     "ML model training duration",
     ["model_name"],
@@ -141,32 +140,32 @@ ml_training_duration_seconds = Histogram()
 # ================================
 
 # Database metrics
-database_connections = Gauge()
+database_connections = Gauge(
     "database_connections_total",
     "Number of database connections",
     ["pool", "status"],
     registry=registry)
 
-database_query_duration_seconds = Histogram()
+database_query_duration_seconds = Histogram(
     "database_query_duration_seconds",
     "Database query duration",
     ["operation", "table"],
     registry=registry)
 
-database_errors_total = Counter()
+database_errors_total = Counter(
     "database_errors_total",
     "Total database errors",
     ["error_type", "table"],
     registry=registry)
 
 # Cache metrics
-cache_operations_total = Counter()
+cache_operations_total = Counter(
     "cache_operations_total",
     "Total cache operations",
     ["operation", "status"],
     registry=registry)
 
-cache_hit_rate = Gauge()
+cache_hit_rate = Gauge(
     "cache_hit_rate", "Cache hit rate percentage", ["cache_type"], registry=registry
 )
 
@@ -177,18 +176,18 @@ cache_hit_rate = Gauge()
 # Application info
 app_info = Info("app_info", "Application information", registry=registry)
 
-app_health_status = Enum()
+app_health_status = Enum(
     "app_health_status",
     "Application health status",
     states=["healthy", "degraded", "unhealthy"],
     registry=registry)
 
 # Resource usage
-memory_usage_bytes = Gauge()
+memory_usage_bytes = Gauge(
     "memory_usage_bytes", "Memory usage in bytes", ["type"], registry=registry
 )
 
-cpu_usage_percent = Gauge()
+cpu_usage_percent = Gauge(
     "cpu_usage_percent", "CPU usage percentage", registry=registry
 )
 
@@ -313,10 +312,8 @@ class MetricsCollector:
 
 
 # Global metrics collector instance
-metrics_collector = MetricsCollector()
-
-
-# ================================
+metrics_collector = MetricsCollector(
+    # ================================
 # DECORATORS FOR AUTOMATIC METRICS
 # ================================
 

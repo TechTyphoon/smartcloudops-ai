@@ -18,12 +18,12 @@ class TestGPTHandler:
     @pytest.fixture
     def mock_openai_client(self):
         """Mock OpenAI client for testing."""
-        mock_client = Mock()
-        mock_response = Mock()
-        mock_response.choices = [Mock()]
+        mock_client = Mock(
+    mock_response = Mock(
+    mock_response.choices = [Mock()]
         mock_response.choices[0].message.content = "Test response from GPT"
-        mock_response.usage = Mock()
-        mock_response.usage.total_tokens = 150
+        mock_response.usage = Mock(
+    mock_response.usage.total_tokens = 150
         mock_client.chat.completions.create.return_value = mock_response
         return mock_client
 
@@ -67,9 +67,8 @@ class TestGPTHandler:
             with patch(
                 "app.chatops.gpt_handler.OpenAI", return_value=mock_openai_client
             ):
-                handler = GPTHandler()
-
-                assert handler.api_key == "env-api-key"
+                handler = GPTHandler(
+    assert handler.api_key == "env-api-key"
                 assert handler.client == mock_openai_client
 
     def test_init_openai_client_error(self):
@@ -272,13 +271,13 @@ class TestGPTHandler:
     def test_process_query_response_sanitization(self, gpt_handler, valid_context):
         """Test that GPT responses are sanitized."""
         # Mock a response with potentially dangerous content
-        mock_response = Mock()
-        mock_response.choices = [Mock()]
+        mock_response = Mock(
+    mock_response.choices = [Mock()]
         mock_response.choices[0].message.content = (
             "<script>alert('xss')</script>Test response"
         )
-        mock_response.usage = Mock()
-        mock_response.usage.total_tokens = 150
+        mock_response.usage = Mock(
+    mock_response.usage.total_tokens = 150
         gpt_handler.client.chat.completions.create.return_value = mock_response
 
         query = "What is the current system status?"

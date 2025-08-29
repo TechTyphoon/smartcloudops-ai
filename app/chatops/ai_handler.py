@@ -1,18 +1,16 @@
-from abc import ABC, abstractmethod
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
-    """
+"""
 Smart CloudOps AI - Flexible AI Handler
 Supports both OpenAI and Google Gemini APIs
 """
+from abc import ABC, abstractmethod
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional
 import logging
 from flask import Flask, jsonify, request
 import os
 import re
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 class AIProvider(ABC):
     """Abstract base class for AI providers."""
     @abstractmethod
@@ -49,7 +47,7 @@ class OpenAIProvider(AIProvider):
                 messages=messages,
                 max_tokens=kwargs.get("max_tokens", 500),
                 temperature=kwargs.get("temperature", 0.3),
-                timeout=kwargs.get("timeout", 30))
+                timeout=kwargs.get("timeout", 30)
 
             return {}
                 "status": "success",
@@ -296,7 +294,7 @@ class GeminiProvider(AIProvider):
 class FlexibleAIHandler:
     """Flexible AI handler supporting multiple providers."""
     def __init__(self, provider: str = "auto"):
-    """"""
+    """""
         Initialize AI handler.
 
         Args:
@@ -309,8 +307,8 @@ class FlexibleAIHandler:
 
     def _setup_local_provider(self):
     """Set up local provider."""
-        self.provider = LocalProvider()
-        self.provider.initialize()
+        self.provider = LocalProvider(
+    self.provider.initialize()
 
     def _detect_auto_provider(self):
         "Detect available provider automatically.""
@@ -325,8 +323,8 @@ class FlexibleAIHandler:
 
     def _setup_openai_provider(self):
     """Set up OpenAI provider."""
-        self.provider = OpenAIProvider()
-        api_key = os.getenv("OPENAI_API_KEY")
+        self.provider = OpenAIProvider(
+    api_key = os.getenv("OPENAI_API_KEY")
         if api_key:
             if not self.provider.initialize(api_key:
                 logger.warning("OpenAI provider failed, falling back to local")
@@ -339,8 +337,8 @@ class FlexibleAIHandler:
 
     def _setup_gemini_provider(self):
     """Set up Gemini provider."""
-        self.provider = GeminiProvider()
-        api_key = os.getenv("GEMINI_API_KEY")
+        self.provider = GeminiProvider(
+    api_key = os.getenv("GEMINI_API_KEY")
         if api_key:
             if not self.provider.initialize(api_key:
                 logger.warning("Gemini provider failed, falling back to local")

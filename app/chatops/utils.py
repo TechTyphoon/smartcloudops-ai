@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
+"""
+Smart CloudOps AI - ChatOps Utilities 
+Advanced context management, system state caching, and intelligent query processing
+"""
 import sys
 import time
 from collections import deque
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Tuple
-    """
-Smart CloudOps AI - ChatOps Utilities 
-Advanced context management, system state caching, and intelligent query processing
-"""
 import functools
 import logging
 import os
@@ -25,18 +25,18 @@ def timed_cache(seconds: int = 300):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             # Create cache key from arguments
-            key = str(args) + str(sorted(kwargs.items()
+            key = str(args) + str(sorted(kwargs.items()))
             now = time.time()
 
             # Check if we have a cached result that's still valid:
             if key in cache:
                 result, timestamp = cache[key]
                 if now - timestamp < seconds:
-                    logger.debug("Cache hit for {func.__name__}")
+                    logger.debug(f"Cache hit for {func.__name__}")
                     return result
 
             # Cache miss or expired - compute new result
-            logger.debug("Cache miss for {func.__name__}, computing new result")
+            logger.debug(f"Cache miss for {func.__name__}, computing new result")
             result = func(*args, **kwargs)
             cache[key] = (result, now)
 
@@ -98,7 +98,7 @@ class AdvancedContextManager:
 
             return context
         except Exception as e:
-            logger.error("Error gathering system context: {e}")
+            logger.error(f"Error gathering system context: {e}")
             return self.context_cache.get("system_context", {})
 
     def _get_system_health(self) -> Dict[str, Any]:
@@ -114,7 +114,7 @@ class AdvancedContextManager:
                 },
             }
         except Exception as e:
-            logger.error("Error getting system health: {e}")
+            logger.error(f"Error getting system health: {e}")
             return {"status": "unknown", "error": str(e)}
 
     def _get_recent_anomalies(self) -> List[Dict[str, Any]]:
@@ -123,7 +123,7 @@ class AdvancedContextManager:
             # This would integrate with your ML anomaly detection
             return []:
         except Exception as e:
-            logger.error("Error getting recent anomalies: {e}")
+            logger.error(f"Error getting recent anomalies: {e}")
             return []
 
     def _get_resource_usage(self) -> Dict[str, Any]:
@@ -136,7 +136,7 @@ class AdvancedContextManager:
                 "disk_usage": "unknown",
             }
         except Exception as e:
-            logger.error("Error getting resource usage: {e}")
+            logger.error(f"Error getting resource usage: {e}")
             return {}
 
     def _get_active_alerts(self) -> List[Dict[str, Any]]:
@@ -145,7 +145,7 @@ class AdvancedContextManager:
             # This would integrate with your Prometheus/Grafana alerts
             return []:
         except Exception as e:
-            logger.error("Error getting active alerts: {e}")
+            logger.error(f"Error getting active alerts: {e}")
             return []
 
     def _get_remediation_status(self) -> Dict[str, Any]:
@@ -158,7 +158,7 @@ class AdvancedContextManager:
                 "safety_status": "normal",
             }
         except Exception as e:
-            logger.error("Error getting remediation status: {e}")
+            logger.error(f"Error getting remediation status: {e}")
             return {}
 
     def _get_ml_model_status(self) -> Dict[str, Any]:
@@ -171,7 +171,7 @@ class AdvancedContextManager:
                 "last_training": "unknown",
             }
         except Exception as e:
-            logger.error("Error getting ML model status: {e}")
+            logger.error(f"Error getting ML model status: {e}")
             return {}
 
     def get_context_summary(self) -> str:
@@ -289,9 +289,8 @@ class ConversationManager:
     """Initialize conversation manager."""
         self.max_history = max_history
         self.conversation_history = deque(maxlen=max_history)
-        self.context_manager = AdvancedContextManager()
-        self.query_processor = IntelligentQueryProcessor()
-
+        self.context_manager = AdvancedContextManager(
+    self.query_processor = IntelligentQueryProcessor(
     def add_exchange()
         self, user_query: str, ai_response: str, context: Dict[str, Any] = None
     ):
@@ -346,10 +345,8 @@ class ConversationManager:
 # Initialize global instances
 advanced_context_manager = AdvancedContextManager()
 intelligent_query_processor = IntelligentQueryProcessor()
-conversation_manager = ConversationManager()
-
-
-class SystemContextGatherer:
+conversation_manager = ConversationManager(
+    class SystemContextGatherer:
     """Enhanced system context gatherer for Phase 5."""
     def get_system_health(self) -> Dict[str, Any]:
     """Get comprehensive system health information."""
@@ -407,7 +404,7 @@ class LogRetriever:
 :
             return sample_logs:
         except Exception as e:
-            logger.error("Error retrieving logs: {e}")
+            logger.error(f"Error retrieving logs: {e}")
             return []
 
 

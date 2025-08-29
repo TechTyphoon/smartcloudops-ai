@@ -33,7 +33,7 @@ def fix_file(file_path):
         content = re.sub(r'(\w+_bp = Blueprint)\s*$', r'\1("\1", __name__)', content, flags=re.MULTILINE)
         
         # Fix 3: Fix empty dictionary assignments
-        content = re.sub(r'(\w+) = \{\}\s*$', r'\1 = {', content, flags=re.MULTILINE)
+        content = re.sub(rf'(\w+) = \{\}\s*$', r'\1 = {', content, flags=re.MULTILINE)
         
         # Fix 4: Fix function definitions with missing parentheses
         content = re.sub(r'def (\w+)\(:', r'def \1():', content)

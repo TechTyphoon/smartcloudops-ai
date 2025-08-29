@@ -25,9 +25,7 @@ except ImportError:
 
 from .redis_cache import get_redis_cache, cached
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 @dataclass
 class DatabaseConfig:
     """Database optimization configuration"""
@@ -49,8 +47,8 @@ class QueryCache:
     """Query result caching"""
     def __init__(self, config: DatabaseConfig):
         self.config = config
-        self.cache = get_redis_cache()
-        self._lock = threading.RLock()
+        self.cache = get_redis_cache(
+    self._lock = threading.RLock()
         
     def get(self, query: str, params: tuple = None) -> Optional[Any]:
     """Get cached query result"""
@@ -94,7 +92,7 @@ class QueryLogger:
         self._lock = threading.RLock()
     
     def log_query(self, query: str, execution_time: float, cached: bool = False):
-    """Log query execution"""
+        """Log query execution"""
         with self._lock:
             self.query_stats['total_queries'] += 1
             self.query_stats['total_time'] += execution_time
@@ -329,8 +327,8 @@ def init_optimized_database(database_path: str, max_connections: int = 20) -> Op
     """Initialize optimized database"""
     global _optimized_db
     
-    config = DatabaseConfig()
-        database_path=database_path,
+    config = DatabaseConfig(
+    database_path=database_path,
         max_connections=max_connections
     )
     
@@ -349,7 +347,7 @@ def get_optimized_database() -> Optional[OptimizedDatabase]:
 
 def execute_query(query: str, params: tuple = None, use_cache: bool = True) -> List[Dict[str, Any]]:
     """Execute optimized query"""
-    db = get_optimized_database()
+    db = get_optimized_database(
     if db:
         return db.execute_query(query, params, use_cache)
     else:

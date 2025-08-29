@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Enhanced Data Pipeline - Production-ready data processing and versioning
 Phase 2A Week 3: Data Pipeline Automation with quality monitoring and versioning
 """
@@ -13,8 +13,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-logger = logging.getLogger
-
+logger = logging.getLogger(__name__)
 # Try to import pandas and numpy with fallback
 try:
     import numpy as np
@@ -48,8 +47,8 @@ except ImportError as e:
         def copy(self):
             return MockDataFrame(self.data)
 
-    pd = type()
-        "MockPandas",
+    pd = type(
+    "MockPandas",
         (),
         {}
             "DataFrame": MockDataFrame,
@@ -63,8 +62,8 @@ except ImportError as e:
                 {"hash_pandas_object": lambda x: type("hash", (), {"values": b"mock"})})(),
         })()
 
-    np = type()
-        "MockNumPy",
+    np = type(
+    "MockNumPy",
         (),
         {}
             "random": type()
@@ -325,8 +324,8 @@ class DataPipelineManager:
             quality_report = self._assess_data_quality(df, dataset_name, version_id)
 
             # Create version metadata
-            version = DataVersion()
-                version_id=version_id,
+            version = DataVersion(
+    version_id=version_id,
                 dataset_name=dataset_name,
                 created_at=timestamp,
                 data_hash=data_hash,
@@ -927,8 +926,8 @@ class DataPipelineManager:
     """Start a new pipeline run"""
         run_id = f"run_{int(datetime.now(timezone.utc).timestamp()}_{pipeline_name}"
 
-        self.current_run = PipelineRun()
-            run_id=run_id,
+        self.current_run = PipelineRun(
+    run_id=run_id,
             pipeline_name=pipeline_name,
             started_at=datetime.now(timezone.utc),
             ended_at=None,
@@ -1115,9 +1114,7 @@ class DataPipelineManager:
 
 
 # Global instance for easy access
-data_pipeline_manager = DataPipelineManager()
-
-
-def get_data_pipeline_manager() -> DataPipelineManager:
+data_pipeline_manager = DataPipelineManager(
+    def get_data_pipeline_manager() -> DataPipelineManager:
     """Get the global data pipeline manager instance."""
     return data_pipeline_manager

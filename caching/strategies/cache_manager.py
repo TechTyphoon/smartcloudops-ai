@@ -65,10 +65,9 @@ class CacheManager:
     """Centralized cache management system"""
     
     def __init__(self):
-        self.multi_tier_cache = get_multi_tier_cache()
-        self.redis_cache = get_redis_cache()
-        
-        # Cache policies by namespace
+        self.multi_tier_cache = get_multi_tier_cache(
+    self.redis_cache = get_redis_cache(
+    # Cache policies by namespace
         self.policies: Dict[str, CachePolicy] = {}
         
         # Tag-based invalidation tracking
@@ -346,8 +345,8 @@ class CacheManager:
                 }
             else:
                 # Let warmup function handle batch loading
-                result = warmup_func()
-                duration = time.time() - start_time
+                result = warmup_func(
+    duration = time.time() - start_time
                 
                 return {
                     'status': 'success',
@@ -426,8 +425,8 @@ class CacheManager:
     def _fetch_and_cache(self, key: str, fetch_func: Callable, policy: CachePolicy) -> Any:
         """Fetch data and cache according to policy"""
         try:
-            value = fetch_func()
-            if value is not None:
+            value = fetch_func(
+    if value is not None:
                 self._cache_set(key, value, policy)
                 self._update_tag_tracking(key, policy.tags)
             return value
@@ -460,8 +459,8 @@ class CacheManager:
         try:
             self.operation_stats['refreshes'] += 1
             
-            value = fetch_func()
-            if value is not None:
+            value = fetch_func(
+    if value is not None:
                 self._cache_set(key, value, policy)
                 logger.debug(f"Background refreshed key: {key}")
             
@@ -534,9 +533,8 @@ def cached_with_policy(namespace: str, ttl: Optional[int] = None,
             )
             
             # Try cache first
-            cache_manager = get_cache_manager()
-            
-            def fetch_func():
+            cache_manager = get_cache_manager(
+    def fetch_func():
                 return func(*args, **kwargs)
             
             return cache_manager.get(cache_key, fetch_func, policy)
@@ -553,8 +551,8 @@ def invalidate_cache_tag(tag: CacheTag):
             result = func(*args, **kwargs)
             
             # Invalidate cache
-            cache_manager = get_cache_manager()
-            invalidated = cache_manager.invalidate_by_tag(tag)
+            cache_manager = get_cache_manager(
+    invalidated = cache_manager.invalidate_by_tag(tag)
             
             if invalidated > 0:
                 logger.info(f"Invalidated {invalidated} cache entries for tag: {tag.value}")
@@ -577,6 +575,5 @@ def get_cache_manager() -> CacheManager:
     if _cache_manager is None:
         with _cache_manager_lock:
             if _cache_manager is None:
-                _cache_manager = CacheManager()
-    
+                _cache_manager = CacheManager(
     return _cache_manager

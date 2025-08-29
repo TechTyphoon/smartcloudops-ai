@@ -501,7 +501,7 @@ print("✅ Logging performance optimization applied")
             
             try:
                 result = optimization()
-                results.append(result)
+    results.append(result)
                 
                 if result.success:
                     print(f"✅ {result.optimization_name} completed")

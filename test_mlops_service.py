@@ -52,8 +52,7 @@ class SimplifiedMLOpsService:
 
 # Test the simplified service
 if __name__ == "__main__":
-    service = SimplifiedMLOpsService()
-    
+    service = SimplifiedMLOpsService(
     experiments, pagination = service.get_experiments()
     print(f"✅ Retrieved {len(experiments)} experiments")
     

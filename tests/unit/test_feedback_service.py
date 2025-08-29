@@ -21,8 +21,7 @@ class TestFeedbackService:
     
     def setup_method(self):
         """Set up test fixtures before each test method."""
-        self.service = FeedbackService()
-    
+        self.service = FeedbackService(
     def test_service_initialization(self):
         """Test that FeedbackService initializes correctly."""
         assert self.service is not None
@@ -291,8 +290,7 @@ class TestFeedbackServiceEdgeCases:
     
     def setup_method(self):
         """Set up test fixtures before each test method."""
-        self.service = FeedbackService()
-    
+        self.service = FeedbackService(
     def test_pagination_edge_cases(self):
         """Test pagination edge cases."""
         # Test page beyond available data

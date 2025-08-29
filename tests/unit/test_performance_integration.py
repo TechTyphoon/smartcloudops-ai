@@ -299,7 +299,7 @@ class TestPerformanceIntegration(unittest.TestCase):
             return "test_result"
         
         result = test_function()
-        self.assertEqual(result, "test_result")
+    self.assertEqual(result, "test_result")
 
 
 class TestMemoryManagement(unittest.TestCase):
