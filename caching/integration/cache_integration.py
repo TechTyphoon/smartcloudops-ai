@@ -21,16 +21,14 @@ logger = logging.getLogger(__name__)
 
 def integrate_mlops_caching():
     """Integrate caching with MLOps service"""
-    cache_manager = get_cache_manager()
-    
+    cache_manager = get_cache_manager(
     # Register MLOps warmup functions
     def warm_experiments():
         """Warm experiments cache"""
         try:
             from app.services.mlops_service import MLOpsService
-            mlops = MLOpsService()
-            
-            # Get all experiment IDs and warm cache
+            mlops = MLOpsService(
+    # Get all experiment IDs and warm cache
             experiments = mlops.get_experiments() or []
             loaded = 0
             
@@ -54,9 +52,8 @@ def integrate_mlops_caching():
         """Warm models cache"""
         try:
             from app.services.mlops_service import MLOpsService
-            mlops = MLOpsService()
-            
-            # Get all models and warm cache
+            mlops = MLOpsService(
+    # Get all models and warm cache
             models = mlops.get_models() or []
             loaded = 0
             
@@ -118,8 +115,8 @@ def integrate_database_caching():
                 result = func(*args, **kwargs)
                 
                 # Invalidate cache for this table
-                cache_manager = get_cache_manager()
-                invalidated = cache_manager.invalidate_by_pattern(f"db:{table}:*")
+                cache_manager = get_cache_manager(
+    invalidated = cache_manager.invalidate_by_pattern(f"db:{table}:*")
                 
                 if invalidated > 0:
                     logger.info(f"Invalidated {invalidated} cache entries for table: {table}")
@@ -161,9 +158,8 @@ def setup_cache_warming_schedule():
     
     def warm_caches_periodically():
         """Periodic cache warming function"""
-        cache_manager = get_cache_manager()
-        
-        while True:
+        cache_manager = get_cache_manager(
+    while True:
             try:
                 # Warm MLOps caches every hour
                 cache_manager.warm_cache('mlops:experiments')
@@ -187,8 +183,7 @@ def setup_cache_warming_schedule():
 
 def get_cache_health_status() -> Dict[str, Any]:
     """Get comprehensive cache health status"""
-    cache_manager = get_cache_manager()
-    
+    cache_manager = get_cache_manager(
     try:
         # Get cache statistics
         stats = cache_manager.get_stats()

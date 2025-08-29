@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Knowledge Base and Recommendation Engine - Minimal Working Version
 Intelligent learning system for anomaly analysis and remediation recommendations
 """
@@ -15,9 +15,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 @dataclass
 class KnowledgeNode:
     """Node in the knowledge graph."""
@@ -53,8 +51,8 @@ class KnowledgeGraph:
         node_id = f"{node_type}_{self.node_counter}"
         self.node_counter += 1
 
-        node = KnowledgeNode()
-            node_id=node_id,
+        node = KnowledgeNode(
+    node_id=node_id,
             node_type=node_type,
             properties=properties,
             created_at=datetime.now(),
@@ -76,8 +74,8 @@ class KnowledgeGraph:
         if source_id not in self.nodes or target_id not in self.nodes:
             raise ValueError("Source or target node not found")
 
-        edge = KnowledgeEdge()
-            source_id=source_id,
+        edge = KnowledgeEdge(
+    source_id=source_id,
             target_id=target_id,
             relationship_type=relationship_type,
             weight=weight,
@@ -197,8 +195,8 @@ class RecommendationEngine:
     """Recommendation engine for remediation actions."""
     def __init__(self, knowledge_graph: KnowledgeGraph):
         self.knowledge_graph = knowledge_graph
-        self.recommendation_model = RandomForestRegressor()
-            n_estimators=100, random_state=42
+        self.recommendation_model = RandomForestRegressor(
+    n_estimators=100, random_state=42
         )
         self.is_trained = False
         self.feature_names = []
@@ -216,7 +214,7 @@ class RecommendationEngine:
                     },
                     "remediation": {"action_type": "scale_up", "success": True},
                 },
-                {}
+                {
                     "anomaly": {}
                         "severity": "medium",
                         "source": "memory_alert",
@@ -325,8 +323,8 @@ class RecommendationEngine:
             recommendations.sort(key=lambda x: x["confidence"], reverse=True)
 
             # Remove duplicates based on action_type
-            seen_actions = set()
-            unique_recommendations = []
+            seen_actions = set(
+    unique_recommendations = []
             for rec in recommendations:
                 if rec["action_type"] not in seen_actions:
                     seen_actions.add(rec["action_type"])
@@ -359,8 +357,8 @@ class RecommendationEngine:
 
                 if successful_remediations:
                     # Use best remediation as target
-                    best_remediation = max()
-                        successful_remediations,
+                    best_remediation = max(
+    successful_remediations,
                         key=lambda r: r.properties.get("success", 1.0))
 
                     # Encode action type as numeric target
@@ -423,8 +421,8 @@ class RecommendationEngine:
             return "unknown"
 
         # Create temporary node for feature extraction
-        temp_node = KnowledgeNode()
-            node_id="temp",
+        temp_node = KnowledgeNode(
+    node_id="temp",
             node_type="anomaly",
             properties=anomaly_info,
             created_at=datetime.now(),
@@ -448,8 +446,8 @@ class RecommendationEngine:
 class KnowledgeBaseManager:
     """Manages knowledge base operations."""
     def __init__(self):
-        self.knowledge_graph = KnowledgeGraph()
-        self.recommendation_engine = RecommendationEngine(self.knowledge_graph)
+        self.knowledge_graph = KnowledgeGraph(
+    self.recommendation_engine = RecommendationEngine(self.knowledge_graph)
 
     def initialize(self):
     """Initialize knowledge base."""

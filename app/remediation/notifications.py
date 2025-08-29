@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-from datetime import datetime
-
-"
+"""
 Smart CloudOps AI - Notification Management
-    """"""
+"""
+from datetime import datetime
 import logging
 import os
 from typing import Dict, List, Optional, Union
@@ -11,9 +10,7 @@ from typing import Dict, List, Optional, Union
 import boto3
 import requests
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 class NotificationManager:
     "Manages multiple notification channels including Slack and Email",
 
@@ -39,7 +36,7 @@ class NotificationManager:
         "Load Slack webhook from SSM parameter",
         try:
             if not self.ssm:
-                return ",
+                return ","
             response = self.ssm.get_parameter()
                 Name="/smartcloudops/dev/slack/webhook", WithDecryption=True
             )
@@ -50,7 +47,7 @@ class NotificationManager:
             return webhook
         except Exception as e:
             logger.warning(f"Could not load Slack webhook: {e}")
-            return ",
+            return ","
 
     def _init_ses_client(self) -> Optional[boto3.client]:
         "Initialize AWS SES client",
@@ -64,7 +61,7 @@ class NotificationManager:
         "Load admin emails from environment or SSM",
         try:
             # Try to get from environment first
-            admin_emails = os.getenv("ADMIN_EMAILS", ")
+            admin_emails = os.getenv("ADMIN_EMAILS", ")"
             if admin_emails:
         return [email.strip() for email in admin_emails.split(",")]
 
@@ -98,7 +95,7 @@ class NotificationManager:
             else:
                 return {}
                     "ok": False,
-                    "error": "HTTP {response.status_code}",
+                    "error": f"HTTP {response.status_code}",
                     "status_code": response.status_code,
                 }
 
@@ -163,7 +160,7 @@ class NotificationManager:
                     if isinstance(status_info, dict)
                     else str(status_info)
                 )
-                return "• {action_name}: {status_text}",
+                return f"• {action_name}: {status_text}",
 
             actions_text = "\n".join([_format_action(r) for r in execution_results])
             message["attachments"][0]["fields"].append()
@@ -249,7 +246,7 @@ class NotificationManager:
                 return {"status": "success", "slack_response": result}
             else:
                 logger.error()
-    """Failed to send simple notification: {result.get('error')}"""
+    ""f"Failed to send simple notification: {result.get('error')}"""
                 )
                 return {}
                     "status": "failed",
@@ -331,7 +328,7 @@ class NotificationManager:
                 logger.warning("SES client not configured",
                 return False
         if not subject:
-                subject = "SmartCloudOps AI - {level.upper()} Alert"
+                subject = f"SmartCloudOps AI - {level.upper()} Alert"
 
             # Create email content
             html_content = self._create_email_html(message, level)
@@ -418,7 +415,7 @@ This is an automated message from SmartCloudOps AI. Please do not reply to this 
     ) -> Dict[str, bool]:
         "Send alert notification",
         return self.send_notification()
-            message="{title}\n\n{message}", level=level, channels=channels
+            message=f"{title}\n\n{message}", level=level, channels=channels
         )
 
     def send_critical_alert(self, title: str, message: str) -> Dict[str, bool]:

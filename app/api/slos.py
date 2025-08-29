@@ -25,9 +25,8 @@ def get_slo_status_endpoint():
     """Get status for all SLOs"""
     try:
         # Get SLO status
-        slo_status = get_all_slo_status()
-        
-        # Log business event
+        slo_status = get_all_slo_status(
+    # Log business event
         log_business_event(
             event_type="slo_status_check",
             business_value=len(slo_status),
@@ -105,8 +104,8 @@ def get_specific_slo_status(slo_name: str):
 def get_error_budget():
     """Get error budget for all SLOs"""
     try:
-        slo_manager = get_slo_manager()
-        error_budgets = {}
+        slo_manager = get_slo_manager(
+    error_budgets = {}
         for slo_name in slo_manager.slos:
             # Use placeholder value for demonstration
             current_value = 99.5
@@ -248,9 +247,8 @@ def get_slo_trends():
 def get_slo_alerts():
     """Get Prometheus alert rules for SLOs"""
     try:
-        alerts = generate_slo_alerts()
-        
-        return jsonify({
+        alerts = generate_slo_alerts(
+    return jsonify({
             "status": "success",
             "data": {
                 "alerts": alerts,
@@ -273,9 +271,8 @@ def get_slo_metrics():
     """Get SLO metrics in Prometheus format"""
     try:
         # Get SLO status
-        slo_status = get_all_slo_status()
-        
-        # Generate Prometheus metrics
+        slo_status = get_all_slo_status(
+    # Generate Prometheus metrics
         metrics = []
         timestamp = int(time.time())
         
@@ -314,9 +311,8 @@ def get_slo_metrics():
 def slo_health_check():
     """Health check for SLO monitoring"""
     try:
-        slo_manager = get_slo_manager()
-        
-        # Check if SLO manager is available
+        slo_manager = get_slo_manager(
+    # Check if SLO manager is available
         if not slo_manager:
             return jsonify({
                 "status": "error",
@@ -325,9 +321,8 @@ def slo_health_check():
             }), 503
         
         # Get basic SLO status
-        slo_status = get_all_slo_status()
-        
-        # Determine overall health
+        slo_status = get_all_slo_status(
+    # Determine overall health
         critical_count = sum(1 for s in slo_status.values() if s.get("status") == "critical")
         alert_count = sum(1 for s in slo_status.values() if s.get("status") == "alert")
         

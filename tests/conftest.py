@@ -40,7 +40,7 @@ from app.models import User, Anomaly, RemediationAction
 @pytest.fixture(scope="session")
 def app():
     """Create application for testing."""
-    app = create_app()
+    app = create_app(
     app.config.update({
         "TESTING": True,
         "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
@@ -79,12 +79,12 @@ def auth_headers():
 def mock_openai():
     """Mock OpenAI client for testing."""
     with patch("openai.OpenAI") as mock:
-        mock_client = MagicMock()
-        mock.return_value = mock_client
+        mock_client = MagicMock(
+    mock.return_value = mock_client
         
         # Mock chat completion
-        mock_response = MagicMock()
-        mock_response.choices = [
+        mock_response = MagicMock(
+    mock_response.choices = [
             MagicMock(message=MagicMock(content="Test AI response"))
         ]
         mock_client.chat.completions.create.return_value = mock_response
@@ -96,8 +96,8 @@ def mock_openai():
 def mock_redis():
     """Mock Redis client for testing."""
     with patch("redis.Redis") as mock:
-        mock_client = MagicMock()
-        mock.return_value = mock_client
+        mock_client = MagicMock(
+    mock.return_value = mock_client
         
         # Mock common Redis operations
         mock_client.get.return_value = None
@@ -170,8 +170,8 @@ def mock_aws_services():
     """Mock AWS services for testing."""
     with patch("boto3.client") as mock_client:
         # Mock EC2
-        ec2_mock = MagicMock()
-        ec2_mock.describe_instances.return_value = {
+        ec2_mock = MagicMock(
+    ec2_mock.describe_instances.return_value = {
             "Reservations": [{
                 "Instances": [{
                     "InstanceId": "i-1234567890",
@@ -181,16 +181,16 @@ def mock_aws_services():
         }
         
         # Mock CloudWatch
-        cloudwatch_mock = MagicMock()
-        cloudwatch_mock.get_metric_statistics.return_value = {
+        cloudwatch_mock = MagicMock(
+    cloudwatch_mock.get_metric_statistics.return_value = {
             "Datapoints": [
                 {"Timestamp": datetime.now(timezone.utc), "Average": 50.0}
             ]
         }
         
         # Mock SSM
-        ssm_mock = MagicMock()
-        ssm_mock.get_parameter.return_value = {
+        ssm_mock = MagicMock(
+    ssm_mock.get_parameter.return_value = {
             "Parameter": {"Value": "test-value"}
         }
         

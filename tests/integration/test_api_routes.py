@@ -227,7 +227,7 @@ class TestAPIRoutes:
     def test_chatops_endpoint_content_type_validation(self, client):
         """Test ChatOps endpoint content type validation."""
         response = client.post('/api/chatops',
-                             data='{"query": "test"}',
+                             data=f'{"query": "test"}',
                              content_type='text/plain')  # Wrong content type
         
         assert response.status_code == 400

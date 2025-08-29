@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Remediation Service - Business Logic Layer
 Handles all remediation action-related business operations
 """
@@ -27,7 +27,7 @@ class RemediationService:
                 "created_at": "2024-01-15T10:35:00Z",
                 "updated_at": "2024-01-15T10:36:30Z",
             },
-            {}
+            {
                 "id": 2,
                 "anomaly_id": 2,
                 "action_type": "restart_service",

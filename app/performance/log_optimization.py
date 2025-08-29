@@ -18,9 +18,7 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 from functools import wraps
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 @dataclass
 class LogConfig:
     """Log optimization configuration"""
@@ -309,7 +307,7 @@ class LogManager:
         
         # Count log files
         try:
-            log_files = list(self.rotator.log_dir.glob("*.log*")
+            log_files = list(self.rotator.log_dir.glob("*.log*"))
             stats['total_files'] = len(log_files)
             stats['total_size'] = sum(f.stat().st_size for f in log_files)
         except Exception as e:
@@ -350,7 +348,7 @@ def get_log_manager() -> Optional[LogManager]:
 
 def write_log(message: str):
     """Write log message"""
-    manager = get_log_manager()
+    manager = get_log_manager(
     if manager:
         manager.write(message)
     else:
@@ -360,7 +358,7 @@ def write_log(message: str):
 
 def write_json_log(data: Dict[str, Any]):
     """Write JSON log message"""
-    manager = get_log_manager()
+    manager = get_log_manager(
     if manager:
         manager.write_json(data)
     else:

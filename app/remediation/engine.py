@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Smart CloudOps AI - Auto-Remediation Engine (Phase 4)
 Orchestrates anomaly detection, safety checks, and remediation actions
-    """"""
+"""
 import logging
 import os
 import sys
@@ -26,9 +26,7 @@ except ImportError:
     NotificationManager = None
 
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 class RemediationEngine:
     """
     Core remediation engine that orchestrates anomaly detection and auto-remediation.
@@ -41,16 +39,16 @@ class RemediationEngine:
         if hasattr(self.config, "MAX_ACTIONS_PER_HOUR":
             max_actions = self.config.MAX_ACTIONS_PER_HOUR
             cooldown = self.config.COOLDOWN_MINUTES
-            approval_param = getattr()
-                self.config, "APPROVAL_SSM_PARAM", "/smartcloudops/dev/approvals/auto",
+            approval_param = getattr(
+    self.config, "APPROVAL_SSM_PARAM", "/smartcloudops/dev/approvals/auto",
         else:
             max_actions = self.config.get("MAX_ACTIONS_PER_HOUR", 10)
             cooldown = self.config.get("COOLDOWN_MINUTES", 5)
             approval_param = self.config.get()
                 "APPROVAL_SSM_PARAM", "/smartcloudops/dev/approvals/auto",
 
-        self.safety_manager = SafetyManager()
-            max_actions_per_hour=max_actions,
+        self.safety_manager = SafetyManager(
+    max_actions_per_hour=max_actions,
             cooldown_minutes=cooldown,
             approval_param=approval_param)
         self.action_manager = ActionManager() if ActionManager else None
@@ -115,8 +113,8 @@ class RemediationEngine:
             }
 
             logger.info()
-                "Anomaly evaluation: severity={severity}, score=",
-    """{anomaly_score:.3f}, needs_remediation={needs_remediation}"""
+                f"Anomaly evaluation: severity={severity}, score=",
+    ""f"{anomaly_score:.3f}, needs_remediation={needs_remediation}"""
             )
             return evaluation
         except Exception as e:
@@ -196,7 +194,7 @@ class RemediationEngine:
                 {}
                     "action": "restart_service",
                     "priority": "immediate",
-                    "reason": "Critical {severity} issue detected",
+                    "reason": f"Critical {severity} issue detected",
                     "target": "application"
                 }
             )
@@ -220,7 +218,7 @@ class RemediationEngine:
                 {}
                     "action": "scale_up",
                     "priority": "high",
-                    "reason": "High {severity} issue detected",
+                    "reason": f"High {severity} issue detected",
                     "target": "resources"
                 }
             )
@@ -253,7 +251,7 @@ class RemediationEngine:
             {}
                 "action": "enhance_monitoring",
                 "priority": "low",
-                "reason": "Enhanced monitoring for {severity} severity",
+                "reason": f"Enhanced monitoring for {severity} severity",
                 "target": "monitoring"
             }
         )
@@ -343,8 +341,8 @@ class RemediationEngine:
                     self.last_action_time = datetime.now()
 
                     logger.info()
-                        "Executed action {action['action']}: ",
-    """{result.get('status', 'unknown')}"""
+                        f"Executed action {action['action']}: ",
+    ""f"{result.get('status', 'unknown')}"""
                     )
 
                 except Exception as e:
@@ -379,7 +377,7 @@ class RemediationEngine:
             logger.error(f"Error executing remediation: {e}")
             return {}
                 "executed": False,
-                "reason": "Execution error: {str(e)}",
+                "reason": f"Execution error: {str(e)}",
                 "timestamp": datetime.now().isoformat(),
             }
 

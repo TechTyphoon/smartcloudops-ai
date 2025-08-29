@@ -285,8 +285,8 @@ class UserManager:
     
     def __init__(self, db_path: str = "data/users.db"):
         self.db_path = db_path
-        self.role_manager = RolePermissionManager()
-        self.jwt_secret = self._get_jwt_secret()
+        self.role_manager = RolePermissionManager(
+    self.jwt_secret = self._get_jwt_secret()
         self.token_expiry_hours = 24
         self.max_failed_attempts = 5
         self.lockout_duration_minutes = 30
@@ -701,10 +701,8 @@ class UserManager:
 
 
 # Global user manager instance
-user_manager = UserManager()
-
-
-def require_permission(permission: Permission):
+user_manager = UserManager(
+    def require_permission(permission: Permission):
     """Decorator to require specific permission"""
     def decorator(func: Callable) -> Callable:
         @wraps(func)

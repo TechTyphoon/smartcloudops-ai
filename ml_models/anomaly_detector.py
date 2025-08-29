@@ -36,12 +36,12 @@ class AnomalyDetector:
         self.model = IsolationForest(
             contamination=contamination, random_state=random_state, n_estimators=100
         )
-        self.scaler = StandardScaler()
-        self.is_trained = False
+        self.scaler = StandardScaler(
+    self.is_trained = False
         self.is_initialized = False
-        self.data_processor = DataProcessor()
-        self.model_trainer = AnomalyModelTrainer()
-        self.model_path = "ml_models/anomaly_detector.pkl"
+        self.data_processor = DataProcessor(
+    self.model_trainer = AnomalyModelTrainer(
+    self.model_path = "ml_models/anomaly_detector.pkl"
         self.scaler_path = "ml_models/anomaly_scaler.pkl"
         self.feature_columns = [
             "cpu_usage_percent",
@@ -557,7 +557,7 @@ class AnomalyDetector:
             }
 
             logger.info(
-                "Multi-metric analysis completed: {len(anomalies)} anomalies detected"
+                f"Multi-metric analysis completed: {len(anomalies)} anomalies detected"
             )
             return result
 
@@ -694,7 +694,7 @@ class AnomalyDetector:
             }
 
             logger.info(
-                "Failure prediction completed: {adjusted_probability:.3f} probability"
+                f"Failure prediction completed: {adjusted_probability:.3f} probability"
             )
             return result
 
@@ -857,7 +857,7 @@ class AnomalyDetector:
                 "explanation_timestamp": datetime.now().isoformat(),
             }
 
-            logger.info("Anomaly explanation generated with {len(factors)} factors")
+            logger.info(f"Anomaly explanation generated with {len(factors)} factors")
             return result
 
         except Exception as e:
@@ -1157,8 +1157,8 @@ class AnomalyModelTrainer:
         self.model = IsolationForest(
             contamination=0.1, random_state=42, n_estimators=100
         )
-        self.scaler = StandardScaler()
-        return self.model
+        self.scaler = StandardScaler(
+    return self.model
 
     def train(self, data):
         """Train the anomaly detection model"""
@@ -1191,7 +1191,7 @@ class AnomalyModelTrainer:
             }
 
         except Exception as e:
-            return {"status": "failed", "reason": "Training failed: {str(e)}"}
+            return {"status": "failed", "reason": f"Training failed: {str(e)}"}
 
     def save_model(self, path=None):
         """Save trained model to disk"""
@@ -1278,8 +1278,7 @@ if __name__ == "__main__":
     # Test the implementation
     print("Testing ML Models Implementation...f")
 
-    detector = AnomalyDetector()
-
+    detector = AnomalyDetector(
     # Test with sample data
     sample_metrics = {
         "cpu_usage_percent": 75.5,
@@ -1291,6 +1290,6 @@ if __name__ == "__main__":
     }
 
     result = detector.predict(sample_metrics)
-    print("Anomaly Detection Result: {result}")
+    print(f"Anomaly Detection Result: {result}")
 
     print("✅ ML Models implementation test completed!")

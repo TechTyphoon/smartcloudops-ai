@@ -19,9 +19,7 @@ from flask import Flask, g, jsonify, request
 from .caching import cache_manager, cache_performance_monitor, cached
 from .database_optimization import get_optimized_database
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 @dataclass
 class APIMetrics:
     """API performance metrics"""
@@ -87,8 +85,8 @@ class PerformanceCollector:
             stats["avg_response_time"] = stats["total_time"] / stats["count"]
             stats["avg_response_size"] = stats["total_response_size"] / stats["count"]
 
-            error_count = sum()
-                count for code, count in stats["status_codes"].items() if code >= 400
+            error_count = sum(
+    count for code, count in stats["status_codes"].items() if code >= 400
             )
             stats["error_rate"] = error_count / stats["count"]
 
@@ -182,10 +180,8 @@ class PerformanceCollector:
 
 
 # Global performance collector
-performance_collector = PerformanceCollector()
-
-
-class ResponseCompression:
+performance_collector = PerformanceCollector(
+    class ResponseCompression:
     """HTTP response compression utility"""
     @staticmethod
     def should_compress(response_data: str, min_size: int = 1000) -> bool:
@@ -245,10 +241,8 @@ class RateLimiter:
 
 
 # Global rate limiter
-rate_limiter = RateLimiter()
-
-
-def performance_middleware(app: Flask):
+rate_limiter = RateLimiter(
+    def performance_middleware(app: Flask):
     """Flask middleware for performance monitoring"""
     @app.before_request
     def before_request():
@@ -268,8 +262,8 @@ def performance_middleware(app: Flask):
             response_size = len(response.get_data()
 
             # Record metrics
-            metrics = APIMetrics()
-                endpoint=request.endpoint or request.path,
+            metrics = APIMetrics(
+    endpoint=request.endpoint or request.path,
                 method=request.method,
                 status_code=response.status_code,
                 response_time=response_time,
@@ -469,8 +463,8 @@ class BackgroundOptimizer:
 
                 # Database optimization (if needed)
                 try:
-                    db = get_database()
-                    if db:
+                    db = get_database(
+    if db:
                         # Analyze slow queries
                         slow_queries = db.metrics.get_slow_queries(threshold=2.0)
                         if len(slow_queries) > 10:
@@ -485,10 +479,8 @@ class BackgroundOptimizer:
 
 
 # Global background optimizer
-background_optimizer = BackgroundOptimizer()
-
-
-def init_performance_monitoring(app: Flask):
+background_optimizer = BackgroundOptimizer(
+    def init_performance_monitoring(app: Flask):
     """Initialize performance monitoring for Flask app"""
     # Add middleware
     performance_middleware(app)

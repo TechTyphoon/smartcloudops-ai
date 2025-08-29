@@ -15,8 +15,7 @@ class TestMLOpsService:
     
     def setup_method(self):
         """Set up test fixtures before each test method."""
-        self.service = MLOpsService()
-    
+        self.service = MLOpsService(
     # ===== INITIALIZATION TESTS =====
     
     def test_initialization_success(self):
@@ -490,8 +489,7 @@ class TestMLOpsServiceEdgeCases:
     
     def setup_method(self):
         """Set up test fixtures before each test method."""
-        self.service = MLOpsService()
-    
+        self.service = MLOpsService(
     def test_get_experiments_empty_filters(self):
         """Test getting experiments with empty/None filters."""
         experiments, pagination = self.service.get_experiments(

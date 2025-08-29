@@ -14,24 +14,24 @@ from typing import List, Dict, Tuple
 # Security patterns to detect
 SECURITY_PATTERNS = {
     "hardcoded_passwords": [
-        r'password\s*=\s*["\'][\w\d]{1,20}["\']',
-        r'PASSWORD\s*=\s*["\'][\w\d]{1,20}["\']',
+        r'password\s*=\s*["\f'][\w\d]{1,20}["\']',
+        r'PASSWORD\s*=\s*["\f'][\w\d]{1,20}["\']',
         r'admin:admin',
         r'default.*password',
         r'password.*:.*admin',
     ],
     "weak_secrets": [
-        r'secret.*=\s*["\']\w{1,31}["\']',  # Secrets less than 32 chars
-        r'SECRET_KEY\s*=\s*["\']\w{1,31}["\']',
-        r'JWT.*KEY\s*=\s*["\']\w{1,31}["\']',
+        r'secret.*=\s*["\f']\w{1,31}["\']',  # Secrets less than 32 chars
+        r'SECRET_KEY\s*=\s*["\f']\w{1,31}["\']',
+        r'JWT.*KEY\s*=\s*["\f']\w{1,31}["\']',
     ],
     "api_keys": [
         r'api[_-]?key\s*=\s*["\'][^$\{][^"\']*["\']',
         r'API[_-]?KEY\s*=\s*["\'][^$\{][^"\']*["\']',
-        r'sk-[a-zA-Z0-9]{48}',  # OpenAI key pattern
+        rf'sk-[a-zA-Z0-9]{48}',  # OpenAI key pattern
     ],
     "aws_credentials": [
-        r'AKIA[0-9A-Z]{16}',  # AWS Access Key ID
+        rf'AKIA[0-9A-Z]{16}',  # AWS Access Key ID
         r'aws_secret_access_key\s*=\s*["\'][^$\{]',
         r'AWS_SECRET_ACCESS_KEY\s*=\s*["\'][^$\{]',
     ]

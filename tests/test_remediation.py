@@ -353,8 +353,7 @@ class TestActionManager:
     def setup_method(self):
         """Set up test fixtures."""
         with patch("boto3.client"):
-            self.action_manager = ActionManager()
-
+            self.action_manager = ActionManager(
     def test_initialization(self):
         """Test action manager initialization."""
         assert self.action_manager.region == "ap-south-1"
@@ -484,11 +483,10 @@ class TestNotificationManager:
         """Set up test fixtures."""
         with patch("boto3.clientf") as mock_boto:
             # Mock SSM to return None for webhook
-            mock_ssm = Mock()
-            mock_ssm.get_parameter.return_value = {"Parameter": {"Value": ""}}
+            mock_ssm = Mock(
+    mock_ssm.get_parameter.return_value = {"Parameter": {"Value": ""}}
             mock_boto.return_value = mock_ssm
-            self.notification_manager = NotificationManager()
-
+            self.notification_manager = NotificationManager(
     def test_initialization(self):
         """Test notification manager initialization."""
         assert self.notification_manager.slack_webhook_url == ""
@@ -504,8 +502,8 @@ class TestNotificationManager:
     @patch("requests.post")
     def test_send_slack_message_success(self, mock_post):
         """Test successful Slack message sending.""f"
-        mock_response = Mock()
-        mock_response.status_code = 200
+        mock_response = Mock(
+    mock_response.status_code = 200
         mock_response.json.return_value = {"ok": True}
         mock_post.return_value = mock_response
 
@@ -523,8 +521,8 @@ class TestNotificationManager:
     @patch("requests.post")
     def test_send_slack_message_failure(self, mock_post):
         """Test failed Slack message sending."""
-        mock_response = Mock()
-        mock_response.status_code = 400
+        mock_response = Mock(
+    mock_response.status_code = 400
         mock_response.text = "Bad Request"
         mock_post.return_value = mock_response
 

@@ -1,4 +1,17 @@
 #!/usr/bin/env python3
+"""Update system metrics."""
+try:
+SYSTEM_METRICS["cpu_percent"] = psutil.cpu_percent(interval=1)
+SYSTEM_METRICS["memory_percent"] = psutil.virtual_memory().percent
+SYSTEM_METRICS["disk_percent"] = psutil.disk_usage("/").percent
+SYSTEM_METRICS["last_updated"] = datetime.now(timezone.utc).isoformat()
+except Exception as e:
+logger.error(f"Error updating system metrics: {e}")
+
+
+@monitoring_bp.route("/metrics", methods=["GET"])
+def prometheus_metrics():
+"""Prometheus metrics endpoint."""
 from datetime import datetime, timezone
 
 """
@@ -35,19 +48,6 @@ SYSTEM_METRICS = {
 
 
 def update_system_metrics():
-    """Update system metrics."""
-    try:
-        SYSTEM_METRICS["cpu_percent"] = psutil.cpu_percent(interval=1)
-        SYSTEM_METRICS["memory_percent"] = psutil.virtual_memory().percent
-        SYSTEM_METRICS["disk_percent"] = psutil.disk_usage("/").percent
-        SYSTEM_METRICS["last_updated"] = datetime.now(timezone.utc).isoformat()
-    except Exception as e:
-        logger.error(f"Error updating system metrics: {e}")
-
-
-@monitoring_bp.route("/metrics", methods=["GET"])
-def prometheus_metrics():
-    """Prometheus metrics endpoint."""
     try:
         return generate_latest(), 200, {"Content-Type": CONTENT_TYPE_LATEST}
     except Exception as e:

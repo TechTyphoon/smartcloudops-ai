@@ -77,8 +77,8 @@ def setup_tracing()
 
     if not OTEL_AVAILABLE:
         logger.warning("OpenTelemetry not available, tracing disabled")
-        tracer = DummyTracer()
-        return False
+        tracer = DummyTracer(
+    return False
     try:
         # Create resource
         resource = Resource.create()
@@ -98,8 +98,8 @@ def setup_tracing()
         exporters = []
 
         if jaeger_endpoint:
-            jaeger_exporter = JaegerExporter()
-                agent_host_name="localhost",
+            jaeger_exporter = JaegerExporter(
+    agent_host_name="localhost",
                 agent_port=14268,
                 collector_endpoint=jaeger_endpoint)
             exporters.append(jaeger_exporter)
@@ -144,8 +144,8 @@ def setup_tracing()
         return True
     except Exception as e:
         logger.error(f"Failed to setup tracing: {e}")
-        tracer = DummyTracer()
-        return False
+        tracer = DummyTracer(
+    return False
 
 
 def get_tracer():
@@ -154,7 +154,7 @@ def get_tracer():
     if tracer is None and OTEL_AVAILABLE:
         tracer = trace.get_tracer(__name__)
     else:
-        tracer = DummyTracer()
+        tracer = DummyTracer(
     return tracer
 
 
@@ -170,8 +170,7 @@ def create_span()
         kind: Span kind (server, client, producer, consumer, internal)
         attributes: Span attributes
     """
-    current_tracer = get_tracer()
-
+    current_tracer = get_tracer(
     span_kwargs = {
     if kind:
         span_kwargs["kind"] = getattr()

@@ -18,8 +18,8 @@ class TestMLOpsAPI(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures."""
-        self.app = create_app()
-        self.app.config['TESTING'] = True
+        self.app = create_app(
+    self.app.config['TESTING'] = True
         self.client = self.app.test_client()
         self.app_context = self.app.app_context()
         self.app_context.push()
@@ -344,8 +344,8 @@ class TestMLOpsAPIEdgeCases(unittest.TestCase):
 
     def setUp(self):
         """Set up test fixtures."""
-        self.app = create_app()
-        self.app.config['TESTING'] = True
+        self.app = create_app(
+    self.app.config['TESTING'] = True
         self.client = self.app.test_client()
         self.app_context = self.app.app_context()
         self.app_context.push()
@@ -356,7 +356,7 @@ class TestMLOpsAPIEdgeCases(unittest.TestCase):
 
     def test_invalid_json_data(self):
         """Test API endpoints with invalid JSON data."""
-        invalid_json = '{"invalid": json syntax}'
+        invalid_json = f'{"invalid": json syntax}'
         
         response = self.client.post(
             '/api/mlops/experiments',

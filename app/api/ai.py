@@ -174,10 +174,10 @@ def analyze_metrics():
 
         # Mock AI analysis
         analysis_result = {
-        analysis_result["anomaly_detected"] = False
-        analysis_result["anomaly_score"] = 0.0
-        analysis_result["confidence"] = 0.0
-        analysis_result["severity"] = "normal"
+            "anomaly_detected": False,
+            "anomaly_score": 0.0,
+            "confidence": 0.0,
+            "severity": "normal"
         analysis_result["insights"] = []
         analysis_result["predictions"] = {}
 

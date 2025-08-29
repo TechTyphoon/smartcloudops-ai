@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Enhanced Data Pipeline - Production-ready data processing and versioning
 Phase 2A Week 3: Data Pipeline Automation with quality monitoring and versioning
 """
@@ -16,9 +16,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 class DataQualityStatus(Enum):
     """Data quality assessment status"""
     EXCELLENT = "excellent"
@@ -265,8 +263,8 @@ class DataPipelineManager:
             quality_report = self._assess_data_quality(df, dataset_name, version_id)
 
             # Create version metadata
-            version = DataVersion()
-                version_id=version_id,
+            version = DataVersion(
+    version_id=version_id,
                 dataset_name=dataset_name,
                 created_at=timestamp,
                 data_hash=data_hash,
@@ -823,8 +821,8 @@ class DataPipelineManager:
     """Start a new pipeline run"""
         run_id = f"run_{int(datetime.now(timezone.utc).timestamp()}_{pipeline_name}"
 
-        self.current_run = PipelineRun()
-            run_id=run_id,
+        self.current_run = PipelineRun(
+    run_id=run_id,
             pipeline_name=pipeline_name,
             started_at=datetime.now(timezone.utc),
             ended_at=None,
@@ -1007,9 +1005,7 @@ class DataPipelineManager:
 
 
 # Global instance for easy access
-data_pipeline_manager = DataPipelineManager()
-
-
-def get_data_pipeline_manager() -> DataPipelineManager:
+data_pipeline_manager = DataPipelineManager(
+    def get_data_pipeline_manager() -> DataPipelineManager:
     """Get the global data pipeline manager instance."""
     return data_pipeline_manager

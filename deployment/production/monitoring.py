@@ -242,8 +242,8 @@ class EmailNotifier:
     def send_alert(self, alert: Alert):
         """Send alert via email"""
         try:
-            msg = MimeMultipart()
-            msg['From'] = self.from_email
+            msg = MimeMultipart(
+    msg['From'] = self.from_email
             msg['To'] = ', '.join(self.to_emails)
             msg['Subject'] = f"[{alert.severity.value.upper()}] SmartCloudOps Alert: {alert.title}"
             
@@ -470,7 +470,7 @@ monitoring_dashboard = MonitoringDashboard(metric_collector, alert_manager)
 def initialize_monitoring(email_config: Optional[Dict[str, Any]] = None):
     """Initialize monitoring system"""
     # Add log notifier
-    log_notifier = LogNotifier()
+    log_notifier = LogNotifier(
     alert_manager.add_alert_handler(log_notifier.send_alert)
     
     # Add email notifier if configured

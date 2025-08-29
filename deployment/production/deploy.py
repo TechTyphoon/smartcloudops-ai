@@ -275,8 +275,8 @@ class DeploymentManager:
         # Initialize MLOps service
         try:
             from app.services.mlops_service import MLOpsService
-            mlops_service = MLOpsService()
-            deployment_steps.append("MLOps service initialized")
+            mlops_service = MLOpsService(
+    deployment_steps.append("MLOps service initialized")
         except Exception as e:
             logger.warning(f"MLOps service initialization failed: {e}")
             deployment_steps.append(f"MLOps service failed: {e}")

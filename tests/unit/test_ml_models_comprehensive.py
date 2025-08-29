@@ -34,17 +34,16 @@ class TestAnomalyDetector:
     @pytest.fixture
     def mock_model(self):
         """Mock ML model for testing."""
-        mock = Mock()
-        mock.predict.return_value = np.array([1, -1, 1, -1, 1])  # Mix of normal and anomalies
+        mock = Mock(
+    mock.predict.return_value = np.array([1, -1, 1, -1, 1])  # Mix of normal and anomalies
         mock.predict_proba.return_value = np.array([[0.8, 0.2], [0.3, 0.7], [0.9, 0.1]])
         mock.score_samples.return_value = np.array([-0.5, -2.0, -0.3, -1.8, -0.4])
         return mock
 
     def test_init_default_parameters(self):
         """Test AnomalyDetector initialization with default parameters."""
-        detector = AnomalyDetector()
-        
-        assert detector.model_type == 'isolation_forest'
+        detector = AnomalyDetector(
+    assert detector.model_type == 'isolation_forest'
         assert detector.model is None
         assert detector.is_trained is False
         assert detector.training_data is None
@@ -70,8 +69,8 @@ class TestAnomalyDetector:
     @patch('ml_models.anomaly_detector.IsolationForest')
     def test_create_model_isolation_forest(self, mock_isolation_forest, anomaly_detector):
         """Test model creation for Isolation Forest."""
-        mock_model = Mock()
-        mock_isolation_forest.return_value = mock_model
+        mock_model = Mock(
+    mock_isolation_forest.return_value = mock_model
         
         model = anomaly_detector._create_model()
         
@@ -86,8 +85,8 @@ class TestAnomalyDetector:
     def test_create_model_one_class_svm(self, mock_one_class_svm):
         """Test model creation for One-Class SVM."""
         detector = AnomalyDetector(model_type='one_class_svm')
-        mock_model = Mock()
-        mock_one_class_svm.return_value = mock_model
+        mock_model = Mock(
+    mock_one_class_svm.return_value = mock_model
         
         model = detector._create_model()
         
@@ -102,8 +101,8 @@ class TestAnomalyDetector:
     def test_create_model_local_outlier_factor(self, mock_lof):
         """Test model creation for Local Outlier Factor."""
         detector = AnomalyDetector(model_type='local_outlier_factor')
-        mock_model = Mock()
-        mock_lof.return_value = mock_model
+        mock_model = Mock(
+    mock_lof.return_value = mock_model
         
         model = detector._create_model()
         
@@ -154,8 +153,8 @@ class TestAnomalyDetector:
     @patch('ml_models.anomaly_detector.IsolationForest')
     def test_train_success(self, mock_isolation_forest, anomaly_detector, sample_data):
         """Test successful model training."""
-        mock_model = Mock()
-        mock_isolation_forest.return_value = mock_model
+        mock_model = Mock(
+    mock_isolation_forest.return_value = mock_model
         
         df = pd.DataFrame(sample_data, columns=['value'])
         
@@ -190,8 +189,8 @@ class TestAnomalyDetector:
     @patch('ml_models.anomaly_detector.IsolationForest')
     def test_train_with_training_error(self, mock_isolation_forest, anomaly_detector, sample_data):
         """Test training when model training fails."""
-        mock_model = Mock()
-        mock_model.fit.side_effect = Exception("Training failed")
+        mock_model = Mock(
+    mock_model.fit.side_effect = Exception("Training failed")
         mock_isolation_forest.return_value = mock_model
         
         df = pd.DataFrame(sample_data, columns=['value'])
@@ -212,8 +211,8 @@ class TestAnomalyDetector:
     def test_predict_success(self, mock_isolation_forest, anomaly_detector, sample_data):
         """Test successful prediction."""
         # Train the model first
-        mock_model = Mock()
-        mock_model.predict.return_value = np.array([1, -1, 1, -1, 1])
+        mock_model = Mock(
+    mock_model.predict.return_value = np.array([1, -1, 1, -1, 1])
         mock_isolation_forest.return_value = mock_model
         
         df_train = pd.DataFrame(sample_data[:100], columns=['value'])
@@ -231,8 +230,8 @@ class TestAnomalyDetector:
     def test_predict_with_scores(self, mock_isolation_forest, anomaly_detector, sample_data):
         """Test prediction with anomaly scores."""
         # Train the model first
-        mock_model = Mock()
-        mock_model.predict.return_value = np.array([1, -1, 1])
+        mock_model = Mock(
+    mock_model.predict.return_value = np.array([1, -1, 1])
         mock_model.score_samples.return_value = np.array([-0.5, -2.0, -0.3])
         mock_isolation_forest.return_value = mock_model
         
@@ -252,8 +251,8 @@ class TestAnomalyDetector:
         """Test prediction when preprocessing fails."""
         # Train the model first
         with patch('ml_models.anomaly_detector.IsolationForest') as mock_isolation_forest:
-            mock_model = Mock()
-            mock_isolation_forest.return_value = mock_model
+            mock_model = Mock(
+    mock_isolation_forest.return_value = mock_model
             
             df_train = pd.DataFrame(sample_data[:100], columns=['value'])
             anomaly_detector.train(df_train)
@@ -266,8 +265,8 @@ class TestAnomalyDetector:
     def test_predict_with_model_error(self, mock_isolation_forest, anomaly_detector, sample_data):
         """Test prediction when model prediction fails."""
         # Train the model first
-        mock_model = Mock()
-        mock_model.predict.side_effect = Exception("Prediction failed")
+        mock_model = Mock(
+    mock_model.predict.side_effect = Exception("Prediction failed")
         mock_isolation_forest.return_value = mock_model
         
         df_train = pd.DataFrame(sample_data[:100], columns=['value'])
@@ -291,8 +290,8 @@ class TestAnomalyDetector:
     def test_get_model_info_trained(self, mock_isolation_forest, anomaly_detector, sample_data):
         """Test getting model info when trained."""
         # Train the model first
-        mock_model = Mock()
-        mock_isolation_forest.return_value = mock_model
+        mock_model = Mock(
+    mock_isolation_forest.return_value = mock_model
         
         df_train = pd.DataFrame(sample_data[:100], columns=['value'])
         anomaly_detector.train(df_train)
@@ -314,8 +313,8 @@ class TestAnomalyDetector:
     def test_save_model_success(self, mock_dump, mock_isolation_forest, anomaly_detector, sample_data):
         """Test successful model saving."""
         # Train the model first
-        mock_model = Mock()
-        mock_isolation_forest.return_value = mock_model
+        mock_model = Mock(
+    mock_isolation_forest.return_value = mock_model
         
         df_train = pd.DataFrame(sample_data[:100], columns=['value'])
         anomaly_detector.train(df_train)
@@ -327,8 +326,8 @@ class TestAnomalyDetector:
 
     def test_load_model_success(self, anomaly_detector):
         """Test successful model loading."""
-        mock_model = Mock()
-        mock_data = {
+        mock_model = Mock(
+    mock_data = {
             'model': mock_model,
             'feature_names': ['value'],
             'training_data_size': 100
@@ -360,8 +359,8 @@ class TestAnomalyDetector:
     def test_evaluate_model(self, mock_isolation_forest, anomaly_detector, sample_data):
         """Test model evaluation."""
         # Train the model first
-        mock_model = Mock()
-        mock_model.predict.return_value = np.array([1, -1, 1, -1, 1])
+        mock_model = Mock(
+    mock_model.predict.return_value = np.array([1, -1, 1, -1, 1])
         mock_isolation_forest.return_value = mock_model
         
         df_train = pd.DataFrame(sample_data[:100], columns=['value'])
@@ -388,8 +387,8 @@ class TestAnomalyDetector:
     def test_update_model(self, mock_isolation_forest, anomaly_detector, sample_data):
         """Test model updating with new data."""
         # Train the model first
-        mock_model = Mock()
-        mock_isolation_forest.return_value = mock_model
+        mock_model = Mock(
+    mock_isolation_forest.return_value = mock_model
         
         df_train = pd.DataFrame(sample_data[:100], columns=['value'])
         anomaly_detector.train(df_train)
@@ -418,7 +417,7 @@ class TestModelVersioning:
 
     def test_init_default_values(self, model_versioning):
         """Test ModelVersioning initialization with default values."""
-        assert model_versioning.version_format == 'v{major}.{minor}.{patch}'
+        assert model_versioning.version_format == f'v{major}.{minor}.{patch}'
         assert model_versioning.models == {}
         assert model_versioning.current_version is None
 

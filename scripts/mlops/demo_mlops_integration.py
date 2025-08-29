@@ -30,17 +30,16 @@ def main():
     from app.mlops.reproducibility import ReproducibilityManager
     
     # Initialize components
-    model_registry = ModelRegistry()
-    dataset_manager = DatasetManager()
-    experiment_tracker = ExperimentTracker()
+    model_registry = ModelRegistry(
+    dataset_manager = DatasetManager(
+    experiment_tracker = ExperimentTracker(
     training_pipeline = TrainingPipeline(
         model_registry=model_registry,
         dataset_manager=dataset_manager,
         experiment_tracker=experiment_tracker
     )
     model_monitor = ModelMonitor(model_registry=model_registry)
-    reproducibility_manager = ReproducibilityManager()
-    
+    reproducibility_manager = ReproducibilityManager(
     print("✅ MLOps framework initialized")
     
     # Step 2: Create environment snapshot
@@ -312,8 +311,8 @@ def main():
 
 if __name__ == "__main__":
     try:
-        result = main()
-        print(f"\n📊 Demo Results: {result}")
+        result = main(
+    print(f"\n📊 Demo Results: {result}")
     except Exception as e:
         print(f"\n❌ Demo failed: {e}")
         import traceback

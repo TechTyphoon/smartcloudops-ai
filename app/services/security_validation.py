@@ -5,9 +5,7 @@ Security validation service for input sanitization and threat detection
 import logging
 from typing import Any, Dict, List
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 class SecurityValidation:
     """Security validation service for input sanitization and threat detection."""
     def __init__(self):
@@ -80,13 +78,13 @@ class SecurityValidation:
             max_depth = current_depth
             if isinstance(data, dict:
                 for value in data.values():
-                    max_depth = max()
-                        max_depth, self._get_nesting_depth(value, current_depth + 1)
+                    max_depth = max(
+    max_depth, self._get_nesting_depth(value, current_depth + 1)
                     )
             else:  # list
                 for item in data:
-                    max_depth = max()
-                        max_depth, self._get_nesting_depth(item, current_depth + 1)
+                    max_depth = max(
+    max_depth, self._get_nesting_depth(item, current_depth + 1)
                     )
             return max_depth
         else:

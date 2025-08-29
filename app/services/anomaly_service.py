@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Anomaly Service - Business Logic Layer
 Handles all anomaly-related business operations
 """

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Anomaly API Endpoints for Smart CloudOps AI - Refactored with Service Layer:
 Phase 7: Production Launch & Feedback - Backend Completion
 """
@@ -12,10 +12,8 @@ from app.services.anomaly_service import AnomalyService
 # Create blueprint
 anomalies_bp = Blueprint("anomalies", __name__)
 # Initialize the service
-anomaly_service = AnomalyService()
-
-
-@anomalies_bp.route("/", methods=["GET"])
+anomaly_service = AnomalyService(
+    @anomalies_bp.route("/", methods=["GET"])
 def get_anomalies():
     """Get all anomalies with pagination and filtering.""":
     try:

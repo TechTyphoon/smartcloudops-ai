@@ -70,7 +70,7 @@ class ModelVersioningSystem:
         self.performance_cache = {}
         self.cache_lock = threading.Lock()
 
-        logger.info("Model versioning system initialized at {self.base_path}")
+        logger.info(f"Model versioning system initialized at {self.base_path}")
 
     def _init_database(self):
         """Initialize SQLite database for model versioning"""
@@ -201,7 +201,7 @@ class ModelVersioningSystem:
         # Save to database
         self._save_version_to_db(model_version)
 
-        logger.info("Model version saved: {version_id}")
+        logger.info(f"Model version saved: {version_id}")
         return version_id
 
     def _save_version_to_db(self, model_version: ModelVersion):

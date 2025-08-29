@@ -356,8 +356,8 @@ class ConfigManager:
     @classmethod
     def get_instance(cls) -> 'ConfigManager':
         if cls._instance is None:
-            cls._instance = cls()
-        return cls._instance
+            cls._instance = cls(
+    return cls._instance
     
     def __init__(self):
         if ConfigManager._instance is not None:
@@ -393,10 +393,8 @@ class ConfigManager:
 
 
 # Global configuration instance
-config_manager = ConfigManager()
-
-
-def get_config() -> ProductionConfig:
+config_manager = ConfigManager(
+    def get_config() -> ProductionConfig:
     """Get global configuration"""
     return config_manager.get_config()
 

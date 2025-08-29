@@ -32,7 +32,7 @@ def test_config_import():
         from app.config import get_config
 
         config = get_config()
-        assert config is not None
+    assert config is not None
         print("✅ Config imported successfully")
         return True
     except ImportError as e:

@@ -53,7 +53,7 @@ def fix_missing_parentheses(content):
 def fix_dictionary_syntax(content):
     """Fix dictionary syntax errors"""
     # Pattern: "key": value, without opening {
-    content = re.sub(r'(\s+)"([^"]+)":\s*([^,\n]+),?\n', r'\1{\n\1    "\2": \3,\n\1}', content)
+    content = re.sub(r'(\s+)"([^"]+)":\s*([^,\n]+),?\n', rf'\1{\n\1    "\2": \3,\n\1}', content)
     
     # Pattern: return {} with missing opening brace
     content = re.sub(r'return\s*\{\s*\n\s*"', r'return {\n        "', content)

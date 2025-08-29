@@ -61,8 +61,8 @@ class SLOManager:
         # ================================
         
         # API Availability SLO
-        api_availability_slo = SLO()
-            name="api_availability",
+        api_availability_slo = SLO(
+    name="api_availability",
             description="API endpoints availability",
             slo_type=SLOType.AVAILABILITY,
             target=99.9,  # 99.9% availability
@@ -74,8 +74,8 @@ class SLOManager:
         self.add_slo(api_availability_slo)
 
         # Database Availability SLO
-        db_availability_slo = SLO()
-            name="database_availability",
+        db_availability_slo = SLO(
+    name="database_availability",
             description="Database connection availability",
             slo_type=SLOType.AVAILABILITY,
             target=99.95,  # 99.95% availability
@@ -91,8 +91,8 @@ class SLOManager:
         # ================================
         
         # API Response Time SLO
-        api_latency_slo = SLO()
-            name="api_latency",
+        api_latency_slo = SLO(
+    name="api_latency",
             description="API response time P95",
             slo_type=SLOType.LATENCY,
             target=95.0,  # 95% of requests under threshold
@@ -104,8 +104,8 @@ class SLOManager:
         self.add_slo(api_latency_slo)
 
         # Database Query Latency SLO
-        db_latency_slo = SLO()
-            name="database_latency",
+        db_latency_slo = SLO(
+    name="database_latency",
             description="Database query response time P95",
             slo_type=SLOType.LATENCY,
             target=95.0,  # 95% of queries under threshold
@@ -121,8 +121,8 @@ class SLOManager:
         # ================================
         
         # API Error Rate SLO
-        api_error_slo = SLO()
-            name="api_error_rate",
+        api_error_slo = SLO(
+    name="api_error_rate",
             description="API error rate (5xx errors)",
             slo_type=SLOType.ERROR_RATE,
             target=99.5,  # 99.5% success rate (0.5% error rate)
@@ -138,8 +138,8 @@ class SLOManager:
         # ================================
         
         # Request Throughput SLO
-        throughput_slo = SLO()
-            name="request_throughput",
+        throughput_slo = SLO(
+    name="request_throughput",
             description="Request processing throughput",
             slo_type=SLOType.THROUGHPUT,
             target=90.0,  # 90% of target throughput
@@ -155,8 +155,8 @@ class SLOManager:
         # ================================
         
         # Resource Saturation SLO
-        saturation_slo = SLO()
-            name="resource_saturation",
+        saturation_slo = SLO(
+    name="resource_saturation",
             description="Resource utilization (CPU, Memory)",
             slo_type=SLOType.SATURATION,
             target=80.0,  # 80% utilization target
@@ -173,8 +173,8 @@ class SLOManager:
     def _setup_default_slis(self):
     """Setup default SLIs for the SLOs"""
         # API Availability SLI
-        api_availability_sli = SLI()
-            name="api_availability_sli",
+        api_availability_sli = SLI(
+    name="api_availability_sli",
             description="API availability measurement",
             metric_name="http_requests_total",
             metric_type="counter",
@@ -190,8 +190,8 @@ class SLOManager:
         self.add_sli(api_availability_sli)
 
         # API Latency SLI
-        api_latency_sli = SLI()
-            name="api_latency_sli",
+        api_latency_sli = SLI(
+    name="api_latency_sli",
             description="API response time P95",
             metric_name="http_request_duration_seconds",
             metric_type="histogram",
@@ -203,8 +203,8 @@ class SLOManager:
         self.add_sli(api_latency_sli)
 
         # API Error Rate SLI
-        api_error_sli = SLI()
-            name="api_error_sli",
+        api_error_sli = SLI(
+    name="api_error_sli",
             description="API error rate measurement",
             metric_name="http_requests_total",
             metric_type="counter",
@@ -220,8 +220,8 @@ class SLOManager:
         self.add_sli(api_error_sli)
 
         # Database Availability SLI
-        db_availability_sli = SLI()
-            name="db_availability_sli",
+        db_availability_sli = SLI(
+    name="db_availability_sli",
             description="Database availability measurement",
             metric_name="pg_up",
             metric_type="gauge",
@@ -231,8 +231,8 @@ class SLOManager:
         self.add_sli(db_availability_sli)
 
         # Resource Saturation SLI
-        saturation_sli = SLI()
-            name="resource_saturation_sli",
+        saturation_sli = SLI(
+    name="resource_saturation_sli",
             description="Resource utilization measurement",
             metric_name="node_cpu_seconds_total",
             metric_type="gauge",
@@ -381,16 +381,14 @@ class SLOManager:
         elif slo.slo_type == SLOType.LATENCY:
             return f"""
             histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[{slo.measurement_period}s]) by (le) > 0.5
-    """"""
+    """""
         else:
             return "1"  # Default expression
 
 
 # Global SLO manager instance
-slo_manager = SLOManager()
-
-
-def get_slo_manager() -> SLOManager:
+slo_manager = SLOManager(
+    def get_slo_manager() -> SLOManager:
     """Get the global SLO manager instance"""
     return slo_manager
 

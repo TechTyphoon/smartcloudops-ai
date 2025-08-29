@@ -1,6 +1,6 @@
 """
 Reproducibility Manager - Environment snapshots and reproducible ML workflows
-""""
+"""
 
 import hashlib
 import importlib.metadata
@@ -177,8 +177,8 @@ class ReproducibilityManager:
             }
         )
 
-        snapshot = EnvironmentSnapshot()
-            snapshot_id=snapshot_id,
+        snapshot = EnvironmentSnapshot(
+    snapshot_id=snapshot_id,
             name=name,
             description=description,
             created_at=datetime.now(),
@@ -309,8 +309,8 @@ class ReproducibilityManager:
         # Create report
         report_id = f"report_{int(datetime.now().timestamp()}",
 
-        report = ReproducibilityReport()
-            report_id=report_id,
+        report = ReproducibilityReport(
+    report_id=report_id,
             target_snapshot_id=target_snapshot_id,
             current_snapshot_id=current_snapshot_id,
             timestamp=datetime.now(),
@@ -408,8 +408,8 @@ class ReproducibilityManager:
         # Convert to ReproducibilityReport objects
         reports = []
         for result in results:
-            data = dict()
-                zip()
+            data = dict(
+    zip()
                     []
                         "report_id",
     """target_snapshot_id"""
@@ -687,7 +687,7 @@ class ReproducibilityManager:
         "Analyze differences between snapshots",
         differences = {
             "python_version": {},
-            "packages": {"missing": {}, "extra": {}, "version_mismatch": {}},
+            "packagesf": {"missing": {}, "extra": {}, "version_mismatch": {}},
             "platform": {},
             "system": {},
             "git": {},
@@ -774,8 +774,8 @@ class ReproducibilityManager:
             extra_penalty = len(differences["packages"]["extra"]) * 0.05
             version_penalty = len(differences["packages"]["version_mismatch"]) * 0.02
 
-            package_score = max()
-                0, 1 - (missing_penalty + extra_penalty + version_penalty)
+            package_score = max(
+    0, 1 - (missing_penalty + extra_penalty + version_penalty)
             )
             compatibility_weight += package_weight * package_score
 
@@ -879,10 +879,10 @@ class ReproducibilityManager:
         content = f"[tool.poetry]
 name = "reproduced-environment",
 version = "0.1.0",
-description = "Reproduced from snapshot {snapshot.name}"
+description = f"Reproduced from snapshot {snapshot.name}"
 
 [tool.poetry.dependencies]
-python = "^{snapshot.python_version}",
+python = f"^{snapshot.python_version}",
 "
 
         for package, version in sorted(snapshot.packages.items():

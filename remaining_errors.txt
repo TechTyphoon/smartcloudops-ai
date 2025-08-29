@@ -1,0 +1,309 @@
+Remaining Syntax Errors
+============================================================
+
+File: app/auth_routes.py
+Error: SyntaxError at line 15: unmatched ')'
+
+File: app/database.py
+Error: SyntaxError at line 23: invalid syntax
+
+File: app/ml_module.py
+Error: SyntaxError at line 52: closing parenthesis '}' does not match opening parenthesis '(' on line 41
+
+File: app/monitoring_module.py
+Error: SyntaxError at line 4: expected an indented block after 'try' statement on line 3
+
+File: app/chatops_module.py
+Error: SyntaxError at line 53: closing parenthesis '}' does not match opening parenthesis '(' on line 44
+
+File: app/main.py
+Error: SyntaxError at line 14: invalid syntax. Perhaps you forgot a comma?
+
+File: app/auth_module.py
+Error: SyntaxError at line 39: unmatched '}'
+
+File: app/auth.py
+Error: SyntaxError at line 173: closing parenthesis '}' does not match opening parenthesis '(' on line 118
+
+File: app/monitoring/metrics.py
+Error: SyntaxError at line 146: unmatched ')'
+
+File: app/api/slos.py
+Error: SyntaxError at line 37: invalid syntax
+
+File: app/api/performance.py
+Error: SyntaxError at line 197: closing parenthesis '}' does not match opening parenthesis '(' on line 194
+
+File: app/api/anomalies_refactored.py
+Error: SyntaxError at line 40: unmatched '}'
+
+File: app/api/ai.py
+Error: SyntaxError at line 180: invalid syntax. Perhaps you forgot a comma?
+
+File: app/api/mlops.py
+Error: SyntaxError at line 54: unmatched '}'
+
+File: app/api/chat.py
+Error: SyntaxError at line 48: invalid syntax
+
+File: app/mlops/dataset_manager.py
+Error: SyntaxError at line 122: unmatched ')'
+
+File: app/mlops/reinforcement_learning.py
+Error: SyntaxError at line 68: unmatched ')'
+
+File: app/mlops/data_pipeline.py
+Error: SyntaxError at line 63: closing parenthesis '}' does not match opening parenthesis '(' on line 35
+
+File: app/mlops/experiment_tracker.py
+Error: SyntaxError at line 94: unmatched ')'
+
+File: app/mlops/model_registry.py
+Error: SyntaxError at line 96: unmatched ')'
+
+File: app/mlops/training_pipeline.py
+Error: SyntaxError at line 89: unmatched ')'
+
+File: app/mlops/model_monitor.py
+Error: SyntaxError at line 337: closing parenthesis '}' does not match opening parenthesis '(' on line 328
+
+File: app/mlops/reproducibility.py
+Error: SyntaxError at line 104: unmatched ')'
+
+File: app/mlops/knowledge_base.py
+Error: SyntaxError at line 72: closing parenthesis ')' does not match opening parenthesis '{' on line 43
+
+File: app/mlops/model_registry_minimal.py
+Error: SyntaxError at line 96: unmatched ')'
+
+File: app/mlops/experiment_tracker_minimal.py
+Error: SyntaxError at line 94: unmatched ')'
+
+File: app/mlops/autonomous_ops.py
+Error: SyntaxError at line 40: unmatched ')'
+
+File: app/mlops/data_pipeline_enhanced.py
+Error: SyntaxError at line 127: unmatched ']'
+
+File: app/analytics/real_time_dashboard.py
+Error: SyntaxError at line 176: unmatched ')'
+
+File: app/remediation/engine.py
+Error: SyntaxError at line 13: unmatched ')'
+
+File: app/remediation/safety.py
+Error: SyntaxError at line 25: unmatched ')'
+
+File: app/remediation/__init__.py
+Error: SyntaxError at line 1: unterminated triple-quoted string literal (detected at line 1)
+
+File: app/remediation/notifications.py
+Error: SyntaxError at line 100: closing parenthesis '}' does not match opening parenthesis '(' on line 83
+
+File: app/remediation/actions.py
+Error: SyntaxError at line 79: closing parenthesis '}' does not match opening parenthesis '(' on line 44
+
+File: app/performance/anomaly_optimization.py
+Error: SyntaxError at line 96: unmatched ')'
+
+File: app/performance/database_optimization.py
+Error: SyntaxError at line 111: closing parenthesis '}' does not match opening parenthesis '(' on line 107
+
+File: app/performance/log_optimization.py
+Error: SyntaxError at line 57: expected an indented block after function definition on line 56
+
+File: app/performance/redis_cache.py
+Error: SyntaxError at line 60: invalid syntax
+
+File: app/performance/caching.py
+Error: SyntaxError at line 65: illegal target for annotation
+
+File: app/performance/__init__.py
+Error: SyntaxError at line 12: expected 'except' or 'finally' block
+
+File: app/performance/api_optimization.py
+Error: SyntaxError at line 73: unmatched '}'
+
+File: app/chatops/gpt_handler.py
+Error: SyntaxError at line 197: invalid syntax
+
+File: app/chatops/ai_handler.py
+Error: SyntaxError at line 58: unmatched '}'
+
+File: app/chatops/utils.py
+Error: SyntaxError at line 16: unmatched ')'
+
+File: app/security/secrets_manager.py
+Error: SyntaxError at line 45: unmatched ')'
+
+File: app/security/config.py
+Error: SyntaxError at line 158: expected an indented block after function definition on line 157
+
+File: app/security/input_validation.py
+Error: SyntaxError at line 200: unmatched ')'
+
+File: app/security/error_handling.py
+Error: SyntaxError at line 34: closing parenthesis ')' does not match opening parenthesis '{' on line 25
+
+File: app/security/rate_limiting.py
+Error: SyntaxError at line 65: unmatched ')'
+
+File: app/security/caching.py
+Error: SyntaxError at line 19: unmatched ')'
+
+File: app/services/ml_service.py
+Error: SyntaxError at line 27: unmatched '}'
+
+File: app/services/mlops_service.py
+Error: SyntaxError at line 69: closing parenthesis '}' does not match opening parenthesis '(' on line 56
+
+File: app/services/feedback_service.py
+Error: SyntaxError at line 27: unmatched '}'
+
+File: app/services/security_validation.py
+Error: SyntaxError at line 25: unmatched ']'
+
+File: app/services/anomaly_service.py
+Error: SyntaxError at line 27: unmatched '}'
+
+File: app/services/ai_service.py
+Error: SyntaxError at line 24: unmatched '}'
+
+File: app/services/remediation_service.py
+Error: SyntaxError at line 29: unmatched '}'
+
+File: app/observability/opentelemetry_config.py
+Error: SyntaxError at line 46: unmatched ')'
+
+File: app/observability/slos.py
+Error: SyntaxError at line 184: invalid decimal literal
+
+File: app/observability/metrics.py
+Error: SyntaxError at line 208: closing parenthesis '}' does not match opening parenthesis '(' on line 20
+
+File: app/observability/middleware.py
+Error: SyntaxError at line 52: closing parenthesis '}' does not match opening parenthesis '(' on line 41
+
+File: app/observability/logging_config.py
+Error: SyntaxError at line 27: unmatched ')'
+
+File: app/observability/tracing.py
+Error: SyntaxError at line 62: unmatched ')'
+
+File: app/observability/enhanced_logging.py
+Error: SyntaxError at line 39: unmatched ')'
+
+File: app/observability/dashboards.py
+Error: SyntaxError at line 29: closing parenthesis ']' does not match opening parenthesis '{' on line 14
+
+File: app/observability/__init__.py
+Error: SyntaxError at line 16: unmatched ']'
+
+File: scripts/monitoring/real_system_monitor.py
+Error: SyntaxError at line 160: invalid syntax. Perhaps you forgot a comma?
+
+File: scripts/monitoring/uptime_monitor.py
+Error: SyntaxError at line 21: invalid syntax
+
+File: scripts/monitoring/continuous_health_monitor.py
+Error: SyntaxError at line 347: unterminated triple-quoted string literal (detected at line 410)
+
+File: scripts/mlops/demo_mlops_integration.py
+Error: SyntaxError at line 36: invalid syntax. Perhaps you forgot a comma?
+
+File: scripts/performance/optimization_engine.py
+Error: SyntaxError at line 504: expected 'except' or 'finally' block
+
+File: scripts/security/validate_secrets.py
+Error: SyntaxError at line 12: invalid syntax
+
+File: scripts/security/validate_security_phase1.py
+Error: SyntaxError at line 17: unexpected character after line continuation character
+
+File: scripts/security/validate_security.py
+Error: SyntaxError at line 80: invalid syntax
+
+File: scripts/testing/production_validation.py
+Error: SyntaxError at line 288: unmatched ')'
+
+File: scripts/testing/health_check.py
+Error: SyntaxError at line 45: invalid syntax
+
+File: tests/test_config.py
+Error: SyntaxError at line 18: invalid syntax
+
+File: tests/test_integration.py
+Error: SyntaxError at line 41: invalid syntax
+
+File: tests/test_smoke.py
+Error: SyntaxError at line 35: expected 'except' or 'finally' block
+
+File: tests/conftest.py
+Error: SyntaxError at line 51: invalid syntax
+
+File: tests/test_ml_anomaly_detection.py
+Error: SyntaxError at line 14: unmatched ')'
+
+File: tests/test_remediation.py
+Error: SyntaxError at line 26: invalid syntax
+
+File: tests/test_gpt_integration.py
+Error: SyntaxError at line 18: invalid syntax
+
+File: tests/test_ai_handler.py
+Error: SyntaxError at line 21: invalid syntax
+
+File: tests/test_chatops.py
+Error: SyntaxError at line 25: expression cannot contain assignment, perhaps you meant "=="?
+
+File: tests/test_ml_endpoints.py
+Error: SyntaxError at line 95: invalid syntax
+
+File: tests/unit/test_chatops_gpt_handler.py
+Error: SyntaxError at line 23: expression cannot contain assignment, perhaps you meant "=="?
+
+File: tests/unit/test_ml_models.py
+Error: SyntaxError at line 49: invalid syntax
+
+File: tests/unit/test_remediation_engine.py
+Error: SyntaxError at line 22: invalid syntax
+
+File: tests/unit/test_mlops_api.py
+Error: SyntaxError at line 22: expression cannot contain assignment, perhaps you meant "=="?
+
+File: tests/unit/test_security.py
+Error: SyntaxError at line 63: invalid syntax
+
+File: tests/unit/test_mlops_service.py
+Error: SyntaxError at line 21: invalid syntax
+
+File: tests/unit/test_feedback_service.py
+Error: SyntaxError at line 25: invalid syntax
+
+File: tests/unit/test_enhanced_mlflow.py
+Error: SyntaxError at line 58: invalid syntax
+
+File: tests/unit/test_data_pipeline.py
+Error: SyntaxError at line 101: unindent does not match any outer indentation level
+
+File: tests/unit/test_remediation_service.py
+Error: SyntaxError at line 25: invalid syntax
+
+File: tests/unit/test_anomaly_service.py
+Error: SyntaxError at line 25: invalid syntax
+
+File: tests/unit/test_chatops_utils.py
+Error: SyntaxError at line 205: unindent does not match any outer indentation level
+
+File: tests/unit/test_security_validation.py
+Error: SyntaxError at line 29: expression cannot contain assignment, perhaps you meant "=="?
+
+File: tests/unit/test_ml_models_comprehensive.py
+Error: SyntaxError at line 38: expression cannot contain assignment, perhaps you meant "=="?
+
+File: tests/integration/test_api_endpoints.py
+Error: SyntaxError at line 37: invalid syntax
+
+File: tests/backend/test_chatops.py
+Error: SyntaxError at line 34: invalid syntax
+

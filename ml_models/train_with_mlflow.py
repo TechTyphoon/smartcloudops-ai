@@ -36,8 +36,8 @@ class MLTrainingPipeline:
         Args:
             experiment_name: Name of the MLflow experiment
         """
-        self.mlflow_manager = get_mlflow_manager()
-        self.experiment_name = experiment_name
+        self.mlflow_manager = get_mlflow_manager(
+    self.experiment_name = experiment_name
         self.model_name = "anomaly-detector"
 
         # Training parameters
@@ -100,8 +100,8 @@ class MLTrainingPipeline:
         logger.info(f"Training model with parameters: {params}")
 
         # Scale the data
-        scaler = StandardScaler()
-        X_train_scaled = scaler.fit_transform(X_train)
+        scaler = StandardScaler(
+    X_train_scaled = scaler.fit_transform(X_train)
 
         # Train model
         model = IsolationForest(**params)
@@ -308,8 +308,7 @@ class MLTrainingPipeline:
 def main():
     """Main training pipeline execution."""
     # Initialize pipeline
-    pipeline = MLTrainingPipeline()
-
+    pipeline = MLTrainingPipeline(
     # Run training
     data_path = "data/training_data.csv"  # Update with your data path
     model_uri = pipeline.run_training_pipeline(data_path)

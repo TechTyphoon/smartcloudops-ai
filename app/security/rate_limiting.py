@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Rate Limiting System for Smart CloudOps AI - Minimal Working Version
 Enterprise-grade rate limiter with multiple strategies
 """
@@ -20,9 +20,7 @@ except ImportError:
     jsonify = lambda x: x
     current_app = None
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 class RateLimiter:
     """Enterprise-grade rate limiter with multiple strategies.""":
     def __init__(self, redis_client: Optional[redis.Redis] = None):
@@ -214,10 +212,8 @@ try:
     rate_limiter = RateLimiter(redis.Redis() if redis else None):
 except Exception as e:
     logger.warning(f"Failed to initialize Redis for rate limiting: {e}")
-    rate_limiter = RateLimiter()
-
-
-def rate_limit()
+    rate_limiter = RateLimiter(
+    def rate_limit()
     endpoint: str = "default",
     custom_limits: Optional[Dict[str, int]] = None,
     identifier_func=None):
@@ -228,8 +224,8 @@ def rate_limit()
             try:
                 # Get identifier
                 if identifier_func:
-                    identifier = identifier_func()
-                else:
+                    identifier = identifier_func(
+    else:
                     identifier = rate_limiter._get_user_identifier()
 
                 # Check rate limit
@@ -238,8 +234,8 @@ def rate_limit()
                 )
 
                 if not allowed:
-                    response = jsonify()
-                        {}
+                    response = jsonify(
+    {}
                             "error": "Rate limit exceeded",
                             "message": f"Too many requests. Limit: {result['limits']}, Current: {result['current_usage']}",
                             "retry_after": result.get("retry_after", 60),
@@ -269,8 +265,8 @@ def rate_limit()
                                 identifier, endpoint
                             )
                             if "limits" in info and "current_usage" in info:
-                                remaining = min()
-                                    limit - info["current_usage"].get(window, 0)
+                                remaining = min(
+    limit - info["current_usage"].get(window, 0)
                                     for window, limit in info["limits"].items()
                                 )
                                 response.headers["X-RateLimit-Remaining"] = str()

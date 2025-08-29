@@ -50,10 +50,8 @@ except ImportError as e:
         @staticmethod
         def register_model(model_uri, name): pass
     
-    mlflow = MockMLflow()
-
-
-class MLflowManager:
+    mlflow = MockMLflow(
+    class MLflowManager:
     """Production-ready MLflow manager with fallback support."""
     
     def __init__(
@@ -398,8 +396,8 @@ class MLflowManager:
         if self.available:
             try:
                 from mlflow.tracking import MlflowClient
-                client = MlflowClient()
-                models = client.list_registered_models()
+                client = MlflowClient(
+    models = client.list_registered_models()
                 return [
                     {
                         "name": model.name,
@@ -430,7 +428,7 @@ def get_mlflow_manager() -> MLflowManager:
     """Get the global MLflow manager instance."""
     global _mlflow_manager
     if _mlflow_manager is None:
-        _mlflow_manager = MLflowManager()
+        _mlflow_manager = MLflowManager(
     return _mlflow_manager
 
 

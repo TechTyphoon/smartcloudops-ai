@@ -76,9 +76,8 @@ class SecurityValidator:
         }
         
         # Validate environment variables
-        env_validation = validate_environment_security()
-        
-        if not env_validation['secure']:
+        env_validation = validate_environment_security(
+    if not env_validation['secure']:
             result['status'] = 'FAIL'
             result['issues'].extend(env_validation['missing_variables'])
             result['warnings'].extend(env_validation['weak_variables'])
@@ -435,7 +434,7 @@ class SecurityValidator:
 
 def main():
     """Main function to run security validation."""
-    validator = SecurityValidator()
+    validator = SecurityValidator(
     results = validator.run_all_checks()
     
     # Print results

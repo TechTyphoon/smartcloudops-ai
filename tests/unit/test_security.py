@@ -53,8 +53,8 @@ class TestAuthentication:
     @pytest.mark.auth
     def test_jwt_token_generation(self):
         """Test JWT token generation."""
-        auth_manager = AuthManager()
-        tokens = auth_manager.generate_tokens(
+        auth_manager = AuthManager(
+    tokens = auth_manager.generate_tokens(
             user_id=1,
             username="testuser",
             role="admin"
@@ -67,8 +67,8 @@ class TestAuthentication:
     @pytest.mark.auth
     def test_jwt_token_verification(self):
         """Test JWT token verification."""
-        auth_manager = AuthManager()
-        tokens = auth_manager.generate_tokens(
+        auth_manager = AuthManager(
+    tokens = auth_manager.generate_tokens(
             user_id=1,
             username="testuser",
             role="admin"
@@ -84,9 +84,8 @@ class TestAuthentication:
     @pytest.mark.auth
     def test_expired_token_rejection(self):
         """Test that expired tokens are rejected."""
-        auth_manager = AuthManager()
-        
-        # Create an expired token
+        auth_manager = AuthManager(
+    # Create an expired token
         expired_payload = {
             "user_id": 1,
             "username": "testuser",
@@ -108,9 +107,8 @@ class TestAuthentication:
     @pytest.mark.auth
     def test_invalid_token_rejection(self):
         """Test that invalid tokens are rejected."""
-        auth_manager = AuthManager()
-        
-        # Test various invalid tokens
+        auth_manager = AuthManager(
+    # Test various invalid tokens
         invalid_tokens = [
             "invalid.token.here",
             "Bearer invalid",
@@ -126,9 +124,8 @@ class TestAuthentication:
     @pytest.mark.auth
     def test_token_with_wrong_secret(self):
         """Test that tokens signed with wrong secret are rejected."""
-        auth_manager = AuthManager()
-        
-        # Create token with different secret
+        auth_manager = AuthManager(
+    # Create token with different secret
         wrong_secret_payload = {
             "user_id": 1,
             "username": "testuser",
@@ -153,9 +150,8 @@ class TestInputValidation:
     @pytest.mark.security
     def test_sql_injection_prevention(self):
         """Test SQL injection prevention."""
-        validator = InputValidator()
-        
-        sql_injection_attempts = [
+        validator = InputValidator(
+    sql_injection_attempts = [
             "'; DROP TABLE users; --",
             "1 OR 1=1",
             "admin' --",
@@ -171,9 +167,8 @@ class TestInputValidation:
     @pytest.mark.security
     def test_xss_prevention(self):
         """Test XSS attack prevention."""
-        validator = InputValidator()
-        
-        xss_attempts = [
+        validator = InputValidator(
+    xss_attempts = [
             "<script>alert('XSS')</script>",
             "<img src=x onerror=alert('XSS')>",
             "javascript:alert('XSS')",
@@ -188,9 +183,8 @@ class TestInputValidation:
     @pytest.mark.security
     def test_command_injection_prevention(self):
         """Test command injection prevention."""
-        validator = InputValidator()
-        
-        command_injection_attempts = [
+        validator = InputValidator(
+    command_injection_attempts = [
             "; ls -la",
             "| cat /etc/passwd",
             "&& rm -rf /",
@@ -205,9 +199,8 @@ class TestInputValidation:
     @pytest.mark.security
     def test_path_traversal_prevention(self):
         """Test path traversal prevention."""
-        validator = InputValidator()
-        
-        path_traversal_attempts = [
+        validator = InputValidator(
+    path_traversal_attempts = [
             "../../../etc/passwd",
             "..\\..\\..\\windows\\system32\\config\\sam",
             "/etc/passwd",

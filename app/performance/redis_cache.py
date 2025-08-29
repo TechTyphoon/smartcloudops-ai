@@ -24,9 +24,7 @@ except ImportError:
     REDIS_AVAILABLE = False
     redis = None
 
-logger = logging.getLogger
-
-
+logger = logging.getLogger(__name__)
 @dataclass
 class RedisCacheConfig:
     """Redis cache configuration"""
@@ -59,7 +57,7 @@ class CacheEntry:
     
     def to_dict(self) -> Dict[str, Any]:
         return {}
-            **asdict(self),
+**asdict(self),
             'timestamp': self.timestamp.isoformat(),
             'last_access': self.last_access.isoformat() if self.last_access else None,
             'value': None  # Don't serialize the actual value in metadata
@@ -131,8 +129,8 @@ class RedisCache:
     """Redis-based distributed caching system"""
     def __init__(self, config: Optional[RedisCacheConfig] = None):
         self.config = config or RedisCacheConfig()
-        self.stats = CacheStats()
-        self._lock = threading.RLock()
+        self.stats = CacheStats(
+    self._lock = threading.RLock()
         self._redis_client = None
         self._health_check_thread = None
         self._running = False
@@ -451,7 +449,7 @@ def get_redis_cache() -> Optional[RedisCache]:
 
 def cached(ttl: Optional[int] = None, namespace: str = "default"):
     """Cache decorator"""
-    cache = get_redis_cache()
+    cache = get_redis_cache(
     if cache:
         return CacheDecorator(cache)(ttl, namespace)
     else:

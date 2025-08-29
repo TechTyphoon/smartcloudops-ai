@@ -172,9 +172,9 @@ class GPTHandler:
     def process_query(
         self, query: str, context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-    """Process ChatOps query with GPT integration and enhanced security.""":
+        """Process ChatOps query with GPT integration and enhanced security."""
         try:
-            # Check if GPT client is available:
+            # Check if GPT client is available
             if not self.client:
                 return {
                     "status": "error",

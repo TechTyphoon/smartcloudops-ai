@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Monitoring: Prometheus Metrics Module - Minimal Working Version
 Centralized metrics collection for application monitoring
 """
@@ -9,8 +9,7 @@ import threading
 
 from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram, Summary
 
-logger = logging.getLogger
-
+logger = logging.getLogger(__name__)
 # Global lock for thread-safe singleton
 _metrics_lock = threading.Lock()
 _metrics_instance = None
@@ -26,116 +25,116 @@ class MetricsCollector:
     def _init_metrics(self):
     """Initialize all Prometheus metrics with custom registry"""
         # HTTP Request Metrics
-        self.request_count = Counter()
-            "flask_requests_total",
+        self.request_count = Counter(
+    "flask_requests_total",
             "Total Flask HTTP requests",
             ["method", "endpoint", "status_code"],
             registry=self.registry)
 
-        self.request_latency = Histogram()
-            "flask_request_duration_seconds",
+        self.request_latency = Histogram(
+    "flask_request_duration_seconds",
             "Flask HTTP request latency",
             ["method", "endpoint"],
             registry=self.registry)
 
         # ML Metrics
-        self.ml_predictions = Counter()
-            "ml_predictions_total",
+        self.ml_predictions = Counter(
+    "ml_predictions_total",
             "Total ML predictions made",
             ["model_type", "status"],
             registry=self.registry)
 
-        self.ml_anomalies = Counter()
-            "ml_anomalies_detected",
+        self.ml_anomalies = Counter(
+    "ml_anomalies_detected",
             "Total anomalies detected",
             ["severity", "model_type"],
             registry=self.registry)
 
-        self.ml_training_runs = Counter()
-            "ml_training_runs_total",
+        self.ml_training_runs = Counter(
+    "ml_training_runs_total",
             "Total model training runs",
             ["status", "model_type"],
             registry=self.registry)
 
         # Remediation Metrics
-        self.remediation_actions = Counter()
-            "remediation_actions_total",
+        self.remediation_actions = Counter(
+    "remediation_actions_total",
             "Total remediation actions executed",
             ["action_type", "severity", "status"],
             registry=self.registry)
 
-        self.remediation_success = Counter()
-            "remediation_success_total",
+        self.remediation_success = Counter(
+    "remediation_success_total",
             "Successful remediation actions",
             ["action_type"],
             registry=self.registry)
 
-        self.remediation_failure = Counter()
-            "remediation_failure_total",
+        self.remediation_failure = Counter(
+    "remediation_failure_total",
             "Failed remediation actions",
             ["action_type", "reason"],
             registry=self.registry)
 
         # System Health Metrics
-        self.system_health = Gauge()
-            "system_health_score",
+        self.system_health = Gauge(
+    "system_health_score",
             "Overall system health score (0-100)",
             ["component"],
             registry=self.registry)
 
-        self.active_connections = Gauge()
-            "active_connections",
+        self.active_connections = Gauge(
+    "active_connections",
             "Number of active connections",
             ["connection_type"],
             registry=self.registry)
 
-        self.error_rate = Gauge()
-            "error_rate_percentage",
+        self.error_rate = Gauge(
+    "error_rate_percentage",
             "Error rate as percentage",
             ["endpoint", "error_type"],
             registry=self.registry)
 
-        self.response_time_summary = Summary()
-            "response_time_seconds",
+        self.response_time_summary = Summary(
+    "response_time_seconds",
             "Response time summary",
             ["endpoint"],
             registry=self.registry)
 
         # Resource Metrics
-        self.memory_usage = Gauge()
-            "memory_usage_bytes",
+        self.memory_usage = Gauge(
+    "memory_usage_bytes",
             "Memory usage in bytes",
             ["component"],
             registry=self.registry)
 
-        self.cpu_usage = Gauge()
-            "cpu_usage_percentage",
+        self.cpu_usage = Gauge(
+    "cpu_usage_percentage",
             "CPU usage percentage",
             ["component"],
             registry=self.registry)
 
         # Authentication Metrics
-        self.auth_attempts = Counter()
-            "auth_attempts_total",
+        self.auth_attempts = Counter(
+    "auth_attempts_total",
             "Total authentication attempts",
             ["method", "status"],
             registry=self.registry)
 
-        self.auth_failures = Counter()
-            "auth_failures_total",
+        self.auth_failures = Counter(
+    "auth_failures_total",
             "Total authentication failures",
             ["reason"],
             registry=self.registry)
 
         # Database Metrics
-        self.db_connections = Gauge()
-            "database_connections",
+        self.db_connections = Gauge(
+    "database_connections",
             "Number of database connections",
             ["status"],
             registry=self.registry)
 
-        self.db_query_duration = Histogram()
-            "database_query_duration_seconds",
+        self.db_query_duration = Histogram(
+    "database_query_duration_seconds",
             "Database query duration",
             ["query_type"],
             registry=self.registry)
@@ -223,6 +222,5 @@ def get_metrics():
     if _metrics_instance is None:
         with _metrics_lock:
             if _metrics_instance is None:
-                _metrics_instance = MetricsCollector()
-
+                _metrics_instance = MetricsCollector(
     return _metrics_instance

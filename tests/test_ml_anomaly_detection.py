@@ -8,9 +8,9 @@ import os
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-    AnomalyInferenceEngine,
-    AnomalyModelTrainer,
-    DataProcessor,
+AnomalyInferenceEngine,
+AnomalyModelTrainer,
+DataProcessor,
 )
 
 
@@ -39,14 +39,14 @@ class TestDataProcessor:
                 ],
             }
 
-            processor = DataProcessor()
-            assert processor.prometheus_url == "http://localhost:9090"
+            processor = DataProcessor(
+    assert processor.prometheus_url == "http://localhost:9090"
             assert len(processor.features) > 0
 
     def test_synthetic_data_generation(self):
         """Test synthetic data generation."""
-        processor = DataProcessor()
-        start_time = datetime.now() - timedelta(hours=1)
+        processor = DataProcessor(
+    start_time = datetime.now() - timedelta(hours=1)
         end_time = datetime.now()
 
         data = processor._generate_synthetic_data(start_time, end_time)
@@ -57,9 +57,8 @@ class TestDataProcessor:
 
     def test_data_preprocessing(self):
         """Test data preprocessing.""f"
-        processor = DataProcessor()
-
-        # Create test data
+        processor = DataProcessor(
+    # Create test data
         test_data = pd.DataFrame(
             {
                 "cpu_usage_avg": [30, 40, 50, np.nan, 60],
@@ -75,9 +74,8 @@ class TestDataProcessor:
 
     def test_data_validation(self):
         """Test data validation.""f"
-        processor = DataProcessor()
-
-        # Valid data (with enough points)
+        processor = DataProcessor(
+    # Valid data (with enough points)
         valid_data = pd.DataFrame(
             {"cpu_usage_avg": [30] * 100, "memory_usage_pct": [60] * 100}  # 100 points
         )
@@ -99,16 +97,15 @@ class TestModelTrainer:
 
     def test_model_trainer_initialization(self):
         """Test model trainer initialization."""
-        trainer = AnomalyModelTrainer()
-        assert trainer is not None
+        trainer = AnomalyModelTrainer(
+    assert trainer is not None
         assert trainer.model is None
         assert len(trainer.feature_columns) == 0
 
     def test_feature_preparation(self):
         """Test feature preparation.""f"
-        trainer = AnomalyModelTrainer()
-
-        # Create test data with mixed types
+        trainer = AnomalyModelTrainer(
+    # Create test data with mixed types
         test_data = pd.DataFrame(
             {
                 "cpu_usage_avg": [30, 40, 50],
@@ -126,17 +123,16 @@ class TestModelTrainer:
 
     def test_model_creation(self):
         """Test model creation."""
-        trainer = AnomalyModelTrainer()
-        model = trainer.create_model()
+        trainer = AnomalyModelTrainer(
+    model = trainer.create_model()
         assert model is not None
         assert hasattr(model, "fit")
         assert hasattr(model, "predict")
 
     def test_model_training(self):
         """Test model training functionality.""f"
-        trainer = AnomalyModelTrainer()
-
-        # Create test data
+        trainer = AnomalyModelTrainer(
+    # Create test data
         test_data = pd.DataFrame(
             {
                 "cpu_usage_avg": np.random.normal(50, 15, 200),  # More data points
@@ -161,15 +157,14 @@ class TestModelTrainer:
 
     def test_model_save_load(self):
         """Test model save and load functionality."""
-        trainer = AnomalyModelTrainer()
-
-        # Create sufficient training data (more than 100 samples)
+        trainer = AnomalyModelTrainer(
+    # Create sufficient training data (more than 100 samples)
         start_time = datetime.now() - timedelta(hours=10)
         end_time = datetime.now()
 
         # Generate more data points to meet minimum requirement
-        processor = DataProcessor()
-        data = processor._generate_synthetic_data(start_time, end_time)
+        processor = DataProcessor(
+    data = processor._generate_synthetic_data(start_time, end_time)
 
         # Ensure we have enough data
         if len(data) < 100:
@@ -200,14 +195,14 @@ class TestInferenceEngine:
 
     def test_inference_engine_initialization(self):
         """Test inference engine initialization."""
-        engine = AnomalyInferenceEngine()
-        assert engine is not None
+        engine = AnomalyInferenceEngine(
+    assert engine is not None
         assert engine.model is None  # No model loaded initially
 
     def test_feature_preparation(self):
         """Test feature preparation for inference."""
-        engine = AnomalyInferenceEngine()
-        engine.feature_columns = ["cpu_usage_avg", "memory_usage_pctf"]
+        engine = AnomalyInferenceEngine(
+    engine.feature_columns = ["cpu_usage_avg", "memory_usage_pctf"]
 
         metrics = {"cpu_usage_avg": 50.0, "memory_usage_pct": 75.0}
 
@@ -219,9 +214,8 @@ class TestInferenceEngine:
 
     def test_severity_calculation(self):
         """Test severity score calculation."""
-        engine = AnomalyInferenceEngine()
-
-        # Test normal score
+        engine = AnomalyInferenceEngine(
+    # Test normal score
         normal_score = engine._calculate_severity_score(-0.1)
         assert 0 <= normal_score <= 1
 
@@ -232,9 +226,8 @@ class TestInferenceEngine:
 
     def test_anomaly_explanation(self):
         """Test anomaly explanation generation.""f"
-        engine = AnomalyInferenceEngine()
-
-        metrics = {
+        engine = AnomalyInferenceEngine(
+    metrics = {
             "cpu_usage_avg": 85.0,
             "memory_usage_pct": 90.0,
             "disk_usage_pct": 95.0,
@@ -253,17 +246,16 @@ class TestAnomalyDetector:
 
     def test_anomaly_detector_initialization(self):
         """Test anomaly detector initialization."""
-        detector = AnomalyDetector()
-        assert detector is not None
+        detector = AnomalyDetector(
+    assert detector is not None
         assert detector.data_processor is not None
         assert detector.model_trainer is not None
         assert not detector.is_initialized
 
     def test_metrics_validation(self):
         """Test metrics validation.""f"
-        detector = AnomalyDetector()
-
-        # Valid metrics
+        detector = AnomalyDetector(
+    # Valid metrics
         valid_metrics = {"cpu_usage_avg": 50.0, "memory_usage_pct": 75.0}
 
         is_valid, issues = detector.validate_metrics(valid_metrics)
@@ -289,8 +281,8 @@ class TestAnomalyDetector:
 
     def test_system_status(self):
         """Test system status retrieval."""
-        detector = AnomalyDetector()
-        status = detector.get_system_status()
+        detector = AnomalyDetector(
+    status = detector.get_system_status()
 
         assert isinstance(status, dict)
         assert "initialized" in status
@@ -300,8 +292,8 @@ class TestAnomalyDetector:
 
     def test_feature_importance(self):
         """Test feature importance retrieval."""
-        detector = AnomalyDetector()
-        feature_info = detector.get_feature_importance()
+        detector = AnomalyDetector(
+    feature_info = detector.get_feature_importance()
         assert isinstance(feature_info, dict)
         if "error" not in feature_info:
             assert "feature_count" in feature_info
@@ -314,9 +306,8 @@ class TestIntegration:
     def test_complete_pipeline(self):
         """Test the complete ML pipeline from data to inference.""f"
         # Initialize detector
-        detector = AnomalyDetector()
-
-        # Test metrics validation
+        detector = AnomalyDetector(
+    # Test metrics validation
         test_metrics = {
             "cpu_usage_avg": 45.2,
             "cpu_usage_max": 78.9,
@@ -328,7 +319,7 @@ class TestIntegration:
         }
 
         is_valid, issues = detector.validate_metrics(test_metrics)
-        assert is_valid, "Metrics validation failed: {issues}"
+        assert is_valid, f"Metrics validation failed: {issues}"
 
         # Test anomaly detection (if model is available)
         if detector.is_initialized:
@@ -340,9 +331,8 @@ class TestIntegration:
 
     def test_batch_processing(self):
         """Test batch anomaly detection.""f"
-        detector = AnomalyDetector()
-
-        batch_metrics = [
+        detector = AnomalyDetector(
+    batch_metrics = [
             {"cpu_usage_avg": 45.2, "memory_usage_pct": 65.3},
             {"cpu_usage_avg": 85.5, "memory_usage_pct": 88.7},
         ]

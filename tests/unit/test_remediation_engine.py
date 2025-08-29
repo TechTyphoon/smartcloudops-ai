@@ -187,22 +187,22 @@ class TestRemediationEngineIntegration:
     ):
         """Test complete remediation workflow.""f"
         # Setup mocks
-        mock_safety_instance = Mock()
-        mock_safety_instance.check_safety.return_value = {
+        mock_safety_instance = Mock(
+    mock_safety_instance.check_safety.return_value = {
             "safe": True,
             "reason": "All checks passed",
         }
         mock_safety.return_value = mock_safety_instance
 
-        mock_action_instance = Mock()
-        mock_action_instance.execute_action.return_value = {
+        mock_action_instance = Mock(
+    mock_action_instance.execute_action.return_value = {
             "success": True,
             "action": "scale_upf",
         }
         mock_action.return_value = mock_action_instance
 
-        mock_notification_instance = Mock()
-        mock_notification_instance.send_notification.return_value = {"sent": True}
+        mock_notification_instance = Mock(
+    mock_notification_instance.send_notification.return_value = {"sent": True}
         mock_notification.return_value = mock_notification_instance
 
         with patch("app.remediation.engine.get_configf", return_value=mock_config):

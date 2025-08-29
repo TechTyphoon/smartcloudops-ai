@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-from datetime import datetime, timezone
-from typing import List
-    """
+"""
 Enterprise Authentication Endpoints
 Login, logout, token refresh, user management
 """
+from datetime import datetime, timezone
+from typing import List
 import logging
 
 from app.auth import 
@@ -26,8 +26,8 @@ def login():
     try:
         # For GET requests, return login form info
         if request.method == "GET":
-            return jsonify()
-                {}
+            return jsonify({
+    }
                     "status": "ready",
                     "message": "Enterprise Login Service",
                     "method": "POST",
@@ -81,7 +81,7 @@ def login():
         # Authenticate user
         user = authenticate_user(username, password)
         if not user:
-            logger.warning("Failed login attempt for username: {username}")
+            logger.warning(f"Failed login attempt for username: {username}")
             return ()
                 jsonify()
                     {}
@@ -102,8 +102,8 @@ def login():
 
         logger.info(f"Successful login for user: {username} (role: {user['role']})")
 
-        return jsonify()
-            {}
+        return jsonify({
+    }
                 "message": "Login successful",
                 "status": "success",
                 "data": {}
@@ -121,7 +121,7 @@ def login():
         )
 
     except Exception as e:
-        logger.error("Login error: {e}")
+        logger.error(f"Login error: {e}")
         return ()
             jsonify()
                 {}
@@ -145,8 +145,8 @@ def logout():
 
         logger.info(f"User logged out: {request.user['username']}")
 
-        return jsonify()
-            {}
+        return jsonify({
+    }
                 "message": "Logout successful",
                 "status": "success",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -154,7 +154,7 @@ def logout():
         )
 
     except Exception as e:
-        logger.error("Logout error: {e}")
+        logger.error(f"Logout error: {e}")
         return ()
             jsonify()
                 {}
@@ -218,8 +218,8 @@ def refresh_token():
             tenant_id=user.get("tenant_id")
         )
 
-        return jsonify()
-            {}
+        return jsonify({
+    }
                 "message": "Token refreshed successfully",
                 "status": "success",
                 "data": {"tokens": tokens},
@@ -245,8 +245,8 @@ def get_profile():
         if not user:
             return jsonify({"error": "User not found", "status": "error"}), 404
 
-        return jsonify()
-            {}
+        return jsonify({
+    }
                 "message": "Profile retrieved successfully",
                 "status": "success",
                                     "data": {}
@@ -296,8 +296,8 @@ def list_users():
                 }
             )
 
-        return jsonify()
-            {}
+        return jsonify({
+    }
                 "message": "Users retrieved successfully",
                 "status": "success",
                 "data": {"users": users, "count": len(users)},
@@ -322,8 +322,8 @@ def list_users():
 @require_auth
 def validate_token():
     """Validate current token and return user info."""
-    return jsonify()
-        {}
+    return jsonify({
+    }
             "message": "Token is valid",
             "status": "success",
             "data": {"user": request.user, "valid": True},
@@ -337,8 +337,8 @@ def validate_token():
 @require_auth
 def get_roles():
     """Get available roles and permissions."""
-    return jsonify()
-        {}
+    return jsonify({
+    }
             "message": "Roles retrieved successfully",
             "status": "success",
             "data": {}

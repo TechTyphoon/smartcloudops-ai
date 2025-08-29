@@ -188,14 +188,13 @@ class TestAdvancedContextManager:
     def test_init_default_values(self):
         """Test AdvancedContextManager initialization with default values."""
         manager = AdvancedContextManager()
+    assert manager.max_context_size == 100
+assert manager.cache_duration == 300
+assert isinstance(manager.context_cache, dict)
+assert isinstance(manager.system_state_history, deque)
+assert manager.system_state_history.maxlen == 50
 
-        assert manager.max_context_size == 100
-        assert manager.cache_duration == 300
-        assert isinstance(manager.context_cache, dict)
-        assert isinstance(manager.system_state_history, deque)
-        assert manager.system_state_history.maxlen == 50
-
-    def test_init_custom_values(self):
+def test_init_custom_values(self):
         """Test AdvancedContextManager initialization with custom values."""
         manager = AdvancedContextManager(max_context_size=200, cache_duration=600)
 

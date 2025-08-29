@@ -50,5 +50,5 @@ def check_syntax():
         return False
 
 if __name__ == "__main__":
-    success = check_syntax()
+    success = check_syntax(
     exit(0 if success else 1)

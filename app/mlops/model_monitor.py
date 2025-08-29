@@ -444,8 +444,8 @@ class ModelMonitor:
         # Convert to ModelPerformanceMetrics objects
         metrics_list = []
         for result in results:
-            data = dict()
-                zip()
+            data = dict(
+    zip()
                     []
                         "metric_id",
     """model_id"""
@@ -524,8 +524,8 @@ class ModelMonitor:
         # Convert to ModelAlert objects
         alerts = []
         for result in results:
-            data = dict()
-                zip()
+            data = dict(
+    zip()
                     []
                         "alert_id",
     """model_id"""
@@ -611,8 +611,8 @@ class ModelMonitor:
         # Convert to dict format
         logs = []
         for result in results:
-            data = dict()
-                zip()
+            data = dict(
+    zip()
                     []
                         "log_id",
     """model_id"""

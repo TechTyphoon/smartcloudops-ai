@@ -38,8 +38,8 @@ class AnomalyDetector:
         self.model = IsolationForest(
             contamination=contamination, random_state=random_state, n_estimators=100
         )
-        self.scaler = StandardScaler()
-        self.is_trained = False
+        self.scaler = StandardScaler(
+    self.is_trained = False
         self.feature_columns = [
             "cpu_usage_percent",
             "memory_usage_percent",
@@ -446,8 +446,7 @@ if __name__ == "__main__":
     # Test the implementation
     print("Testing ML Models Implementation...")
 
-    detector = AnomalyDetector()
-
+    detector = AnomalyDetector(
     # Test with sample data
     sample_metrics = {
         "cpu_usage_percent": 75.5,

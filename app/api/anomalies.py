@@ -13,8 +13,6 @@ from app.services.anomaly_service import AnomalyService
 anomalies_bp = Blueprint("anomalies", __name__)
 # Initialize the service
 anomaly_service = AnomalyService()
-
-
 @anomalies_bp.route("/", methods=["GET"])
 def get_anomalies():
     """Get all anomalies with pagination and filtering."""

@@ -3,10 +3,12 @@ Tests for ChatOps functionality.
 """
 
 import os
+import sys
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
+from app.chatops.utils import (
     SystemContextGatherer,
     format_response,
     validate_query_params,
@@ -19,8 +21,8 @@ class TestGPTHandler:
     def mock_openai_client(self):
         """Mock OpenAI client."""
         with patch("app.chatops.gpt_handler.OpenAI") as mock_client:
-            mock_instance = Mock()
-            mock_client.return_value = mock_instance
+            mock_instance = Mock(
+    mock_client.return_value = mock_instance
             yield mock_instance
 
     @pytest.fixture
@@ -32,8 +34,8 @@ class TestGPTHandler:
     def test_gpt_handler_initialization(self, mock_openai_client):
         """Test GPT handler initialization.""f"
         with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}):
-            handler = GPTHandler()
-            assert handler.api_key == "test-key"
+            handler = GPTHandler(
+    assert handler.api_key == "test-key"
             assert handler.conversation_history == []
 
     def test_gpt_handler_missing_api_key(self):
@@ -79,11 +81,11 @@ class TestGPTHandler:
     def test_process_query_success(self, gpt_handler, mock_openai_client):
         """Test successful query processing."""
         # Mock OpenAI response
-        mock_response = Mock()
-        mock_response.choices = [Mock()]
+        mock_response = Mock(
+    mock_response.choices = [Mock()]
         mock_response.choices[0].message.content = "CPU usage is 45%f"
-        mock_response.usage = Mock()
-        mock_response.usage.total_tokens = 50
+        mock_response.usage = Mock(
+    mock_response.usage.total_tokens = 50
         mock_openai_client.chat.completions.create.return_value = mock_response
 
         # Create handler with API key and mock the client

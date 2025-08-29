@@ -140,13 +140,12 @@ class RedisCache:
         self.client = redis.Redis(connection_pool=self.connection_pool, decode_responses=False)
         
         # Cache statistics
-        self.stats = CacheStats()
-        self.stats_lock = threading.Lock()
+        self.stats = CacheStats(
+    self.stats_lock = threading.Lock()
         
         # Serializer
-        self.serializer = CacheSerializer()
-        
-        # Test connection
+        self.serializer = CacheSerializer(
+    # Test connection
         self._test_connection()
     
     def _test_connection(self):
@@ -550,7 +549,7 @@ class CacheDecorator:
 
 # Global Redis cache instance
 try:
-    redis_cache = RedisCache()
+    redis_cache = RedisCache(
     cache_decorator = CacheDecorator(redis_cache)
 except Exception as e:
     logger.warning(f"Redis cache not available: {e}")

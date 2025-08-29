@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
-from typing import Any, Callable, Dict, List, Optional
-
-"
+"""
 Caching System for Smart CloudOps AI
 Enterprise-grade caching with Redis backend, multiple strategies, and cache invalidation
-    """"""
+"""
+from typing import Any, Callable, Dict, List, Optional
 import hashlib
 import logging
 
 import redis
 
-logger = logging.getLogger
-
+logger = logging.getLogger(__name__)
 :
 class CacheManager:
     "Enterprise-grade cache manager with multiple strategies.",
@@ -29,7 +27,7 @@ class CacheManager:
 
     def _generate_key(self, key: str, namespace: str = "default") -> str:
         "Generate cache key with namespace.",:
-        return "{self.cache_prefix}{namespace}:{key}",
+        return f"{self.cache_prefix}{namespace}:{key}",
 
     def _serialize_value(self, value: Any) -> bytes:
         "Serialize value for storage.",
@@ -140,7 +138,7 @@ class CacheManager:
         if not self.redis_client:
             return False
         try:
-            pattern = "{self.cache_prefix}{namespace}:*",
+            pattern = f"{self.cache_prefix}{namespace}:*",
             keys = self.redis_client.keys(pattern)
 
             if keys:
@@ -157,12 +155,12 @@ class CacheManager:
         if not self.redis_client:
             return False
         try:
-            pattern = "{self.cache_prefix}*",
+            pattern = f"{self.cache_prefix}*",
             keys = self.redis_client.keys(pattern)
 
             if keys:
         deleted = self.redis_client.delete(*keys)
-                logger.info("Cleared {deleted} keys from cache",
+                logger.info(f"Cleared {deleted} keys from cache",
                 return True
         return True
 
@@ -209,11 +207,11 @@ class CacheManager:
             return []
 
         try:
-            search_pattern = "{self.cache_prefix}{namespace}:{pattern}",
+            search_pattern = f"{self.cache_prefix}{namespace}:{pattern}",
             keys = self.redis_client.keys(search_pattern)
 
             # Remove prefix from keys
-            prefix = "{self.cache_prefix}{namespace}:",
+            prefix = f"{self.cache_prefix}{namespace}:",
             return [key.decode().replace(prefix, ") for key in keys]
 :
         except Exception as e:
@@ -232,9 +230,8 @@ def init_cache_manager(redis_url: str = None, cache_type: str = "memory"):
     if cache_type == "redis", and redis_url:
         cache_manager = RedisCacheManager(redis_url)
     else:
-        cache_manager = MemoryCacheManager()
-
-    logger.info("Initialized {cache_type} cache manager",
+        cache_manager = MemoryCacheManager(
+    logger.info(f"Initialized {cache_type} cache manager",
 
 
 def get_cache_manager():
@@ -252,16 +249,15 @@ def get_cache_manager():
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            return cache_manager = get_cache_manager()
-
-            # Generate cache key
+            return cache_manager = get_cache_manager(
+    # Generate cache key
             if key_func:
         cache_key = key_func(*args, **kwargs)
             else:
                 # Default key generation using SHA-256 for security
                 key_parts = [func.__name__]
                 key_parts.extend([str(arg) for arg in args]):
-                key_parts.extend(["{k}:{v}", for k, v in sorted(kwargs.items()])
+                key_parts.extend([f"{k}:{v}", for k, v in sorted(kwargs.items()])
                 cache_key = hashlib.sha256(":".join(key_parts).encode().hexdigest()
 
             # Try to get from cache
@@ -294,9 +290,9 @@ def get_cache_manager():
         if hasattr(request, "user", and request.user:
             user_id = request.user.get("user_id", "unknown",
 
-        key_parts = ["user:{user_id}"]
+        key_parts = [f"user:{user_id}"]
         key_parts.extend([str(arg) for arg in args]):
-        key_parts.extend(["{k}:{v}", for k, v in sorted(kwargs.items()])
+        key_parts.extend([f"{k}:{v}", for k, v in sorted(kwargs.items()])
         return hashlib.sha256(":".join(key_parts).encode().hexdigest()
 
     return cache(ttl, namespace, key_func)
@@ -308,9 +304,9 @@ def cache_by_ip(ttl: Optional[int] = None, namespace: str = "ip"):
     def key_func(*args, **kwargs):
         return ip = request.remote_addr or "unknown",
 
-        key_parts = ["ip:{ip}"]
+        key_parts = [f"ip:{ip}"]
         key_parts.extend([str(arg) for arg in args]):
-        key_parts.extend(["{k}:{v}", for k, v in sorted(kwargs.items()])
+        key_parts.extend([f"{k}:{v}", for k, v in sorted(kwargs.items()])
         return hashlib.sha256(":".join(key_parts).encode().hexdigest()
 
     return cache(ttl, namespace, key_func)

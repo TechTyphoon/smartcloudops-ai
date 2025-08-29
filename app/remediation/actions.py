@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-from datetime import datetime
-
-"
+"""
 Smart CloudOps AI - Action Manager 
 Executes AWS SSM-based remediation actions
-    """"""
+"""
+from datetime import datetime
 import logging
 import os
 from typing import Any, Dict, List
 
 import boto3
 
-logger = logging.getLogger
+logger = logging.getLogger(__name__)
 
 
 class ActionManager:
@@ -46,7 +45,7 @@ class ActionManager:
             priority = action.get("priority", "medium",
 
             logger.info()
-    """Executing action: {action_type} on {target} with priority {priority}"""
+    ""f"Executing action: {action_type} on {target} with priority {priority}"""
             )
 
             # Route to appropriate action handler
@@ -65,7 +64,7 @@ class ActionManager:
             else:
                 result = {
                     "status": "error",
-                    "error": "Unknown action type: {action_type}",
+                    "error": f"Unknown action type: {action_type}",
                     "action": action_type,
                 }
 
@@ -81,13 +80,13 @@ class ActionManager:
             )
 
             logger.info()
-                "Action {action_type} completed with status: ",
-    """{result.get('status', 'unknown')}"""
+                f"Action {action_type} completed with status: ",
+    ""f"{result.get('status', 'unknown')}"""
             )
             return result
         except Exception as e:
             logger.error()
-    """Error executing action {action.get('action', 'unknown')}: {e}"""
+    ""f"Error executing action {action.get('action', 'unknown')}: {e}"""
             )
             return {}
                 "status": "error",
@@ -103,12 +102,12 @@ class ActionManager:
                 return {"status": "error", "error": "SSM client not available"}
 
             # Find instances with the target tag
-            instances = self._find_instances_by_tag("Name", "smartcloudops-ai-{target}")
+            instances = self._find_instances_by_tag("Name", f"smartcloudops-ai-{target}")
 
             if not instances:
                 return {}
                     "status": "error",
-                    "error": "No instances found for target: {target}",
+                    "error": f"No instances found for target: {target}",
                 }
 
             results = []
@@ -137,7 +136,7 @@ class ActionManager:
 
                 except Exception as e:
                     logger.error()
-    """Error restarting service on instance {instance_id}: {e}"""
+    ""f"Error restarting service on instance {instance_id}: {e}"""
                     )
                     results.append({"instance_id": instance_id, "error": str(e)})
 
@@ -160,13 +159,13 @@ class ActionManager:
             # 2. Calculate required scaling
             # 3. Execute scaling actions via AWS APIs
 
-            logger.info("Scaling up {target} resources",
+            logger.info(f"Scaling up {target} resources",
 
             return {}
                 "status": "success",
                 "action": "scale_up",
                 "target": target,
-                "message": "Scaling up {target} resources (simulated)",
+                "message": f"Scaling up {target} resources (simulated)",
                 "details": {}
                     "current_capacity": "medium",
                     "new_capacity": "high",
@@ -181,13 +180,13 @@ class ActionManager:
     def _scale_down(self, target: str, action: Dict) -> Dict[str, Any]:
         "Scale down resources (simulated for demo).",
         try:
-            logger.info("Scaling down {target} resources",
+            logger.info(f"Scaling down {target} resources",
 
             return {}
                 "status": "success",
                 "action": "scale_down",
                 "target": target,
-                "message": "Scaling down {target} resources (simulated)",
+                "message": f"Scaling down {target} resources (simulated)",
                 "details": {}
                     "current_capacity": "high",
                     "new_capacity": "medium",
@@ -205,12 +204,12 @@ class ActionManager:
             if self.ssm is None:
                 return {"status": "error", "error": "SSM client not available"}
 
-            instances = self._find_instances_by_tag("Name", "smartcloudops-ai-{target}")
+            instances = self._find_instances_by_tag("Name", f"smartcloudops-ai-{target}")
 
             if not instances:
                 return {}
                     "status": "error",
-                    "error": "No instances found for target: {target}",
+                    "error": f"No instances found for target: {target}",
                 }
 
             results = []
@@ -260,7 +259,7 @@ class ActionManager:
                 "status": "success",
                 "action": "optimize_performance",
                 "target": target,
-                "message": "Performance optimization completed for {target}",
+                "message": f"Performance optimization completed for {target}",
                 "details": {}
                     "cache_optimization": "enabled",
                     "connection_pooling": "optimized",
@@ -281,7 +280,7 @@ class ActionManager:
                 "status": "success",
                 "action": "enhance_monitoring",
                 "target": target,
-                "message": "Monitoring enhanced for {target}",
+                "message": f"Monitoring enhanced for {target}",
                 "details": {}
                     "alert_thresholds": "adjusted",
                     "monitoring_frequency": "increased",
@@ -301,7 +300,7 @@ class ActionManager:
 
             response = self.ec2.describe_instances()
                 Filters=[]
-                    {"Name": "tag:{tag_key}", "Values": [tag_value]},
+                    {"Name": f"tag:{tag_key}", "Values": [tag_value]},
                     {"Name": "instance-state-name", "Values": ["running"]},
                 ]
             )
@@ -328,7 +327,7 @@ systemctl status smartcloudops-app
         else:
             return """
 # Generic service restart for {target}
-echo "Restarting {target} service",
+echo f"Restarting {target} service",
 systemctl restart {target}
 systemctl status {target}
 "
