@@ -11,7 +11,7 @@ import os
 
 import psutil
 from flask import Blueprint, jsonify, request
-from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -19,11 +19,15 @@ logger = logging.getLogger(__name__)
 # Create blueprint
 monitoring_bp = Blueprint("monitoring", __name__, url_prefix="/monitoring")
 
-# Prometheus metrics
+# Prometheus metrics - Using unique names to avoid conflicts
 REQUEST_COUNT = Counter(
-    "http_requests_total", "Total HTTP requests", ["method", "endpoint", "status"]
+    "monitoring_http_requests_total",
+    "Total HTTP requests (monitoring)",
+    ["method", "endpoint", "status"],
 )
-REQUEST_LATENCY = Histogram("http_request_duration_seconds", "HTTP request latency")
+REQUEST_LATENCY = Histogram(
+    "monitoring_http_request_duration_seconds", "HTTP request latency (monitoring)"
+)
 
 # System metrics
 SYSTEM_METRICS = {
@@ -70,7 +74,7 @@ def health_check():
             "services": {
                 "app": "healthy",
                 "database": "unknown",  # Will be checked if DB connection available
-                "ml_service": "unknown"  # Will be checked if ML available
+                "ml_service": "unknown",  # Will be checked if ML available
             },
             "system": {
                 "cpu_percent": SYSTEM_METRICS["cpu_percent"],
@@ -96,7 +100,8 @@ def health_check():
                 port=db_port,
                 database=db_name,
                 user=db_user,
-                password=db_password)
+                password=db_password,
+            )
             conn.close()
             health_status["services"]["database"] = "healthy"
         except Exception as db_error:
@@ -107,7 +112,15 @@ def health_check():
 
     except Exception as e:
         logger.error(f"Health check error: {e}")
-        return jsonify({"error": "Health check failed", "timestamp": datetime.now(timezone.utc).isoformat()}), 503
+        return (
+            jsonify(
+                {
+                    "error": "Health check failed",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                }
+            ),
+            503,
+        )
 
 
 @monitoring_bp.route("/status", methods=["GET"])
@@ -135,7 +148,7 @@ def system_status():
             "endpoints": {
                 "health": "/monitoring/health",
                 "metrics": "/monitoring/metrics",
-                "status": "/monitoring/status"
+                "status": "/monitoring/status",
             },
         }
 
@@ -155,14 +168,24 @@ def get_logs():
         log_file = os.getenv("LOG_FILE", "logs/app.log")
 
         if not os.path.exists(log_file):
-            return jsonify({"status": "success", "message": "No log file found", "logs": []})
+            return jsonify(
+                {"status": "success", "message": "No log file found", "logs": []}
+            )
 
         # Read last 100 lines
         with open(log_file, "r") as f:
             lines = f.readlines()
             recent_logs = lines[-100:] if len(lines) > 100 else lines
 
-        return jsonify({"status": "success", "log_file": log_file, "total_lines": len(lines), "recent_lines": len(recent_logs), "logs": recent_logs})
+        return jsonify(
+            {
+                "status": "success",
+                "log_file": log_file,
+                "total_lines": len(lines),
+                "recent_lines": len(recent_logs),
+                "logs": recent_logs,
+            }
+        )
 
     except Exception as e:
         logger.error(f"Log retrieval error: {e}")
@@ -173,7 +196,16 @@ def get_logs():
 def alerts():
     "Alerts endpoint."
     if request.method == "GET":
-        return jsonify({"status": "success", "message": "Alerts endpoint", "endpoints": {"get_alerts": "GET /monitoring/alerts", "create_alert": "POST /monitoring/alerts"}})
+        return jsonify(
+            {
+                "status": "success",
+                "message": "Alerts endpoint",
+                "endpoints": {
+                    "get_alerts": "GET /monitoring/alerts",
+                    "create_alert": "POST /monitoring/alerts",
+                },
+            }
+        )
     else:
         # POST - Create new alert
         try:
@@ -192,7 +224,16 @@ def alerts():
 
             logger.info(f"Alert created: {alert['id']} - {alert['message']}")
 
-            return jsonify({"status": "success", "message": "Alert created successfully", "alert": alert}), 201
+            return (
+                jsonify(
+                    {
+                        "status": "success",
+                        "message": "Alert created successfully",
+                        "alert": alert,
+                    }
+                ),
+                201,
+            )
 
         except Exception as e:
             logger.error(f"Alert creation error: {e}")

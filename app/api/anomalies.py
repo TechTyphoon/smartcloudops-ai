@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Anomaly API Endpoints for Smart CloudOps AI - Refactored with Service Layer
 Phase 7: Production Launch & Feedback - Backend Completion
-"
+"""
 
 from datetime import datetime
 
@@ -11,7 +11,7 @@ from flask import Blueprint, jsonify, request
 from app.services.anomaly_service import AnomalyService
 
 # Create blueprint
-anomalies_bp = Blueprint
+anomalies_bp = Blueprint("anomalies", __name__)
 
 # Initialize the service
 anomaly_service = AnomalyService()
@@ -19,7 +19,7 @@ anomaly_service = AnomalyService()
 
 @anomalies_bp.route("/", methods=["GET"])
 def get_anomalies():
-    "Get all anomalies with pagination and filtering."
+    """Get all anomalies with pagination and filtering."""
     try:
         # Get query parameters
         page = request.args.get("page", 1, type=int)
@@ -29,63 +29,68 @@ def get_anomalies():
         source = request.args.get("source")
 
         # Use service layer for business logic
-        anomalies, pagination_info = anomaly_service.get_anomalies()
+        anomalies, pagination_info = anomaly_service.get_anomalies(
             page=page,
             per_page=per_page,
             status=status,
             severity=severity,
-            source=source)
+            source=source,
+        )
 
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "success",
                     "data": {"anomalies": anomalies, "pagination": pagination_info},
                 }
             ),
-            200)
+            200,
+        )
 
     except Exception as e:
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "error",
                     "message": f"Failed to retrieve anomalies: {str(e)}",
                 }
             ),
-            500)
+            500,
+        )
 
 
 @anomalies_bp.route("/<int:anomaly_id>", methods=["GET"])
 def get_anomaly(anomaly_id):
-    "Get a specific anomaly by ID."
+    """Get a specific anomaly by ID."""
     try:
         # Use service layer for business logic
         anomaly = anomaly_service.get_anomaly_by_id(anomaly_id)
 
         if not anomaly:
-            return ()
-                jsonify()
-                    {}
+            return (
+                jsonify(
+                    {
                         "status": "error",
                         "message": f"Anomaly with ID {anomaly_id} not found",
                     }
                 ),
-                404)
+                404,
+            )
 
         return jsonify({"status": "success", "data": {"anomaly": anomaly}}), 200
 
     except Exception as e:
-        return ()
-            jsonify()
+        return (
+            jsonify(
                 {"status": "error", "message": f"Failed to retrieve anomaly: {str(e)}"}
             ),
-            500)
+            500,
+        )
 
 
 @anomalies_bp.route("/", methods=["POST"])
 def create_anomaly():
-    "Create a new anomaly."
+    """Create a new anomaly."""
     try:
         data = request.get_json()
 
@@ -95,29 +100,31 @@ def create_anomaly():
         # Use service layer for business logic (includes validation)
         new_anomaly = anomaly_service.create_anomaly(data)
 
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "success",
-                    "message": "Anomaly created successfully",
                     "data": {"anomaly": new_anomaly},
+                    "message": "Anomaly created successfully",
                 }
             ),
-            201)
+            201,
+        )
 
-    except ValueError as ve:
-        return jsonify({"status": "error", "message": str(ve)}), 400
+    except ValueError as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
     except Exception as e:
-        return ()
-            jsonify()
+        return (
+            jsonify(
                 {"status": "error", "message": f"Failed to create anomaly: {str(e)}"}
             ),
-            500)
+            500,
+        )
 
 
 @anomalies_bp.route("/<int:anomaly_id>", methods=["PUT"])
 def update_anomaly(anomaly_id):
-    "Update an existing anomaly."
+    """Update an existing anomaly."""
     try:
         data = request.get_json()
 
@@ -128,158 +135,217 @@ def update_anomaly(anomaly_id):
         updated_anomaly = anomaly_service.update_anomaly(anomaly_id, data)
 
         if not updated_anomaly:
-            return ()
-                jsonify()
-                    {}
+            return (
+                jsonify(
+                    {
                         "status": "error",
                         "message": f"Anomaly with ID {anomaly_id} not found",
                     }
                 ),
-                404)
+                404,
+            )
 
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "success",
-                    "message": "Anomaly updated successfully",
                     "data": {"anomaly": updated_anomaly},
+                    "message": "Anomaly updated successfully",
                 }
             ),
-            200)
+            200,
+        )
 
-    except ValueError as ve:
-        return jsonify({"status": "error", "message": str(ve)}), 400
+    except ValueError as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
     except Exception as e:
-        return ()
-            jsonify()
+        return (
+            jsonify(
                 {"status": "error", "message": f"Failed to update anomaly: {str(e)}"}
             ),
-            500)
+            500,
+        )
 
 
 @anomalies_bp.route("/<int:anomaly_id>", methods=["DELETE"])
 def delete_anomaly(anomaly_id):
-    "Delete an anomaly."
+    """Delete an anomaly."""
     try:
         # Use service layer for business logic
-        deleted_anomaly = anomaly_service.delete_anomaly(anomaly_id)
+        success = anomaly_service.delete_anomaly(anomaly_id)
 
-        if not deleted_anomaly:
-            return ()
-                jsonify()
-                    {}
+        if not success:
+            return (
+                jsonify(
+                    {
                         "status": "error",
                         "message": f"Anomaly with ID {anomaly_id} not found",
                     }
                 ),
-                404)
+                404,
+            )
 
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "success",
-                    "message": "Anomaly deleted successfully",
-                    "data": {"deleted_anomaly": deleted_anomaly},
+                    "message": f"Anomaly with ID {anomaly_id} deleted successfully",
                 }
             ),
-            200)
+            200,
+        )
 
     except Exception as e:
-        return ()
-            jsonify()
+        return (
+            jsonify(
                 {"status": "error", "message": f"Failed to delete anomaly: {str(e)}"}
             ),
-            500)
+            500,
+        )
 
 
 @anomalies_bp.route("/<int:anomaly_id>/acknowledge", methods=["POST"])
 def acknowledge_anomaly(anomaly_id):
-    "Acknowledge an anomaly."
+    """Acknowledge an anomaly."""
     try:
-        # Use service layer for business logic
-        anomaly = anomaly_service.acknowledge_anomaly(anomaly_id)
+        data = request.get_json() or {}
+        acknowledged_by = data.get("acknowledged_by", "system")
 
-        if not anomaly:
-            return ()
-                jsonify()
-                    {}
+        # Use service layer for business logic
+        success = anomaly_service.acknowledge_anomaly(anomaly_id, acknowledged_by)
+
+        if not success:
+            return (
+                jsonify(
+                    {
                         "status": "error",
                         "message": f"Anomaly with ID {anomaly_id} not found",
                     }
                 ),
-                404)
+                404,
+            )
 
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "success",
-                    "message": "Anomaly acknowledged successfully",
-                    "data": {"anomaly": anomaly},
+                    "message": f"Anomaly with ID {anomaly_id} acknowledged successfully",
                 }
             ),
-            200)
+            200,
+        )
 
     except Exception as e:
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "error",
                     "message": f"Failed to acknowledge anomaly: {str(e)}",
                 }
             ),
-            500)
+            500,
+        )
 
 
 @anomalies_bp.route("/<int:anomaly_id>/resolve", methods=["POST"])
 def resolve_anomaly(anomaly_id):
-    "Resolve an anomaly."
+    """Resolve an anomaly."""
     try:
-        # Use service layer for business logic
-        anomaly = anomaly_service.resolve_anomaly(anomaly_id)
+        data = request.get_json() or {}
+        resolution_notes = data.get("resolution_notes", "")
 
-        if not anomaly:
-            return ()
-                jsonify()
-                    {}
+        # Use service layer for business logic
+        success = anomaly_service.resolve_anomaly(anomaly_id, resolution_notes)
+
+        if not success:
+            return (
+                jsonify(
+                    {
                         "status": "error",
                         "message": f"Anomaly with ID {anomaly_id} not found",
                     }
                 ),
-                404)
+                404,
+            )
 
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "success",
-                    "message": "Anomaly resolved successfully",
-                    "data": {"anomaly": anomaly},
+                    "message": f"Anomaly with ID {anomaly_id} resolved successfully",
                 }
             ),
-            200)
+            200,
+        )
 
     except Exception as e:
-        return ()
-            jsonify()
+        return (
+            jsonify(
                 {"status": "error", "message": f"Failed to resolve anomaly: {str(e)}"}
             ),
-            500)
+            500,
+        )
 
 
 @anomalies_bp.route("/stats", methods=["GET"])
 def get_anomaly_stats():
-    "Get anomaly statistics."
+    """Get anomaly statistics."""
     try:
+        # Get query parameters for time range
+        days = request.args.get("days", 7, type=int)
+        source = request.args.get("source")
+
         # Use service layer for business logic
-        stats = anomaly_service.get_anomaly_statistics()
+        stats = anomaly_service.get_anomaly_stats(days=days, source=source)
 
-        return jsonify({"status": "success", "data": stats}), 200
-
-    except Exception as e:
-        return ()
-            jsonify()
-                {}
-                    "status": "error",
-                    "message": f"Failed to retrieve anomaly statistics: {str(e)}",
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "data": {"stats": stats},
                 }
             ),
-            500)
+            200,
+        )
+
+    except Exception as e:
+        return (
+            jsonify(
+                {"status": "error", "message": f"Failed to get anomaly stats: {str(e)}"}
+            ),
+            500,
+        )
+
+
+@anomalies_bp.route("/export", methods=["GET"])
+def export_anomalies():
+    """Export anomalies to CSV."""
+    try:
+        # Get query parameters
+        format_type = request.args.get("format", "csv")
+        days = request.args.get("days", 30, type=int)
+        status = request.args.get("status")
+
+        # Use service layer for business logic
+        export_data = anomaly_service.export_anomalies(
+            format_type=format_type, days=days, status=status
+        )
+
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "data": {"export": export_data},
+                    "message": f"Anomalies exported successfully in {format_type} format",
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        return (
+            jsonify(
+                {"status": "error", "message": f"Failed to export anomalies: {str(e)}"}
+            ),
+            500,
+        )

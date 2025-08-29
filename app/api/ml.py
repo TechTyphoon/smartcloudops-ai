@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+"""
 Machine Learning API Endpoints for Smart CloudOps AI - Minimal Working Version
 ML model management, training, and operations
-"
+"""
 
 import os
 import random
@@ -11,11 +11,11 @@ from datetime import datetime, timedelta, timezone
 from flask import Blueprint, jsonify, request
 
 # Create blueprint
-ml_bp = Blueprint
+ml_bp = Blueprint("ml", __name__)
 
 # Mock data for testing
-MOCK_TRAINING_JOBS = []
-    {}
+MOCK_TRAINING_JOBS = [
+    {
         "id": 1,
         "model_name": "anomaly_detector_v2",
         "status": "completed",
@@ -27,7 +27,7 @@ MOCK_TRAINING_JOBS = []
         "started_at": "2024-01-14T10:00:00Z",
         "completed_at": "2024-01-14T10:30:47Z",
     },
-    {}
+    {
         "id": 2,
         "model_name": "remediation_recommender_v2",
         "status": "running",
@@ -41,8 +41,8 @@ MOCK_TRAINING_JOBS = []
     },
 ]
 
-MOCK_DATASETS = []
-    {}
+MOCK_DATASETS = [
+    {
         "id": 1,
         "name": "anomaly_training_data_2024",
         "size": 10000,
@@ -51,7 +51,7 @@ MOCK_DATASETS = []
         "created_at": "2024-01-10T08:00:00Z",
         "updated_at": "2024-01-14T16:30:00Z",
     },
-    {}
+    {
         "id": 2,
         "name": "remediation_history_data",
         "size": 8500,
@@ -65,11 +65,11 @@ MOCK_DATASETS = []
 
 @ml_bp.route("/models", methods=["GET"])
 def get_ml_models():
-    "Get all ML models with their status and performance metrics."
+    """Get all ML models with their status and performance metrics."""
     try:
         # Mock ML models data
-        models = []
-            {}
+        models = [
+            {
                 "id": "anomaly_detector_v1",
                 "name": "Anomaly Detection Model v1",
                 "type": "anomaly_detection",
@@ -84,7 +84,7 @@ def get_ml_models():
                 "last_used": "2024-01-15T10:45:00Z",
                 "predictions_made": 1247,
             },
-            {}
+            {
                 "id": "remediation_recommender_v1",
                 "name": "Remediation Recommendation Model v1",
                 "type": "recommendation",
@@ -99,150 +99,65 @@ def get_ml_models():
                 "last_used": "2024-01-15T10:30:00Z",
                 "predictions_made": 892,
             },
-            {}
-                "id": "anomaly_detector_v2",
-                "name": "Anomaly Detection Model v2",
-                "type": "anomaly_detection",
-                "algorithm": "isolation_forest",
-                "version": "2.0.0",
-                "status": "training",
-                "accuracy": None,
-                "precision": None,
-                "recall": None,
-                "f1_score": None,
-                "training_date": None,
-                "last_used": None,
-                "predictions_made": 0,
-            },
         ]
 
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "success",
-                    "data": {}
-                        "models": models,
-                        "total_models": len(models),
-                        "active_models": len()
-                            [m for m in models if m["status"] == "active"]
-                        ),
-                        "training_models": len()
-                            [m for m in models if m["status"] == "training"]
-                        ),
-                    },
+                    "data": {"models": models},
                 }
             ),
-            200)
+            200,
+        )
 
     except Exception as e:
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "error",
                     "message": f"Failed to retrieve ML models: {str(e)}",
                 }
             ),
-            500)
+            500,
+        )
 
 
 @ml_bp.route("/models/<model_id>", methods=["GET"])
 def get_ml_model(model_id):
-    "Get detailed information about a specific ML model."
+    """Get a specific ML model by ID."""
     try:
-        # Mock model details based on ID
-        if model_id == "anomaly_detector_v1":
-            model_details = {}
-                "id": model_id,
-                "name": "Anomaly Detection Model v1",
-                "description": "Isolation Forest-based anomaly detection for infrastructure metrics",
-                "type": "anomaly_detection",
-                "algorithm": "isolation_forest",
-                "version": "1.0.0",
-                "status": "active",
-                "performance_metrics": {}
-                    "accuracy": 0.918,
-                    "precision": 0.892,
-                    "recall": 0.945,
-                    "f1_score": 0.918,
-                    "auc_roc": 0.934,
-                },
-                "hyperparameters": {}
-                    "n_estimators": 100,
-                    "contamination": 0.1,
-                    "random_state": 42,
-                },
-                "training_info": {}
-                    "dataset_size": 10000,
-                    "features": 25,
-                    "training_time": 1847,
-                    "training_date": "2024-01-10T14:30:00Z",
-                },
-                "usage_stats": {}
-                    "predictions_made": 1247,
-                    "last_used": "2024-01-15T10:45:00Z",
-                    "avg_prediction_time": 23.5,
-                },
-            }
-        elif model_id == "remediation_recommender_v1":
-            model_details = {}
-                "id": model_id,
-                "name": "Remediation Recommendation Model v1",
-                "description": "Random Forest classifier for recommending remediation actions",
-                "type": "recommendation",
-                "algorithm": "random_forest",
-                "version": "1.0.0",
-                "status": "active",
-                "performance_metrics": {}
-                    "accuracy": 0.874,
-                    "precision": 0.856,
-                    "recall": 0.891,
-                    "f1_score": 0.873,
-                    "auc_roc": 0.889,
-                },
-                "hyperparameters": {}
-                    "n_estimators": 200,
-                    "max_depth": 10,
-                    "min_samples_split": 5,
-                    "random_state": 42,
-                },
-                "training_info": {}
-                    "dataset_size": 8500,
-                    "features": 18,
-                    "training_time": 2156,
-                    "training_date": "2024-01-12T09:15:00Z",
-                },
-                "usage_stats": {}
-                    "predictions_made": 892,
-                    "last_used": "2024-01-15T10:30:00Z",
-                    "avg_prediction_time": 45.2,
-                },
-            }
-        else:
-            return ()
-                jsonify()
-                    {}
-                        "status": "error",
-                        "message": f"Model with ID {model_id} not found",
-                    }
-                ),
-                404)
+        # Mock model data
+        model = {
+            "id": model_id,
+            "name": f"Model {model_id}",
+            "type": "anomaly_detection",
+            "algorithm": "isolation_forest",
+            "version": "1.0.0",
+            "status": "active",
+            "accuracy": 0.918,
+            "precision": 0.892,
+            "recall": 0.945,
+            "f1_score": 0.918,
+            "training_date": "2024-01-10T14:30:00Z",
+            "last_used": "2024-01-15T10:45:00Z",
+            "predictions_made": 1247,
+        }
 
-        return jsonify({"status": "success", "data": {"model": model_details}}), 200
+        return jsonify({"status": "success", "data": {"model": model}}), 200
 
     except Exception as e:
-        return ()
-            jsonify()
-                {}
-                    "status": "error",
-                    "message": f"Failed to retrieve model details: {str(e)}",
-                }
+        return (
+            jsonify(
+                {"status": "error", "message": f"Failed to retrieve ML model: {str(e)}"}
             ),
-            500)
+            500,
+        )
 
 
 @ml_bp.route("/train", methods=["POST"])
 def train_model():
-    "Start training a new ML model."
+    """Start a new model training job."""
     try:
         data = request.get_json()
 
@@ -253,341 +168,321 @@ def train_model():
         required_fields = ["model_name", "algorithm", "dataset_id"]
         for field in required_fields:
             if field not in data:
-                return ()
-                    jsonify()
-                        {}
+                return (
+                    jsonify(
+                        {
                             "status": "error",
                             "message": f"Missing required field: {field}",
                         }
                     ),
-                    400)
-
-        # Validate algorithm
-        valid_algorithms = []
-            "isolation_forest",
-            "random_forest",
-            "svm",
-            "neural_network",
-        ]
-        if data["algorithm"] not in valid_algorithms:
-            return ()
-                jsonify()
-                    {}
-                        "status": "error",
-                        "message": f"Invalid algorithm. Must be one of: {', '.join(valid_algorithms)}",
-                    }
-                ),
-                400)
+                    400,
+                )
 
         # Create new training job
-        new_job = {}
+        new_job = {
             "id": len(MOCK_TRAINING_JOBS) + 1,
             "model_name": data["model_name"],
-            "status": "started",
+            "status": "queued",
             "algorithm": data["algorithm"],
-            "dataset_id": data["dataset_id"],
-            "dataset_size": random.randint(5000, 15000),
-            "hyperparameters": data.get("hyperparameters", {}),
+            "dataset_size": data.get("dataset_size", 0),
             "accuracy": None,
             "loss": None,
             "training_time": None,
             "started_at": datetime.now(timezone.utc).isoformat() + "Z",
             "completed_at": None,
-            "estimated_completion": ()
-                datetime.now(timezone.utc) + timedelta(minutes=random.randint(15, 45)
-            ).isoformat()
-            + "Z",
         }
 
+        # Add to mock data
         MOCK_TRAINING_JOBS.append(new_job)
 
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "success",
-                    "message": "Model training started successfully",
                     "data": {"training_job": new_job},
+                    "message": "Training job created successfully",
                 }
             ),
-            201)
+            201,
+        )
 
     except Exception as e:
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "error",
-                    "message": f"Failed to start model training: {str(e)}",
+                    "message": f"Failed to create training job: {str(e)}",
                 }
             ),
-            500)
+            500,
+        )
 
 
-@ml_bp.route("/training/jobs", methods=["GET"])
+@ml_bp.route("/training-jobs", methods=["GET"])
 def get_training_jobs():
-    "Get all training jobs with their status."
+    """Get all training jobs."""
     try:
-        # Simulate some jobs completing over time
-        for job in MOCK_TRAINING_JOBS:
-            if ()
-                job["status"] == "running" and random.random() < 0.3
-            :  # 30% chance to complete
-                job["status"] = "completed"
-                job["completed_at"] = datetime.now(timezone.utc).isoformat() + "Z"
-                job["accuracy"] = round(random.uniform(0.8, 0.95), 3)
-                job["loss"] = round(random.uniform(0.05, 0.2), 3)
-                job["training_time"] = random.randint(1200, 3600)
+        # Get query parameters
+        page = request.args.get("page", 1, type=int)
+        per_page = min(request.args.get("per_page", 20, type=int), 100)
+        status = request.args.get("status")
 
-        return ()
-            jsonify()
-                {}
+        # Filter jobs
+        filtered_jobs = MOCK_TRAINING_JOBS.copy()
+
+        if status:
+            filtered_jobs = [j for j in filtered_jobs if j["status"] == status]
+
+        # Calculate pagination
+        total = len(filtered_jobs)
+        start = (page - 1) * per_page
+        end = start + per_page
+        jobs_page = filtered_jobs[start:end]
+
+        return (
+            jsonify(
+                {
                     "status": "success",
-                    "data": {}
-                        "training_jobs": MOCK_TRAINING_JOBS,
-                        "total_jobs": len(MOCK_TRAINING_JOBS),
-                        "active_jobs": len()
-                            []
-                                j
-                                for j in MOCK_TRAINING_JOBS
-                                if j["status"] in ["running", "started"]
-                            ]
-                        ),
-                        "completed_jobs": len()
-                            []
-                                j
-                                for j in MOCK_TRAINING_JOBS
-                                if j["status"] == "completed"
-                            ]
-                        ),
+                    "data": {
+                        "training_jobs": jobs_page,
+                        "pagination": {
+                            "page": page,
+                            "per_page": per_page,
+                            "total": total,
+                            "pages": (total + per_page - 1) // per_page,
+                        },
                     },
                 }
             ),
-            200)
+            200,
+        )
 
     except Exception as e:
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "error",
                     "message": f"Failed to retrieve training jobs: {str(e)}",
                 }
             ),
-            500)
+            500,
+        )
 
 
-@ml_bp.route("/training/jobs/<int:job_id>", methods=["GET"])
+@ml_bp.route("/training-jobs/<int:job_id>", methods=["GET"])
 def get_training_job(job_id):
-    "Get detailed information about a specific training job."
+    """Get a specific training job by ID."""
     try:
-        # Find training job by ID
+        # Find job by ID
         job = next((j for j in MOCK_TRAINING_JOBS if j["id"] == job_id), None)
 
         if not job:
-            return ()
-                jsonify()
-                    {}
+            return (
+                jsonify(
+                    {
                         "status": "error",
                         "message": f"Training job with ID {job_id} not found",
                     }
                 ),
-                404)
+                404,
+            )
 
         return jsonify({"status": "success", "data": {"training_job": job}}), 200
 
     except Exception as e:
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "error",
                     "message": f"Failed to retrieve training job: {str(e)}",
                 }
             ),
-            500)
+            500,
+        )
 
 
 @ml_bp.route("/datasets", methods=["GET"])
 def get_datasets():
-    "Get all available datasets for ML training."
+    """Get all datasets."""
     try:
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "success",
-                    "data": {}
-                        "datasets": MOCK_DATASETS,
-                        "total_datasets": len(MOCK_DATASETS),
-                        "total_samples": sum(d["size"] for d in MOCK_DATASETS),
-                    },
+                    "data": {"datasets": MOCK_DATASETS},
                 }
             ),
-            200)
+            200,
+        )
 
     except Exception as e:
-        return ()
-            jsonify()
+        return (
+            jsonify(
                 {"status": "error", "message": f"Failed to retrieve datasets: {str(e)}"}
             ),
-            500)
-
-
-@ml_bp.route("/datasets/<int:dataset_id>", methods=["GET"])
-def get_dataset(dataset_id):
-    "Get detailed information about a specific dataset."
-    try:
-        # Find dataset by ID
-        dataset = next((d for d in MOCK_DATASETS if d["id"] == dataset_id), None)
-
-        if not dataset:
-            return ()
-                jsonify()
-                    {}
-                        "status": "error",
-                        "message": f"Dataset with ID {dataset_id} not found",
-                    }
-                ),
-                404)
-
-        # Add additional details
-        dataset_details = {}
-            **dataset,
-            "feature_names": [f"feature_{i+1}" for i in range(dataset["features"])],
-            "statistics": {}
-                "mean_value": round(random.uniform(0.4, 0.8), 3),
-                "std_deviation": round(random.uniform(0.1, 0.3), 3),
-                "null_values": random.randint(0, 50),
-                "data_quality_score": round(random.uniform(0.85, 0.98), 3),
-            },
-        }
-
-        return jsonify({"status": "success", "data": {"dataset": dataset_details}}), 200
-
-    except Exception as e:
-        return ()
-            jsonify()
-                {"status": "error", "message": f"Failed to retrieve dataset: {str(e)}"}
-            ),
-            500)
+            500,
+        )
 
 
 @ml_bp.route("/predict", methods=["POST"])
 def make_prediction():
-    "Make a prediction using the active ML models."
+    """Make a prediction using an ML model."""
     try:
         data = request.get_json()
 
         if not data:
             return jsonify({"status": "error", "message": "No data provided"}), 400
 
+        # Validate required fields
+        if "model_id" not in data:
+            return (
+                jsonify(
+                    {"status": "error", "message": "Missing required field: model_id"}
+                ),
+                400,
+            )
+
         if "features" not in data:
-            return ()
-                jsonify()
+            return (
+                jsonify(
                     {"status": "error", "message": "Missing required field: features"}
                 ),
-                400)
+                400,
+            )
 
-        features = data["features"]
-        model_id = data.get("model_id", "anomaly_detector_v1")  # Default model
+        # Mock prediction
+        prediction = {
+            "model_id": data["model_id"],
+            "prediction": random.choice([0, 1]),
+            "confidence": round(random.uniform(0.7, 0.99), 3),
+            "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
+        }
 
-        # Mock prediction logic
-        if model_id == "anomaly_detector_v1":
-            # Anomaly detection prediction
-            anomaly_score = round(random.uniform(0.1, 0.9), 3)
-            is_anomaly = anomaly_score > 0.7
-            prediction = {}
-                "anomaly_score": anomaly_score,
-                "is_anomaly": is_anomaly,
-                "confidence": round(random.uniform(0.8, 0.95), 3),
-                "severity": ()
-                    "high"
-                    if anomaly_score > 0.8
-                    else "medium" if anomaly_score > 0.5 else "low"
-                ),
-            }
-        elif model_id == "remediation_recommender_v1":
-            # Remediation recommendation prediction
-            actions = ["scale_up", "restart_service", "cleanup_logs", "update_config"]
-            prediction = {}
-                "recommended_action": random.choice(actions),
-                "confidence": round(random.uniform(0.6, 0.9), 3),
-                "alternatives": random.sample(actions, 2),
-                "estimated_success_rate": round(random.uniform(0.7, 0.95), 3),
-            }
-        else:
-            return ()
-                jsonify()
-                    {}
-                        "status": "error",
-                        "message": f"Model with ID {model_id} not found or not active",
-                    }
-                ),
-                404)
-
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "success",
-                    "data": {}
-                        "prediction": prediction,
-                        "model_info": {}
-                            "model_id": model_id,
-                            "processing_time_ms": round(random.uniform(20, 100), 1),
-                            "features_processed": len(features),
-                        },
-                    },
+                    "data": {"prediction": prediction},
                 }
             ),
-            200)
+            200,
+        )
 
     except Exception as e:
-        return ()
-            jsonify()
+        return (
+            jsonify(
                 {"status": "error", "message": f"Failed to make prediction: {str(e)}"}
             ),
-            500)
+            500,
+        )
 
 
 @ml_bp.route("/models/<model_id>/deploy", methods=["POST"])
 def deploy_model(model_id):
-    "Deploy a trained model to production."
+    """Deploy a model to production."""
     try:
-        # Check if model exists (in real implementation, would check database)
-        if model_id not in []
-            "anomaly_detector_v1",
-            "remediation_recommender_v1",
-            "anomaly_detector_v2",
-        ]:
-            return ()
-                jsonify()
-                    {}
-                        "status": "error",
-                        "message": f"Model with ID {model_id} not found",
-                    }
-                ),
-                404)
-
-        # Mock deployment process
-        deployment_result = {}
+        # Mock deployment
+        deployment_info = {
             "model_id": model_id,
-            "deployment_status": "success",
-            "endpoint_url": f"/api/ml/models/{model_id}/predict",
+            "status": "deployed",
             "deployment_time": datetime.now(timezone.utc).isoformat() + "Z",
-            "version": "1.0.0",
-            "replicas": 3,
-            "resource_allocation": {"cpu": "500m", "memory": "1Gi", "gpu": "0"},
+            "endpoint": f"/api/ml/predict/{model_id}",
         }
 
-        return ()
-            jsonify()
-                {}
+        return (
+            jsonify(
+                {
                     "status": "success",
+                    "data": {"deployment": deployment_info},
                     "message": f"Model {model_id} deployed successfully",
-                    "data": {"deployment": deployment_result},
                 }
             ),
-            200)
+            200,
+        )
 
     except Exception as e:
-        return ()
-            jsonify()
+        return (
+            jsonify(
                 {"status": "error", "message": f"Failed to deploy model: {str(e)}"}
             ),
-            500)
+            500,
+        )
+
+
+@ml_bp.route("/models/<model_id>/undeploy", methods=["POST"])
+def undeploy_model(model_id):
+    """Undeploy a model from production."""
+    try:
+        # Mock undeployment
+        undeployment_info = {
+            "model_id": model_id,
+            "status": "undeployed",
+            "undeployment_time": datetime.now(timezone.utc).isoformat() + "Z",
+        }
+
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "data": {"undeployment": undeployment_info},
+                    "message": f"Model {model_id} undeployed successfully",
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        return (
+            jsonify(
+                {"status": "error", "message": f"Failed to undeploy model: {str(e)}"}
+            ),
+            500,
+        )
+
+
+@ml_bp.route("/stats", methods=["GET"])
+def get_ml_stats():
+    """Get ML statistics."""
+    try:
+        # Calculate statistics
+        total_models = 2  # Mock count
+        active_models = 2
+        total_predictions = 2139  # Mock count
+        avg_accuracy = 0.896  # Mock average
+
+        stats = {
+            "total_models": total_models,
+            "active_models": active_models,
+            "total_predictions": total_predictions,
+            "average_accuracy": avg_accuracy,
+            "training_jobs": {
+                "total": len(MOCK_TRAINING_JOBS),
+                "completed": len(
+                    [j for j in MOCK_TRAINING_JOBS if j["status"] == "completed"]
+                ),
+                "running": len(
+                    [j for j in MOCK_TRAINING_JOBS if j["status"] == "running"]
+                ),
+                "queued": len(
+                    [j for j in MOCK_TRAINING_JOBS if j["status"] == "queued"]
+                ),
+            },
+        }
+
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "data": {"stats": stats},
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        return (
+            jsonify(
+                {"status": "error", "message": f"Failed to get ML stats: {str(e)}"}
+            ),
+            500,
+        )

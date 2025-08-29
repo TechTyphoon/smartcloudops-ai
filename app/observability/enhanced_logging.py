@@ -1,397 +1,184 @@
-"
+"""
 Enhanced Structured Logging with OpenTelemetry Integration
-Phase 4: Observability & Operability - Production-ready logging
-"
+Phase 4: Observability & Operability
+"""
 
+import json
 import logging
 import os
 import sys
 import uuid
-from contextvars import ContextVar
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 import structlog
 from flask import Flask, g, request
-from opentelemetry import trace
-from opentelemetry.trace import Span, Status, StatusCode
-from pythonjsonlogger import jsonlogger
-
-# OpenTelemetry tracer
-tracer = trace.get_tracer
-
-# Context variables for request tracking
-correlation_id: ContextVar[Optional[str]] = ContextVar("correlation_id", default=None)
-request_id: ContextVar[Optional[str]] = ContextVar("request_id", default=None)
-user_id: ContextVar[Optional[str]] = ContextVar("user_id", default=None)
-session_id: ContextVar[Optional[str]] = ContextVar("session_id", default=None)
-
-# Global logger instance
-logger: Optional[structlog.BoundLogger] = None
 
 
-class EnhancedJSONFormatter(jsonlogger.JsonFormatter):
-    "Enhanced JSON formatter with OpenTelemetry integration"
-
-    def add_fields()
-        self,
-        log_record: Dict[str, Any],
-        record: logging.LogRecord,
-        message_dict: Dict[str, Any]) -> None:
-        super().add_fields(log_record, record, message_dict)
-
-        # Add ISO timestamp
-        log_record["timestamp"] = datetime.now(timezone.utc).isoformat() + "Z"
-
-        # Add correlation and request tracking
-        corr_id = correlation_id.get()
-        req_id = request_id.get()
-        usr_id = user_id.get()
-        sess_id = session_id.get()
-
-        if corr_id:
-            log_record["correlation_id"] = corr_id
-        if req_id:
-            log_record["request_id"] = req_id
-        if usr_id:
-            log_record["user_id"] = usr_id
-        if sess_id:
-            log_record["session_id"] = sess_id
-
-        # Add OpenTelemetry trace context
-        current_span = trace.get_current_span()
-        if current_span and current_span.get_span_context().is_valid:
-            span_context = current_span.get_span_context()
-            log_record["trace_id"] = format(span_context.trace_id, "032x")
-            log_record["span_id"] = format(span_context.span_id, "016x")
-
-        # Add request context
-        if request:
-            try:
-                log_record["request"] = {}
-                    "method": request.method,
-                    "path": request.path,
-                    "endpoint": request.endpoint,
-                    "remote_addr": request.remote_addr,
-                    "user_agent": request.headers.get("User-Agent", "),
-                    "content_type": request.content_type,
-                    "content_length": request.content_length,
-                    "query_string": request.query_string.decode() if request.query_string else None,
-                }
-
-                # Add headers (sanitized)
-                headers = dict(request.headers)
-                sensitive_headers = ["authorization", "cookie", "x-api-key"]
-                for header in sensitive_headers:
-                    if header in headers:
-                        headers[header] = "[REDACTED]"
-                log_record["request"]["headers"] = headers
-
-            except RuntimeError:
-                # Outside request context
-                pass
-
-        # Add service information
-        log_record["service"] = {}
-            "name": "smartcloudops-ai",
-            "version": os.getenv("APP_VERSION", "4.0.0"),
-            "environment": os.getenv("FLASK_ENV", "development"),
-            "component": record.name,
-            "hostname": os.getenv("HOSTNAME", "unknown"),
-        }
-
-        # Add performance metrics
-        if hasattr(record, "duration_ms":
-            log_record["performance"] = {}
-                "duration_ms": record.duration_ms,
-                "memory_usage_mb": self._get_memory_usage(),
-            }
-
-        # Ensure level is string
-        log_record["level"] = record.levelname
-
-        # Add source location
-        log_record["source"] = {}
-            "file": record.filename,
-            "line": record.lineno,
-            "function": record.funcName,
-            "module": record.module,
-        }
-
-        # Add exception information
-        if record.exc_info:
-            log_record["exception"] = {}
-                "type": record.exc_info[0].__name__ if record.exc_info[0] else None,
-                "message": str(record.exc_info[1]) if record.exc_info[1] else None,
-                "traceback": self.formatException(record.exc_info),
-            }
-
-    def _get_memory_usage(self) -> Optional[float]:
-        "Get current memory usage in MB"
-        try:
-            import psutil
-            process = psutil.Process
-            return round(process.memory_info().rss / 1024 / 1024, 2)
-        except ImportError:
-            return None
-
-
-class PerformanceFilter(logging.Filter):
-    "Filter to add performance metrics to log records"
-
-    def filter(self, record: logging.LogRecord) -> bool:
-        # Add start time for performance tracking
-        if not hasattr(record, "start_time":
-            record.start_time = datetime.now()
-        return True
-
-
-def setup_enhanced_logging()
+def setup_enhanced_logging(
     app: Flask,
     log_level: str = "INFO",
     log_format: str = "json",
-    enable_structlog: bool = True) -> None:
-    "
-    Setup enhanced structured logging with OpenTelemetry integration
+    enable_structlog: bool = True,
+) -> None:
+    """
+    Setup enhanced structured logging with correlation IDs and OpenTelemetry integration
 
     Args:
         app: Flask application instance
-        log_level: Logging level
-        log_format: Format type ('json' or 'text')
-        enable_structlog: Enable structlog for additional features
-    "
-    global logger
+        log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+        log_format: Log format (json, text)
+        enable_structlog: Enable structured logging
+    """
+    # Configure basic logging
+    logging.basicConfig(
+        level=getattr(logging, log_level.upper()),
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=[
+            logging.FileHandler("logs/app.log"),
+            logging.StreamHandler(sys.stdout),
+        ],
+    )
 
-    # Configure structlog if enabled
     if enable_structlog:
-        structlog.configure()
-            processors=[]
-                structlog.stdlib.filter_by_level,
-                structlog.stdlib.add_logger_name,
-                structlog.stdlib.add_log_level,
-                structlog.stdlib.PositionalArgumentsFormatter(),
-                structlog.processors.TimeStamper(fmt="iso"),
-                structlog.processors.StackInfoRenderer(),
-                structlog.processors.format_exc_info,
-                structlog.processors.UnicodeDecoder(),
-                structlog.processors.JSONRenderer(),
-            ],
-            context_class=dict,
-            logger_factory=structlog.stdlib.LoggerFactory(),
-            wrapper_class=structlog.stdlib.BoundLogger,
-            cache_logger_on_first_use=True)
+        _setup_structlog(log_format)
 
-    # Configure standard logging
+    # Add correlation ID middleware
+    app.before_request(_add_correlation_id)
+    app.after_request(_log_request)
+
+    # Configure Flask logging
+    app.logger.setLevel(getattr(logging, log_level.upper()))
+
+
+def _setup_structlog(log_format: str) -> None:
+    """Setup structured logging with structlog"""
+    processors = [
+        structlog.stdlib.filter_by_level,
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        _add_correlation_id_processor,
+    ]
+
     if log_format == "json":
-        formatter = EnhancedJSONFormatter()
-            fmt="%(timestamp)s %(level)s %(name)s %(message)s"
-        )
+        processors.append(structlog.processors.JSONRenderer())
     else:
-        formatter = logging.Formatter()
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+        processors.append(structlog.dev.ConsoleRenderer())
 
-    # Configure handlers
-    handlers = []
-
-    # Console handler
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setFormatter(formatter)
-    handlers.append(console_handler)
-
-    # File handler for production
-    if os.getenv("FLASK_ENV") == "production":
-        log_dir = "logs"
-        os.makedirs(log_dir, exist_ok=True)
-        
-        file_handler = logging.FileHandler(f"{log_dir}/app.log")
-        file_handler.setFormatter(formatter)
-        handlers.append(file_handler)
-
-        # Error log file
-        error_handler = logging.FileHandler(f"{log_dir}/error.log")
-        error_handler.setFormatter(formatter)
-        error_handler.setLevel(logging.ERROR)
-        handlers.append(error_handler)
-
-    # Configure root logger
-    root_logger = logging.getLogger()
-    root_logger.setLevel(getattr(logging, log_level.upper()
-    
-    # Clear existing handlers
-    for handler in root_logger.handlers[:]:
-        root_logger.removeHandler(handler)
-    
-    # Add new handlers
-    for handler in handlers:
-        root_logger.addHandler(handler)
-
-    # Add performance filter
-    performance_filter = PerformanceFilter()
-    root_logger.addFilter(performance_filter)
-
-    # Create global logger instance
-    if enable_structlog:
-        logger = structlog.get_logger()
-    else:
-        logger = logging.getLogger(__name__)
-
-    # Log setup completion
-    logger.info()
-        "Enhanced logging configured",
-        log_level=log_level,
-        log_format=log_format,
-        structlog_enabled=enable_structlog,
-        environment=os.getenv("FLASK_ENV", "development"))
+    structlog.configure(
+        processors=processors,
+        context_class=dict,
+        logger_factory=structlog.stdlib.LoggerFactory(),
+        wrapper_class=structlog.stdlib.BoundLogger,
+        cache_logger_on_first_use=True,
+    )
 
 
-def get_logger(name: str = None) -> Union[structlog.BoundLogger, logging.Logger]:
-    "Get a logger instance with current context"
-    if logger and hasattr(logger, "bind":
-        # Return structlog logger with context
-        return logger.bind()
-            correlation_id=correlation_id.get(),
-            request_id=request_id.get(),
-            user_id=user_id.get(),
-            session_id=session_id.get())
-    else:
-        # Return standard logger
-        return logging.getLogger(name or __name__)
+def _add_correlation_id_processor(logger, method_name, event_dict):
+    """Add correlation ID to log entries"""
+    if hasattr(g, "correlation_id"):
+        event_dict["correlation_id"] = g.correlation_id
+    return event_dict
 
 
-def set_request_context()
-    corr_id: Optional[str] = None,
-    req_id: Optional[str] = None,
-    usr_id: Optional[str] = None,
-    sess_id: Optional[str] = None) -> None:
-    "Set request context for logging"
-    if corr_id:
-        correlation_id.set(corr_id)
-    if req_id:
-        request_id.set(req_id)
-    if usr_id:
-        user_id.set(usr_id)
-    if sess_id:
-        session_id.set(sess_id)
+def _add_correlation_id():
+    """Add correlation ID to request context"""
+    g.correlation_id = request.headers.get("X-Correlation-ID", str(uuid.uuid4()))
+    g.request_start_time = datetime.now(timezone.utc)
 
 
-def clear_request_context() -> None:
-    "Clear request context"
-    correlation_id.set(None)
-    request_id.set(None)
-    user_id.set(None)
-    session_id.set(None)
+def _log_request(response):
+    """Log request details after processing"""
+    if hasattr(g, "request_start_time"):
+        duration = (datetime.now(timezone.utc) - g.request_start_time).total_seconds()
+
+        log_data = {
+            "method": request.method,
+            "path": request.path,
+            "status_code": response.status_code,
+            "duration_ms": round(duration * 1000, 2),
+            "correlation_id": g.correlation_id,
+            "user_agent": request.headers.get("User-Agent", ""),
+            "remote_addr": request.remote_addr,
+        }
+
+        logger = structlog.get_logger(__name__)
+        logger.info("Request processed", **log_data)
+
+    return response
 
 
-def log_with_span()
-    message: str,
-    level: str = "info",
-    span_name: Optional[str] = None,
-    **kwargs: Any) -> None:
-    "Log message with OpenTelemetry span context"
-    log_func = getattr(get_logger(), level)
-    
-    if span_name:
-        with tracer.start_as_current_span(span_name) as span:
-            # Add span attributes
-            for key, value in kwargs.items():
-                if isinstance(value, (str, int, float, bool:
-                    span.set_attribute(key, value)
-            
-            # Log with span context
-            log_func(message, **kwargs)
-    else:
-        log_func(message, **kwargs)
+def get_logger(name: str) -> structlog.BoundLogger:
+    """Get structured logger instance"""
+    return structlog.get_logger(name)
 
 
-def log_performance()
-    operation: str,
-    duration_ms: float,
-    success: bool = True,
-    **kwargs: Any) -> None:
-    "Log performance metrics with OpenTelemetry integration"
-    log_data = {}
-        "operation": operation,
-        "duration_ms": duration_ms,
-        "success": success,
-        "performance_metric": True,
-    }
-    log_data.update(kwargs)
+def log_business_event(event_type: str, business_value: float, **kwargs) -> None:
+    """
+    Log business events with structured data
 
-    # Create span for performance tracking
-    with tracer.start_as_current_span(f"performance.{operation}") as span:
-        span.set_attribute("operation", operation)
-        span.set_attribute("duration_ms", duration_ms)
-        span.set_attribute("success", success)
-        
-        for key, value in kwargs.items():
-            if isinstance(value, (str, int, float, bool:
-                span.set_attribute(key, value)
+    Args:
+        event_type: Type of business event
+        business_value: Business value metric
+        **kwargs: Additional event data
+    """
+    logger = structlog.get_logger(__name__)
 
-        # Set span status
-        if success:
-            span.set_status(Status(StatusCode.OK)
-        else:
-            span.set_status(Status(StatusCode.ERROR)
-
-        # Log performance data
-        level = "info" if success else "warning"
-        get_logger().log(level, f"Performance: {operation}", **log_data)
-
-
-def log_security_event()
-    event_type: str,
-    severity: str = "info",
-    user_id: Optional[str] = None,
-    ip_address: Optional[str] = None,
-    **kwargs: Any) -> None:
-    "Log security events with enhanced context"
-    security_data = {}
+    event_data = {
         "event_type": event_type,
-        "security_event": True,
+        "business_value": business_value,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        **kwargs,
+    }
+
+    logger.info("Business event", **event_data)
+
+
+def log_performance_metric(
+    metric_name: str, value: float, unit: str = "ms", **kwargs
+) -> None:
+    """
+    Log performance metrics
+
+    Args:
+        metric_name: Name of the metric
+        value: Metric value
+        unit: Unit of measurement
+        **kwargs: Additional metric data
+    """
+    logger = structlog.get_logger(__name__)
+
+    metric_data = {
+        "metric_name": metric_name,
+        "value": value,
+        "unit": unit,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        **kwargs,
+    }
+
+    logger.info("Performance metric", **metric_data)
+
+
+def log_security_event(event_type: str, severity: str = "info", **kwargs) -> None:
+    """
+    Log security events
+
+    Args:
+        event_type: Type of security event
+        severity: Event severity (info, warning, error, critical)
+        **kwargs: Additional event data
+    """
+    logger = structlog.get_logger(__name__)
+
+    security_data = {
+        "event_type": event_type,
         "severity": severity,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        **kwargs,
     }
-    
-    if user_id:
-        security_data["user_id"] = user_id
-    if ip_address:
-        security_data["ip_address"] = ip_address
-    
-    security_data.update(kwargs)
 
-    # Create security span
-    with tracer.start_as_current_span(f"security.{event_type}") as span:
-        span.set_attribute("event_type", event_type)
-        span.set_attribute("severity", severity)
-        
-        for key, value in security_data.items():
-            if isinstance(value, (str, int, float, bool:
-                span.set_attribute(key, value)
-
-        get_logger().log(severity, f"Security Event: {event_type}", **security_data)
-
-
-def log_business_event()
-    event_type: str,
-    business_value: Optional[float] = None,
-    **kwargs: Any) -> None:
-    "Log business events with metrics"
-    business_data = {}
-        "event_type": event_type,
-        "business_event": True,
-    }
-    
-    if business_value is not None:
-        business_data["business_value"] = business_value
-    
-    business_data.update(kwargs)
-
-    # Create business span
-    with tracer.start_as_current_span(f"business.{event_type}") as span:
-        span.set_attribute("event_type", event_type)
-        
-        for key, value in business_data.items():
-            if isinstance(value, (str, int, float, bool:
-                span.set_attribute(key, value)
-
-        get_logger().info(f"Business Event: {event_type}", **business_data)
+    logger.warning("Security event", **security_data)

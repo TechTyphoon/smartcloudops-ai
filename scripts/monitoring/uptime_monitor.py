@@ -2,7 +2,11 @@
 """
 Smart CloudOps AI - 30-Day Uptime Monitor
 Tracks uptime and logs to S3 every 5 minutes
-""f"
+"""
+
+import json
+import time
+from datetime import datetime, timezone
 
 import boto3
 import requests
@@ -18,7 +22,7 @@ S3_BUCKET = "smartcloudops-uptime-logs-20250814"
 
 
 def check_service(name, url):
-    """Check if a service is up""f"
+    """Check if a service is up"""
     try:
         response = requests.get(url, timeout=10)
         return {
@@ -41,7 +45,7 @@ def upload_to_s3(data):
     """Upload uptime data to S3"""
     try:
         s3 = boto3.client("s3")
-        key = f"uptime-logs/{datetime.now(timezone.utc).strftime('%Y/%m/%d/%H%Mf')}.json"
+        key = f"uptime-logs/{datetime.now(timezone.utc).strftime('%Y/%m/%d/%H%M')}.json"
         s3.put_object(
             Bucket=S3_BUCKET,
             Key=key,

@@ -136,7 +136,9 @@ class Config:
             errors.append("GEMINI_API_KEY is required when AI_PROVIDER is 'gemini'")
 
         if errors:
-            raise ConfigValidationError(f"Configuration validation failed: {', '.join(errors)}")
+            raise ConfigValidationError(
+                f"Configuration validation failed: {', '.join(errors)}"
+            )
 
     def get_database_config(self) -> Dict[str, Any]:
         """Get database configuration as dictionary."""
@@ -177,12 +179,14 @@ def get_config() -> Config:
 # Environment-specific configurations
 class DevelopmentConfig(Config):
     """Development configuration."""
+
     DEBUG = True
     LOG_LEVEL = "DEBUG"
 
 
 class TestingConfig(Config):
     """Testing configuration."""
+
     DEBUG = True
     TESTING = True
     DATABASE_URL = "sqlite:///:memory:"
@@ -192,6 +196,7 @@ class TestingConfig(Config):
 
 class ProductionConfig(Config):
     """Production configuration."""
+
     DEBUG = False
     LOG_LEVEL = "WARNING"
 

@@ -3,14 +3,15 @@ Unit tests for ChatOps Utilities
 Comprehensive test coverage for utility functions and context management
 """
 
-import pytest
 import time
-from unittest.mock import Mock, patch, MagicMock
-from datetime import datetime, timedelta
 from collections import deque
-from typing import Dict, Any, List
+from datetime import datetime, timedelta
+from typing import Any, Dict, List
+from unittest.mock import MagicMock, Mock, patch
 
-from app.chatops.utils import timed_cache, AdvancedContextManager
+import pytest
+
+from app.chatops.utils import AdvancedContextManager, timed_cache
 
 
 class TestTimedCache:

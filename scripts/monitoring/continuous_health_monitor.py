@@ -7,8 +7,10 @@ Parallel background verification of all production endpoints
 import logging
 import os
 import threading
+
 import boto3
 import requests
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -213,8 +215,7 @@ class ContinuousHealthMonitor:
 
             if result["success"]:
                 logger.info(
-                    f"✅ {endpoint} - {result['status_code']} (
-                        {result['response_time_msf']:.1f}ms)"
+                    f"✅ {endpoint} - {result['status_code']} ({result['response_time_ms']:.1f}ms)"
                 )
             else:
                 level = logging.ERROR if result["critical"] else logging.WARNING
@@ -225,7 +226,7 @@ class ContinuousHealthMonitor:
         total_checks = len(check_results)
         successful_checks = sum(1 for r in check_results if r["success"])
         critical_failures = sum(
-            1 for r in check_results if not r["success"] and r["criticalf"]
+            1 for r in check_results if not r["success"] and r["critical"]
         )
 
         health_summary = {
@@ -250,7 +251,7 @@ class ContinuousHealthMonitor:
         status_emoji = "🟢" if health_summary["overall_status"] == "healthy" else "🟡"
         logger.info(
             f"{status_emoji} Health Check Summary: {successful_checks}/{total_checks} endpoints healthy "
-            f"({health_summary['success_ratef']}%)"
+            f"({health_summary['success_rate']}%)"
         )
 
         # Upload to S3 if available
@@ -344,7 +345,7 @@ class ContinuousHealthMonitor:
                 time.sleep(10)  # Short delay before retry
 
     def get_health_report(self):
-        """Generate a comprehensive health report""f"
+        """Generate a comprehensive health report"""
         if not self.health_data:
             return {"error": "No health data available"}
 
@@ -355,7 +356,7 @@ class ContinuousHealthMonitor:
             recent_checks
         )
         total_critical_failures = sum(
-            check["critical_failuresf"] for check in recent_checks
+            check["critical_failures"] for check in recent_checks
         )
 
         # Find most problematic endpoints
@@ -363,7 +364,7 @@ class ContinuousHealthMonitor:
         for check in recent_checks:
             for result in check["detailed_results"]:
                 if not result["success"]:
-                    endpoint = result["endpointf"]
+                    endpoint = result["endpoint"]
                     endpoint_failures[endpoint] = endpoint_failures.get(endpoint, 0) + 1
 
         report = {
@@ -383,7 +384,7 @@ class ContinuousHealthMonitor:
 
 
 def main():
-    # Create log directory if it doesnf't exist
+    # Create log directory if it doesn't exist
     os.makedirs("/var/log", exist_ok=True)
 
     monitor = ContinuousHealthMonitor()

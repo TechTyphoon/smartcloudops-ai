@@ -3,24 +3,25 @@ ML Training Pipeline with MLflow Integration
 Automated model training, evaluation, and deployment
 """
 
+import logging
 import os
 import sys
-import logging
+from datetime import datetime
+from typing import Any, Dict, Optional, Tuple
+
+import joblib
 import numpy as np
 import pandas as pd
-from datetime import datetime
-from typing import Dict, Any, Optional, Tuple
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
 from sklearn.ensemble import IsolationForest
+from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
+from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.preprocessing import StandardScaler
-import joblib
 
 # Add project root to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ml_models.mlflow_config import get_mlflow_manager
 from ml_models.anomaly_detector import AnomalyDetector
+from ml_models.mlflow_config import get_mlflow_manager
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

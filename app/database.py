@@ -51,28 +51,31 @@ def create_db_engine():
 
     # SQLite specific configuration
     if database_url.startswith("sqlite"):
-        engine_kwargs.update({
-            "poolclass": StaticPool, 
-            "connect_args": {"check_same_thread": False}
-        })
+        engine_kwargs.update(
+            {"poolclass": StaticPool, "connect_args": {"check_same_thread": False}}
+        )
 
     # PostgreSQL specific configuration
     elif database_url.startswith("postgresql"):
-        engine_kwargs.update({
-            "pool_size": 10,
-            "max_overflow": 20,
-            "pool_pre_ping": True,
-            "pool_recycle": 3600,
-        })
+        engine_kwargs.update(
+            {
+                "pool_size": 10,
+                "max_overflow": 20,
+                "pool_pre_ping": True,
+                "pool_recycle": 3600,
+            }
+        )
 
     # MySQL specific configuration
     elif database_url.startswith("mysql"):
-        engine_kwargs.update({
-            "pool_size": 10,
-            "max_overflow": 20,
-            "pool_pre_ping": True,
-            "pool_recycle": 3600,
-        })
+        engine_kwargs.update(
+            {
+                "pool_size": 10,
+                "max_overflow": 20,
+                "pool_pre_ping": True,
+                "pool_recycle": 3600,
+            }
+        )
 
     return create_engine(database_url, **engine_kwargs)
 
@@ -124,13 +127,13 @@ def check_db_health():
             return {
                 "status": "healthy",
                 "message": "Database connection successful",
-                "timestamp": datetime.now().isoformat()
+                "timestamp": datetime.now().isoformat(),
             }
     except Exception as e:
         return {
             "status": "unhealthy",
             "message": f"Database connection failed: {str(e)}",
-            "timestamp": datetime.now().isoformat()
+            "timestamp": datetime.now().isoformat(),
         }
 
 
@@ -140,7 +143,7 @@ def run_migrations():
     try:
         from alembic import command
         from alembic.config import Config
-        
+
         alembic_cfg = Config("alembic.ini")
         command.upgrade(alembic_cfg, "head")
         print("✅ Database migrations completed successfully")
@@ -156,9 +159,10 @@ def backup_database():
     try:
         database_url = get_database_url()
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        
+
         if database_url.startswith("sqlite"):
             import shutil
+
             backup_path = f"backup/smartcloudops_{timestamp}.db"
             os.makedirs("backup", exist_ok=True)
             shutil.copy2("smartcloudops.db", backup_path)

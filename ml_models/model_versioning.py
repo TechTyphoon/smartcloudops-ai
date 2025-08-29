@@ -7,11 +7,18 @@ Enterprise-grade model lifecycle management with A/B testing,
 """
 
 import hashlib
+import json
 import logging
 import os
 import shutil
 import sqlite3
 import threading
+from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 logger = logging.getLogger(__name__)
 
 
@@ -31,7 +38,7 @@ class ModelVersion:
     file_path: str
     file_size: int
     checksum: str
-    status: str  # 'active', 'staging', 'archived', 'deprecatedf'
+    status: str  # 'active', 'staging', 'archived', 'deprecated'
     parent_version: Optional[str] = None
     tags: List[str] = None
     deployment_config: Dict[str, Any] = None
@@ -59,7 +66,7 @@ class ModelVersioningSystem:
     def __init__(self, base_path: str = "ml_models/versions"):
         self.base_path = Path(base_path)
         self.base_path.mkdir(parents=True, exist_ok=True)
-        self.db_path = self.base_path / "model_versions.dbf"
+        self.db_path = self.base_path / "model_versions.db"
         self.lock = threading.Lock()
         self.executor = ThreadPoolExecutor(max_workers=4)
 
@@ -70,7 +77,7 @@ class ModelVersioningSystem:
         self.performance_cache = {}
         self.cache_lock = threading.Lock()
 
-        logger.info("Model versioning system initialized at {self.base_path}")
+        logger.info(f"Model versioning system initialized at {self.base_path}")
 
     def _init_database(self):
         """Initialize SQLite database for model versioning"""
@@ -171,7 +178,7 @@ class ModelVersioningSystem:
 
         # Save model file
         model_file = version_dir / f"{model_name}.pkl"
-        with open(model_file, "wbf") as f:
+        with open(model_file, "wb") as f:
             pickle.dump(model, f)
 
         # Calculate metadata
@@ -192,7 +199,7 @@ class ModelVersioningSystem:
             file_path=str(model_file),
             file_size=file_size,
             checksum=checksum,
-            status="stagingf",
+            status="staging",
             parent_version=parent_version,
             tags=tags or [],
             deployment_config=deployment_config or {},
@@ -201,7 +208,7 @@ class ModelVersioningSystem:
         # Save to database
         self._save_version_to_db(model_version)
 
-        logger.info("Model version saved: {version_id}")
+        logger.info(f"Model version saved: {version_id}")
         return version_id
 
     def _save_version_to_db(self, model_version: ModelVersion):
@@ -216,14 +223,16 @@ class ModelVersioningSystem:
                     created_at,
                     created_by,
                     description,
-
-                 hyperparameters,
-                     feature_columns,
-                     performance_metrics,
-                     file_path,
-                     file_size,
-
-                 checksum, status, parent_version, tags, deployment_config)
+                    hyperparameters,
+                    feature_columns,
+                    performance_metrics,
+                    file_path,
+                    file_size,
+                    checksum,
+                    status,
+                    parent_version,
+                    tags,
+                    deployment_config)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
                 (
@@ -287,7 +296,7 @@ class ModelVersioningSystem:
     def evaluate_model_performance(
         self, version_id: str, X_test: np.ndarray, y_test: np.ndarray, model: Any = None
     ) -> Dict[str, float]:
-        """Evaluate model performance and store metrics""f"
+        """Evaluate model performance and store metrics"""
 
         if model is None:
             model, _ = self.load_model_version(version_id)
@@ -328,7 +337,6 @@ class ModelVersioningSystem:
         with sqlite3.connect(self.db_path) as conn:
             conn.execute(
                 "UPDATE model_versions SET performance_metrics = ? WHERE version_id = ?",
-
                 (json.dumps(metrics), version_id),
             )
             conn.commit()
@@ -434,8 +442,7 @@ class ModelVersioningSystem:
         """Get version history for a model"""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.execute(
-                "SELECT * FROM model_versions WHERE model_name = ? ORDER BY created_at DESCf",
-
+                "SELECT * FROM model_versions WHERE model_name = ? ORDER BY created_at DESC",
                 (model_name,),
             )
 
@@ -559,7 +566,7 @@ class ModelVersioningSystem:
                 """
                 SELECT model_name, created_at FROM model_versions
                 ORDER BY created_at DESC LIMIT 5
-            ""f"
+            """
             ).fetchall()
 
         return {

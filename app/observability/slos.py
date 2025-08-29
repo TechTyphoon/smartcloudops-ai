@@ -1,413 +1,205 @@
-"
-Service Level Objectives (SLOs) Configuration
-Phase 4: Observability & Operability - Production SLOs and SLIs
-"
+"""
+Service Level Objectives (SLO) Monitoring Module
+SLO tracking and alerting
+"""
 
 import time
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
-from dataclasses import dataclass
-from enum import Enum
-
-from prometheus_client import Counter, Gauge, Histogram, Summary
-
-
-class SLOType:
-    "Types of SLOs"
-    AVAILABILITY = "availability"
-    LATENCY = "latency"
-    THROUGHPUT = "throughput"
-    ERROR_RATE = "error_rate"
-    SATURATION = "saturation"
-
-
-@dataclass
-class SLO:
-    "Service Level Objective definition"
-    name: str
-    description: str
-    slo_type: SLOType
-    target: float  # Target percentage (e.g., 99.9 for 99.9%)
-    window: int  # Time window in seconds
-    measurement_period: int  # Measurement period in seconds
-    alert_threshold: float  # Alert when below this percentage
-    critical_threshold: float  # Critical alert threshold
-
-
-@dataclass
-class SLI:
-    "Service Level Indicator definition"
-    name: str
-    description: str
-    metric_name: str
-    metric_type: str  # counter, gauge, histogram, summary
-    labels: List[str]
-    query: str  # Prometheus query
-    slo_name: str
+from datetime import datetime, timezone
+from typing import Dict, List, Optional
 
 
 class SLOManager:
-    "Manages SLOs and SLIs for the application"
+    """Service Level Objectives manager"""
 
     def __init__(self):
-        self.slos: Dict[str, SLO] = {}
-        self.slis: Dict[str, SLI] = {}
-        self.metrics: Dict[str, any] = {}
+        self.slos = {}
+        self.metrics = {}
+        self.alerts = []
+
+        # Initialize default SLOs
         self._setup_default_slos()
 
     def _setup_default_slos(self):
-        "Setup default SLOs for SmartCloudOps AI"
-        
-        # ================================
-        # AVAILABILITY SLOs
-        # ================================
-        
-        # API Availability SLO
-        api_availability_slo = SLO()
-            name="api_availability",
-            description="API endpoints availability",
-            slo_type=SLOType.AVAILABILITY,
-            target=99.9,  # 99.9% availability
-            window=3600,  # 1 hour window
-            measurement_period=300,  # 5 minute measurement
-            alert_threshold=99.5,  # Alert at 99.5%
-            critical_threshold=99.0,  # Critical at 99.0%
+        """Setup default SLOs for SmartCloudOps AI"""
+        self.add_slo(
+            name="availability",
+            target=99.9,
+            window_hours=24,
+            description="Service availability percentage",
         )
-        self.add_slo(api_availability_slo)
 
-        # Database Availability SLO
-        db_availability_slo = SLO()
-            name="database_availability",
-            description="Database connection availability",
-            slo_type=SLOType.AVAILABILITY,
-            target=99.95,  # 99.95% availability
-            window=3600,  # 1 hour window
-            measurement_period=300,  # 5 minute measurement
-            alert_threshold=99.9,  # Alert at 99.9%
-            critical_threshold=99.5,  # Critical at 99.5%
+        self.add_slo(
+            name="response_time",
+            target=200,  # ms
+            window_hours=1,
+            description="Average response time in milliseconds",
         )
-        self.add_slo(db_availability_slo)
 
-        # ================================
-        # LATENCY SLOs
-        # ================================
-        
-        # API Response Time SLO
-        api_latency_slo = SLO()
-            name="api_latency",
-            description="API response time P95",
-            slo_type=SLOType.LATENCY,
-            target=95.0,  # 95% of requests under threshold
-            window=3600,  # 1 hour window
-            measurement_period=300,  # 5 minute measurement
-            alert_threshold=90.0,  # Alert at 90%
-            critical_threshold=80.0,  # Critical at 80%
+        self.add_slo(
+            name="error_rate",
+            target=0.1,  # 0.1%
+            window_hours=1,
+            description="Error rate percentage",
         )
-        self.add_slo(api_latency_slo)
 
-        # Database Query Latency SLO
-        db_latency_slo = SLO()
-            name="database_latency",
-            description="Database query response time P95",
-            slo_type=SLOType.LATENCY,
-            target=95.0,  # 95% of queries under threshold
-            window=3600,  # 1 hour window
-            measurement_period=300,  # 5 minute measurement
-            alert_threshold=90.0,  # Alert at 90%
-            critical_threshold=80.0,  # Critical at 80%
+        self.add_slo(
+            name="throughput",
+            target=1000,  # requests per second
+            window_hours=1,
+            description="Requests per second",
         )
-        self.add_slo(db_latency_slo)
 
-        # ================================
-        # ERROR RATE SLOs
-        # ================================
-        
-        # API Error Rate SLO
-        api_error_slo = SLO()
-            name="api_error_rate",
-            description="API error rate (5xx errors)",
-            slo_type=SLOType.ERROR_RATE,
-            target=99.5,  # 99.5% success rate (0.5% error rate)
-            window=3600,  # 1 hour window
-            measurement_period=300,  # 5 minute measurement
-            alert_threshold=99.0,  # Alert at 99.0%
-            critical_threshold=98.0,  # Critical at 98.0%
-        )
-        self.add_slo(api_error_slo)
-
-        # ================================
-        # THROUGHPUT SLOs
-        # ================================
-        
-        # Request Throughput SLO
-        throughput_slo = SLO()
-            name="request_throughput",
-            description="Request processing throughput",
-            slo_type=SLOType.THROUGHPUT,
-            target=90.0,  # 90% of target throughput
-            window=3600,  # 1 hour window
-            measurement_period=300,  # 5 minute measurement
-            alert_threshold=80.0,  # Alert at 80%
-            critical_threshold=70.0,  # Critical at 70%
-        )
-        self.add_slo(throughput_slo)
-
-        # ================================
-        # SATURATION SLOs
-        # ================================
-        
-        # Resource Saturation SLO
-        saturation_slo = SLO()
-            name="resource_saturation",
-            description="Resource utilization (CPU, Memory)",
-            slo_type=SLOType.SATURATION,
-            target=80.0,  # 80% utilization target
-            window=3600,  # 1 hour window
-            measurement_period=300,  # 5 minute measurement
-            alert_threshold=85.0,  # Alert at 85%
-            critical_threshold=90.0,  # Critical at 90%
-        )
-        self.add_slo(saturation_slo)
-
-        # Setup corresponding SLIs
-        self._setup_default_slis()
-
-    def _setup_default_slis(self):
-        "Setup default SLIs for the SLOs"
-        
-        # API Availability SLI
-        api_availability_sli = SLI()
-            name="api_availability_sli",
-            description="API availability measurement",
-            metric_name="http_requests_total",
-            metric_type="counter",
-            labels=["status_code"],
-            query=""
-            ()
-                sum(rate(http_requests_total{status_code!~"5.."}[5m]) 
-                / 
-                sum(rate(http_requests_total[5m])
-            ) * 100
-            "",
-            slo_name="api_availability")
-        self.add_sli(api_availability_sli)
-
-        # API Latency SLI
-        api_latency_sli = SLI()
-            name="api_latency_sli",
-            description="API response time P95",
-            metric_name="http_request_duration_seconds",
-            metric_type="histogram",
-            labels=["method", "endpoint"],
-            query="
-            histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m]) by (le)
-            ",
-            slo_name="api_latency")
-        self.add_sli(api_latency_sli)
-
-        # API Error Rate SLI
-        api_error_sli = SLI()
-            name="api_error_sli",
-            description="API error rate measurement",
-            metric_name="http_requests_total",
-            metric_type="counter",
-            labels=["status_code"],
-            query=""
-            ()
-                sum(rate(http_requests_total{status_code=~"5.."}[5m]) 
-                / 
-                sum(rate(http_requests_total[5m])
-            ) * 100
-            "",
-            slo_name="api_error_rate")
-        self.add_sli(api_error_sli)
-
-        # Database Availability SLI
-        db_availability_sli = SLI()
-            name="db_availability_sli",
-            description="Database availability measurement",
-            metric_name="pg_up",
-            metric_type="gauge",
-            labels=[],
-            query="pg_up",
-            slo_name="database_availability")
-        self.add_sli(db_availability_sli)
-
-        # Resource Saturation SLI
-        saturation_sli = SLI()
-            name="resource_saturation_sli",
-            description="Resource utilization measurement",
-            metric_name="node_cpu_seconds_total",
-            metric_type="gauge",
-            labels=["mode"],
-            query=""
-            ()
-                1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])
-            ) * 100
-            "",
-            slo_name="resource_saturation")
-        self.add_sli(saturation_sli)
-
-    def add_slo(self, slo: SLO) -> None:
-        "Add an SLO to the manager"
-        self.slos[slo.name] = slo
-
-    def add_sli(self, sli: SLI) -> None:
-        "Add an SLI to the manager"
-        self.slis[sli.name] = sli
-
-    def get_slo(self, name: str) -> Optional[SLO]:
-        "Get an SLO by name"
-        return self.slos.get(name)
-
-    def get_sli(self, name: str) -> Optional[SLI]:
-        "Get an SLI by name"
-        return self.slis.get(name)
-
-    def get_slis_for_slo(self, slo_name: str) -> List[SLI]:
-        "Get all SLIs for a specific SLO"
-        return [sli for sli in self.slis.values() if sli.slo_name == slo_name]
-
-    def calculate_slo_compliance(self, slo_name: str, current_value: float) -> Dict[str, any]:
-        "Calculate SLO compliance for a given value"
-        slo = self.get_slo(slo_name)
-        if not slo:
-            return {"error": f"SLO {slo_name} not found"}
-
-        # Calculate compliance percentage
-        if slo.slo_type == SLOType.AVAILABILITY or slo.slo_type == SLOType.ERROR_RATE:
-            compliance = current_value
-        elif slo.slo_type == SLOType.LATENCY:
-            # For latency, we want lower values to be better
-            # Assuming target is maximum acceptable latency
-            compliance = (slo.target / current_value) * 100 if current_value > 0 else 100
-        else:
-            compliance = current_value
-
-        # Determine status
-        if compliance >= slo.target:
-            status = "meeting"
-        elif compliance >= slo.alert_threshold:
-            status = "warning"
-        elif compliance >= slo.critical_threshold:
-            status = "alert"
-        else:
-            status = "critical"
-
-        # Calculate error budget
-        error_budget = max(0, slo.target - compliance)
-
-        return {}
-            "slo_name": slo_name,
-            "current_value": current_value,
-            "target": slo.target,
-            "compliance_percentage": compliance,
-            "status": status,
-            "error_budget": error_budget,
-            "alert_threshold": slo.alert_threshold,
-            "critical_threshold": slo.critical_threshold,
-            "window_seconds": slo.window,
-            "measurement_period_seconds": slo.measurement_period,
+    def add_slo(
+        self, name: str, target: float, window_hours: int, description: str = ""
+    ):
+        """Add a new SLO"""
+        self.slos[name] = {
+            "target": target,
+            "window_hours": window_hours,
+            "description": description,
+            "created_at": datetime.now(timezone.utc),
         }
 
-    def get_all_slo_status(self) -> Dict[str, any]:
-        "Get status for all SLOs"
-        status = {}
-        for slo_name in self.slos:
-            # This would typically get actual metrics from Prometheus
-            # For now, we'll use placeholder values
-            placeholder_value = 99.5  # Placeholder
-            status[slo_name] = self.calculate_slo_compliance(slo_name, placeholder_value)
-        return status
+    def record_metric(
+        self, slo_name: str, value: float, timestamp: Optional[datetime] = None
+    ):
+        """Record a metric for an SLO"""
+        if slo_name not in self.slos:
+            raise ValueError(f"SLO '{slo_name}' not found")
 
-    def generate_prometheus_alerts(self) -> List[Dict[str, any]]:
-        "Generate Prometheus alert rules for SLOs"
+        if timestamp is None:
+            timestamp = datetime.now(timezone.utc)
+
+        if slo_name not in self.metrics:
+            self.metrics[slo_name] = []
+
+        self.metrics[slo_name].append({"value": value, "timestamp": timestamp})
+
+        # Clean old metrics
+        self._cleanup_old_metrics(slo_name)
+
+    def _cleanup_old_metrics(self, slo_name: str):
+        """Remove metrics older than the SLO window"""
+        if slo_name not in self.slos or slo_name not in self.metrics:
+            return
+
+        window_hours = self.slos[slo_name]["window_hours"]
+        cutoff_time = datetime.now(timezone.utc) - time.timedelta(hours=window_hours)
+
+        self.metrics[slo_name] = [
+            metric
+            for metric in self.metrics[slo_name]
+            if metric["timestamp"] > cutoff_time
+        ]
+
+    def get_slo_status(
+        self, slo_name: str, current_value: Optional[float] = None
+    ) -> Dict:
+        """Get current status of an SLO"""
+        if slo_name not in self.slos:
+            return {"error": f"SLO '{slo_name}' not found"}
+
+        slo = self.slos[slo_name]
+        target = slo["target"]
+
+        # Calculate current value if not provided
+        if current_value is None:
+            current_value = self._calculate_current_value(slo_name)
+
+        # Determine status
+        if slo_name == "error_rate":
+            # For error rate, lower is better
+            if current_value <= target:
+                status = "meeting"
+            elif current_value <= target * 2:
+                status = "warning"
+            else:
+                status = "alert"
+        else:
+            # For other metrics, higher is better
+            if current_value >= target:
+                status = "meeting"
+            elif current_value >= target * 0.8:
+                status = "warning"
+            else:
+                status = "alert"
+
+        return {
+            "name": slo_name,
+            "target": target,
+            "current_value": current_value,
+            "status": status,
+            "description": slo["description"],
+            "window_hours": slo["window_hours"],
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+
+    def _calculate_current_value(self, slo_name: str) -> float:
+        """Calculate current value for an SLO based on recent metrics"""
+        if slo_name not in self.metrics or not self.metrics[slo_name]:
+            return 0.0
+
+        values = [metric["value"] for metric in self.metrics[slo_name]]
+
+        if slo_name == "availability":
+            # Calculate availability percentage
+            return sum(1 for v in values if v > 0) / len(values) * 100
+        elif slo_name == "error_rate":
+            # Calculate error rate percentage
+            return sum(1 for v in values if v > 0) / len(values) * 100
+        else:
+            # Calculate average for other metrics
+            return sum(values) / len(values)
+
+    def get_all_slo_status(self) -> Dict[str, Dict]:
+        """Get status of all SLOs"""
+        return {name: self.get_slo_status(name) for name in self.slos.keys()}
+
+    def generate_alerts(self) -> List[Dict]:
+        """Generate alerts for SLOs that are not meeting targets"""
         alerts = []
-        
-        for slo in self.slos.values():
-            # Warning alert
-            warning_alert = {}
-                "name": f"{slo.name}_warning",
-                "expr": self._generate_alert_expression(slo, "warning"),
-                "for": f"{slo.measurement_period}s",
-                "labels": {}
-                    "severity": "warning",
-                    "slo": slo.name,
-                    "type": slo.slo_type.value,
-                },
-                "annotations": {}
-                    "summary": f"{slo.description} - Warning",
-                    "description": f"{slo.description} is below warning threshold ({slo.alert_threshold}%)",
-                },
-            }
-            alerts.append(warning_alert)
 
-            # Critical alert
-            critical_alert = {}
-                "name": f"{slo.name}_critical",
-                "expr": self._generate_alert_expression(slo, "critical"),
-                "for": f"{slo.measurement_period}s",
-                "labels": {}
-                    "severity": "critical",
-                    "slo": slo.name,
-                    "type": slo.slo_type.value,
-                },
-                "annotations": {}
-                    "summary": f"{slo.description} - Critical",
-                    "description": f"{slo.description} is below critical threshold ({slo.critical_threshold}%)",
-                },
-            }
-            alerts.append(critical_alert)
+        for slo_name in self.slos:
+            status = self.get_slo_status(slo_name)
+            if status.get("status") in ["warning", "alert"]:
+                alerts.append(
+                    {
+                        "slo_name": slo_name,
+                        "status": status["status"],
+                        "current_value": status["current_value"],
+                        "target": status["target"],
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                    }
+                )
 
         return alerts
-
-    def _generate_alert_expression(self, slo: SLO, alert_type: str) -> str:
-        "Generate Prometheus alert expression for SLO"
-        threshold = slo.alert_threshold if alert_type == "warning" else slo.critical_threshold
-        
-        if slo.slo_type == SLOType.AVAILABILITY:
-            return f""
-            ()
-                sum(rate(http_requests_total{{status_code!~"5.."}}[{slo.measurement_period}s]) 
-                / 
-                sum(rate(http_requests_total[{slo.measurement_period}s])
-            ) * 100 < {threshold}
-            "
-        elif slo.slo_type == SLOType.ERROR_RATE:
-            return f"
-            ()
-                sum(rate(http_requests_total{{status_code=~}"5.."}}[{slo.measurement_period}s]) 
-                / 
-                sum(rate(http_requests_total[{slo.measurement_period}s])
-            ) * 100 > {100 - threshold}
-            "
-        elif slo.slo_type == SLOType.LATENCY:
-            return f"
-            histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[{slo.measurement_period}s]) by (le) > 0.5
-            ""
-        else:
-            return "1"  # Default expression
 
 
 # Global SLO manager instance
 slo_manager = SLOManager()
 
 
+def setup_slo_monitoring(app) -> None:
+    """Setup SLO monitoring for the application"""
+    # SLO manager is already initialized
+    app.logger.info("SLO monitoring initialized")
+
+
 def get_slo_manager() -> SLOManager:
-    "Get the global SLO manager instance"
+    """Get the global SLO manager instance"""
     return slo_manager
 
 
-def get_slo_status(slo_name: str, current_value: float) -> Dict[str, any]:
-    "Get SLO status for a specific SLO"
-    return slo_manager.calculate_slo_compliance(slo_name, current_value)
+def get_slo_status(slo_name: str, current_value: Optional[float] = None) -> Dict:
+    """Get status of a specific SLO"""
+    return slo_manager.get_slo_status(slo_name, current_value)
 
 
-def get_all_slo_status() -> Dict[str, any]:
-    "Get status for all SLOs"
+def get_all_slo_status() -> Dict[str, Dict]:
+    """Get status of all SLOs"""
     return slo_manager.get_all_slo_status()
 
 
-def generate_slo_alerts() -> List[Dict[str, any]]:
-    "Generate Prometheus alert rules for all SLOs"
-    return slo_manager.generate_prometheus_alerts()
+def generate_slo_alerts() -> List[Dict]:
+    """Generate alerts for SLOs not meeting targets"""
+    return slo_manager.generate_alerts()

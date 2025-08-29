@@ -1,5 +1,5 @@
 """
-ML Models package for Smart CloudOps AI  
+ML Models package for Smart CloudOps AI
 Phase 2A: Minimal imports for stability
 """
 

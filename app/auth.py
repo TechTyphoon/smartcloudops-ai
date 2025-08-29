@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from datetime import datetime, timezone
 
-"
+"""
 Authentication System for Smart CloudOps AI
 Phase 7: Production Launch & Feedback - JWT Authentication
-"
+"""
 
 import os
 from functools import wraps
@@ -16,19 +16,19 @@ from flask import jsonify, request
 class AuthManager:
     "Authentication and authorization manager."
 
-    def __init__:
+    def __init__(self, secret_key=None, algorithm="HS256"):
         self.secret_key = secret_key or os.getenv("JWT_SECRET_KEY")
         if not self.secret_key:
             raise ValueError("JWT_SECRET_KEY environment variable is required")
         self.algorithm = algorithm
-        self.token_expiry = int(os.getenv("JWT_EXPIRY_HOURS", 24)  # 24 hours default
+        self.token_expiry = int(os.getenv("JWT_EXPIRY_HOURS", 24))  # 24 hours default
 
     def generate_tokens(self, user_id: int, username: str, role: str):
         "Generate access and refresh tokens."
         now = datetime.now(timezone.utc)
 
         # Access token (short-lived)
-        access_token_payload = {}
+        access_token_payload = {
             "user_id": user_id,
             "username": username,
             "role": role,
@@ -38,7 +38,7 @@ class AuthManager:
         }
 
         # Refresh token (long-lived)
-        refresh_token_payload = {}
+        refresh_token_payload = {
             "user_id": user_id,
             "username": username,
             "type": "refresh",
@@ -46,14 +46,14 @@ class AuthManager:
             "exp": now + timedelta(hours=self.token_expiry),
         }
 
-        access_token = jwt.encode()
+        access_token = jwt.encode(
             access_token_payload, self.secret_key, algorithm=self.algorithm
         )
-        refresh_token = jwt.encode()
+        refresh_token = jwt.encode(
             refresh_token_payload, self.secret_key, algorithm=self.algorithm
         )
 
-        return {}
+        return {
             "access_token": access_token,
             "refresh_token": refresh_token,
             "token_type": "Bearer",
@@ -79,11 +79,11 @@ class AuthManager:
     def authenticate_user(self, username: str, password: str):
         "Authenticate user with username and password."
         with get_db_session() as session:
-            user = ()
+            user = (
                 session.query(User).filter_by(username=username, is_active=True).first()
             )
 
-            if user and check_password_hash(user.password_hash, password:
+            if user and check_password_hash(user.password_hash, password):
                 return user
         return None
 
@@ -92,28 +92,30 @@ class AuthManager:
         with get_db_session() as session:
             return session.query(User).filter_by(id=user_id, is_active=True).first()
 
-    def log_audit_event()
+    def log_audit_event(
         self,
         user_id: int,
         action: str,
         resource_type: str = None,
         resource_id: int = None,
-        details: dict = None):
-        "Log audit event."
+        details: dict = None,
+    ):
+        """Log audit event."""
         try:
             with get_db_session() as session:
-                audit_log = AuditLog()
+                audit_log = AuditLog(
                     user_id=user_id,
                     action=action,
                     resource_type=resource_type,
                     resource_id=resource_id,
                     details=details,
                     ip_address=request.remote_addr,
-                    user_agent=request.headers.get("User-Agent", "))
+                    user_agent=request.headers.get("User-Agent", ""),
+                )
                 session.add(audit_log)
         except Exception as e:
             # Don't fail the main operation if audit logging fails
-            print("Audit logging failed: {e}")
+            print(f"Audit logging failed: {e}")
 
 
 # Global auth manager instance
@@ -121,7 +123,7 @@ auth_manager = AuthManager()
 
 
 def require_auth(f):
-    "Decorator to require authentication."
+    """Decorator to require authentication."""
 
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -156,7 +158,7 @@ def require_auth(f):
 
 
 def require_role(required_role):
-    "Decorator to require specific role."
+    """Decorator to require specific role."""
 
     def decorator(f):
         @wraps(f)
@@ -172,29 +174,29 @@ def require_role(required_role):
                 return jsonify({"error": "User not found"}), 401
 
             if user.role != required_role and user.role != "admin":
-                return ()
-                    jsonify()
-                        {}
+                return (
+                    jsonify(
+                        {
                             "error": f"Insufficient permissions. Required role: {required_role}"
                         }
                     ),
-                    403)
+                    403,
+                )
 
             return f(*args, **kwargs)
 
-        return decorated_function
         return decorated_function
 
     return decorator
 
 
 def require_admin(f):
-    "Decorator to require admin role."
+    """Decorator to require admin role."""
     return require_role("admin")(f)
 
 
 def get_current_user():
-    "Get current authenticated user."
+    """Get current authenticated user."""
     return getattr(request, "current_user", None)
 
 
@@ -222,15 +224,15 @@ def register_auth_endpoints(app):
             tokens = auth_manager.generate_tokens(user.id, user.username, user.role)
 
             # Log audit event
-            auth_manager.log_audit_event()
+            auth_manager.log_audit_event(
                 user_id=user.id, action="login", details={"username": username}
             )
 
-            return ()
-                jsonify()
-                    {}
+            return (
+                jsonify(
+                    {
                         "message": "Login successful",
-                        "user": {}
+                        "user": {
                             "id": user.id,
                             "username": user.username,
                             "email": user.email,
@@ -239,7 +241,8 @@ def register_auth_endpoints(app):
                         "tokens": tokens,
                     }
                 ),
-                200)
+                200,
+            )
 
         except Exception as e:
             return jsonify({"error": f"Login failed: {str(e)}"}), 500
@@ -265,9 +268,10 @@ def register_auth_endpoints(app):
             # Generate new tokens
             tokens = auth_manager.generate_tokens(user.id, user.username, user.role)
 
-            return ()
+            return (
                 jsonify({"message": "Token refreshed successfully", "tokens": tokens}),
-                200)
+                200,
+            )
 
         except jwt.ExpiredSignatureError:
             return jsonify({"error": "Refresh token has expired"}), 401
@@ -284,7 +288,7 @@ def register_auth_endpoints(app):
             user = get_current_user()
 
             # Log audit event
-            auth_manager.log_audit_event()
+            auth_manager.log_audit_event(
                 user_id=user.id, action="logout", details={"username": user.username}
             )
 
@@ -300,10 +304,10 @@ def register_auth_endpoints(app):
         try:
             user = get_current_user()
 
-            return ()
-                jsonify()
-                    {}
-                        "user": {}
+            return (
+                jsonify(
+                    {
+                        "user": {
                             "id": user.id,
                             "username": user.username,
                             "email": user.email,
@@ -313,7 +317,8 @@ def register_auth_endpoints(app):
                         }
                     }
                 ),
-                200)
+                200,
+            )
 
         except Exception as e:
             return jsonify({"error": f"Failed to get user info: {str(e)}"}), 500
@@ -337,9 +342,9 @@ def register_auth_endpoints(app):
 
             with get_db_session() as session:
                 # Check if user already exists
-                existing_user = ()
+                existing_user = (
                     session.query(User)
-                    .filter((User.username == username) | (User.email == email)
+                    .filter((User.username == username) | (User.email == email))
                     .first()
                 )
 
@@ -347,26 +352,28 @@ def register_auth_endpoints(app):
                     return jsonify({"error": "Username or email already exists"}), 409
 
                 # Create new user
-                new_user = User()
+                new_user = User(
                     username=username,
                     email=email,
                     password_hash=generate_password_hash(password),
                     role=role,
-                    is_active=True)
+                    is_active=True,
+                )
 
                 session.add(new_user)
 
                 # Log audit event
-                auth_manager.log_audit_event()
+                auth_manager.log_audit_event(
                     user_id=new_user.id,
                     action="user_registered",
-                    details={"username": username, "email": email, "role": role})
+                    details={"username": username, "email": email, "role": role},
+                )
 
-                return ()
-                    jsonify()
-                        {}
+                return (
+                    jsonify(
+                        {
                             "message": "User registered successfully",
-                            "user": {}
+                            "user": {
                                 "id": new_user.id,
                                 "username": new_user.username,
                                 "email": new_user.email,
@@ -374,7 +381,8 @@ def register_auth_endpoints(app):
                             },
                         }
                     ),
-                    201)
+                    201,
+                )
 
         except Exception as e:
             return jsonify({"error": f"Registration failed: {str(e)}"}), 500
@@ -393,7 +401,7 @@ def register_auth_endpoints(app):
                 return jsonify({"error": "Current and new password required"}), 400
 
             # Verify current password
-            if not check_password_hash(user.password_hash, current_password:
+            if not check_password_hash(user.password_hash, current_password):
                 return jsonify({"error": "Current password is incorrect"}), 401
 
             with get_db_session() as session:
@@ -402,10 +410,11 @@ def register_auth_endpoints(app):
                 session.merge(user)
 
                 # Log audit event
-                auth_manager.log_audit_event()
+                auth_manager.log_audit_event(
                     user_id=user.id,
                     action="password_changed",
-                    details={"username": user.username})
+                    details={"username": user.username},
+                )
 
                 return jsonify({"message": "Password changed successfully"}), 200
 
@@ -428,6 +437,6 @@ def is_admin(user):
     return user and user.role == "admin"
 
 
-def has_permission(user, required_role:
+def has_permission(user, required_role):
     "Check if user has required role."
     return user and (user.role == required_role or user.role == "admin")

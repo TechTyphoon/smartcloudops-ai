@@ -8,23 +8,24 @@ import ast
 import os
 from collections import defaultdict
 
+
 def check_syntax():
     errors_by_file = defaultdict(list)
     file_count = 0
-    
-    for root, dirs, files in os.walk('app'):
+
+    for root, dirs, files in os.walk("app"):
         for file in files:
-            if file.endswith('.py'):
+            if file.endswith(".py"):
                 file_count += 1
                 filepath = os.path.join(root, file)
                 try:
-                    with open(filepath, 'r') as f:
+                    with open(filepath, "r") as f:
                         ast.parse(f.read())
                 except SyntaxError as e:
-                    errors_by_file[filepath].append(f'Line {e.lineno}: {e.msg}')
-    
+                    errors_by_file[filepath].append(f"Line {e.lineno}: {e.msg}")
+
     total_errors = sum(len(errors) for errors in errors_by_file.values())
-    
+
     print("=" * 60)
     print("SYNTAX ERROR VERIFICATION REPORT")
     print("=" * 60)
@@ -32,7 +33,7 @@ def check_syntax():
     print(f"Files with syntax errors: {len(errors_by_file)}")
     print(f"Total syntax errors: {total_errors}")
     print()
-    
+
     if total_errors == 0:
         print("🎉 SUCCESS! All syntax errors have been fixed!")
         print("✅ Your codebase is ready for GitHub push!")
@@ -45,9 +46,12 @@ def check_syntax():
             for error in errors:
                 print(f"   ❌ {error}")
             print()
-        
-        print(f"📊 SUMMARY: {total_errors} errors remaining across {len(errors_by_file)} files")
+
+        print(
+            f"📊 SUMMARY: {total_errors} errors remaining across {len(errors_by_file)} files"
+        )
         return False
+
 
 if __name__ == "__main__":
     success = check_syntax()

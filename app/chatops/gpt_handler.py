@@ -5,13 +5,13 @@ OpenAI integration for ChatOps functionality with enhanced security
 
 import html
 import logging
-from flask import Flask, jsonify, request
 import os
 import re
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 import bleach
+from flask import Flask, jsonify, request
 from openai import OpenAI
 
 logger = logging.getLogger(__name__)
@@ -88,7 +88,8 @@ class GPTHandler:
             tags=allowed_tags,
             attributes=allowed_attributes,
             protocols=allowed_protocols,
-            strip=True)
+            strip=True,
+        )
 
         # SQL Injection prevention patterns
         sql_patterns = [
@@ -230,8 +231,12 @@ class GPTHandler:
             )
 
             # Update conversation history with sanitized content
-            self.conversation_history.append({"role": "user", "content": sanitized_query})
-            self.conversation_history.append({"role": "assistant", "content": gpt_response})
+            self.conversation_history.append(
+                {"role": "user", "content": sanitized_query}
+            )
+            self.conversation_history.append(
+                {"role": "assistant", "content": gpt_response}
+            )
 
             # Keep history manageable (security: limit memory usage)
             if len(self.conversation_history) > 20:

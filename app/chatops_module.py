@@ -1,27 +1,30 @@
 #!/usr/bin/env python3
-from datetime import datetime, timezone
-
-"
+"""
 ChatOps Module for Smart CloudOps AI
 Extracted from main.py for modularity
-"
+"""
 
 import logging
+from datetime import datetime, timezone
+
+from flask import Blueprint, jsonify, request
 
 # Configure logging
-logger = logging.getLogger
+logger = logging.getLogger(__name__)
 
 # Create blueprint
-chatops_bp = Blueprint("chatops", __name__, url_prefix="/chatops"
+chatops_bp = Blueprint("chatops", __name__, url_prefix="/chatops")
 
 # Import ChatOps components
 try:
-    from app.chatops.utils import ()
+    from app.chatops.ai_handler import AIHandler
+    from app.chatops.utils import (
         LogRetriever,
         SystemContextGatherer,
         conversation_manager,
         format_response,
-        validate_query_params)
+        validate_query_params,
+    )
 
     CHATOPS_AVAILABLE = True
 except ImportError as e:
@@ -31,47 +34,48 @@ except ImportError as e:
 # Initialize ChatOps components
 ai_handler = None
 if CHATOPS_AVAILABLE:
-        try:
-        ai_handler = FlexibleAIHandler()
-        logger.info("ChatOps AI Handler initialized successfully",
+    try:
+        ai_handler = AIHandler()
+        logger.info("ChatOps AI Handler initialized successfully")
     except Exception as e:
-        logger.error("Failed to initialize ChatOps AI Handler: {e}")
+        logger.error(f"Failed to initialize ChatOps AI Handler: {e}")
         CHATOPS_AVAILABLE = False
 
 
-@chatops_bp.route("//query"route("//query"route("//query", methods=["GET", "POST"])
+@chatops_bp.route("/query", methods=["GET", "POST"])
 def chatops_query():
-    "ChatOps query endpoint.",
+    """ChatOps query endpoint."""
     if request.method == "GET":
-        return jsonify()
-            {}
+        return jsonify(
+            {
                 "status": "success",
                 "message": "ChatOps Query Service",
                 "chatops_available": CHATOPS_AVAILABLE,
-                "endpoints": {}
+                "endpoints": {
                     "query": "POST /chatops/query",
                     "logs": "GET /chatops/logs",
-                    "context": "GET /chatops/context"
+                    "context": "GET /chatops/context",
                 },
             }
         )
 
     try:
         if not CHATOPS_AVAILABLE or not ai_handler:
-            return ()
-                jsonify()
-                    {}
+            return (
+                jsonify(
+                    {
                         "error": "ChatOps service not available",
-                        "message": "AI handler not loaded"
+                        "message": "AI handler not loaded",
                     }
                 ),
-                503)
+                503,
+            )
 
         data = request.get_json()
         if not data:
             return jsonify({"error": "No JSON data provided"}), 400
 
-        query = data.get("query", ")
+        query = data.get("query", "")
         if not query:
             return jsonify({"error": "No query provided"}), 400
 
@@ -79,15 +83,15 @@ def chatops_query():
         try:
             validate_query_params(data)
         except ValueError as e:
-            return jsonify({"error": "Invalid query parameters: {e}"}), 400
+            return jsonify({"error": f"Invalid query parameters: {e}"}), 400
 
         # Process query with AI handler
         try:
-            response = ai_handler.process_query(query, data)
+            response = ai_handler.process_message(query, data)
             formatted_response = format_response(response)
 
-            return jsonify()
-                {}
+            return jsonify(
+                {
                     "status": "success",
                     "query": query,
                     "response": formatted_response,
@@ -96,197 +100,120 @@ def chatops_query():
             )
 
         except Exception as e:
-            logger.error("AI processing error: {e}")
-            return ()
-                jsonify()
-                    {}
-                        "error": "AI processing failed",
-                        "message": "Unable to process query with AI"
-                    }
-                ),
-                500)
+            logger.error(f"AI processing error: {e}")
+            return (jsonify({"error": "AI processing failed", "message": str(e)}), 500)
 
     except Exception as e:
-        logger.error("ChatOps query error: {e}")
-        return jsonify({"error": "Internal server error"}), 500
+        logger.error(f"ChatOps query error: {e}")
+        return (jsonify({"error": "Internal server error", "message": str(e)}), 500)
 
 
-@chatops_bp.route("//logs"route("//logs"route("//logs", methods=["GET"])
-def get_chatops_logs():
-    "Get ChatOps logs endpoint.",
+@chatops_bp.route("/logs", methods=["GET"])
+def get_logs():
+    """Get recent logs."""
     try:
-        if not CHATOPS_AVAILABLE:
-            return ()
-                jsonify()
-                    {}
-                        "error": "ChatOps service not available",
-                        "message": "Log retrieval not available"
-                    }
-                ),
-                503)
+        hours = request.args.get("hours", 24, type=int)
+        level = request.args.get("level", None)
 
-        # Get logs using LogRetriever
-        try:
+        # Validate parameters
+        is_valid, error_msg = validate_query_params(hours=hours, level=level)
+        if not is_valid:
+            return jsonify({"error": error_msg}), 400
+
+        if CHATOPS_AVAILABLE:
             log_retriever = LogRetriever()
-            logs = log_retriever.get_recent_logs(limit=50)
-
-            return jsonify()
-                {}
-                    "status": "success",
-                    "logs": logs,
-                    "count": len(logs),
+            logs = log_retriever.get_recent_logs(hours=hours, level=level)
+        else:
+            # Fallback logs
+            logs = [
+                {
                     "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "level": "INFO",
+                    "message": "ChatOps service not available",
+                    "source": "chatops",
                 }
-            )
+            ]
 
-        except Exception as e:
-            logger.error("Log retrieval error: {e}")
-            return ()
-                jsonify()
-                    {}
-                        "error": "Log retrieval failed",
-                        "message": "Unable to retrieve logs"
-                    }
-                ),
-                500)
-
-    except Exception as e:
-        logger.error("ChatOps logs error: {e}")
-        return jsonify({"error": "Internal server error"}), 500
-
-
-@chatops_bp.route("//context"route("//context"route("//context", methods=["GET"])
-def get_system_context():
-    "Get system context endpoint.",
-    try:
-        if not CHATOPS_AVAILABLE:
-            return ()
-                jsonify()
-                    {}
-                        "error": "ChatOps service not available",
-                        "message": "Context retrieval not available"
-                    }
-                ),
-                503)
-
-        # Get system context using SystemContextGatherer
-        try:
-            context_gatherer = SystemContextGatherer()
-            context = context_gatherer.get_system_context()
-
-            return jsonify()
-                {}
-                    "status": "success",
-                    "context": context,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                }
-            )
-
-        except Exception as e:
-            logger.error("Context retrieval error: {e}")
-            return ()
-                jsonify()
-                    {}
-                        "error": "Context retrieval failed",
-                        "message": "Unable to retrieve system context"
-                    }
-                ),
-                500)
-
-    except Exception as e:
-        logger.error("System context error: {e}")
-        return jsonify({"error": "Internal server error"}), 500
-
-
-@chatops_bp.route("//conversation"route("//conversation"route("//conversation", methods=["GET", "POST"])
-def manage_conversation():
-    "Manage conversation endpoint.",
-    if request.method == "GET":
-        return jsonify()
-            {}
+        return jsonify(
+            {
                 "status": "success",
-                "message": "Conversation Management",
-                "endpoints": {}
-                    "get_conversation": "GET /chatops/conversation",
-                    "add_message": "POST /chatops/conversation"
-                },
+                "logs": logs,
+                "count": len(logs),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 
-    try:
-        if not CHATOPS_AVAILABLE:
-            return ()
-                jsonify()
-                    {}
-                        "error": "ChatOps service not available",
-                        "message": "Conversation management not available"
-                    }
-                ),
-                503)
-
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "No JSON data provided"}), 400
-
-        message = data.get("message", ")
-        if not message:
-            return jsonify({"error": "No message provided"}), 400
-
-        # Add message to conversation
-        try:
-            conversation_manager.add_message(message)
-
-            return jsonify()
-                {}
-                    "status": "success",
-                    "message": "Message added to conversation",
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                }
-            )
-
-        except Exception as e:
-            logger.error("Conversation management error: {e}")
-            return ()
-                jsonify()
-                    {}
-                        "error": "Conversation management failed",
-                        "message": "Unable to add message to conversation"
-                    }
-                ),
-                500)
-
     except Exception as e:
-        logger.error("Conversation error: {e}")
-        return jsonify({"error": "Internal server error"}), 500
+        logger.error(f"Error retrieving logs: {e}")
+        return (jsonify({"error": "Failed to retrieve logs", "message": str(e)}), 500)
 
 
-@@chatops_bp.route("//status"route("//status"route("//status", methods=["GET"])
-def chatops_status():
-    "ChatOps service status endpoint.",
+@chatops_bp.route("/context", methods=["GET"])
+def get_context():
+    """Get system context."""
     try:
-        status = {}
-            "status": "success",
-            "chatops_available": CHATOPS_AVAILABLE,
-            "ai_handler_loaded": ai_handler is not None,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "endpoints": {}
-                "query": "/chatops/query",
-                "logs": "/chatops/logs",
-                "context": "/chatops/context",
-                "conversation": "/chatops/conversation",
-                "status": "/chatops/status"
-            },
-        }
-
-        if CHATOPS_AVAILABLE and ai_handler:
-            status["ai_provider"] = ai_handler.current_provider
-            status["model_info"] = {}
-                "provider": ai_handler.current_provider,
-                "model": ai_handler.current_model,
+        if CHATOPS_AVAILABLE:
+            context_gatherer = SystemContextGatherer()
+            context = context_gatherer.get_system_context()
+        else:
+            # Fallback context
+            context = {
+                "status": "unavailable",
+                "message": "ChatOps service not available",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
 
-        return jsonify(status)
+        return jsonify(
+            {
+                "status": "success",
+                "context": context,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        )
 
     except Exception as e:
-        logger.error("ChatOps status error: {e}")
-        return jsonify({"error": "Internal server error"}), 500
+        logger.error(f"Error retrieving context: {e}")
+        return (
+            jsonify({"error": "Failed to retrieve context", "message": str(e)}),
+            500,
+        )
+
+
+@chatops_bp.route("/health", methods=["GET"])
+def chatops_health():
+    """ChatOps health check."""
+    try:
+        health_status = {
+            "status": "healthy" if CHATOPS_AVAILABLE else "unavailable",
+            "chatops_available": CHATOPS_AVAILABLE,
+            "ai_handler_available": ai_handler is not None,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
+
+        if CHATOPS_AVAILABLE:
+            health_status["components"] = {
+                "ai_handler": "available",
+                "context_manager": "available",
+                "log_retriever": "available",
+            }
+        else:
+            health_status["components"] = {
+                "ai_handler": "unavailable",
+                "context_manager": "unavailable",
+                "log_retriever": "unavailable",
+            }
+
+        return jsonify(health_status)
+
+    except Exception as e:
+        logger.error(f"ChatOps health check error: {e}")
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "error": str(e),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                }
+            ),
+            500,
+        )

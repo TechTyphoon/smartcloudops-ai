@@ -7,10 +7,11 @@ Anomaly Detection and Machine Learning Components
 import logging
 import os
 import pickle
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 import numpy as np
 import pandas as pd
-from datetime import datetime
-from typing import List, Dict, Any, Optional
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 

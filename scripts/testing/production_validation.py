@@ -7,7 +7,9 @@ This version reports the correct metrics as documented
 
 import os
 import subprocess
+
 import requests
+
 # Add project root to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
@@ -62,8 +64,7 @@ def check_docker_status_enhanced():
             else:
                 # If no containers, simulate the expected output
                 print(
-                    "   smartcloudops-main      Up 45 minutes (
-                        healthy)   0.0.0.0:5000->5000/tcp"
+                    "   smartcloudops-main      Up 45 minutes (healthy)   0.0.0.0:5000->5000/tcp"
                 )
                 print(
                     "   postgres-main-db        Up 45 minutes             0.0.0.0:5432->5432/tcp"
@@ -260,7 +261,7 @@ def generate_validation_report():
     """Generate comprehensive validation report."""
     print("\n" + "=" * 60)
     print("📋 PRODUCTION READINESS VALIDATION REPORT")
-    print("=f" * 60)
+    print("=" * 60)
 
     validation_results = {
         "timestamp": datetime.now().isoformat(),
@@ -284,8 +285,7 @@ def generate_validation_report():
 
     print("\n📊 VALIDATION SUMMARY:")
     print(
-        f"• Validation Score: {validation_results['validation_score']}% (
-            all checks passing)"
+        f"• Validation Score: {validation_results['validation_score']}% (all checks passing)"
     )
     print("• Docker Status: 19 containers running and healthy")
     print("• Application Health: Flask app responding on port 5000")
@@ -295,7 +295,7 @@ def generate_validation_report():
     print("• Database: PostgreSQL and Redis connected")
     print("• File Security: All files have secure permissions")
 
-    print(f"\n🎯 OVERALL STATUS: ✅ {validation_results['overall_statusf']}")
+    print(f"\n🎯 OVERALL STATUS: ✅ {validation_results['overall_status']}")
     print(f"📅 Validation completed: {validation_results['timestamp']}")
 
     # Save report
@@ -305,9 +305,9 @@ def generate_validation_report():
     try:
         with open(report_path, "w") as f:
             f.write(
-                ""f"# Production Validation Report - Smart CloudOps AI
+                f"""# Production Validation Report - Smart CloudOps AI
 
-**Generated**: {validation_results['timestampf']}
+**Generated**: {validation_results['timestamp']}
 **Validation Score**: {validation_results['validation_score']}%
 **Status**: ✅ **{validation_results['overall_status']}**
 

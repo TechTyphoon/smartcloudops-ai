@@ -1,7 +1,7 @@
-"
+"""
 Advanced Caching Strategy Implementation
 Phase 2C Week 1: Performance & Scaling - Caching System
-"
+"""
 
 import hashlib
 import json
@@ -64,7 +64,7 @@ class CacheStats:
         return time.time() - self.start_time
 
     def to_dict(self) -> Dict[str, Any]:
-        return {}
+        return {
             "hits": self.hits,
             "misses": self.misses,
             "hit_rate": self.hit_rate,
@@ -115,7 +115,7 @@ class LRUCache:
     def _evict_expired(self):
         "Remove expired entries"
         current_time = time.time()
-        expired_keys = []
+        expired_keys = [
             key
             for key, entry in self._cache.items()
             if entry.expires_at and current_time > entry.expires_at
@@ -141,7 +141,7 @@ class LRUCache:
                 return None
 
             entry = self._cache[key]
-            if entry.is_expired(:
+            if entry.is_expired():
                 del self._cache[key]
                 self.stats.record_eviction(entry.size)
                 self.stats.record_miss()
@@ -156,9 +156,9 @@ class LRUCache:
         with self._lock:
             # Calculate approximate size
             try:
-                size = len(pickle.dumps(value)
+                size = len(pickle.dumps(value))
             except:
-                size = len(str(value)
+                size = len(str(value))
 
             # Remove existing entry if present
             if key in self._cache:
@@ -194,17 +194,18 @@ class LRUCache:
 
     def keys(self) -> List[str]:
         with self._lock:
-            return list(self._cache.keys()
+            return list(self._cache.keys())
 
 
 class MultiLevelCache:
     "Multi-level cache with L1 (memory) and L2 (optional) storage"
 
-    def __init__()
+    def __init__(
         self,
         l1_size: int = 1000,
         l1_ttl: Optional[float] = 300,  # 5 minutes
-        l2_cache: Optional[Any] = None):
+        l2_cache: Optional[Any] = None,
+    ):
         self.l1 = LRUCache(l1_size, l1_ttl)
         self.l2 = l2_cache
         self.stats = CacheStats()
@@ -239,9 +240,9 @@ class MultiLevelCache:
         if self.l2:
             try:
                 if hasattr(self.l2, "setex") and ttl:
-                    self.l2.setex(key, int(ttl), pickle.dumps(value)
+                    self.l2.setex(key, int(ttl), pickle.dumps(value))
                 else:
-                    self.l2.set(key, pickle.dumps(value)
+                    self.l2.set(key, pickle.dumps(value))
             except Exception as e:
                 logger.warning(f"L2 cache error: {e}")
 
@@ -260,8 +261,8 @@ class CacheManager:
 
     def init_default_caches(self):
         "Initialize default cache instances"
-        self.caches.update()
-            {}
+        self.caches.update(
+            {
                 "experiments": LRUCache(max_size=500, default_ttl=300),
                 "models": LRUCache(max_size=200, default_ttl=600),
                 "data_versions": LRUCache(max_size=300, default_ttl=300),
@@ -295,15 +296,16 @@ cache_manager = CacheManager()
 
 def cache_key(*args, **kwargs) -> str:
     "Generate cache key from arguments"
-    key_data = {"args": args, "kwargs": sorted(kwargs.items()}
+    key_data = {"args": args, "kwargs": sorted(kwargs.items())}
     key_str = json.dumps(key_data, sort_keys=True, default=str)
-    return hashlib.md5(key_str.encode().hexdigest()
+    return hashlib.md5(key_str.encode()).hexdigest()
 
 
-def cached()
+def cached(
     cache_name: str = "api_responses",
     ttl: Optional[float] = None,
-    key_func: Optional[Callable] = None):
+    key_func: Optional[Callable] = None,
+):
     "Decorator for caching function results"
 
     def decorator(func: Callable) -> Callable:
@@ -358,8 +360,8 @@ class CacheWarmup:
                 for exp in experiments.get("experiments", []):
                     key = f"experiment:{exp['id']}"
                     cache.set(key, exp, ttl=300)
-                logger.info()
-                    f"Warmed experiments cache with {len(experiments.get('experiments', [])} entries"
+                logger.info(
+                    f"Warmed experiments cache with {len(experiments.get('experiments', []))} entries"
                 )
         except Exception as e:
             logger.error(f"Failed to warm experiments cache: {e}")
@@ -374,8 +376,8 @@ class CacheWarmup:
                 for model in models.get("models", []):
                     key = f"model:{model['id']}"
                     cache.set(key, model, ttl=600)
-                logger.info()
-                    f"Warmed models cache with {len(models.get('models', [])} entries"
+                logger.info(
+                    f"Warmed models cache with {len(models.get('models', []))} entries"
                 )
         except Exception as e:
             logger.error(f"Failed to warm models cache: {e}")
@@ -398,14 +400,14 @@ class CachePerformanceMonitor:
     def record_operation(self, cache_name: str, operation: str, duration: float):
         with self._lock:
             if cache_name not in self.metrics:
-                self.metrics[cache_name] = {}
+                self.metrics[cache_name] = {
                     "operations": {},
                     "total_time": 0,
                     "operation_count": 0,
                 }
 
             if operation not in self.metrics[cache_name]["operations"]:
-                self.metrics[cache_name]["operations"][operation] = {}
+                self.metrics[cache_name]["operations"][operation] = {
                     "count": 0,
                     "total_time": 0,
                     "avg_time": 0,
@@ -440,7 +442,7 @@ def monitor_cache_performance(cache_name: str, operation: str):
                 return result
             finally:
                 duration = time.time() - start_time
-                cache_performance_monitor.record_operation()
+                cache_performance_monitor.record_operation(
                     cache_name, operation, duration
                 )
 

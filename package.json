@@ -10,5 +10,12 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "@0xshariq/docker-mcp-server": "^2.0.4",
+    "@henkey/postgres-mcp-server": "^1.0.5",
+    "@pickstar-2002/redis-mcp": "^1.0.4",
+    "grafana-mcp-analyzer": "^2.1.0",
+    "prometheus-mcp": "^1.1.3"
   }
 }

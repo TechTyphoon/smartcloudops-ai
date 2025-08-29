@@ -3,11 +3,12 @@ Unit tests for ChatOps GPT Handler
 Comprehensive test coverage for GPT integration and security features
 """
 
-import pytest
 import json
-from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime, timezone
-from typing import Dict, Any
+from typing import Any, Dict
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 
 from app.chatops.gpt_handler import GPTHandler
 

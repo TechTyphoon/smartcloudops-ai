@@ -5,49 +5,54 @@ Phase 2: Testing Backbone
 
 import os
 import sys
-import pytest
 import tempfile
-from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
 from datetime import datetime, timezone
+from pathlib import Path
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 
 # Add app directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Set test environment variables before importing app
-os.environ.update({
-    "FLASK_ENV": "testing",
-    "TESTING": "true",
-    "SECRET_KEY": "test-secret-key-for-testing-only-32chars",
-    "JWT_SECRET_KEY": "test-jwt-secret-key-for-testing-32ch",
-    "DEFAULT_ADMIN_PASSWORD": "test-admin-password-16chars",
-    "DATABASE_URL": "sqlite:///:memory:",
-    "REDIS_HOST": "localhost",
-    "REDIS_PORT": "6379",
-    "REDIS_PASSWORD": "test-redis-password",
-    "OPENAI_API_KEY": "test-openai-key",
-    "AWS_REGION": "us-east-1",
-    "DISABLE_AWS_SERVICES": "true",
-    "DISABLE_ELASTICSEARCH": "true",
-    "USE_LOCAL_STORAGE": "true",
-})
+os.environ.update(
+    {
+        "FLASK_ENV": "testing",
+        "TESTING": "true",
+        "SECRET_KEY": "test-secret-key-for-testing-only-32chars",
+        "JWT_SECRET_KEY": "test-jwt-secret-key-for-testing-32ch",
+        "DEFAULT_ADMIN_PASSWORD": "test-admin-password-16chars",
+        "DATABASE_URL": "sqlite:///:memory:",
+        "REDIS_HOST": "localhost",
+        "REDIS_PORT": "6379",
+        "REDIS_PASSWORD": "test-redis-password",
+        "OPENAI_API_KEY": "test-openai-key",
+        "AWS_REGION": "us-east-1",
+        "DISABLE_AWS_SERVICES": "true",
+        "DISABLE_ELASTICSEARCH": "true",
+        "USE_LOCAL_STORAGE": "true",
+    }
+)
 
 from app import create_app
 from app.database import db_session, init_db
-from app.models import User, Anomaly, RemediationAction
+from app.models import Anomaly, RemediationAction, User
 
 
 @pytest.fixture(scope="session")
 def app():
     """Create application for testing."""
     app = create_app()
-    app.config.update({
-        "TESTING": True,
-        "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
-        "WTF_CSRF_ENABLED": False,
-        "SECRET_KEY": "test-secret-key-for-testing-only-32chars",
-    })
-    
+    app.config.update(
+        {
+            "TESTING": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "WTF_CSRF_ENABLED": False,
+            "SECRET_KEY": "test-secret-key-for-testing-only-32chars",
+        }
+    )
+
     with app.app_context():
         init_db()
         yield app
@@ -71,7 +76,7 @@ def auth_headers():
     """Generate authentication headers for testing."""
     return {
         "Authorization": "Bearer test-jwt-token",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
     }
 
 
@@ -81,14 +86,14 @@ def mock_openai():
     with patch("openai.OpenAI") as mock:
         mock_client = MagicMock()
         mock.return_value = mock_client
-        
+
         # Mock chat completion
         mock_response = MagicMock()
         mock_response.choices = [
             MagicMock(message=MagicMock(content="Test AI response"))
         ]
         mock_client.chat.completions.create.return_value = mock_response
-        
+
         yield mock_client
 
 
@@ -98,13 +103,13 @@ def mock_redis():
     with patch("redis.Redis") as mock:
         mock_client = MagicMock()
         mock.return_value = mock_client
-        
+
         # Mock common Redis operations
         mock_client.get.return_value = None
         mock_client.set.return_value = True
         mock_client.delete.return_value = 1
         mock_client.exists.return_value = False
-        
+
         yield mock_client
 
 
@@ -117,7 +122,7 @@ def mock_prometheus():
                 yield {
                     "counter": mock_counter,
                     "histogram": mock_histogram,
-                    "gauge": mock_gauge
+                    "gauge": mock_gauge,
                 }
 
 
@@ -148,8 +153,8 @@ def sample_remediation():
         "parameters": {
             "instance_type": "t3.large",
             "min_instances": 2,
-            "max_instances": 5
-        }
+            "max_instances": 5,
+        },
     }
 
 
@@ -161,7 +166,7 @@ def sample_user():
         "username": "testuser",
         "email": "test@example.com",
         "role": "admin",
-        "is_active": True
+        "is_active": True,
     }
 
 
@@ -172,28 +177,25 @@ def mock_aws_services():
         # Mock EC2
         ec2_mock = MagicMock()
         ec2_mock.describe_instances.return_value = {
-            "Reservations": [{
-                "Instances": [{
-                    "InstanceId": "i-1234567890",
-                    "State": {"Name": "running"}
-                }]
-            }]
+            "Reservations": [
+                {
+                    "Instances": [
+                        {"InstanceId": "i-1234567890", "State": {"Name": "running"}}
+                    ]
+                }
+            ]
         }
-        
+
         # Mock CloudWatch
         cloudwatch_mock = MagicMock()
         cloudwatch_mock.get_metric_statistics.return_value = {
-            "Datapoints": [
-                {"Timestamp": datetime.now(timezone.utc), "Average": 50.0}
-            ]
+            "Datapoints": [{"Timestamp": datetime.now(timezone.utc), "Average": 50.0}]
         }
-        
+
         # Mock SSM
         ssm_mock = MagicMock()
-        ssm_mock.get_parameter.return_value = {
-            "Parameter": {"Value": "test-value"}
-        }
-        
+        ssm_mock.get_parameter.return_value = {"Parameter": {"Value": "test-value"}}
+
         def client_factory(service_name, **kwargs):
             if service_name == "ec2":
                 return ec2_mock
@@ -202,7 +204,7 @@ def mock_aws_services():
             elif service_name == "ssm":
                 return ssm_mock
             return MagicMock()
-        
+
         mock_client.side_effect = client_factory
         yield mock_client
 
@@ -235,25 +237,22 @@ def pytest_configure(config):
 # Test utilities
 class TestUtils:
     """Utility functions for testing."""
-    
+
     @staticmethod
     def create_test_token(user_id=1, username="testuser", role="admin"):
         """Create a test JWT token."""
-        import jwt
         from datetime import datetime, timedelta, timezone
-        
+
+        import jwt
+
         payload = {
             "user_id": user_id,
             "username": username,
             "role": role,
-            "exp": datetime.now(timezone.utc) + timedelta(hours=1)
+            "exp": datetime.now(timezone.utc) + timedelta(hours=1),
         }
-        return jwt.encode(
-            payload,
-            os.environ.get("JWT_SECRET_KEY"),
-            algorithm="HS256"
-        )
-    
+        return jwt.encode(payload, os.environ.get("JWT_SECRET_KEY"), algorithm="HS256")
+
     @staticmethod
     def assert_response_success(response, status_code=200):
         """Assert API response is successful."""
@@ -262,7 +261,7 @@ class TestUtils:
             data = response.get_json()
             assert "error" not in data or data["error"] is None
         return response
-    
+
     @staticmethod
     def assert_response_error(response, status_code=400):
         """Assert API response is an error."""
@@ -284,22 +283,22 @@ def test_utils():
 def performance_tracker():
     """Track test performance."""
     import time
-    
+
     class PerformanceTracker:
         def __init__(self):
             self.start_time = None
             self.end_time = None
-        
+
         def start(self):
             self.start_time = time.time()
-        
+
         def stop(self):
             self.end_time = time.time()
-        
+
         @property
         def duration(self):
             if self.start_time and self.end_time:
                 return self.end_time - self.start_time
             return None
-    
+
     return PerformanceTracker()

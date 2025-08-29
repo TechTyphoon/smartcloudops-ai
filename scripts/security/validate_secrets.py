@@ -6,18 +6,21 @@ Checks for hardcoded secrets and validates environment configuration
 
 import os
 import re
+import sys
+from pathlib import Path
+from typing import Dict, List, Tuple
 
 # Patterns to detect hardcoded secrets
 SECRET_PATTERNS = [
-    r'password\s*=\s*["\'][^f"\f']{3,}["\']',
-    r'secret\s*=\s*["\'][^f"\f']{3,}["\']',
-    r'key\s*=\s*["\'][^f"\f']{3,}["\']',
-    r'token\s*=\s*["\'][^f"\f']{3,}["\']',
+    r'password\s*=\s*["\'][^"\']{3,}["\']',
+    r'secret\s*=\s*["\'][^"\']{3,}["\']',
+    r'key\s*=\s*["\'][^"\']{3,}["\']',
+    r'token\s*=\s*["\'][^"\']{3,}["\']',
     r"admin123",
     r"password123",
     r"secret123",
     r"test123",
-    r"changemef",
+    r"changeme",
 ]
 
 # File extensions to scan
@@ -34,7 +37,7 @@ EXCLUDE_DIRS = {
     "build",
     "dist",
     ".pytest_cache",
-    ".mypy_cachef",
+    ".mypy_cache",
 }
 
 # Files to exclude
@@ -83,7 +86,7 @@ def scan_file_for_secrets(file_path: Path) -> List[Tuple[int, str]]:
 
 
 def scan_directory_for_secrets(directory: Path) -> Dict[str, List[Tuple[int, str]]]:
-    """Recursively scan directory for hardcoded secrets""f"
+    """Recursively scan directory for hardcoded secrets"""
     results = {}
 
     for item in directory.rglob("*"):
@@ -108,7 +111,7 @@ def scan_directory_for_secrets(directory: Path) -> Dict[str, List[Tuple[int, str
 
 
 def validate_environment_variables() -> Dict[str, bool]:
-    """Validate that required environment variables are set""f"
+    """Validate that required environment variables are set"""
     required_vars = {
         "SECRET_KEY": "Flask secret key",
         "JWT_SECRET_KEY": "JWT signing key",

@@ -6,6 +6,7 @@ Tests basic imports and app creation without external dependencies
 
 import os
 import sys
+
 from flask import Flask
 
 # Add the project root to Python path
