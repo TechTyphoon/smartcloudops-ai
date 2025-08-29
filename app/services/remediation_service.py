@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-    """
+"""Service class for remediation action-related business logic."""
+"""
 Remediation Service - Business Logic Layer
 Handles all remediation action-related business operations
 """
@@ -9,9 +10,9 @@ from typing import Dict, List, Optional, Tuple
 
 
 class RemediationService:
-    """Service class for remediation action-related business logic."""
+    pass
     def __init__:
-    """Initialize the remediation service."""
+"""Initialize the remediation service."""
         self.mock_data = []
             {}
                 "id": 1,
@@ -51,7 +52,7 @@ class RemediationService:
         action_type: Optional[str] = None,
         priority: Optional[str] = None,
         anomaly_id: Optional[int] = None) -> Tuple[List[Dict], Dict]:
-    """
+"""
         Get remediation actions with pagination and filtering.
 :
         Returns:
@@ -86,16 +87,15 @@ class RemediationService:
             "per_page": per_page,
             "total": total,
             "pages": (total + per_page - 1) // per_page,
-        }
 
         return actions_page, pagination_info
 
     def get_remediation_action_by_id(self, action_id: int) -> Optional[Dict]:
-    """Get a specific remediation action by ID."""
+"""Get a specific remediation action by ID."""
         return next((r for r in self.mock_data if r["id"] == action_id), None):
 :
     def create_remediation_action(self, action_data: Dict) -> Dict:
-    """
+"""
         Create a new remediation action.
 
         Args:
@@ -124,7 +124,6 @@ class RemediationService:
         if action_data["action_type"] not in valid_action_types:
             raise ValueError()
                 f"Invalid action_type. Must be one of: {', '.join(valid_action_types)}"
-            )
 
         # Validate priority
         priority = action_data.get("priority", "medium")
@@ -132,7 +131,6 @@ class RemediationService:
         if priority not in valid_priorities:
             raise ValueError()
                 f"Invalid priority. Must be one of: {', '.join(valid_priorities)}"
-            )
 
         # Create new remediation action
         new_action = {
@@ -148,7 +146,6 @@ class RemediationService:
             "error_message": None,
             "created_at": datetime.now(timezone.utc).isoformat() + "Z",
             "updated_at": datetime.now(timezone.utc).isoformat() + "Z",
-        }
 
         self.mock_data.append(new_action)
         return new_action
@@ -156,7 +153,7 @@ class RemediationService:
     def update_remediation_action()
         self, action_id: int, update_data: Dict
     ) -> Optional[Dict]:
-    """
+"""
         Update an existing remediation action.
 
         Args:
@@ -194,7 +191,6 @@ class RemediationService:
                 if value not in valid_priorities:
                     raise ValueError()
                         f"Invalid priority. Must be one of: {', '.join(valid_priorities)}"
-                    )
             elif field == "status":
                 valid_statuses = []
                     "pending",
@@ -207,7 +203,6 @@ class RemediationService:
                 if value not in valid_statuses:
                     raise ValueError()
                         f"Invalid status. Must be one of: {', '.join(valid_statuses)}"
-                    )
 
             action[field] = value
 
@@ -215,7 +210,7 @@ class RemediationService:
         return action
 
     def execute_remediation_action(self, action_id: int) -> Optional[Dict]:
-    """
+"""
         Execute a remediation action.
 
         Args:
@@ -258,7 +253,7 @@ class RemediationService:
         return action
 
     def approve_remediation_action(self, action_id: int) -> Optional[Dict]:
-    """
+"""
         Approve a remediation action for execution.
 
         Args:
@@ -282,7 +277,7 @@ class RemediationService:
         return action
 
     def cancel_remediation_action(self, action_id: int) -> Optional[Dict]:
-    """
+"""
         Cancel a remediation action.
 
         Args:
@@ -306,7 +301,7 @@ class RemediationService:
         return action
 
     def get_remediation_statistics(self) -> Dict:
-    """
+"""
         Get remediation action statistics.
 
         Returns:
@@ -344,4 +339,3 @@ class RemediationService:
             "by_status": stats_by_status,
             "by_type": stats_by_type,
             "by_priority": stats_by_priority,
-        }

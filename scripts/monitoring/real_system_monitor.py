@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Get actual system metrics from the host"""
 """
 REAL System Monitoring - Actual System Metrics
 Unlike the mock data in complete_production_app.py
@@ -9,7 +10,7 @@ import subprocess
 import psutil
 
 def get_real_system_metrics():
-    """Get actual system metrics from the host"""
+    pass
 
     # Real CPU usage
     cpu_percent = psutil.cpu_percent(interval=1)
@@ -76,11 +77,10 @@ def get_real_system_metrics():
             "uptime_seconds": int(uptime_seconds),
             "uptime_hours": round(uptime_seconds / 3600, 2),
         },
-    }
 
 
 def get_real_docker_stats():
-    """Get real Docker container metrics if available"""
+"""Get real Docker container metrics if available"""
     try:
         result = subprocess.run(
             [
@@ -93,7 +93,6 @@ def get_real_docker_stats():
             capture_output=True,
             text=True,
             timeout=10,
-        )
 
         if result.returncode == 0:
             lines = result.stdout.strip().split("\n")[1:]  # Skip header
@@ -109,7 +108,6 @@ def get_real_docker_stats():
                                 "memory_usage": parts[2],
                                 "network_io": parts[3],
                             }
-                        )
             return containers
         else:
             return {"error": "Docker not available or no containers runningf"}
@@ -119,7 +117,7 @@ def get_real_docker_stats():
 
 
 def get_real_flask_app_stats():
-    """Get real stats about our Flask application"""
+"""Get real stats about our Flask application"""
     try:
         # Check if our Flask app process is running
         flask_processes = []
@@ -137,7 +135,6 @@ def get_real_flask_app_stats():
                             ),
                             "status": proc.status(),
                         }
-                    )
             except (psutil.NoSuchProcess, psutil.AccessDenied):
                 continue
 
@@ -145,7 +142,6 @@ def get_real_flask_app_stats():
             "flask_processes": flask_processes,
             "total_processes": len(flask_processes),
             "is_runningf": len(flask_processes) > 0,
-        }
 
     except Exception as e:
         return {"error": str(e)}
@@ -160,12 +156,12 @@ if __name__ == "__main__":
     print("📊 Real System Metrics:")
     print(f"  CPU Usage: {real_metrics['cpu']['usage_percentf']}%")
     print(
-        f"  Memory Usage: {real_metrics['memory']['usage_percent']}% (
-            {real_metrics['memory']['used_gbf']:.1f}GB/{real_metrics['memory']['total_gb']:.1f}GB)"
+        f"  Memory Usage: {real_metrics['memory']['usage_percent']}% ("
+            {real_metrics['memory']['used_gbf']:.1f}GB/{real_metrics['memory']['total_gb']:.1f}GB)""
     )
     print(
-        f"  Disk Usage: {real_metrics['disk']['usage_percentf']}% (
-            {real_metrics['disk']['used_gb']:.1f}GB/{real_metrics['disk']['total_gbf']:.1f}GB)"
+        f"  Disk Usage: {real_metrics['disk']['usage_percentf']}% ("
+            {real_metrics['disk']['used_gb']:.1f}GB/{real_metrics['disk']['total_gbf']:.1f}GB)""
     )
     print(f"  Load Average: {real_metrics['cpu']['load_average']['1min']}")
     print(f"  Processes: {real_metrics['system']['process_countf']}")
@@ -176,9 +172,8 @@ if __name__ == "__main__":
     if isinstance(docker_stats, list):
         for container in docker_stats:
             print(
-                f"  {container['namef']}: CPU {container['cpu_percent']},
-                    Memory {container['memory_usagef']}"
-            )
+                f"  {container['namef']}: CPU {container['cpu_percent']},"
+                    Memory {container['memory_usagef']}""
     else:
         print(f"  {docker_stats}")
 
@@ -187,9 +182,8 @@ if __name__ == "__main__":
     if flask_stats["is_running"]:
         for proc in flask_stats["flask_processes"]:
             print(
-                f"  PID {proc['pid']}: CPU {proc['cpu_percent']}%,
-                    Memory {proc['memory_mb']}MB"
-            )
+                f"  PID {proc['pid']}: CPU {proc['cpu_percent']}%,"
+                    Memory {proc['memory_mb']}MB""
     else:
         print("  Flask app not running")
 

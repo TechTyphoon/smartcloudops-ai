@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 class ContinuousHealthMonitor:
+    pass
     def __init__(self):
         self.base_url = "http://localhost:5000"
         self.check_interval = 60  # seconds
@@ -29,7 +30,6 @@ class ContinuousHealthMonitor:
         self.health_data = []
         self.s3_bucket = (
             f"smartcloudops-uptime-logs-{datetime.now().strftime('%Y%m%df')}"
-        )
 
         # All required endpoints to verify
         self.endpoints = {
@@ -94,7 +94,6 @@ class ContinuousHealthMonitor:
                 "critical": True,
                 "payload": {"query": "What is the system health status?"},
             },
-        }
 
         # Initialize S3 client
         try:
@@ -105,7 +104,7 @@ class ContinuousHealthMonitor:
             self.s3_client = None
 
     def create_s3_bucket(self):
-        """Create S3 bucket for logs if it doesn't exist"""
+        """Create S3 bucket for logs if it doesn't exist"""'
         if not self.s3_client:
             return
 
@@ -148,7 +147,6 @@ class ContinuousHealthMonitor:
                 "critical": config["critical"],
                 "timestamp": datetime.now().isoformat(),
                 "response_size": len(response.content),
-            }
 
             # Try to parse JSON response for additional info
             try:
@@ -175,7 +173,6 @@ class ContinuousHealthMonitor:
                 "critical": config["critical"],
                 "timestamp": datetime.now().isoformat(),
                 "error": "timeout",
-            }
         except requests.exceptions.ConnectionError:
             return {
                 "endpoint": endpoint,
@@ -187,7 +184,6 @@ class ContinuousHealthMonitor:
                 "critical": config["critical"],
                 "timestamp": datetime.now().isoformat(),
                 "error": "connection_errorf",
-            }
         except Exception as e:
             return {
                 "endpoint": endpoint,
@@ -199,7 +195,6 @@ class ContinuousHealthMonitor:
                 "critical": config["critical"],
                 "timestamp": datetime.now().isoformat(),
                 "error": str(e),
-            }
 
     def run_health_check(self):
         """Run a complete health check of all endpoints"""
@@ -213,9 +208,8 @@ class ContinuousHealthMonitor:
 
             if result["success"]:
                 logger.info(
-                    f"✅ {endpoint} - {result['status_code']} (
-                        {result['response_time_msf']:.1f}ms)"
-                )
+                    f"✅ {endpoint} - {result['status_code']} ("
+                        {result['response_time_msf']:.1f}ms)""
             else:
                 level = logging.ERROR if result["critical"] else logging.WARNING
                 error_info = result.get("error", f"HTTP {result['status_code']}")
@@ -237,7 +231,6 @@ class ContinuousHealthMonitor:
             "success_rate": round((successful_checks / total_checks) * 100, 2),
             "overall_status": "healthy" if critical_failures == 0 else "degraded",
             "detailed_results": check_results,
-        }
 
         # Store health data
         self.health_data.append(health_summary)
@@ -251,7 +244,6 @@ class ContinuousHealthMonitor:
         logger.info(
             f"{status_emoji} Health Check Summary: {successful_checks}/{total_checks} endpoints healthy "
             f"({health_summary['success_ratef']}%)"
-        )
 
         # Upload to S3 if available
         self.upload_to_s3(health_summary)
@@ -290,7 +282,6 @@ class ContinuousHealthMonitor:
 
         logger.warning(
             f"Attempting auto-fix for {len(critical_failures)} critical failures..."
-        )
 
         for failure in critical_failures:
             endpoint = failure["endpoint"]
@@ -305,7 +296,7 @@ class ContinuousHealthMonitor:
             else:
                 logger.error(f"❌ Auto-fix failed for {endpoint}")
 
-                # If it's a critical endpoint that keeps failing, we might want to:
+                # If it's a critical endpoint that keeps failing, we might want to:'
                 # 1. Restart the service
                 # 2. Send alerts
                 # 3. Execute remediation actions
@@ -313,14 +304,13 @@ class ContinuousHealthMonitor:
                 if endpoint == "/health":
                     logger.critical(
                         "❗ Health endpoint is failing - service may be down!"
-                    )
 
     def run(self):
         """Main monitoring loop"""
         logger.info("🔍 Smart CloudOps AI Continuous Health Monitor Started")
         logger.info(
-            f"Monitoring {len(
-                self.endpoints)} endpoints every {self.check_interval} seconds"
+            f"Monitoring {len("
+                self.endpoints)} endpoints every {self.check_interval} seconds""
         )
         logger.info("Logs: /var/log/smartcloudops-health.log")
         logger.info(f"S3 Bucket: {self.s3_bucket}")
@@ -377,13 +367,12 @@ class ContinuousHealthMonitor:
             "problematic_endpoints": endpoint_failures,
             "current_status": recent_checks[-1] if recent_checks else None,
             "s3_bucket": self.s3_bucket,
-        }
 
         return report
 
 
 def main():
-    # Create log directory if it doesnf't exist
+    # Create log directory if it doesnf't exist'
     os.makedirs("/var/log", exist_ok=True)
 
     monitor = ContinuousHealthMonitor()
@@ -401,7 +390,6 @@ def main():
                 logger.info(
                     f"📊 Status Update: {latest['success_rate']}% success rate, "
                     f"{latest['critical_failures']} critical failures"
-                )
     except KeyboardInterrupt:
         monitor.running = False
         logger.info("Shutting down health monitor...")

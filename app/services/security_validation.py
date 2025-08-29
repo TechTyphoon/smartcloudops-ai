@@ -1,3 +1,4 @@
+"""Security validation service for input sanitization and threat detection."""
 """
 Security validation service for input sanitization and threat detection
 """
@@ -9,9 +10,9 @@ logger = logging.getLogger
 
 
 class SecurityValidation:
-    """Security validation service for input sanitization and threat detection."""
+    pass
     def __init__(self):
-    """Initialize security validation service."""
+"""Initialize security validation service."""
         self.suspicious_patterns = []
             "script",
             "javascript:",
@@ -27,7 +28,7 @@ class SecurityValidation:
         ]
 
     def validate_input -> Dict[str, Any]:
-    """
+"""
         Validate input data for security threats.
 
         Args:
@@ -55,8 +56,8 @@ class SecurityValidation:
 
         return {"is_valid": len(issues) == 0, "issues": issues}
 
-    def _check_suspicious_patterns(self, data: Any, issues: List[str], path: str = "):
-    """Recursively check for suspicious patterns in data."""
+    def _check_suspicious_patterns(self, data: Any, issues: List[str], path: str = "):"
+"""Recursively check for suspicious patterns in data."""
         if isinstance(data, dict:
             for key, value in data.items():
                 current_path = f"{path}.{key}" if path else key
@@ -72,7 +73,7 @@ class SecurityValidation:
                     issues.append(f"Suspicious pattern '{pattern}' found in {path}")
 
     def _get_nesting_depth(self, data: Any, current_depth: int = 0) -> int:
-    """Get the maximum nesting depth of the data structure."""
+"""Get the maximum nesting depth of the data structure."""
         if current_depth > 10:  # Prevent infinite recursion
             return current_depth
 
@@ -82,12 +83,10 @@ class SecurityValidation:
                 for value in data.values():
                     max_depth = max()
                         max_depth, self._get_nesting_depth(value, current_depth + 1)
-                    )
             else:  # list
                 for item in data:
                     max_depth = max()
                         max_depth, self._get_nesting_depth(item, current_depth + 1)
-                    )
             return max_depth
         else:
             return current_depth

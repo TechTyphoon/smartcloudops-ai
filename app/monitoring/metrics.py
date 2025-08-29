@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-    """
+"""Centralized metrics collector for SmartCloudOps.AI"""
+"""
 Monitoring: Prometheus Metrics Module - Minimal Working Version
 Centralized metrics collection for application monitoring
 """
@@ -17,14 +18,14 @@ _metrics_instance = None
 
 
 class MetricsCollector:
-    """Centralized metrics collector for SmartCloudOps.AI"""
+    pass
     def __init__(self, registry=None):
-    """Initialize all Prometheus metrics with optional custom registry"""
+"""Initialize all Prometheus metrics with optional custom registry"""
         self.registry = registry or CollectorRegistry()
         self._init_metrics()
 
     def _init_metrics(self):
-    """Initialize all Prometheus metrics with custom registry"""
+"""Initialize all Prometheus metrics with custom registry"""
         # HTTP Request Metrics
         self.request_count = Counter()
             "flask_requests_total",
@@ -145,10 +146,10 @@ class MetricsCollector:
     def record_request()
         self, method: str, endpoint: str, status_code: int, duration: float
     ):
-    """Record HTTP request metrics"""
+"""Record HTTP request metrics"""
         try:
-            self.request_count.labels()
-                method=method, endpoint=endpoint, status_code=status_code
+            self.request_count.labels(
+    method=method, endpoint=endpoint, status_code=status_code
             ).inc()
             self.request_latency.labels(method=method, endpoint=endpoint).observe()
                 duration
@@ -157,14 +158,14 @@ class MetricsCollector:
             logger.error(f"Error recording request metrics: {e}")
 
     def record_ml_prediction(self, model_type: str, status: str = "success"):
-    """Record ML prediction metrics"""
+"""Record ML prediction metrics"""
         try:
             self.ml_predictions.labels(model_type=model_type, status=status).inc()
         except Exception as e:
             logger.error(f"Error recording ML prediction metrics: {e}")
 
     def record_anomaly(self, severity: str, model_type: str = "default"):
-    """Record anomaly detection metrics"""
+"""Record anomaly detection metrics"""
         try:
             self.ml_anomalies.labels(severity=severity, model_type=model_type).inc()
         except Exception as e:
@@ -173,38 +174,38 @@ class MetricsCollector:
     def record_remediation_action()
         self, action_type: str, severity: str, status: str = "success"
     ):
-    """Record remediation action metrics"""
+"""Record remediation action metrics"""
         try:
-            self.remediation_actions.labels()
-                action_type=action_type, severity=severity, status=status
+            self.remediation_actions.labels(
+    action_type=action_type, severity=severity, status=status
             ).inc()
 
             if status == "success":
                 self.remediation_success.labels(action_type=action_type).inc()
             else:
-                self.remediation_failure.labels()
-                    action_type=action_type, reason=status
+                self.remediation_failure.labels(
+    action_type=action_type, reason=status
                 ).inc()
 
         except Exception as e:
             logger.error(f"Error recording remediation metrics: {e}")
 
     def set_system_health(self, component: str, score: float):
-    """Set system health score"""
+"""Set system health score"""
         try:
             self.system_health.labels(component=component).set(score)
         except Exception as e:
             logger.error(f"Error setting system health metrics: {e}")
 
     def set_active_connections(self, connection_type: str, count: int):
-    """Set active connections count"""
+"""Set active connections count"""
         try:
             self.active_connections.labels(connection_type=connection_type).set(count)
         except Exception as e:
             logger.error(f"Error setting connection metrics: {e}")
 
     def record_auth_attempt(self, method: str, status: str):
-    """Record authentication attempt"""
+"""Record authentication attempt"""
         try:
             self.auth_attempts.labels(method=method, status=status).inc()
 
@@ -217,7 +218,7 @@ class MetricsCollector:
 
 # Global metrics instance with singleton pattern
 def get_metrics():
-    """Get or create the global metrics instance (singleton pattern)"""
+"""Get or create the global metrics instance (singleton pattern)"""
     global _metrics_instance
 
     if _metrics_instance is None:

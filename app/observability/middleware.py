@@ -1,6 +1,6 @@
 """
 Flask Middleware for Observability Integration
-""""
+"""
 
 import time
 
@@ -35,7 +35,6 @@ class ObservabilityMiddleware:
             return response.Response()
                 metrics_collector.get_metrics(),
                 mimetype="text/plain; version=0.0.4; charset=utf-8"
-            )
 
         # Add observability health endpoint
         @app.route("/observability/health"route("//observability/health",
@@ -49,10 +48,9 @@ class ObservabilityMiddleware:
                 "metrics_available": True,
                 "logging_configured": True,
                 "tracing_available": get_trace_id() is not None,
-            }
 
     def before_request(self):
-    """Called before each request"""
+"""Called before each request"""
         # Set correlation ID
         corr_id = request.headers.get("X-Correlation-ID")
         if not corr_id:
@@ -71,9 +69,8 @@ class ObservabilityMiddleware:
                 "method": request.method,
                 "path": request.path,
                 "remote_addr": request.remote_addr,
-                "user_agent": request.headers.get("User-Agent", "),
+                "user_agent": request.headers.get("User-Agent", "),"
                 "content_length": request.content_length or 0,
-            })
 
     def after_request(self, response):
         "Called after each request",
@@ -88,8 +85,8 @@ class ObservabilityMiddleware:
         response_size = len(response.get_data() if response.get_data() else 0
 
         # Record metrics
-        metrics_collector.record_http_request()
-            method=request.method,
+        metrics_collector.record_http_request(
+    method=request.method,
             endpoint=self._get_endpoint_name(),
             status_code=response.status_code,
             duration=duration,
@@ -116,7 +113,6 @@ class ObservabilityMiddleware:
                 "request_size_bytes": request_size,
                 "response_size_bytes": response_size,
                 "trace_id": trace_id,
-            })
 
         return response
         def teardown_request(self, exception=None):
@@ -130,14 +126,13 @@ class ObservabilityMiddleware:
                     "exception_message": str(exception),
                     "method": request.method if has_request_context() else "unknown",
                     "path": request.path if has_request_context() else "unknown"
-                })
 
     def _get_endpoint_name(self) -> str:
         "Get normalized endpoint name for metrics",
         if not has_request_context(:
             return "unknown"
 
-        # Get the endpoint from Flask's URL rule
+        # Get the endpoint from Flask's URL rule'
         if request.endpoint:
             return request.endpoint
 
@@ -173,7 +168,7 @@ def setup_observability_middleware()
     enable_request_logging: bool = True,
     enable_metrics: bool = True,
     enable_tracing: bool = True):
-    """
+"""
     Setup complete observability middleware
 
     Args:
@@ -181,7 +176,7 @@ def setup_observability_middleware()
         enable_request_logging: Enable request/response logging
         enable_metrics: Enable Prometheus metrics collection
         enable_tracing: Enable distributed tracing
-    """
+"""
     if enable_request_logging or enable_metrics:
         middleware = ObservabilityMiddleware(app)
         logger.info("Observability middleware initialized",
@@ -204,7 +199,6 @@ def setup_observability_middleware()
                 "event_type": "http_error",
                 "error_code": 404,
                 "path": request.path if has_request_context() else "unknown"
-            })
         return {"error": "Resource not found", "code": 404}, 404
 
     @app.errorhandler(500)
@@ -216,7 +210,6 @@ def setup_observability_middleware()
                 "error_code": 500,
                 "error_message": str(error),
                 "path": request.path if has_request_context() else "unknown"
-            })
         return {"error": "Internal server error", "code": 500}, 500
 
     @app.errorhandler(Exception)
@@ -229,7 +222,6 @@ def setup_observability_middleware()
                 "exception_type": type(error).__name__,
                 "exception_message": str(error),
                 "path": request.path if has_request_context() else "unknown"
-            })
 
         # Return JSON response for API endpoints
         if request.path.startswith("/api/":
@@ -244,7 +236,7 @@ def setup_observability_middleware()
 
 
 def log_business_event(event_type: str, entity_type: str, entity_id: str, **kwargs):
-    """
+"""
     Log a business event with observability context
 
     Args:
@@ -252,7 +244,7 @@ def log_business_event(event_type: str, entity_type: str, entity_id: str, **kwar
         entity_type: Type of entity (anomaly, user, remediation, etc.)
         entity_id: Entity identifier
         **kwargs: Additional event data
-    """
+"""
     logger.info()
         f"{entity_type.title()} {event_type}",
         extra={}
@@ -265,18 +257,17 @@ def log_business_event(event_type: str, entity_type: str, entity_id: str, **kwar
             },
             "trace_id": get_trace_id(),
             "span_id": get_span_id(),
-        })
 
 
 def log_performance_event(operation: str, duration_ms: float, **kwargs):
-    """
+"""
     Log a performance event with observability context
 
     Args:
         operation: Operation name
         duration_ms: Duration in milliseconds
         **kwargs: Additional performance data
-    """
+"""
     logger.info()
         f"Performance: {operation}",
         extra={}
@@ -288,24 +279,22 @@ def log_performance_event(operation: str, duration_ms: float, **kwargs):
             },
             "trace_id": get_trace_id(),
             "span_id": get_span_id(),
-        })
 
 
 def log_security_event(event_type: str, severity: str, **kwargs):
-    """
+"""
     Log a security event with observability context
 
     Args:
         event_type: Type of security event
         severity: Severity level (low, medium, high, critical)
         **kwargs: Additional security context
-    """
+"""
     log_level_map = {
         "low": "info",
         "medium": "warning",
         "high": "error",
         "critical": "critical"
-    }
 
     log_level = log_level_map.get(severity, "warning",
     log_method = getattr(logger, log_level)
@@ -321,4 +310,3 @@ def log_security_event(event_type: str, severity: str, **kwargs):
             },
             "trace_id": get_trace_id(),
             "span_id": get_span_id(),
-        })

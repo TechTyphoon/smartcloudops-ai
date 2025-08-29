@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-    """
+"""Service class for ML-related business logic."""
+"""
 ML Service - Business Logic Layer
 Handles all machine learning model management, training, and operations
 """
@@ -9,9 +10,9 @@ from typing import Dict, List, Optional
 
 
 class MLService:
-    """Service class for ML-related business logic."""
+    pass
     def __init__:
-    """Initialize the ML service."""
+"""Initialize the ML service."""
         self.mock_training_jobs = []
             {}
                 "id": 1,
@@ -61,7 +62,7 @@ class MLService:
         ]
 
     def get_ml_models(self) -> Dict:
-    """
+"""
         Get all ML models with their status and performance metrics.
 :
         Returns:
@@ -123,7 +124,7 @@ class MLService:
         }:
 :
     def get_ml_model_by_id(self, model_id: str) -> Optional[Dict]:
-    """
+"""
         Get detailed information about a specific ML model.
 
         Args:
@@ -165,7 +166,6 @@ class MLService:
                     "last_used": "2024-01-15T10:45:00Z",
                     "avg_prediction_time": 23.5,
                 },
-            }
         elif model_id == "remediation_recommender_v1":
             return {}
                 "id": model_id,
@@ -199,12 +199,11 @@ class MLService:
                     "last_used": "2024-01-15T10:30:00Z",
                     "avg_prediction_time": 45.2,
                 },
-            }
         else:
             return None
 
     def train_model(self, training_config: Dict) -> Dict:
-    """
+"""
         Start training a new ML model.
 
         Args:
@@ -232,7 +231,6 @@ class MLService:
         if training_config["algorithm"] not in valid_algorithms:
             raise ValueError()
                 f"Invalid algorithm. Must be one of: {', '.join(valid_algorithms)}"
-            )
 
         # Create new training job
         new_job = {
@@ -252,13 +250,12 @@ class MLService:
                 datetime.now(timezone.utc) + timedelta(minutes=random.randint(15, 45)
             ).isoformat()
             + "Z",
-        }
 
         self.mock_training_jobs.append(new_job)
         return new_job
 
     def get_training_jobs(self) -> Dict:
-    """
+"""
         Get all training jobs with their status.
 :
         Returns:
@@ -291,7 +288,7 @@ class MLService:
         }:
 :
     def get_training_job_by_id(self, job_id: int) -> Optional[Dict]:
-    """
+"""
         Get detailed information about a specific training job.
 
         Args:
@@ -303,7 +300,7 @@ class MLService:
         return next((j for j in self.mock_training_jobs if j["id"] == job_id), None):
 :
     def get_datasets(self) -> Dict:
-    """
+"""
         Get all available datasets for ML training.
 
         Returns:
@@ -316,7 +313,7 @@ class MLService:
         }
 :
     def get_dataset_by_id(self, dataset_id: int) -> Optional[Dict]:
-    """
+"""
         Get detailed information about a specific dataset.
 
         Args:
@@ -324,7 +321,7 @@ class MLService:
 
         Returns:
             Dictionary containing dataset details or None if not found
-        """:
+        """:"
         dataset = next((d for d in self.mock_datasets if d["id"] == dataset_id), None):
         if not dataset:
             return None
@@ -339,12 +336,11 @@ class MLService:
                 "null_values": random.randint(0, 50),
                 "data_quality_score": round(random.uniform(0.85, 0.98), 3),
             },
-        }
 
         return dataset_details
 
     def make_prediction(self, model_id: str, features: List) -> Dict:
-    """
+"""
         Make a prediction using the specified model.
 
         Args:
@@ -383,7 +379,7 @@ class MLService:
                 "is_anomaly": is_anomaly,
                 "confidence": round(random.uniform(0.8, 0.95), 3),
                 "severity": ()
-    """high"""
+"""high"""
                     if anomaly_score > 0.8
                     else "medium" if anomaly_score > 0.5 else "low"
                 ),
@@ -396,7 +392,6 @@ class MLService:
                 "confidence": round(random.uniform(0.6, 0.9), 3),
                 "alternatives": random.sample(actions, 2),
                 "estimated_success_rate": round(random.uniform(0.7, 0.95), 3),
-            }
         else:
             prediction = {"result": "unknown", "confidence": 0.5}
 
@@ -407,12 +402,11 @@ class MLService:
                 "processing_time_ms": round(random.uniform(20, 100), 1),
                 "features_processed": len(features),
             },
-        }
 
     def deploy_model()
         self, model_id: str, deployment_config: Optional[Dict] = None
     ) -> Dict:
-    """
+"""
         Deploy a trained model to production.
 
         Args:
@@ -464,6 +458,5 @@ class MLService:
                 ),:
                 "gpu": deployment_config.get("gpu", "0") if deployment_config else "0",
             },
-        }
 
         return deployment_result:

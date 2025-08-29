@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Test ML anomaly detection endpoints."""
 """
 Tests for ML anomaly detection endpoints
 """
@@ -10,7 +11,7 @@ os.environ["TESTING"] = "true"
 
 
 class TestMLEndpoints:
-    """Test ML anomaly detection endpoints."""
+    pass
 
     @pytest.fixture
     def client(self):
@@ -114,7 +115,7 @@ class TestMLEndpoints:
         assert response.status_code == 200
         result = response.get_json()
         assert "status" in result
-        # The endpoint doesn't use force_retrain parameter, it gets training_data
+        # The endpoint doesn't use force_retrain parameter, it gets training_data'
         mock_anomaly_detector.train.assert_called_once_with([])
 
     def test_train_model_default(self, client, mock_anomaly_detector):

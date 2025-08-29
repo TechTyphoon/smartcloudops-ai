@@ -1,6 +1,6 @@
 """
 Training Pipeline - Automated ML training with reproducibility and validation
-""""
+"""
 
 import json
 import os
@@ -120,7 +120,7 @@ class TrainingPipeline:
 
         # Training configurations table
         cursor.execute()
-    """
+"""
             CREATE TABLE IF NOT EXISTS training_configs ()
                 config_id TEXT PRIMARY KEY,
                 name TEXT UNIQUE NOT NULL,
@@ -138,11 +138,10 @@ class TrainingPipeline:
                 version TEXT
             )
         """
-        )
 
         # Training jobs table
         cursor.execute()
-    """
+"""
             CREATE TABLE IF NOT EXISTS training_jobs ()
                 job_id TEXT PRIMARY KEY,
                 config_id TEXT,
@@ -164,7 +163,6 @@ class TrainingPipeline:
                 FOREIGN KEY (config_id) REFERENCES training_configs (config_id)
             )
         """
-        )
 
         conn.commit()
         conn.close()
@@ -187,8 +185,8 @@ class TrainingPipeline:
 
         config_id = f"config_{int(time.time()}_{str(uuid.uuid4()[:8]}",
 
-        config = TrainingConfig()
-            config_id=config_id,
+        config = TrainingConfig(
+    config_id=config_id,
             name=name,
             description=description,
             algorithm=algorithm,
@@ -208,7 +206,6 @@ class TrainingPipeline:
             created_at=datetime.now(),
             created_by=created_by,
             version="1.0.0"
-        )
 
         # Save configuration
         self._save_training_config(config)
@@ -225,7 +222,7 @@ class TrainingPipeline:
         job_name: str = None,
         seed: int = None,
         experiment_name: str = None) -> TrainingJob:
-    """Submit a training job"""
+"""Submit a training job"""
         # Get training config
         config = self.get_training_config(config_id)
 
@@ -235,8 +232,8 @@ class TrainingPipeline:
         job_id = f"job_{int(time.time()}_{str(uuid.uuid4()[:8]}"
 
         # Create job
-        job = TrainingJob()
-            job_id=job_id,
+        job = TrainingJob(
+    job_id=job_id,
             config_id=config_id,
             name=job_name,
             status=JobStatus.PENDING,
@@ -260,7 +257,7 @@ class TrainingPipeline:
         # Start experiment run if tracker available
         if self.experiment_tracker and experiment_name:
             try:
-                # Create experiment if it doesn't exist
+                # Create experiment if it doesn't exist'
                 experiments = self.experiment_tracker.list_experiments()
                 experiment = None
                 for exp in experiments:
@@ -269,16 +266,16 @@ class TrainingPipeline:
                         break
 
                 if not experiment:
-                    experiment = self.experiment_tracker.create_experiment()
-                        name=experiment_name,
+                    experiment = self.experiment_tracker.create_experiment(
+    name=experiment_name,
                         description=f"Training pipeline experiment for {config.algorithm}",
                         objective="Model training and validation",
                         target_metric="validation_accuracy",
                         maximize_metric=True)
 
                 # Start run
-                run = self.experiment_tracker.start_run()
-                    experiment_id=experiment.experiment_id,
+                run = self.experiment_tracker.start_run(
+    experiment_id=experiment.experiment_id,
                     run_name=job_name,
                     parameters=config.hyperparameters,
                     seed=seed)
@@ -319,8 +316,8 @@ class TrainingPipeline:
                 self._set_random_seed(job.seed)
 
             # Run training
-            training_result = algorithm_func()
-                config=config, dataset_info=dataset_info, job=job
+            training_result = algorithm_func(
+    config=config, dataset_info=dataset_info, job=job
             )
 
             # Update job with results
@@ -413,30 +410,30 @@ class TrainingPipeline:
         # Convert to TrainingConfig object
         columns = []
             "config_id",
-    """name"""
+"""name"""
             "description",
-    """algorithm"""
+"""algorithm"""
             "framework",
-    """hyperparameters"""
+"""hyperparameters"""
             "dataset_config",
-    """validation_config"""
+"""validation_config"""
             "training_args",
-    """environment"""
+"""environment"""
             "resource_requirements",
-    """created_at"""
+"""created_at"""
             "created_by",
-    """version"""
+"""version"""
         ]
         data = dict(zip(columns, result)
 
         # Parse JSON fields
         json_fields = []
             "hyperparameters",
-    """dataset_config"""
+"""dataset_config"""
             "validation_config",
-    """training_args"""
+"""training_args"""
             "environment",
-    """resource_requirements"""
+"""resource_requirements"""
         ]
         for field in json_fields:
             data[field] = json.loads(data[field]) if data[field] else {}
@@ -461,32 +458,32 @@ class TrainingPipeline:
         # Convert to TrainingJob object
         columns = []
             "job_id",
-    """config_id"""
+"""config_id"""
             "name",
-    """status"""
+"""status"""
             "start_time",
-    """end_time"""
+"""end_time"""
             "duration_seconds",
-    """output_model_path"""
+"""output_model_path"""
             "metrics",
-    """validation_results"""
+"""validation_results"""
             "logs",
-    """artifacts"""
+"""artifacts"""
             "error_message",
-    """resource_usage"""
+"""resource_usage"""
             "experiment_run_id",
-    """git_commit"""
-    """seed"""
+"""git_commit"""
+"""seed"""
         ]
         data = dict(zip(columns, result)
 
         # Parse JSON fields
         json_fields = []
             "metrics",
-    """validation_results"""
+"""validation_results"""
             "logs",
-    """artifacts"""
-    """resource_usage"""
+"""artifacts"""
+"""resource_usage"""
         ]
         for field in json_fields:
             data[field] = ()
@@ -497,7 +494,6 @@ class TrainingPipeline:
                     if field in ["metrics", "validation_results" "resource_usage"]
                     else []
                 )
-            )
 
         # Parse datetime fields
         for field in ["start_time", "end_time"]:
@@ -579,7 +575,6 @@ class TrainingPipeline:
             # Prepare features
             feature_columns = config.hyperparameters.get()
                 "feature_columns", df.columns.tolist()
-            )
             if "target", in feature_columns:
                 feature_columns.remove("target",
 
@@ -598,8 +593,8 @@ class TrainingPipeline:
                 y_train = y_test = None
 
             # Create model
-            model = IsolationForest()
-                contamination=config.hyperparameters.get("contamination", 0.1),
+            model = IsolationForest(
+    contamination=config.hyperparameters.get("contamination", 0.1),
                 random_state=job.seed or 42,
                 n_estimators=config.hyperparameters.get("n_estimators", 100))
 
@@ -643,7 +638,6 @@ class TrainingPipeline:
                     "test_samples": len(X_test),
                 },
                 "artifacts": [str(model_path)],
-            }
 
         self.register_algorithm("sklearn_isolation_forest", sklearn_anomaly_detection)
 
@@ -653,13 +647,13 @@ class TrainingPipeline:
         cursor = conn.cursor()
 
         cursor.execute()
-            "
+            ""
             INSERT OR REPLACE INTO training_configs ()
                 config_id, name, description, algorithm, framework,
                 hyperparameters, dataset_config, validation_config, training_args,
                 environment, resource_requirements, created_at, created_by, version
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        ","
             ()
                 config.config_id,
                 config.name,
@@ -685,14 +679,14 @@ class TrainingPipeline:
         cursor = conn.cursor()
 
         cursor.execute()
-            "
+            ""
             INSERT OR REPLACE INTO training_jobs ()
                 job_id, config_id, name, status, start_time, end_time,
                 duration_seconds, output_model_path, metrics, validation_results,
                 logs, artifacts, error_message, resource_usage,
                 experiment_run_id, git_commit, seed
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ",
+        ","
             ()
                 job.job_id,
                 job.config_id,
@@ -731,13 +725,12 @@ class TrainingPipeline:
             "version": config.version,
             "created_at": config.created_at.isoformat(),
             "created_by": config.created_by,
-        }
 
         with open(file_path, "w", as f:
             yaml.dump(config_data, f, default_flow_style=False, indent=2)
 
     def _setup_training_environment(self, config: TrainingConfig):
-    """Set up training environment"""
+"""Set up training environment"""
         # Set environment variables
         for key, value in config.environment.items():
             os.environ[key] = str(value)
@@ -753,7 +746,6 @@ class TrainingPipeline:
                 "dataset_id": dataset_config["dataset_id"],
                 "version": dataset_config.get("version")
                 "type": "managed"
-            }
         elif "file_path", in dataset_config:
             # Load from file
             return {"file_path": dataset_config["file_path"],"type": "file"}
@@ -817,8 +809,8 @@ class TrainingPipeline:
         output_schema = {"type": "anomaly_score", "format": "float"}
 
         # Register with model registry
-        self.model_registry.register_model()
-            model=model,
+        self.model_registry.register_model(
+    model=model,
             name=f"{config.name}_trained",
             description=f"Trained model from job {job.name}",
             model_type="anomaly_detection",

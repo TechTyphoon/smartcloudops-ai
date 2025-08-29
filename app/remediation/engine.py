@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"
+""
 Smart CloudOps AI - Auto-Remediation Engine (Phase 4)
 Orchestrates anomaly detection, safety checks, and remediation actions
-    """"""
+""""""
 import logging
 import os
 import sys
@@ -10,7 +10,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 # Add the project root to Python path - MUST be first
-sys.path.insert, "..", "..")
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..")))
 
 # Import config after path setup
 from app.config import get_config
@@ -30,9 +30,9 @@ logger = logging.getLogger
 
 
 class RemediationEngine:
-    """
+""""
     Core remediation engine that orchestrates anomaly detection and auto-remediation.
-    """
+""""
     def __init__(self, config: Optional[Dict] = None):
         "Initialize the remediation engine.",
         self.config = config or get_config()
@@ -49,8 +49,8 @@ class RemediationEngine:
             approval_param = self.config.get()
                 "APPROVAL_SSM_PARAM", "/smartcloudops/dev/approvals/auto",
 
-        self.safety_manager = SafetyManager()
-            max_actions_per_hour=max_actions,
+        self.safety_manager = SafetyManager(
+    max_actions_per_hour=max_actions,
             cooldown_minutes=cooldown,
             approval_param=approval_param)
         self.action_manager = ActionManager() if ActionManager else None
@@ -67,7 +67,7 @@ class RemediationEngine:
     def evaluate_anomaly()
         self, anomaly_score: float, metrics: Dict[str, Any]
     ) -> Dict[str, Any]:
-    """
+""""
         Evaluate an anomaly and determine if remediation is needed.
 
         Args:
@@ -76,7 +76,7 @@ class RemediationEngine:
 
         Returns:
             Dict with evaluation results and recommended actions
-        """
+        """"
         try:
             # Define severity thresholds
             severity_thresholds = {
@@ -84,7 +84,6 @@ class RemediationEngine:
                 "high": 0.6,
                 "medium": 0.4,
                 "low": 0.2,
-            }
 
             # Determine severity level
             severity = "normal",
@@ -112,12 +111,10 @@ class RemediationEngine:
                 "issues": issues,
                 "recommended_actions": recommended_actions,
                 "metrics": metrics,
-            }
 
             logger.info()
                 "Anomaly evaluation: severity={severity}, score=",
-    """{anomaly_score:.3f}, needs_remediation={needs_remediation}"""
-            )
+"""{anomaly_score:.3f}, needs_remediation={needs_remediation}"""
             return evaluation
         except Exception as e:
             logger.error(f"Error evaluating anomaly: {e}")
@@ -129,7 +126,6 @@ class RemediationEngine:
                 "issues": ["evaluation_error"],
                 "recommended_actions": [],
                 "error": str(e),
-            }
 
     def _analyze_cpu_metrics(self, metrics: Dict[str, Any],issues: List[str]) -> None:
         "Analyze CPU metrics and add issues.",
@@ -199,7 +195,6 @@ class RemediationEngine:
                     "reason": "Critical {severity} issue detected",
                     "target": "application"
                 }
-            )
 
         if "critical_disk_usage", in issues:
             actions.append()
@@ -209,7 +204,6 @@ class RemediationEngine:
                     "reason": "Critical disk usage detected",
                     "target": "system"
                 }
-            )
 
     def _add_high_actions()
         self, actions: List[Dict],issues: List[str],severity: str
@@ -223,7 +217,6 @@ class RemediationEngine:
                     "reason": "High {severity} issue detected",
                     "target": "resources"
                 }
-            )
 
         if "high_disk_usage", in issues:
             actions.append()
@@ -233,7 +226,6 @@ class RemediationEngine:
                     "reason": "High disk usage detected",
                     "target": "system"
                 }
-            )
 
     def _add_medium_actions(self, actions: List[Dict],issues: List[str]) -> None:
         "Add medium severity actions.",
@@ -245,7 +237,6 @@ class RemediationEngine:
                     "reason": "Performance optimization needed",
                     "target": "application"
                 }
-            )
 
     def _add_monitoring_action(self, actions: List[Dict],severity: str) -> None:
         "Add monitoring action for all severities.",
@@ -256,7 +247,6 @@ class RemediationEngine:
                 "reason": "Enhanced monitoring for {severity} severity",
                 "target": "monitoring"
             }
-        )
 
     def _get_recommended_actions()
         self, severity: str, issues: List[str],metrics: Dict[str, Any]
@@ -283,11 +273,10 @@ class RemediationEngine:
                     "reason": "Error in action recommendation",
                     "target": "system"
                 }
-            )
 
         return actions
         def execute_remediation(self, evaluation: Dict[str, Any]) -> Dict[str, Any]:
-    """
+""""
         Execute remediation based on anomaly evaluation.
 
         Args:
@@ -295,7 +284,7 @@ class RemediationEngine:
 
         Returns:
             Dict with execution results
-        """
+        """"
         try:
             if not evaluation.get("needs_remediation", False:
                 logger.info("No remediation needed for this anomaly",
@@ -303,7 +292,6 @@ class RemediationEngine:
                     "executed": False,
                     "reason": "No remediation needed",
                     "timestamp": datetime.now().isoformat(),
-                }
 
             # Check safety conditions
             safety_check = self.safety_manager.check_safety_conditions()
@@ -317,7 +305,6 @@ class RemediationEngine:
                     "reason": safety_check["reason"],
                     "safety_check": safety_check,
                     "timestamp": datetime.now().isoformat(),
-                }
 
             # Execute actions
             execution_results = []
@@ -330,7 +317,6 @@ class RemediationEngine:
                             "result": result,
                             "timestamp": datetime.now().isoformat(),
                         }
-                    )
 
                     # Update safety tracking
                     self.recent_actions.append()
@@ -344,8 +330,7 @@ class RemediationEngine:
 
                     logger.info()
                         "Executed action {action['action']}: ",
-    """{result.get('status', 'unknown')}"""
-                    )
+"""{result.get('status', 'unknown')}"""
 
                 except Exception as e:
                     logger.error(f"Error executing action {action['action']}: {e}")
@@ -355,14 +340,12 @@ class RemediationEngine:
                             "result": {"status": "error", "error": str(e)},
                             "timestamp": datetime.now().isoformat(),
                         }
-                    )
 
             # Send notifications
             notification_result = ()
                 self.notification_manager.send_remediation_notification()
                     evaluation, execution_results
                 )
-            )
 
             # Clean up old actions (keep last 24 hours)
             self._cleanup_old_actions()
@@ -373,7 +356,6 @@ class RemediationEngine:
                 "execution_results": execution_results,
                 "notification_result": notification_result,
                 "timestamp": datetime.now().isoformat(),
-            }
 
         except Exception as e:
             logger.error(f"Error executing remediation: {e}")
@@ -381,7 +363,6 @@ class RemediationEngine:
                 "executed": False,
                 "reason": "Execution error: {str(e)}",
                 "timestamp": datetime.now().isoformat(),
-            }
 
     def _cleanup_old_actions(self):
         "Clean up actions older than 24 hours.",
@@ -406,11 +387,9 @@ class RemediationEngine:
                 "recent_actions_count": len(self.recent_actions),
                 "safety_status": self.safety_manager.get_status(),
                 "timestamp": datetime.now().isoformat(),
-            }
         except Exception as e:
             logger.error(f"Error getting status: {e}")
             return {}
                 "status": "error",
                 "error": str(e),
                 "timestamp": datetime.now().isoformat(),
-            }

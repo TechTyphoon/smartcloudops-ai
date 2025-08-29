@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-from datetime import datetime, timezone
-    """
+"""
 ML Module for Smart CloudOps AI
 Extracted from main.py for modularity
 """
+from datetime import datetime, timezone
 import logging
 import os
 
@@ -52,13 +52,10 @@ def anomaly_detection():
                     "batch": "POST /ml/batch"
                 },
             }
-        )
 
     try:
         if not ML_AVAILABLE or not anomaly_detector:
-            return ()
-                jsonify()
-                    {}
+            return jsonify({
                         "error": "ML service not available",
                         "message": "Anomaly detection model not loaded"
                     }
@@ -94,7 +91,6 @@ def anomaly_detection():
                 "features_used": len(features),
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-        )
 
     except Exception as e:
         logger.error("Anomaly detection error: {e}")
@@ -112,14 +108,12 @@ def ml_status():
             "model_path": ML_MODEL_PATH,
             "feature_count": ML_FEATURE_COUNT,
             "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
 
         if ML_AVAILABLE and anomaly_detector:
             status["model_info"] = {}
                 "type": "IsolationForest",
                 "version": "1.0.0",
                 "last_trained": "2024-01-01T00:00:00Z"
-            }
 
         return jsonify(status)
 
@@ -133,9 +127,7 @@ def batch_anomaly_detection():
     "Batch Anomaly Detection endpoint.",
     try:
         if not ML_AVAILABLE or not anomaly_detector:
-            return ()
-                jsonify()
-                    {}
+            return jsonify({
                         "error": "ML service not available",
                         "message": "Anomaly detection model not loaded"
                     }
@@ -172,7 +164,6 @@ def batch_anomaly_detection():
                             "timestamp", datetime.now(timezone.utc).isoformat()
                         ),
                     }
-                )
 
             except Exception as e:
                 logger.error("Error processing batch item {i}: {e}")
@@ -183,7 +174,6 @@ def batch_anomaly_detection():
                         "anomaly_detected": False,
                         "anomaly_score": 0.0,
                     }
-                )
 
         return jsonify()
             {}
@@ -196,7 +186,6 @@ def batch_anomaly_detection():
                 "results": results,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
-        )
 
     except Exception as e:
         logger.error("Batch anomaly detection error: {e}")
@@ -206,11 +195,9 @@ def batch_anomaly_detection():
 @ml_bp.route("//train"route("//train"route("//train", methods=["POST"])
 def train_model():
     "Model Training endpoint (disabled in production).",
-    return ()
-        jsonify()
-            {}
+    return jsonify({
                 "error": "Model training disabled in production",
-                "message": "Use development environment for model training""
+                "message": "Use development environment for model training"""
             }
         ),
         403)

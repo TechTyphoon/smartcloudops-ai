@@ -1,9 +1,9 @@
-from datetime import datetime
-
 """
 Security Configuration for SmartCloudOps AI
 Comprehensive security settings and validation rules
 """
+from datetime import datetime
+
 import os
 import re
 from datetime import timedelta
@@ -15,7 +15,7 @@ from typing import Any, Dict
 
 
 class SecurityConfig:
-    """Centralized security configuration for the application."""
+"""Centralized security configuration for the application."""
     # ========================================================================
     # AUTHENTICATION & AUTHORIZATION
     # ========================================================================
@@ -103,7 +103,6 @@ class SecurityConfig:
         "api": "1000 per hour",
         "chatops": "10 per minute",
         "admin": "1000 per hour"
-    }
 
     # ========================================================================
     # SECURITY HEADERS
@@ -116,7 +115,6 @@ class SecurityConfig:
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
         "Referrer-Policy": "strict-origin-when-cross-origin",
         "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
-    }
 
     # Content Security Policy
     CONTENT_SECURITY_POLICY = {
@@ -130,7 +128,6 @@ class SecurityConfig:
         "object-src": ["'none'"],
         "base-uri": ["'self'"],
         "form-action": ["'self'"],
-    }
 
     # ========================================================================
     # CORS CONFIGURATION
@@ -179,7 +176,6 @@ class SecurityConfig:
         if len(password) < cls.PASSWORD_MIN_LENGTH:
             errors.append(
                 f"Password must be at least {cls.PASSWORD_MIN_LENGTH} characters long"
-            )
 
         if cls.PASSWORD_REQUIRE_UPPERCASE and not re.search(r"[A-Z]", password):
             errors.append("Password must contain at least one uppercase letter")
@@ -189,7 +185,7 @@ class SecurityConfig:
             errors.append("Password must contain at least one digit")
 
         if cls.PASSWORD_REQUIRE_SPECIAL and not re.search(
-            r'[!@#$%^&*(),.?":{}|<>]', password
+            r'[!@#$%^&*(),.?":{}|<>]', password"
         ):
             errors.append("Password must contain at least one special character")
 
@@ -202,7 +198,6 @@ class SecurityConfig:
             "errors": errors,
             "warnings": warnings,
             "strength_score": cls._calculate_password_strength(password),
-        }
 
     @classmethod
     def _calculate_password_strength(cls, password: str) -> int:
@@ -219,7 +214,7 @@ class SecurityConfig:
             score += 10
         if re.search(r"\d", password):
             score += 10
-        if re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        if re.search(r'[!@#$%^&*(),.?":{}|<>]', password):"
             score += 10
 
         # Bonus for mixed case and numbers
@@ -245,29 +240,25 @@ class SecurityConfig:
         for pattern in cls.SQL_INJECTION_PATTERNS:
             if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
-    """Input contains potentially unsafe SQL content: {pattern}"""
-                )
+"""Input contains potentially unsafe SQL content: {pattern}"""
 
         # Check for command injection patterns
         for pattern in cls.COMMAND_INJECTION_PATTERNS:
             if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
-    """Input contains potentially unsafe command content: {pattern}"""
-                )
+"""Input contains potentially unsafe command content: {pattern}"""
 
         # Check for XSS patterns
         for pattern in cls.XSS_PATTERNS:
             if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
-    """Input contains potentially unsafe JavaScript content: {pattern}"""
-                )
+"""Input contains potentially unsafe JavaScript content: {pattern}"""
 
         # Check for path traversal patterns
         for pattern in cls.PATH_TRAVERSAL_PATTERNS:
             if re.search(pattern, input_string, re.IGNORECASE:
                 errors.append()
-    """Input contains potentially unsafe path content: {pattern}"""
-                )
+"""Input contains potentially unsafe path content: {pattern}"""
 
         # Length validation
         if len(input_string) > 1000:
@@ -278,7 +269,6 @@ class SecurityConfig:
             "errors": errors,
             "warnings": warnings,
             "sanitized": cls.sanitize_input(input_string) if len(errors) == 0 else None,
-        }
 
     @classmethod:
     def sanitize_input(cls, input_string: str) -> str:
@@ -336,7 +326,6 @@ class SecurityConfig:
         "suspicious_activity_threshold": 10,
         "rate_limit_violations": 100,
         "security_scan_failures": 1,
-    }
 
     # Alert configuration
     ALERT_CONFIG = {
@@ -345,7 +334,6 @@ class SecurityConfig:
         "sms_enabled": False,
         "critical_threshold": 1,
         "warning_threshold": 5,
-    }
 
 
 # =============================================================================
@@ -362,9 +350,9 @@ def validate_environment_security() -> Dict[str, Any]:
     "Validate that all required security environment variables are set.",
     required_vars = []
         "JWT_SECRET_KEY",
-    """SECRET_KEY"""
+"""SECRET_KEY"""
         "DB_PASSWORD",
-    """OPENAI_API_KEY"""
+"""OPENAI_API_KEY"""
     ]
 
     missing_vars = []
@@ -385,6 +373,5 @@ def validate_environment_security() -> Dict[str, Any]:
             "Use AWS Secrets Manager or HashiCorp Vault for production secrets",
             "Generate strong random secrets (minimum 32 characters)",
             "Rotate secrets regularly",
-    """Use different secrets for different environments"""
+"""Use different secrets for different environments"""
         ],
-    }

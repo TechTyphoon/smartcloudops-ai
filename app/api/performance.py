@@ -24,13 +24,12 @@ logger = get_logger(__name__)
 
 @performance_bp.route("/health", methods=["GET"])
 def health_check():
-    """Performance system health check"""
+"""Performance system health check"""
     try:
         health_status = {
             "status": "healthy",
             "timestamp": datetime.utcnow().isoformat(),
             "components": {}
-        }
         
         # Check Redis cache
         redis_cache = get_redis_cache()
@@ -75,8 +74,7 @@ def health_check():
         # Log business event
         log_business_event("performance_health_check", {
             "status": health_status["status"],
-            "components_count": len(health_status["components"])
-        })
+            "components_count": len(health_status["components"])}
         
         return jsonify(health_status), 200
         
@@ -85,13 +83,12 @@ def health_check():
         return jsonify({
             "status": "unhealthy",
             "error": str(e),
-            "timestamp": datetime.utcnow().isoformat()
-        }), 500
+            "timestamp": datetime.utcnow().isoformat()}, 500
 
 
 @performance_bp.route("/cache/stats", methods=["GET"])
 def cache_stats():
-    """Get cache statistics"""
+"""Get cache statistics"""
     try:
         redis_cache = get_redis_cache()
         if not redis_cache:
@@ -102,19 +99,18 @@ def cache_stats():
         # Log business event
         log_business_event("cache_stats_retrieved", {
             "hit_rate": stats.get("hit_rate", 0),
-            "total_requests": stats.get("total_requests", 0)
-        })
+            "total_requests": stats.get("total_requests", 0)}
         
         return jsonify(stats), 200
         
     except Exception as e:
         logger.error(f"Cache stats retrieval failed: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}, 500
 
 
 @performance_bp.route("/cache/clear", methods=["POST"])
 def clear_cache():
-    """Clear cache"""
+"""Clear cache"""
     try:
         data = request.get_json() or {}
         namespace = data.get("namespace", "default")
@@ -134,17 +130,16 @@ def clear_cache():
         return jsonify({
             "success": success,
             "namespace": namespace,
-            "timestamp": datetime.utcnow().isoformat()
-        }), 200 if success else 500
+            "timestamp": datetime.utcnow().isoformat()}, 200 if success else 500
         :
     except Exception as e:
         logger.error(f"Cache clear failed: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}, 500
 
 
 @performance_bp.route("/anomaly/detect", methods=["POST"])
 def detect_anomaly():
-    """Detect anomaly in data"""
+"""Detect anomaly in data"""
     try:
         data = request.get_json()
         if not data:
@@ -177,12 +172,12 @@ def detect_anomaly():
         
     except Exception as e:
         logger.error(f"Anomaly detection failed: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}, 500
 
 
 @performance_bp.route("/anomaly/stats", methods=["GET"])
 def anomaly_stats():
-    """Get anomaly detection statistics"""
+"""Get anomaly detection statistics"""
     try:
         anomaly_detector = get_anomaly_detector()
         if not anomaly_detector:
@@ -193,19 +188,18 @@ def anomaly_stats():
         # Log business event
         log_business_event("anomaly_stats_retrieved", {}
             "model_version": stats.get("model_version", "unknown"),
-            "cache_enabled": stats.get("cache_enabled", False)
-        })
+            "cache_enabled": stats.get("cache_enabled", False)}
         
         return jsonify(stats), 200
         
     except Exception as e:
         logger.error(f"Anomaly stats retrieval failed: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}, 500
 
 
 @performance_bp.route("/logs/stats", methods=["GET"])
 def log_stats():
-    """Get log optimization statistics"""
+"""Get log optimization statistics"""
     try:
         log_manager = get_log_manager()
         if not log_manager:
@@ -216,19 +210,18 @@ def log_stats():
         # Log business event
         log_business_event("log_stats_retrieved", {}
             "total_files": stats.get("total_files", 0),
-            "total_size": stats.get("total_size", 0)
-        })
+            "total_size": stats.get("total_size", 0)}
         
         return jsonify(stats), 200
         
     except Exception as e:
         logger.error(f"Log stats retrieval failed: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}, 500
 
 
 @performance_bp.route("/database/stats", methods=["GET"])
 def database_stats():
-    """Get database optimization statistics"""
+"""Get database optimization statistics"""
     try:
         db = get_optimized_database()
         if not db:
@@ -239,19 +232,18 @@ def database_stats():
         # Log business event
         log_business_event("database_stats_retrieved", {}
             "total_queries": stats.get("query_stats", {}).get("total_queries", 0),
-            "avg_time": stats.get("query_stats", {}).get("avg_time", 0)
-        })
+            "avg_time": stats.get("query_stats", {}).get("avg_time", 0)}
         
         return jsonify(stats), 200
         
     except Exception as e:
         logger.error(f"Database stats retrieval failed: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}, 500
 
 
 @performance_bp.route("/database/optimize", methods=["POST"])
 def optimize_database():
-    """Optimize database tables"""
+"""Optimize database tables"""
     try:
         db = get_optimized_database()
         if not db:
@@ -261,42 +253,39 @@ def optimize_database():
         
         # Log business event
         log_business_event("database_optimized", {}
-            "timestamp": datetime.utcnow().isoformat()
-        })
+            "timestamp": datetime.utcnow().isoformat()}
         
         return jsonify({}
             "success": True,
             "message": "Database optimization completed",
-            "timestamp": datetime.utcnow().isoformat()
-        }), 200
+            "timestamp": datetime.utcnow().isoformat()}, 200
         
     except Exception as e:
         logger.error(f"Database optimization failed: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}, 500
 
 
 @performance_bp.route("/metrics", methods=["GET"])
 def performance_metrics():
-    """Get Prometheus metrics"""
+"""Get Prometheus metrics"""
     try:
         # Generate Prometheus metrics
         metrics = generate_latest()
         
         # Log business event
         log_business_event("performance_metrics_retrieved", {}
-            "metrics_size": len(metrics)
-        })
+            "metrics_size": len(metrics)}
         
         return metrics, 200, {"Content-Type": CONTENT_TYPE_LATEST}
         
     except Exception as e:
         logger.error(f"Performance metrics generation failed: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}, 500
 
 
 @performance_bp.route("/config", methods=["GET"])
 def get_config():
-    """Get performance configuration"""
+"""Get performance configuration"""
     try:
         config = {
             "redis_cache": {}
@@ -323,23 +312,21 @@ def get_config():
                 "enable_query_logging": True,
                 "slow_query_threshold": 1.0
             }
-        }
         
         # Log business event
         log_business_event("performance_config_retrieved", {}
-            "config_sections": len(config)
-        })
+            "config_sections": len(config)}
         
         return jsonify(config), 200
         
     except Exception as e:
         logger.error(f"Performance config retrieval failed: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}, 500
 
 
 @performance_bp.route("/config", methods=["PUT"])
 def update_config():
-    """Update performance configuration"""
+"""Update performance configuration"""
     try:
         data = request.get_json()
         if not data:
@@ -365,28 +352,25 @@ def update_config():
         
         # Log business event
         log_business_event("performance_config_updated", {}
-            "updated_sections": list(data.keys()
-        })
+            "updated_sections": list(data.keys()}
         
         return jsonify({}
             "success": True,
             "message": "Configuration updated",
-            "timestamp": datetime.utcnow().isoformat()
-        }), 200
+            "timestamp": datetime.utcnow().isoformat()}, 200
         
     except Exception as e:
         logger.error(f"Performance config update failed: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}, 500
 
 
 @performance_bp.route("/summary", methods=["GET"])
 def performance_summary():
-    """Get comprehensive performance summary"""
+"""Get comprehensive performance summary"""
     try:
         summary = {
             "timestamp": datetime.utcnow().isoformat(),
             "components": {}
-        }
         
         # Redis cache summary
         redis_cache = get_redis_cache()
@@ -396,7 +380,6 @@ def performance_summary():
                 "status": "active" if cache_stats.get("redis_connected") else "inactive",:
                 "hit_rate": cache_stats.get("hit_rate", 0),
                 "total_requests": cache_stats.get("total_requests", 0)
-            }
         
         # Anomaly detection summary
         anomaly_detector = get_anomaly_detector()
@@ -406,7 +389,6 @@ def performance_summary():
                 "status": "active",
                 "model_version": anomaly_stats.get("model_version", "unknown"),
                 "cache_enabled": anomaly_stats.get("cache_enabled", False)
-            }
         
         # Log optimization summary
         log_manager = get_log_manager()
@@ -416,7 +398,6 @@ def performance_summary():
                 "status": "active",
                 "total_files": log_stats.get("total_files", 0),
                 "total_size": log_stats.get("total_size", 0)
-            }
         
         # Database optimization summary
         db = get_optimized_database()
@@ -426,7 +407,6 @@ def performance_summary():
                 "status": "active",
                 "total_queries": db_stats.get("query_stats", {}).get("total_queries", 0),
                 "avg_query_time": db_stats.get("query_stats", {}).get("avg_time", 0)
-            }
         
         # Overall performance score
         active_components = sum(1 for comp in summary["components"].values() 
@@ -448,4 +428,4 @@ def performance_summary():
         
     except Exception as e:
         logger.error(f"Performance summary generation failed: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}, 500

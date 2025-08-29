@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 MLOpsService - Business logic for MLOps operations
 Phase 2A: MLOps integration with service layer pattern
 """
@@ -37,9 +37,10 @@ except ImportError:
 
 
 class MLOpsService:
-    """Business logic for MLOps operations including experiment tracking, model management, and MLflow integration."""
+    pass
+"""Business logic for MLOps operations including experiment tracking, model management, and MLflow integration."""
     def __init__:
-    """Initialize MLOps service with components."""
+"""Initialize MLOps service with components."""
         # Initialize available components
         self.experiment_tracker = None
         self.model_registry = None
@@ -121,7 +122,7 @@ class MLOpsService:
         per_page: int = 20,
         status: Optional[str] = None,
         tags: Optional[List[str]] = None) -> Tuple[List[Dict], Dict]:
-    """Get experiments with pagination and filtering."""
+"""Get experiments with pagination and filtering."""
         # Apply filters
         filtered_data = self.mock_experiments.copy()
 :
@@ -143,19 +144,18 @@ class MLOpsService:
             "per_page": per_page,
             "total": total,
             "pages": (total + per_page - 1) // per_page,
-        }
 
         return page_data, pagination
 
     def get_experiment_by_id(self, experiment_id: str) -> Optional[Dict]:
-    """Get a specific experiment by ID."""
+"""Get a specific experiment by ID."""
         for experiment in self.mock_experiments:
             if experiment["id"] == experiment_id:
                 return experiment
         return None
 
     def create_experiment(self, experiment_data: Dict) -> Dict:
-    """Create a new experiment with validation."""
+"""Create a new experiment with validation."""
         # Validate required fields
         required_fields = ["name", "description"]:
         for field in required_fields:
@@ -180,7 +180,6 @@ class MLOpsService:
             "created_at": datetime.now(timezone.utc).isoformat() + "Z",
             "runs_count": 0,
             "best_run_id": None,
-        }
 
         self.mock_experiments.append(new_experiment)
 
@@ -196,7 +195,7 @@ class MLOpsService:
         return new_experiment
 
     def start_experiment_run(self, experiment_id: str, run_data: Dict) -> Dict:
-    """Start a new experiment run."""
+"""Start a new experiment run."""
         # Validate experiment exists
         experiment = self.get_experiment_by_id(experiment_id)
         if not experiment:
@@ -222,7 +221,6 @@ class MLOpsService:
             "started_at": datetime.now(timezone.utc).isoformat() + "Z",
             "ended_at": None,
             "duration_seconds": None,
-        }
 
         # Update experiment run count
         experiment["runs_count"] += 1
@@ -246,7 +244,7 @@ class MLOpsService:
         per_page: int = 20,
         status: Optional[str] = None,
         name: Optional[str] = None) -> Tuple[List[Dict], Dict]:
-    """Get models with pagination and filtering."""
+"""Get models with pagination and filtering."""
         # Apply filters
         filtered_data = self.mock_models.copy()
 :
@@ -268,19 +266,18 @@ class MLOpsService:
             "per_page": per_page,
             "total": total,
             "pages": (total + per_page - 1) // per_page,
-        }
 
         return page_data, pagination
 
     def get_model_by_id(self, model_id: str) -> Optional[Dict]:
-    """Get a specific model by ID."""
+"""Get a specific model by ID."""
         for model in self.mock_models:
             if model["id"] == model_id:
                 return model
         return None
 
     def register_model(self, model_data: Dict) -> Dict:
-    """Register a new model with validation."""
+"""Register a new model with validation."""
         # Validate required fields
         required_fields = ["name", "version", "algorithm", "framework"]:
         for field in required_fields:
@@ -307,7 +304,6 @@ class MLOpsService:
             :
                 raise ValueError()
                     f"Model {model_data['name']} version {model_data['version']} already exists"
-                )
 
         # Create new model
         new_id = f"model_{len(self.mock_models) + 1}"
@@ -315,7 +311,7 @@ class MLOpsService:
             "id": new_id,
             "name": model_data["name"],
             "version": model_data["version"],
-            "description": model_data.get("description", "),
+            "description": model_data.get("description", "),"
             "status": status,
             "algorithm": model_data["algorithm"],
             "framework": model_data["framework"],
@@ -323,7 +319,6 @@ class MLOpsService:
             "created_at": datetime.now(timezone.utc).isoformat() + "Z",
             "created_by": model_data.get("created_by", "system"),
             "size_mb": model_data.get("size_mb", 0.0),
-        }
 
         self.mock_models.append(new_model)
 
@@ -333,7 +328,7 @@ class MLOpsService:
         #     model=model_data["model_object"],
         #     name=model_data["name"],
         #     version=model_data["version"],
-        #     description=model_data.get("description", "),
+        #     description=model_data.get("description", "),"
         #     algorithm=model_data["algorithm"],
         #     framework=model_data["framework"],
         #     metrics=model_data.get("metrics", {})
@@ -342,7 +337,7 @@ class MLOpsService:
         return new_model
 
     def update_model_status(self, model_id: str, status: str) -> Optional[Dict]:
-    """Update model status with validation."""
+"""Update model status with validation."""
         valid_statuses = []
             "development",
             "staging",
@@ -375,7 +370,7 @@ class MLOpsService:
     def get_data_versions()
         self, dataset_name: Optional[str] = None, page: int = 1, per_page: int = 20
     ) -> Tuple[List[Dict], Dict]:
-    """Get data versions with pagination and filtering.""":
+"""Get data versions with pagination and filtering.""":
         if not self.data_pipeline:
             return [], {"page": page, "per_page": per_page, "total": 0, "pages": 0}
 
@@ -409,7 +404,6 @@ class MLOpsService:
                 "per_page": per_page,
                 "total": total,
                 "pages": (total + per_page - 1) // per_page,
-            }
 
             return version_dicts, pagination
 
@@ -435,12 +429,11 @@ class MLOpsService:
                 "per_page": per_page,
                 "total": total,
                 "pages": 1,
-            }
 
             return mock_versions, pagination
 
     def get_data_quality_report(self, version_id: str) -> Optional[Dict]:
-    """Get quality report for a data version."""
+"""Get quality report for a data version."""
         if not self.data_pipeline:
             return {}
                 "version_id": version_id,
@@ -453,7 +446,6 @@ class MLOpsService:
                 "validity_score": 0.92,
                 "issues_found": ["Minor missing values in optional fields"],
                 "recommendations": ["Consider data validation rules"],
-            }
 
         try:
             quality_report = self.data_pipeline.get_quality_report(version_id)
@@ -475,7 +467,6 @@ class MLOpsService:
                 "data_drift_detected": quality_report.data_drift_detected,
                 "issues_found": quality_report.issues_found,
                 "recommendations": quality_report.recommendations,
-            }
         except Exception:
             # Return fallback quality report
             return {}
@@ -489,20 +480,18 @@ class MLOpsService:
                 "validity_score": 0.92,
                 "issues_found": ["Minor missing values in optional fields"],
                 "recommendations": ["Consider data validation rules"],
-            }
 
     def create_data_transformation()
         self,
         source_version_id: str,
         transformations: List[Dict[str, Any]],
         target_dataset_name: Optional[str] = None) -> Dict[str, Any]:
-    """Create a data transformation pipeline."""
+"""Create a data transformation pipeline."""
         if not self.data_pipeline:
             return {}
                 "success": False,
                 "error": "Data pipeline not available",
                 "fallback_version_id": f"transformed_{source_version_id}",
-            }
 
         try:
             result_version = self.data_pipeline.transform_data()
@@ -516,18 +505,16 @@ class MLOpsService:
                 "transformations_applied": len(transformations),
                 "output_row_count": result_version.row_count,
                 "quality_score": result_version.quality_score,
-            }
         except Exception as e:
             return {}
                 "success": False,
                 "error": str(e),
                 "transformations_attempted": len(transformations),
-            }
 
     # ===== MLFLOW INTEGRATION =====
 
     def get_mlflow_experiments(self) -> List[Dict]:
-    """Get MLflow experiments."""
+"""Get MLflow experiments."""
         # ✅ Using mock MLflow integration for development
         # For production, uncomment below to use actual MLflow:
         # if self.mlflow_manager and self.mlflow_manager.is_available(:
@@ -542,7 +529,7 @@ class MLOpsService:
         ]
 
     def get_mlflow_runs(self, experiment_id: str) -> List[Dict]:
-    """Get MLflow runs for an experiment."""
+"""Get MLflow runs for an experiment."""
         # ✅ Using mock MLflow integration for development
         # For production, uncomment below to use actual MLflow:
         # if self.mlflow_manager and self.mlflow_manager.is_available(:
@@ -552,7 +539,7 @@ class MLOpsService:
     # ===== STATISTICS AND REPORTING =====
 
     def get_mlops_statistics(self) -> Dict:
-    """Get comprehensive MLOps statistics."""
+"""Get comprehensive MLOps statistics."""
         # Experiment statistics
         experiment_stats = {
             "total_experiments": len(self.mock_experiments),
@@ -589,12 +576,10 @@ class MLOpsService:
             mlflow_stats = {
                 "tracking_uri": self.mlflow_manager.tracking_uri,
                 "experiment_name": self.mlflow_manager.experiment_name,
-            }
         else:
             mlflow_stats = {
                 "tracking_uri": "not_configured",
                 "experiment_name": "not_configured",
-            }
 
         # Data pipeline statistics
         data_pipeline_stats = {
@@ -602,7 +587,6 @@ class MLOpsService:
             "total_versions": 0,
             "average_quality_score": 0.0,
             "by_quality_status": {},
-        }
 
         if self.data_pipeline:
             try:
@@ -634,7 +618,6 @@ class MLOpsService:
                     "total_versions": 8,
                     "average_quality_score": 0.87,
                     "by_quality_status": {"excellent": 3, "good": 4, "warning": 1},
-                }
 
         return {}
             "experiments": experiment_stats,
@@ -647,10 +630,9 @@ class MLOpsService:
                 "data_pipeline": DATA_PIPELINE_AVAILABLE,
                 "mlflow": MLFLOW_AVAILABLE,
             },
-        }
 
     def get_available_frameworks(self) -> List[Dict]:
-    """Get available ML frameworks."""
+"""Get available ML frameworks."""
         return []
             {}
                 "name": "scikit-learn",
@@ -663,7 +645,7 @@ class MLOpsService:
         ]
 
     def get_available_algorithms(self) -> List[Dict]:
-    """Get available ML algorithms."""
+"""Get available ML algorithms."""
         return []
             {}
                 "name": "isolation_forest",

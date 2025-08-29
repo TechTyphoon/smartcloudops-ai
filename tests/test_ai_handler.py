@@ -1,3 +1,4 @@
+"""Test cases for flexible AI handler."""
 """Tests for flexible AI handler supporting multiple providers."""
 
 import os
@@ -7,7 +8,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 
 class TestFlexibleAIHandler:
-    """Test cases for flexible AI handler."""
+    pass
 
     def test_handler_init_without_api_keys(self):
         """Test handler initialization without API keys.""f"
@@ -57,7 +58,7 @@ class TestFlexibleAIHandler:
         handler = FlexibleAIHandler()
         handler.provider = None
 
-        result = handler.process_query("What's the CPU usage?")
+        result = handler.process_query("What's the CPU usage?")'
 
         assert result["status"] == "error"
         assert "AI functionality not available" in result["error"]
@@ -67,12 +68,12 @@ class TestFlexibleAIHandler:
         handler = FlexibleAIHandler()
 
         # Test normal input
-        result = handler.sanitize_input("What's the CPU usage?")
-        assert result == "What's the CPU usage?"
+        result = handler.sanitize_input("What's the CPU usage?")'
+        assert result == "What's the CPU usage?"'
 
         # Test input with dangerous characters
         result = handler.sanitize_input(
-            "What's the CPU usage? <script>alert('xss')</script>"
+            "What's the CPU usage? <script>alert('xss')</script>"'
         )
         assert "<script>" not in result
         assert "alert('xss')" not in result
@@ -131,7 +132,7 @@ class TestFlexibleAIHandler:
 
 
 class TestOpenAIProvider:
-    """Test cases for OpenAI provider."""
+"""Test cases for OpenAI provider."""
 
     def test_openai_provider_init(self):
         """Test OpenAI provider initialization."""
@@ -186,7 +187,7 @@ class TestOpenAIProvider:
 
 
 class TestGeminiProvider:
-    """Test cases for Gemini provider."""
+"""Test cases for Gemini provider."""
 
     def test_gemini_provider_init(self):
         """Test Gemini provider initialization."""
@@ -210,14 +211,14 @@ class TestGeminiProvider:
 
         messages = [
             {"role": "system", "content": "You are a helpful assistant"},
-            {"role": "user", "content": "What's the CPU usage?f"},
+            {"role": "user", "content": "What's the CPU usage?f"},'
             {"role": "assistant", "content": "Let me check that for you"},
         ]
 
         converted = provider._convert_messages(messages)
 
         assert "System: You are a helpful assistant" in converted
-        assert "User: What's the CPU usage?" in converted
+        assert "User: What's the CPU usage?" in converted'
         assert "Assistant: Let me check that for you" in converted
 
     def test_gemini_provider_get_model_info(self):

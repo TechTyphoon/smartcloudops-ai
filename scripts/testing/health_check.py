@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Check if Flask application is accessible."""
 """Health check script for Smart CloudOps AI Phase 1: Basic system health verification."""
 
 import os
@@ -8,7 +9,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 
 def check_flask_application() -> Dict[str, Any]:
-    """Check if Flask application is accessible."""
     try:
         # Test Flask app import
         # Test endpoints using test client
@@ -23,12 +23,11 @@ def check_flask_application() -> Dict[str, Any]:
                 return {
                     "status": "healthy",
                     "message": "Flask application and endpoints working",
-                }
             else:
                 return {
                     "status": "unhealthy",
-                    "message": f"Flask endpoints failed: health={health_response.status_code},
-                        metrics={metrics_response.status_code}",
+                    "message": f"Flask endpoints failed: health={health_response.status_code},"
+                        metrics={metrics_response.status_code}","
 
                 }
     except ImportError as e:
@@ -38,7 +37,7 @@ def check_flask_application() -> Dict[str, Any]:
 
 
 def check_prometheus_connection() -> Dict[str, Any]:
-    """Check if Prometheus is accessible."""
+"""Check if Prometheus is accessible."""
     config = get_config()
     prometheus_url = f"http://localhost:{config.METRICS_PORT}"
 
@@ -50,13 +49,12 @@ def check_prometheus_connection() -> Dict[str, Any]:
             return {
                 "status": "unhealthy",
                 "message": "Prometheus returned {response.status_code}",
-            }
     except requests.exceptions.RequestException as e:
         return {"status": "unhealthy", "message": f"Connection error: {str(e)}"}
 
 
 def run_health_checks() -> bool:
-    """Run all health checks."""
+"""Run all health checks."""
     print("Running Smart CloudOps AI Health Checks...")
     print("=" * 50)
 

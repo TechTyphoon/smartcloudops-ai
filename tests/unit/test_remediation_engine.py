@@ -6,7 +6,7 @@ Tests core remediation logic, safety checks, and action orchestration
 
 
 class TestRemediationEngine:
-    """Test suite for Remediation Engine functionality."""
+"""Test suite for Remediation Engine functionality."""
 
     @pytest.fixture
     def mock_config(self):
@@ -15,7 +15,6 @@ class TestRemediationEngine:
             "MAX_ACTIONS_PER_HOUR": 10,
             "COOLDOWN_MINUTES": 5,
             "APPROVAL_SSM_PARAM": "/smartcloudops/dev/approvals/auto",
-        }
 
     @pytest.fixture
     def engine(self, mock_config):
@@ -164,11 +163,10 @@ class TestRemediationEngine:
             mock_logging.getLogger.assert_called_with(__name__)
             mock_logging.getLogger().info.assert_called_with(
                 "Remediation engine initialized successfully"
-            )
 
 
 class TestRemediationEngineIntegration:
-    """Integration tests for remediation engine with external dependencies."""
+"""Integration tests for remediation engine with external dependencies."""
 
     @pytest.fixture
     def mock_config(self):
@@ -177,7 +175,6 @@ class TestRemediationEngineIntegration:
             "MAX_ACTIONS_PER_HOUR": 5,
             "COOLDOWN_MINUTES": 3,
             "APPROVAL_SSM_PARAM": "/test/approvals/auto",
-        }
 
     @patch("app.remediation.engine.SafetyManager")
     @patch("app.remediation.engine.ActionManager")
@@ -234,7 +231,7 @@ class TestRemediationEngineIntegration:
 
 
 class TestRemediationEngineErrorHandling:
-    """Test error handling in remediation engine."""
+"""Test error handling in remediation engine."""
 
     @pytest.fixture
     def mock_config(self):
@@ -243,7 +240,6 @@ class TestRemediationEngineErrorHandling:
             "MAX_ACTIONS_PER_HOUR": 10,
             "COOLDOWN_MINUTES": 5,
             "APPROVAL_SSM_PARAM": "/test/approvals/auto",
-        }
 
     def test_evaluate_anomaly_invalid_score(self, mock_config):
         """Test anomaly evaluation with invalid score."""
@@ -278,7 +274,7 @@ class TestRemediationEngineErrorHandling:
 
 
 class TestRemediationEnginePerformance:
-    """Performance tests for remediation engine."""
+"""Performance tests for remediation engine."""
 
     @pytest.fixture
     def mock_config(self):
@@ -287,7 +283,6 @@ class TestRemediationEnginePerformance:
             "MAX_ACTIONS_PER_HOUR": 10,
             "COOLDOWN_MINUTES": 5,
             "APPROVAL_SSM_PARAM": "/test/approvals/auto",
-        }
 
     def test_evaluation_performance(self, mock_config):
         """Test anomaly evaluation performance."""

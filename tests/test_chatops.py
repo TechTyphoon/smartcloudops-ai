@@ -1,3 +1,4 @@
+"""Test cases for GPT Handler."""
 """
 Tests for ChatOps functionality.
 """
@@ -10,10 +11,9 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
     SystemContextGatherer,
     format_response,
     validate_query_params,
-)
 
 class TestGPTHandler:
-    """Test cases for GPT Handler."""
+    pass
 
     @pytest.fixture
     def mock_openai_client(self):
@@ -44,8 +44,8 @@ class TestGPTHandler:
 
     def test_sanitize_input_valid(self, gpt_handler):
         """Test input sanitization with valid input."""
-        result = gpt_handler.sanitize_input("What's the CPU usage?")
-        assert result == "What's the CPU usage?"
+        result = gpt_handler.sanitize_input("What's the CPU usage?")'
+        assert result == "What's the CPU usage?"'
 
     def test_sanitize_input_empty(self, gpt_handler):
         """Test input sanitization with empty input."""
@@ -94,7 +94,7 @@ class TestGPTHandler:
                 handler = GPTHandler(api_key=os.environ.get("TEST_OPENAI_API_KEY", "mock-test-key-for-testing-only"))
                 # Mock the client after initialization
                 handler.client = mock_openai_client
-                result = handler.process_query("What's the CPU usage?")
+                result = handler.process_query("What's the CPU usage?")'
 
                 assert result["status"] == "success"
                 assert "CPU usage is 45%" in result["response"]
@@ -130,7 +130,7 @@ class TestGPTHandler:
 
 
 class TestSystemContextGatherer:
-    """Test cases for System Context Gatherer."""
+"""Test cases for System Context Gatherer."""
 
     @pytest.fixture
     def context_gatherer(self):
@@ -155,7 +155,7 @@ class TestSystemContextGatherer:
 
 
 class TestLogRetriever:
-    """Test cases for Log Retriever."""
+"""Test cases for Log Retriever."""
 
     @pytest.fixture
     def log_retriever(self):
@@ -184,7 +184,7 @@ class TestLogRetriever:
 
 
 class TestUtilityFunctions:
-    """Test cases for utility functions."""
+"""Test cases for utility functions."""
 
     def test_validate_query_params_valid(self):
         """Test parameter validation with valid parameters."""
@@ -235,7 +235,7 @@ class TestUtilityFunctions:
 
 
 class TestChatOpsIntegration:
-    """Test ChatOps integration with Flask app."""
+"""Test ChatOps integration with Flask app."""
 
     @pytest.fixture
     def test_app(self):

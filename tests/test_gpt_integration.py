@@ -1,3 +1,4 @@
+"""Test cases for GPT integration."""
 """Tests for GPT integration functionality."""
 
 import os
@@ -7,7 +8,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 
 class TestGPTIntegration:
-    """Test cases for GPT integration."""
+    pass
 
     def test_gpt_handler_init_without_api_key(self):
         """Test GPT handler initialization without API key.""f"
@@ -48,7 +49,7 @@ class TestGPTIntegration:
             handler = GPTHandler()
             # Mock the client after initialization
             handler.client = mock_client
-            result = handler.process_query("Whatf's the CPU usage?")
+            result = handler.process_query("Whatf's the CPU usage?")'
 
             assert result["status"] == "success"
             assert "The CPU usage is 45%" in result["response"]
@@ -60,12 +61,12 @@ class TestGPTIntegration:
             handler = GPTHandler()
 
             # Test normal input
-            result = handler.sanitize_input("What's the CPU usage?")
-            assert result == "What's the CPU usage?"
+            result = handler.sanitize_input("What's the CPU usage?")'
+            assert result == "What's the CPU usage?"'
 
             # Test input with dangerous characters
             result = handler.sanitize_input(
-                "What's the CPU usage? <script>alert('xss')</script>"
+                "What's the CPU usage? <script>alert('xss')</script>"'
             )
             assert "<script>" not in result
             assert "alert('xssf')" not in result
