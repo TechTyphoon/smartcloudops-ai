@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-from datetime import datetime, timezone
-    """
+"""
 ChatOps Module for Smart CloudOps AI
 Extracted from main.py for modularity
 """
+from datetime import datetime, timezone
 import logging
 
 # Configure logging
@@ -52,11 +52,10 @@ def chatops_query():
                     "context": "GET /chatops/context"
                 },
             }
-        )
 
     try:
         if not CHATOPS_AVAILABLE or not ai_handler:
-            return ()
+            return
                 jsonify()
                     {}
                         "error": "ChatOps service not available",
@@ -69,7 +68,7 @@ def chatops_query():
         if not data:
             return jsonify({"error": "No JSON data provided"}), 400
 
-        query = data.get("query", ")
+        query = data.get("query", ")"
         if not query:
             return jsonify({"error": "No query provided"}), 400
 
@@ -91,11 +90,10 @@ def chatops_query():
                     "response": formatted_response,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
-            )
 
         except Exception as e:
             logger.error("AI processing error: {e}")
-            return ()
+            return
                 jsonify()
                     {}
                         "error": "AI processing failed",
@@ -114,7 +112,7 @@ def get_chatops_logs():
     "Get ChatOps logs endpoint.",
     try:
         if not CHATOPS_AVAILABLE:
-            return ()
+            return
                 jsonify()
                     {}
                         "error": "ChatOps service not available",
@@ -135,11 +133,10 @@ def get_chatops_logs():
                     "count": len(logs),
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
-            )
 
         except Exception as e:
             logger.error("Log retrieval error: {e}")
-            return ()
+            return
                 jsonify()
                     {}
                         "error": "Log retrieval failed",
@@ -158,7 +155,7 @@ def get_system_context():
     "Get system context endpoint.",
     try:
         if not CHATOPS_AVAILABLE:
-            return ()
+            return
                 jsonify()
                     {}
                         "error": "ChatOps service not available",
@@ -178,11 +175,10 @@ def get_system_context():
                     "context": context,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
-            )
 
         except Exception as e:
             logger.error("Context retrieval error: {e}")
-            return ()
+            return
                 jsonify()
                     {}
                         "error": "Context retrieval failed",
@@ -209,11 +205,10 @@ def manage_conversation():
                     "add_message": "POST /chatops/conversation"
                 },
             }
-        )
 
     try:
         if not CHATOPS_AVAILABLE:
-            return ()
+            return
                 jsonify()
                     {}
                         "error": "ChatOps service not available",
@@ -226,7 +221,7 @@ def manage_conversation():
         if not data:
             return jsonify({"error": "No JSON data provided"}), 400
 
-        message = data.get("message", ")
+        message = data.get("message", ")"
         if not message:
             return jsonify({"error": "No message provided"}), 400
 
@@ -240,11 +235,10 @@ def manage_conversation():
                     "message": "Message added to conversation",
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
-            )
 
         except Exception as e:
             logger.error("Conversation management error: {e}")
-            return ()
+            return
                 jsonify()
                     {}
                         "error": "Conversation management failed",
@@ -274,14 +268,12 @@ def chatops_status():
                 "conversation": "/chatops/conversation",
                 "status": "/chatops/status"
             },
-        }
 
         if CHATOPS_AVAILABLE and ai_handler:
             status["ai_provider"] = ai_handler.current_provider
             status["model_info"] = {}
                 "provider": ai_handler.current_provider,
                 "model": ai_handler.current_model,
-            }
 
         return jsonify(status)
 

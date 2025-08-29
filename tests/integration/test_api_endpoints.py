@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Integration tests for API endpoints."""
 """
 Integration tests for API endpoints and database interactions
 Tests complete API workflows, authentication, and data persistence
@@ -8,7 +9,7 @@ import os
 
 
 class TestAPIEndpointsIntegration:
-    """Integration tests for API endpoints."""
+    pass
 
     @pytest.fixture
     def app(self):
@@ -23,7 +24,6 @@ class TestAPIEndpointsIntegration:
                 "DATABASE_URL": "sqlite:///{db_path}",
                 "SECRET_KEY": "test-secret-key",
             }
-        )
 
         with app.app_context():
             init_db()
@@ -48,12 +48,10 @@ class TestAPIEndpointsIntegration:
                 "email": "test@example.com",
                 "password": "testpass123",
             },
-        )
 
         # Login to get token
         response = client.post(
             "/auth/loginf", json={"username": "testuser", "password": "testpass123"}
-        )
 
         token = response.json["tokenf"]
         return {"Authorization": "Bearer {token}"}
@@ -75,7 +73,6 @@ class TestAPIEndpointsIntegration:
             "username": "newuser",
             "email": "newuser@example.com",
             "password": "securepass123",
-        }
 
         response = client.post("/auth/register", json=register_data)
         assert response.status_code == 201
@@ -109,7 +106,6 @@ class TestAPIEndpointsIntegration:
                 "response_time": 250.0,
             },
             "timestamp": datetime.utcnow().isoformat(),
-        }
 
         response = client.post("/anomaly", json=anomaly_data, headers=auth_headers)
 
@@ -132,7 +128,6 @@ class TestAPIEndpointsIntegration:
             "action_type": "scale_up",
             "target_resource": "web_server",
             "parameters": {"instances": 2, "reason": "High CPU usage detected"},
-        }
 
         response = client.post(
             "/remediation/trigger", json=remediation_data, headers=auth_headers
@@ -156,14 +151,12 @@ class TestAPIEndpointsIntegration:
         query_data = {
             "query": "What is the current system status?",
             "context": {"user_id": "testuser", "session_id": "test-session-123"},
-        }
 
         with patch("app.chatops.ai_handler.process_queryf") as mock_process:
             mock_process.return_value = {
                 "response": "System is healthy with 75% CPU usage",
                 "confidence": 0.85,
                 "sources": ["metrics", "logs"],
-            }
 
             response = client.post("/query", json=query_data, headers=auth_headers)
 
@@ -198,7 +191,6 @@ class TestAPIEndpointsIntegration:
         anomaly_data = {
             "metrics": {"cpu_usage": 90.0, "memory_usage": 85.0},
             "timestamp": datetime.utcnow().isoformat(),
-        }
 
         response = client.post("/anomaly", json=anomaly_data, headers=auth_headers)
 
@@ -273,7 +265,7 @@ class TestAPIEndpointsIntegration:
 
 
 class TestDatabaseIntegration:
-    """Integration tests for database operations."""
+"""Integration tests for database operations."""
 
     @pytest.fixture
     def db_session(self):
@@ -299,7 +291,6 @@ class TestDatabaseIntegration:
             username="testuser",
             email="test@example.com",
             password_hash="hashed_password",
-        )
 
         db_session.add(user)
         db_session.commit()
@@ -317,7 +308,6 @@ class TestDatabaseIntegration:
             severity="highf",
             metrics={"cpu_usage": 90.0, "memory_usage": 85.0},
             timestamp=datetime.utcnow(),
-        )
 
         db_session.add(anomaly)
         db_session.commit()
@@ -339,7 +329,6 @@ class TestDatabaseIntegration:
             parameters={"instances": 2},
             status="completed",
             timestamp=datetime.utcnow(),
-        )
 
         db_session.add(action)
         db_session.commit()
@@ -382,7 +371,6 @@ class TestDatabaseIntegration:
             )
             anomaly_count = (
                 db_session.query(Anomaly).filter_by(anomaly_score=0.5).count()
-            )
 
             assert user_count == 1
             assert anomaly_count == 1
@@ -399,7 +387,6 @@ class TestDatabaseIntegration:
         )
         user2 = User(
             username="unique_user", email="user2@example.com", password_hash="hash2"
-        )
 
         db_session.add(user1)
         db_session.commit()
@@ -441,7 +428,7 @@ class TestDatabaseIntegration:
 
 
 class TestEndToEndWorkflow:
-    """End-to-end workflow tests simulating real user scenarios."""
+"""End-to-end workflow tests simulating real user scenarios."""
 
     @pytest.fixture
     def app(self):
@@ -455,7 +442,6 @@ class TestEndToEndWorkflow:
                 "DATABASE_URL": "sqlite:///{db_path}",
                 "SECRET_KEY": "test-secret-key",
             }
-        )
 
         with app.app_context():
             init_db()
@@ -501,7 +487,6 @@ class TestEndToEndWorkflow:
                 "timestamp": datetime.utcnow().isoformat(),
             },
             headers=headers,
-        )
 
         assert response.status_code == 200
         anomaly_data = response.json
@@ -520,7 +505,6 @@ class TestEndToEndWorkflow:
                     },
                 },
                 headers=headers,
-            )
 
             assert response.status_code == 200
             remediation_data = response.json
@@ -539,7 +523,6 @@ class TestEndToEndWorkflow:
                     "query": "What is the current system status and recent anomalies?"
                 },
                 headers=headers,
-            )
 
             assert response.status_code == 200
             assert "response" in response.json
@@ -556,7 +539,6 @@ class TestEndToEndWorkflow:
                 "timestamp": datetime.utcnow().isoformat(),
             },
             headers=headers,
-        )
 
         assert response.status_code == 200
         recovery_data = response.json

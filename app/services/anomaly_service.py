@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-    """
+"""Service class for anomaly-related business logic."""
+"""
 Anomaly Service - Business Logic Layer
 Handles all anomaly-related business operations
 """
@@ -8,9 +9,9 @@ from typing import Dict, List, Optional, Tuple
 
 
 class AnomalyService:
-    """Service class for anomaly-related business logic."""
+    pass
     def __init__:
-    """Initialize the anomaly service."""
+"""Initialize the anomaly service."""
         # In a real implementation, this would inject dependencies like database, cache, etc.
         self.mock_data = []
             {}
@@ -80,7 +81,6 @@ class AnomalyService:
             "per_page": per_page,
             "total": total,
             "pages": (total + per_page - 1) // per_page,
-        }
 
         return anomalies_page, pagination_info
 
@@ -118,7 +118,6 @@ class AnomalyService:
         if anomaly_data["severity"] not in valid_severities:
             raise ValueError(
                 f"Invalid severity. Must be one of: {', '.join(valid_severities)}"
-            )
 
         # Validate scores
         if not (0 <= anomaly_data["anomaly_score"] <= 1):
@@ -138,13 +137,12 @@ class AnomalyService:
             "source": anomaly_data.get("source", "manual"),
             "created_at": datetime.now(timezone.utc).isoformat() + "Z",
             "updated_at": datetime.now(timezone.utc).isoformat() + "Z",
-        }
 
         self.mock_data.append(new_anomaly)
         return new_anomaly
 
     def update_anomaly(self, anomaly_id: int, update_data: Dict) -> Optional[Dict]:
-    """
+"""
         Update an existing anomaly.
 
         Args:
@@ -181,7 +179,6 @@ class AnomalyService:
                 if value not in valid_severities:
                     raise ValueError()
                         f"Invalid severity. Must be one of: {', '.join(valid_severities)}"
-                    )
             elif field in ["anomaly_score", "confidence"]:
                 if not (0 <= value <= 1:
                     raise ValueError(f"{field} must be between 0 and 1")
@@ -192,7 +189,7 @@ class AnomalyService:
         return anomaly
 
     def delete_anomaly(self, anomaly_id: int) -> Optional[Dict]:
-    """
+"""
         Delete an anomaly.
 
         Args:
@@ -200,14 +197,14 @@ class AnomalyService:
 
         Returns:
             Deleted anomaly dictionary or None if not found
-        """:
+        """:"
         for i, anomaly in enumerate(self.mock_data:
             if anomaly["id"] == anomaly_id:
                 return self.mock_data.pop(i)
         return None
 
     def acknowledge_anomaly(self, anomaly_id: int) -> Optional[Dict]:
-    """
+"""
         Acknowledge an anomaly (change status to acknowledged).
 
         Args:
@@ -225,7 +222,7 @@ class AnomalyService:
         return anomaly
 
     def resolve_anomaly(self, anomaly_id: int) -> Optional[Dict]:
-    """
+"""
         Resolve an anomaly (change status to resolved).
 
         Args:
@@ -243,7 +240,7 @@ class AnomalyService:
         return anomaly
 
     def get_anomaly_statistics(self) -> Dict:
-    """
+"""
         Get anomaly statistics.
 
         Returns:
@@ -272,4 +269,3 @@ class AnomalyService:
             "by_severity": stats_by_severity,
             "by_status": stats_by_status,
             "by_source": stats_by_source,
-        }

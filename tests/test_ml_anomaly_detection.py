@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Test data processor functionality."""
 """
 Tests for ML Anomaly Detection Components
 """
@@ -11,11 +12,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
     AnomalyInferenceEngine,
     AnomalyModelTrainer,
     DataProcessor,
-)
 
 
 class TestDataProcessor:
-    """Test data processor functionality."""
+    pass
 
     def test_data_processor_initialization(self):
         """Test data processor initialization."""
@@ -37,7 +37,6 @@ class TestDataProcessor:
                     "network_bytes_total",
                     "request_rate",
                 ],
-            }
 
             processor = DataProcessor()
             assert processor.prometheus_url == "http://localhost:9090"
@@ -66,7 +65,6 @@ class TestDataProcessor:
                 "memory_usage_pct": [60, 70, 80, 90, 100],
                 "disk_usage_pct": [45, 55, 65, 75, 85],
             }
-        )
 
         processed_data = processor.preprocess_data(test_data)
         assert isinstance(processed_data, pd.DataFrame)
@@ -95,7 +93,7 @@ class TestDataProcessor:
 
 
 class TestModelTrainer:
-    """Test model trainer functionality."""
+"""Test model trainer functionality."""
 
     def test_model_trainer_initialization(self):
         """Test model trainer initialization."""
@@ -116,7 +114,6 @@ class TestModelTrainer:
                 "hour": [10, 11, 12],  # Time feature to exclude
                 "day_of_week": [1, 2, 3],  # Time feature to exclude
             }
-        )
 
         feature_data = trainer.prepare_features(test_data)
         assert isinstance(feature_data, pd.DataFrame)
@@ -143,7 +140,6 @@ class TestModelTrainer:
                 "memory_usage_pct": np.random.normal(70, 10, 200),
                 "disk_usage_pct": np.random.normal(60, 8, 200),
             }
-        )
 
         # Train model
         results = trainer.train(test_data)
@@ -189,14 +185,13 @@ class TestModelTrainer:
             load_success = trainer.load_model()
             assert load_success
         else:
-            # If training failed, skip save/load test but don't fail the test
+            # If training failed, skip save/load test but don't fail the test'
             pytest.skip(
                 f"Model training failed: {result.get('message', 'Unknown error')}"
-            )
 
 
 class TestInferenceEngine:
-    """Test inference engine functionality."""
+"""Test inference engine functionality."""
 
     def test_inference_engine_initialization(self):
         """Test inference engine initialization."""
@@ -238,7 +233,6 @@ class TestInferenceEngine:
             "cpu_usage_avg": 85.0,
             "memory_usage_pct": 90.0,
             "disk_usage_pct": 95.0,
-        }
 
         explanation = engine._explain_anomaly(metrics, -0.5, 0.6, 10.0)
         assert isinstance(explanation, str)
@@ -249,7 +243,7 @@ class TestInferenceEngine:
 
 
 class TestAnomalyDetector:
-    """Test main anomaly detector functionality."""
+"""Test main anomaly detector functionality."""
 
     def test_anomaly_detector_initialization(self):
         """Test anomaly detector initialization."""
@@ -309,7 +303,7 @@ class TestAnomalyDetector:
 
 
 class TestIntegration:
-    """Integration tests for the complete ML pipeline."""
+"""Integration tests for the complete ML pipeline."""
 
     def test_complete_pipeline(self):
         """Test the complete ML pipeline from data to inference.""f"
@@ -325,7 +319,6 @@ class TestIntegration:
             "network_bytes_total": 1250.5,
             "request_rate": 15.2,
             "response_time_p95": 0.23,
-        }
 
         is_valid, issues = detector.validate_metrics(test_metrics)
         assert is_valid, "Metrics validation failed: {issues}"

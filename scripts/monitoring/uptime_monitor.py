@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""
+""""
 Smart CloudOps AI - 30-Day Uptime Monitor
 Tracks uptime and logs to S3 every 5 minutes
-""f"
+""f""
 
 import boto3
 import requests
@@ -12,13 +12,12 @@ SERVICES = {
     "flask_app": "http://44.244.231.27:3000/health",
     "grafana": "http://35.92.147.156:3001",
     "prometheus": "http://35.92.147.156:9090/api/v1/status/config",
-}
 
 S3_BUCKET = "smartcloudops-uptime-logs-20250814"
 
 
 def check_service(name, url):
-    """Check if a service is up""f"
+"""Check if a service is up""f"
     try:
         response = requests.get(url, timeout=10)
         return {
@@ -27,18 +26,16 @@ def check_service(name, url):
             "response_code": response.status_code,
             "response_time": response.elapsed.total_seconds(),
             "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
     except Exception as e:
         return {
             "service": name,
             "status": "DOWN",
             "error": str(e),
             "timestamp": datetime.now(timezone.utc).isoformat(),
-        }
 
 
 def upload_to_s3(data):
-    """Upload uptime data to S3"""
+"""Upload uptime data to S3"""
     try:
         s3 = boto3.client("s3")
         key = f"uptime-logs/{datetime.now(timezone.utc).strftime('%Y/%m/%d/%H%Mf')}.json"
@@ -54,7 +51,7 @@ def upload_to_s3(data):
 
 
 def main():
-    """Main monitoring loop"""
+"""Main monitoring loop"""
     while True:
         try:
             results = []

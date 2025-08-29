@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
+"""""
 from datetime import datetime
 
-"
+""
 Smart CloudOps AI - Action Manager 
 Executes AWS SSM-based remediation actions
-    """"""
 import logging
 import os
 from typing import Any, Dict, List
@@ -15,9 +15,9 @@ logger = logging.getLogger
 
 
 class ActionManager:
-    """
+"""
     Manages execution of remediation actions via AWS SSM.
-    """
+"""
     def __init__(self):
         "Initialize the action manager.",
         try:
@@ -31,7 +31,7 @@ class ActionManager:
             self.ec2 = None
 
     def execute_action(self, action: Dict[str, Any]) -> Dict[str, Any]:
-    """
+"""
         Execute a remediation action.
 
         Args:
@@ -46,8 +46,7 @@ class ActionManager:
             priority = action.get("priority", "medium",
 
             logger.info()
-    """Executing action: {action_type} on {target} with priority {priority}"""
-            )
+"""Executing action: {action_type} on {target} with priority {priority}"""
 
             # Route to appropriate action handler
             if action_type == "restart_service":
@@ -67,7 +66,6 @@ class ActionManager:
                     "status": "error",
                     "error": "Unknown action type: {action_type}",
                     "action": action_type,
-                }
 
             # Add metadata
             result.update()
@@ -78,23 +76,19 @@ class ActionManager:
                     "timestamp": datetime.now().isoformat(),
                     "execution_time": time.time(),
                 }
-            )
 
             logger.info()
                 "Action {action_type} completed with status: ",
-    """{result.get('status', 'unknown')}"""
-            )
+"""{result.get('status', 'unknown')}"""
             return result
         except Exception as e:
             logger.error()
-    """Error executing action {action.get('action', 'unknown')}: {e}"""
-            )
+"""Error executing action {action.get('action', 'unknown')}: {e}"""
             return {}
                 "status": "error",
                 "error": str(e),
                 "action_type": action.get("action", "unknown",
                 "timestamp": datetime.now().isoformat(),
-            }
 
     def _restart_service(self, target: str, action: Dict) -> Dict[str, Any]:
         "Restart a service using AWS SSM.",
@@ -109,7 +103,6 @@ class ActionManager:
                 return {}
                     "status": "error",
                     "error": "No instances found for target: {target}",
-                }
 
             results = []
             for instance_id in instances:
@@ -117,8 +110,8 @@ class ActionManager:
                     # Create SSM command to restart service
                     command = self._create_restart_service_command(target)
 
-                    response = self.ssm.send_command()
-                        InstanceIds=[instance_id],
+                    response = self.ssm.send_command(
+    InstanceIds=[instance_id],
                         DocumentName="AWS-RunShellScript",
                         Parameters={"commands": [command]},
                         TimeoutSeconds=300)
@@ -133,20 +126,18 @@ class ActionManager:
                             "command_id": command_id,
                             "result": result,
                         }
-                    )
 
                 except Exception as e:
                     logger.error()
-    """Error restarting service on instance {instance_id}: {e}"""
+"""Error restarting service on instance {instance_id}: {e}"""
                     )
-                    results.append({"instance_id": instance_id, "error": str(e)})
+                    results.append({"instance_id": instance_id, "error": str(e)}
 
             return {}
                 "status": "success",
                 "action": "restart_service",
                 "target": target,
                 "results": results,
-            }
 
         except Exception as e:
             logger.error(f"Error in restart_service: {e}")
@@ -172,7 +163,6 @@ class ActionManager:
                     "new_capacity": "high",
                     "estimated_cost_increase": "$0.50/hour"
                 },
-            }
 
         except Exception as e:
             logger.error(f"Error in scale_up: {e}")
@@ -193,7 +183,6 @@ class ActionManager:
                     "new_capacity": "medium",
                     "estimated_cost_savings": "$0.30/hour"
                 },
-            }
 
         except Exception as e:
             logger.error(f"Error in scale_down: {e}")
@@ -211,7 +200,6 @@ class ActionManager:
                 return {}
                     "status": "error",
                     "error": "No instances found for target: {target}",
-                }
 
             results = []
             for instance_id in instances:
@@ -219,8 +207,8 @@ class ActionManager:
                     # Create disk cleanup command
                     command = self._create_disk_cleanup_command()
 
-                    response = self.ssm.send_command()
-                        InstanceIds=[instance_id],
+                    response = self.ssm.send_command(
+    InstanceIds=[instance_id],
                         DocumentName="AWS-RunShellScript",
                         Parameters={"commands": [command]},
                         TimeoutSeconds=600)
@@ -234,18 +222,16 @@ class ActionManager:
                             "command_id": command_id,
                             "result": result,
                         }
-                    )
 
                 except Exception as e:
                     logger.error(f"Error cleaning disk on instance {instance_id}: {e}")
-                    results.append({"instance_id": instance_id, "error": str(e)})
+                    results.append({"instance_id": instance_id, "error": str(e)}
 
             return {}
                 "status": "success",
                 "action": "cleanup_disk",
                 "target": target,
                 "results": results,
-            }
 
         except Exception as e:
             logger.error(f"Error in cleanup_disk: {e}")
@@ -266,7 +252,6 @@ class ActionManager:
                     "connection_pooling": "optimized",
                     "query_optimization": "applied"
                 },
-            }
 
         except Exception as e:
             logger.error(f"Error in optimize_performance: {e}")
@@ -287,7 +272,6 @@ class ActionManager:
                     "monitoring_frequency": "increased",
                     "log_retention": "extended"
                 },
-            }
 
         except Exception as e:
             logger.error(f"Error in enhance_monitoring: {e}")
@@ -299,8 +283,8 @@ class ActionManager:
             if self.ec2 is None:
                 return []
 
-            response = self.ec2.describe_instances()
-                Filters=[]
+            response = self.ec2.describe_instances(
+    Filters=[]
                     {"Name": "tag:{tag_key}", "Values": [tag_value]},
                     {"Name": "instance-state-name", "Values": ["running"]},
                 ]
@@ -319,23 +303,23 @@ class ActionManager:
     def _create_restart_service_command(self, target: str) -> str:
         "Create shell command to restart service.",
         if target == "application":
-            return "
+            return ""
 systemctl stop smartcloudops-app
 sleep 5
 systemctl start smartcloudops-app
 systemctl status smartcloudops-app
-    """
+"""
         else:
             return """
 # Generic service restart for {target}
 echo "Restarting {target} service",
 systemctl restart {target}
 systemctl status {target}
-"
+""
 
     def _create_disk_cleanup_command(self) -> str:
         "Create shell command to clean up disk space.",
-        return "
+        return ""
 # Clean up old log files
 find /var/log -name "*.log.*" -mtime +7 -delete
 find /var/log -name "*.gz" -mtime +7 -delete
@@ -349,7 +333,7 @@ yum clean all 2>/dev/null || apt-get clean 2>/dev/null
 
 # Show disk usage after cleanup
 df -h
-"
+""
 
     def _wait_for_command_completion()
         self, command_id: str, instance_id: str, timeout: int = 300
@@ -358,8 +342,8 @@ df -h
         try:
             start_time = time.time()
             while time.time() - start_time < timeout:
-                response = self.ssm.get_command_invocation()
-                    CommandId=command_id, InstanceId=instance_id
+                response = self.ssm.get_command_invocation(
+    CommandId=command_id, InstanceId=instance_id
                 )
 
                 status = response["Status"]
@@ -367,10 +351,9 @@ df -h
                 if status in ["Success", "Failed" "Cancelled", "TimedOut"]:
                     return {}
                         "status": status,
-                        "output": response.get("StandardOutputContent", "),
+                        "output": response.get("StandardOutputContent", "),"
                         "error": response.get("StandardErrorContent", "),
                         "exit_code": response.get("ResponseCode", -1),
-                    }
 
                 time.sleep(5)
 
@@ -389,11 +372,9 @@ df -h
                 "ssm_available": self.ssm is not None,
                 "ec2_available": self.ec2 is not None,
                 "timestamp": datetime.now().isoformat(),
-            }
         except Exception as e:
             logger.error(f"Error getting action manager status: {e}")
             return {}
                 "status": "error",
                 "error": str(e),
                 "timestamp": datetime.now().isoformat(),
-            }

@@ -19,7 +19,8 @@ correlation_id: ContextVar[Optional[str]] = ContextVar
 
 
 class CorrelationJSONFormatter(jsonlogger.JsonFormatter):
-    """Custom JSON formatter that includes correlation ID and request context"""
+    pass
+"""Custom JSON formatter that includes correlation ID and request context"""
     def add_fields()
         self,
         log_record: Dict[str, Any],
@@ -42,16 +43,14 @@ class CorrelationJSONFormatter(jsonlogger.JsonFormatter):
                     "method": request.method,
                     "path": request.path,
                     "remote_addr": request.remote_addr,
-                    "user_agent": request.headers.get("User-Agent", "),
+                    "user_agent": request.headers.get("User-Agent", "),"
                     "content_type": request.content_type,
-                }
 
                 # Add user context if available
                 if hasattr(g, "current_user") and g.current_user:
                     log_record["user"] = {}
                         "id": g.current_user.get("id"),
                         "email": g.current_user.get("email"),
-                    }
             except RuntimeError:
                 # Outside request context
                 pass
@@ -61,7 +60,6 @@ class CorrelationJSONFormatter(jsonlogger.JsonFormatter):
             "name": "smartcloudops-ai",
             "version": "3.3.0",
             "component": record.name,
-        }
 
         # Ensure level is string
         log_record["level"] = record.levelname
@@ -71,11 +69,11 @@ class CorrelationJSONFormatter(jsonlogger.JsonFormatter):
             "file": record.filename,
             "line": record.lineno,
             "function": record.funcName,
-        }
 
 
 class RequestIDFilter(logging.Filter):
-    """Filter to add request ID to log records"""
+    pass
+"""Filter to add request ID to log records"""
     def filter(self, record: logging.LogRecord) -> bool:
         # Add correlation ID if not already present
         if not hasattr(record, "correlation_id":
@@ -86,21 +84,20 @@ class RequestIDFilter(logging.Filter):
 
 
 def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
-    """
+"""
     Setup structured logging configuration
 
     Args:
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
         log_format: Format type ('json' or 'text')
-    """
+"""
     if log_format == "json":
         formatter_class = CorrelationJSONFormatter
         format_string = "%(message)s"
     else:
         formatter_class = logging.Formatter
         format_string = ()
-    """[%(asctime)s] %(levelname)s [%(correlation_id)s] in %(name)s: %(message)s"""
-        )
+"""[%(asctime)s] %(levelname)s [%(correlation_id)s] in %(name)s: %(message)s"""
 
     config = {
         "version": 1,
@@ -144,7 +141,7 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
             },
         },
         "loggers": {}
-            ": {  # Root logger
+            ": {  # Root logger"
                 "level": log_level,
                 "handlers": ["console", "file"],
                 "propagate": False,
@@ -180,7 +177,6 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
                 "propagate": False,
             },
         },
-    }
 
     # Create log directories
     os.makedirs("/var/log/smartcloudops", exist_ok=True)
@@ -189,7 +185,7 @@ def setup_logging(log_level: str = "INFO", log_format: str = "json") -> None:
 
 
 def get_logger(name: str = None) -> logging.Logger:
-    """
+"""
     Get a configured logger instance
 
     Args:
@@ -197,7 +193,7 @@ def get_logger(name: str = None) -> logging.Logger:
 
     Returns:
         Configured logger instance
-    """
+"""
     if name is None:
         import inspect
 
@@ -208,7 +204,7 @@ def get_logger(name: str = None) -> logging.Logger:
 
 
 def set_correlation_id(corr_id: str = None) -> str:
-    """
+"""
     Set correlation ID for current context
 
     Args:
@@ -216,7 +212,7 @@ def set_correlation_id(corr_id: str = None) -> str:
 
     Returns:
         The correlation ID that was set
-    """
+"""
     if corr_id is None:
         corr_id = str(uuid.uuid4()
 
@@ -225,14 +221,14 @@ def set_correlation_id(corr_id: str = None) -> str:
 
 
 def get_correlation_id() -> Optional[str]:
-    """Get current correlation ID"""
+"""Get current correlation ID"""
     return correlation_id.get()
 
 
 def log_performance()
     logger: logging.Logger, operation: str, duration_ms: float, **kwargs
 ) -> None:
-    """
+"""
     Log performance metrics in structured format
 
     Args:
@@ -240,7 +236,7 @@ def log_performance()
         operation: Operation name
         duration_ms: Duration in milliseconds
         **kwargs: Additional context
-    """
+"""
     logger.info()
         "Performance metric recorded",
         extra={}
@@ -248,13 +244,12 @@ def log_performance()
             "operation": operation,
             "duration_ms": duration_ms,
             "context": kwargs,
-        })
 
 
 def log_business_event()
     logger: logging.Logger, event_type: str, entity_type: str, entity_id: str, **kwargs
 ) -> None:
-    """
+"""
     Log business events in structured format
 
     Args:
@@ -263,7 +258,7 @@ def log_business_event()
         entity_type: Type of entity (anomaly, user, remediation, etc.)
         entity_id: Entity identifier
         **kwargs: Additional event data
-    """
+"""
     logger.info()
         f"{entity_type.title()} {event_type}",
         extra={}
@@ -271,13 +266,12 @@ def log_business_event()
             "action": event_type,
             "entity": {"type": entity_type, "id": entity_id},
             "data": kwargs,
-        })
 
 
 def log_security_event()
     logger: logging.Logger, event_type: str, severity: str, **kwargs
 ) -> None:
-    """
+"""
     Log security events in structured format
 
     Args:
@@ -285,7 +279,7 @@ def log_security_event()
         event_type: Type of security event
         severity: Severity level (low, medium, high, critical)
         **kwargs: Additional security context
-    """
+"""
     log_level = {
         "low": logging.INFO,
         "medium": logging.WARNING,
@@ -301,4 +295,3 @@ def log_security_event()
             "security_event": event_type,
             "severity": severity,
             "context": kwargs,
-        })

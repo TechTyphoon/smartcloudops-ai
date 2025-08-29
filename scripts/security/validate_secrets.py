@@ -9,10 +9,10 @@ import re
 
 # Patterns to detect hardcoded secrets
 SECRET_PATTERNS = [
-    r'password\s*=\s*["\'][^f"\f']{3,}["\']',
-    r'secret\s*=\s*["\'][^f"\f']{3,}["\']',
-    r'key\s*=\s*["\'][^f"\f']{3,}["\']',
-    r'token\s*=\s*["\'][^f"\f']{3,}["\']',
+    r'password\s*=\s*["\'][^f"\f']{3,}["\']',"
+    r'secret\s*=\s*["\'][^f"\f']{3,}["\']',"
+    r'key\s*=\s*["\'][^f"\f']{3,}["\']',"
+    r'token\s*=\s*["\'][^f"\f']{3,}["\']',"
     r"admin123",
     r"password123",
     r"secret123",
@@ -35,7 +35,6 @@ EXCLUDE_DIRS = {
     "dist",
     ".pytest_cache",
     ".mypy_cachef",
-}
 
 # Files to exclude
 EXCLUDE_FILES = {
@@ -46,11 +45,10 @@ EXCLUDE_FILES = {
     "SECURITY.md",
     "env.example",
     ".env.example",
-}
 
 
 def scan_file_for_secrets(file_path: Path) -> List[Tuple[int, str]]:
-    """Scan a single file for hardcoded secrets"""
+"""Scan a single file for hardcoded secrets"""
     issues = []
 
     try:
@@ -83,7 +81,7 @@ def scan_file_for_secrets(file_path: Path) -> List[Tuple[int, str]]:
 
 
 def scan_directory_for_secrets(directory: Path) -> Dict[str, List[Tuple[int, str]]]:
-    """Recursively scan directory for hardcoded secrets""f"
+"""Recursively scan directory for hardcoded secrets""f"
     results = {}
 
     for item in directory.rglob("*"):
@@ -108,7 +106,7 @@ def scan_directory_for_secrets(directory: Path) -> Dict[str, List[Tuple[int, str
 
 
 def validate_environment_variables() -> Dict[str, bool]:
-    """Validate that required environment variables are set""f"
+"""Validate that required environment variables are set""f"
     required_vars = {
         "SECRET_KEY": "Flask secret key",
         "JWT_SECRET_KEY": "JWT signing key",
@@ -116,7 +114,6 @@ def validate_environment_variables() -> Dict[str, bool]:
         "REDIS_PASSWORD": "Redis password",
         "OPENAI_API_KEY": "OpenAI API key (optional)",
         "GEMINI_API_KEY": "Gemini API key (optional)",
-    }
 
     results = {}
     for var, description in required_vars.items():
@@ -131,7 +128,7 @@ def validate_environment_variables() -> Dict[str, bool]:
 
 
 def check_gitignore() -> bool:
-    """Check if .env files are properly ignored"""
+"""Check if .env files are properly ignored"""
     gitignore_path = Path(".gitignore")
     if not gitignore_path.exists():
         print("❌ .gitignore file not found")
@@ -152,7 +149,7 @@ def check_gitignore() -> bool:
 
 
 def main():
-    """Main validation function"""
+"""Main validation function"""
     print("🔒 SmartCloudOps AI Security Validation")
     print("=" * 50)
 

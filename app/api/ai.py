@@ -78,7 +78,6 @@ def get_recommendations():
                     }
                 ),
                 400,
-            )
 
         anomaly_data = data["anomaly_data"]
         limit = data.get("limit", 3)
@@ -112,7 +111,6 @@ def get_recommendations():
                     "reasoning": f"Recommended for {severity} severity {source} anomaly",
                     "anomaly_match_score": round(random.uniform(0.7, 0.95), 3),
                 }
-            )
 
         # Sort by confidence and return top recommendations
         filtered_recommendations.sort(key=lambda x: x["confidence"], reverse=True)
@@ -139,7 +137,6 @@ def get_recommendations():
                 }
             ),
             200,
-        )
 
     except Exception as e:
         return (
@@ -150,12 +147,11 @@ def get_recommendations():
                 }
             ),
             500,
-        )
 
 
 @ai_bp.route("/analyze", methods=["POST"])
 def analyze_metrics():
-    """Analyze metrics data using AI/ML models."""
+"""Analyze metrics data using AI/ML models."""
     try:
         data = request.get_json()
 
@@ -168,7 +164,6 @@ def analyze_metrics():
                     {"status": "error", "message": "Missing required field: metrics"}
                 ),
                 400,
-            )
 
         metrics = data["metrics"]
 
@@ -196,7 +191,6 @@ def analyze_metrics():
                     "threshold": 80,
                     "severity": "high" if cpu_usage > 90 else "medium",
                 }
-            )
 
         if memory_usage > 85:
             anomaly_indicators.append(
@@ -206,7 +200,6 @@ def analyze_metrics():
                     "threshold": 85,
                     "severity": "high" if memory_usage > 95 else "medium",
                 }
-            )
 
         if error_rate > 5:
             anomaly_indicators.append(
@@ -216,7 +209,6 @@ def analyze_metrics():
                     "threshold": 5,
                     "severity": "critical" if error_rate > 15 else "high",
                 }
-            )
 
         if anomaly_indicators:
             analysis_result["anomaly_detected"] = True
@@ -245,7 +237,6 @@ def analyze_metrics():
                 "trend": "increasing" if len(anomaly_indicators) > 1 else "stable",
                 "estimated_resolution_time": f"{random.randint(5, 30)} minutes",
                 "impact_level": analysis_result["severity"],
-            }
         else:
             analysis_result["confidence"] = round(random.uniform(0.6, 0.8), 3)
             analysis_result["insights"] = ["All metrics are within normal ranges"]
@@ -253,7 +244,6 @@ def analyze_metrics():
                 "trend": "stable",
                 "estimated_resolution_time": "N/A",
                 "impact_level": "none",
-            }
 
         return (
             jsonify(
@@ -270,18 +260,16 @@ def analyze_metrics():
                 }
             ),
             200,
-        )
 
     except Exception as e:
         return (
             jsonify({"status": "error", "message": f"Failed to analyze metrics: {str(e)}"}),
             500,
-        )
 
 
 @ai_bp.route("/chat", methods=["POST"])
 def chat_query():
-    """Process natural language queries about the system."""
+"""Process natural language queries about the system."""
     try:
         data = request.get_json()
 
@@ -294,7 +282,6 @@ def chat_query():
                     {"status": "error", "message": "Missing required field: query"}
                 ),
                 400,
-            )
 
         query = data["query"].lower()
 
@@ -341,14 +328,15 @@ def chat_query():
             ]
         else:
             response = {
-            response["message"] = "I understand you're asking about your infrastructure. Could you be more specific? I can help with system status, anomalies, performance metrics, and remediation actions."
-            response["intent"] = "general_inquiry"
-            response["confidence"] = 0.60
-            response["suggested_actions"] = [
-                "Ask about system health",
-                "Check for anomalies",
-                "View dashboards",
-            ]
+                "message": "I understand you're asking about your infrastructure. Could you be more specific? I can help with system status, anomalies, performance metrics, and remediation actions.",
+                "intent": "general_inquiry",
+                "confidence": 0.60,
+                "suggested_actions": [
+                    "Ask about system health",
+                    "Check for anomalies",
+                    "View dashboards",
+                ]
+            }
 
         return (
             jsonify(
@@ -366,7 +354,6 @@ def chat_query():
                 }
             ),
             200,
-        )
 
     except Exception as e:
         return (
@@ -377,12 +364,11 @@ def chat_query():
                 }
             ),
             500,
-        )
 
 
 @ai_bp.route("/models", methods=["GET"])
 def get_models():
-    """Get information about available AI/ML models."""
+"""Get information about available AI/ML models."""
     try:
         return (
             jsonify(
@@ -392,24 +378,22 @@ def get_models():
                         "models": MOCK_MODELS,
                         "total_models": len(MOCK_MODELS),
                         "active_models": len(
-                            [m for m in MOCK_MODELS if m["status"] == "active"]
+                            [m for m in MOCK_MODELS if m["status"] = "active"]
                         ),
                     },
                 }
             ),
             200,
-        )
 
     except Exception as e:
         return (
             jsonify({"status": "error", "message": f"Failed to retrieve models: {str(e)}"}),
             500,
-        )
 
 
 @ai_bp.route("/models/<model_id>/predict", methods=["POST"])
 def predict_with_model(model_id):
-    """Make predictions using a specific model."""
+"""Make predictions using a specific model."""
     try:
         data = request.get_json()
 
@@ -417,7 +401,7 @@ def predict_with_model(model_id):
             return jsonify({"status": "error", "message": "No data provided"}), 400
 
         # Find model
-        model = next((m for m in MOCK_MODELS if m["id"] == model_id), None)
+        model = next((m for m in MOCK_MODELS if m["id"] = model_id), None)
         if not model:
             return (
                 jsonify(
@@ -427,21 +411,19 @@ def predict_with_model(model_id):
                     }
                 ),
                 404,
-            )
 
         if model["status"] != "active":
             return (
                 jsonify({"status": "error", "message": f"Model {model_id} is not active"}),
                 400,
-            )
 
         # Mock prediction based on model type
-        if model["type"] == "anomaly_detection":
+        if model["type"] = "anomaly_detection":
             prediction = {
             prediction["anomaly_probability"] = round(random.uniform(0.1, 0.9), 3)
             prediction["is_anomaly"] = random.choice([True, False])
             prediction["confidence"] = round(random.uniform(0.7, 0.95), 3)
-        elif model["type"] == "recommendation":
+        elif model["type"] = "recommendation":
             prediction = {
             prediction["recommended_action"] = random.choice(
                 ["scale_up", "restart_service", "cleanup_logs"]
@@ -468,10 +450,8 @@ def predict_with_model(model_id):
                 }
             ),
             200,
-        )
 
     except Exception as e:
         return (
             jsonify({"status": "error", "message": f"Failed to make prediction: {str(e)}"}),
             500,
-        )

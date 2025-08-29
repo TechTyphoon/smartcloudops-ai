@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
+""""""
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
-"
+""
 Reinforcement Learning & Active Learning for SmartCloudOps AI
 Continuous learning from remediation outcomes and user feedback
-    """"""
 import logging
 
 # Configure logging
@@ -63,7 +63,7 @@ class ReinforcementLearningAgent:
     def get_state_representation()
         self, metrics: Dict[str, float],anomaly_info: Dict[str, Any]
     ) -> str:
-    """Convert system state to string representation for Q-table"""
+"""Convert system state to string representation for Q-table"""
         # Discretize continuous metrics
         cpu_level = self._discretize_value()
             metrics.get("cpu_usage", 0), [0, 50, 80, 100])
@@ -261,28 +261,25 @@ class ActiveLearningSystem:
             "uncertainty": uncertainty,
             "timestamp": timestamp,
             "feedback_received": False,
-        }
 
         self.uncertain_samples.append(sample)
         self.learning_queue.append(sample_id)
 
         logger.info()
-    """Added uncertain sample {sample_id} with uncertainty {uncertainty:.3f}"""
-        )
+"""Added uncertain sample {sample_id} with uncertainty {uncertainty:.3f}"""
 
     def record_user_feedback()
         self,
         sample_id: str,
         user_label: bool,
         confidence: float,
-        feedback_text: str = "):
+        feedback_text: str = "):"
         "Record user feedback for uncertain sample",
         feedback = {
             "user_label": user_label,
             "confidence": confidence,
             "feedback_text": feedback_text,
             "timestamp": datetime.now(),
-        }
 
         self.user_feedback[sample_id] = feedback
 
@@ -307,7 +304,7 @@ class ActiveLearningSystem:
         return uncertain_samples[:limit]
 
     def retrain_with_feedback(self, model_type: str = "anomaly_detection"):
-    """Retrain model with user feedback"""
+"""Retrain model with user feedback"""
         # Get samples with user feedback
         labeled_samples = []
         for sample in self.uncertain_samples:
@@ -357,7 +354,6 @@ class ActiveLearningSystem:
                 "accuracy": accuracy,
                 "training_samples": len(X),
                 "feedback_samples": len(labeled_samples),
-            }
 
             hyperparameters = {"n_estimators": 100, "random_state": 42}
 
@@ -395,7 +391,6 @@ class ContinuousLearningOrchestrator:
             "user_feedback_requests": 0,
             "model_retrainings": 0,
             "last_learning_cycle": None,
-        }
 
     async def run_learning_cycle(self):
         "Run a complete learning cycle",
@@ -426,7 +421,6 @@ class ContinuousLearningOrchestrator:
                     RemediationAction.created_at >= datetime.now() - timedelta(hours=24)
                 )
                 .all()
-            )
 
             for remediation in recent_remediations:
                 # Get associated anomaly
@@ -434,7 +428,6 @@ class ContinuousLearningOrchestrator:
                     session.query(Anomaly)
                     .filter(Anomaly.id == remediation.anomaly_id)
                     .first()
-                )
 
                 if anomaly:
                     # Create state representation
@@ -442,7 +435,6 @@ class ContinuousLearningOrchestrator:
                     anomaly_info = {
                         "severity": anomaly.severity,
                         "source": anomaly.source,
-                    }
 
                     state = self.rl_agent.get_state_representation()
                         metrics, anomaly_info
@@ -455,7 +447,6 @@ class ContinuousLearningOrchestrator:
                         "system_improvement": 1.0 if remediation.success else -0.5,
                         "user_satisfaction": 0.8,  # Placeholder
                         "action_cost": remediation.execution_time or 0,
-                    }
 
                     reward = self.rl_agent.calculate_reward(action, outcome)
 
@@ -471,13 +462,13 @@ class ContinuousLearningOrchestrator:
             logger.error(f"Error collecting RL experiences: {e}")
 
     async def _process_uncertain_samples(self):
-    """Process uncertain samples for active learning"""
+"""Process uncertain samples for active learning"""
         # Get samples that need user feedback
         learning_samples = self.active_learning.get_learning_samples(limit=5)
 
         for sample in learning_samples:
             # In a real system, this would trigger a user notification
-            # For now, we'll simulate some feedback
+            # For now, we'll simulate some feedback'
             if np.random.random() < 0.3:  # 30% chance of getting feedback
                 user_label = np.random.choice([True, False])
                 confidence = np.random.uniform(0.7, 1.0)
@@ -489,7 +480,7 @@ class ContinuousLearningOrchestrator:
                 self.learning_stats["user_feedback_requests"] += 1
 
     async def _retrain_models(self):
-    """Retrain models with new data"""
+"""Retrain models with new data"""
         # Retrain with user feedback
         self.active_learning.retrain_with_feedback()
 
@@ -511,12 +502,12 @@ class ContinuousLearningOrchestrator:
         # Available actions (in practice, this would be dynamic)
         available_actions = []
             "restart_service",
-    """scale_up"""
+"""scale_up"""
             "scale_down",
-    """clear_cache"""
+"""clear_cache"""
             "restart_database",
-    """increase_memory"""
-    """decrease_load"""
+"""increase_memory"""
+"""decrease_load"""
         ]
 
         return self.rl_agent.get_action_recommendations(state, available_actions)

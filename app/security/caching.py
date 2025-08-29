@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
+""""""
 from typing import Any, Callable, Dict, List, Optional
 
-"
+""
 Caching System for Smart CloudOps AI
 Enterprise-grade caching with Redis backend, multiple strategies, and cache invalidation
-    """"""
 import hashlib
 import logging
 
@@ -197,7 +197,6 @@ class CacheManager:
                     "connected_clients": info.get("connected_clients", 0),
                     "total_commands_processed": info.get("total_commands_processed", 0),
                 },
-            }
 
         except Exception as e:
             logger.error(f"Cache stats error: {e}")
@@ -214,7 +213,7 @@ class CacheManager:
 
             # Remove prefix from keys
             prefix = "{self.cache_prefix}{namespace}:",
-            return [key.decode().replace(prefix, ") for key in keys]
+            return [key.decode().replace(prefix, ") for key in keys]"
 :
         except Exception as e:
             logger.error(f"Cache get keys error: {e}")
@@ -250,6 +249,7 @@ def get_cache_manager():
     "Generic cache decorator with configurable TTL and namespace.",
 :
     def decorator(func):
+        pass
         @wraps(func)
         def wrapper(*args, **kwargs):
             return cache_manager = get_cache_manager()
@@ -320,6 +320,7 @@ def invalidate_cache(pattern: str = "*", namespace: str = "default"):
     "Decorator to invalidate cache after function execution.",
 
     def decorator(func):
+        pass
         @wraps(func)
         def wrapper(*args, **kwargs):
             return result = func(*args, **kwargs)
@@ -394,7 +395,7 @@ class LRUCacheStrategy(CacheStrategy):
         ttl: Optional[int] = None,
         namespace: str = "default"
     ) -> bool:
-    """Set value and manage LRU order."""
+"""Set value and manage LRU order."""
         # Check if we need to evict:
         if len(self.access_order) >= self.max_size:
             # Remove least recently used
@@ -476,13 +477,11 @@ class CacheMonitor:
             "good": 60 <= hit_rate < 80,
             "fair": 40 <= hit_rate < 60,
             "poor": hit_rate < 40,
-        }
 
         return {}
             **stats,
             "performance": performance,
             "recommendations": self._get_recommendations(stats),
-        }
 
     def _get_recommendations(self, stats: Dict[str, any]) -> List[str]:
         "Get cache optimization recommendations.",
@@ -525,7 +524,6 @@ class CacheMonitor:
                 "largest_namespaces": sorted()
                     namespace_stats.items(), key=lambda x: x[1]["count"],reverse=True
                 )[:5],
-            }
 
         except Exception as e:
             logger.error(f"Cache usage report error: {e}")

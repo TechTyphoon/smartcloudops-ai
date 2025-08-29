@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Test suite for AnomalyDetector functionality."""
 """
 Unit tests for ML Models module
 Tests anomaly detection, model training, and prediction functionality
@@ -8,7 +9,7 @@ import os
 
 
 class TestAnomalyDetector:
-    """Test suite for AnomalyDetector functionality."""
+    pass
 
     @pytest.fixture
     def sample_data(self):
@@ -32,7 +33,6 @@ class TestAnomalyDetector:
                 "network_io",
                 "response_time",
             ],
-        )
 
     @pytest.fixture
     def mock_config(self):
@@ -42,7 +42,6 @@ class TestAnomalyDetector:
             "ANOMALY_THRESHOLD": 0.7,
             "MIN_SAMPLES": 100,
             "RANDOM_STATE": 42,
-        }
 
     @patch("ml_models.anomaly_detector.IsolationForest")
     def test_anomaly_detector_initialization(self, mock_isolation_forest, mock_config):
@@ -209,7 +208,7 @@ class TestAnomalyDetector:
 
 
 class TestModelVersioning:
-    """Test suite for model versioning functionality."""
+"""Test suite for model versioning functionality."""
 
     @pytest.fixture
     def mock_config(self):
@@ -218,7 +217,6 @@ class TestModelVersioning:
             "MODEL_REGISTRY_PATH": "/tmp/model_registry",
             "VERSION_FORMAT": "v{major}.{minor}.{patch}",
             "MAX_VERSIONS": 5,
-        }
 
     def test_version_creation(self, mock_config):
         """Test model version creation."""
@@ -250,7 +248,7 @@ class TestModelVersioning:
 
 
 class TestMLModelsIntegration:
-    """Integration tests for ML models with external dependencies."""
+"""Integration tests for ML models with external dependencies."""
 
     @pytest.fixture
     def sample_data(self):
@@ -262,7 +260,6 @@ class TestMLModelsIntegration:
                 "memory_usage": np.random.normal(60, 15, 100),
                 "disk_usage": np.random.normal(40, 8, 100),
             }
-        )
 
     @patch("ml_models.anomaly_detector.joblib")
     def test_full_ml_pipeline(self, mock_joblib, sample_data):
@@ -272,7 +269,6 @@ class TestMLModelsIntegration:
             "ANOMALY_THRESHOLD": 0.7,
             "MIN_SAMPLES": 50,
             "RANDOM_STATE": 42,
-        }
 
         # Setup mocks
         mock_joblib.dump.return_value = None
@@ -297,7 +293,6 @@ class TestMLModelsIntegration:
             "ANOMALY_THRESHOLD": 0.7,
             "MIN_SAMPLES": 50,
             "RANDOM_STATE": 42,
-        }
 
         # Create and train model
         detector1 = AnomalyDetector(config)
@@ -326,7 +321,7 @@ class TestMLModelsIntegration:
 
 
 class TestMLModelsErrorHandling:
-    """Test error handling in ML models."""
+"""Test error handling in ML models."""
 
     def test_invalid_data_handling(self):
         """Test handling of invalid data.""f"
@@ -335,7 +330,6 @@ class TestMLModelsErrorHandling:
             "ANOMALY_THRESHOLD": 0.7,
             "MIN_SAMPLES": 50,
             "RANDOM_STATE": 42,
-        }
 
         detector = AnomalyDetector(config)
 
@@ -356,7 +350,6 @@ class TestMLModelsErrorHandling:
             "ANOMALY_THRESHOLD": 0.7,
             "MIN_SAMPLES": 50,
             "RANDOM_STATE": 42,
-        }
 
         detector = AnomalyDetector(config)
 
@@ -378,7 +371,7 @@ class TestMLModelsErrorHandling:
 
 
 class TestMLModelsPerformance:
-    """Performance tests for ML models."""
+"""Performance tests for ML models."""
 
     @pytest.fixture
     def large_sample_data(self):
@@ -393,7 +386,6 @@ class TestMLModelsPerformance:
                 "network_io": np.random.normal(30, 5, n_samples),
                 "response_time": np.random.normal(100, 20, n_samples),
             }
-        )
 
     @patch("ml_models.anomaly_detector.IsolationForest")
     def test_training_performance(self, mock_isolation_forest, large_sample_data):
@@ -404,7 +396,6 @@ class TestMLModelsPerformance:
             "ANOMALY_THRESHOLD": 0.7,
             "MIN_SAMPLES": 100,
             "RANDOM_STATE": 42,
-        }
 
         # Setup mock
         mock_model = Mock()
@@ -429,7 +420,6 @@ class TestMLModelsPerformance:
             "ANOMALY_THRESHOLD": 0.7,
             "MIN_SAMPLES": 100,
             "RANDOM_STATE": 42,
-        }
 
         # Setup mock
         mock_model = Mock()

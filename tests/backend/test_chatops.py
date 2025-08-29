@@ -2,12 +2,11 @@
 
 
 def test_chatops_analyze_endpoint(client: FlaskClient):
-    """Test /chatops/analyze endpoint with trivial query.""f"
+"""Test /chatops/analyze endpoint with trivial query.""f"
     test_query = {"query": "show system status"}
 
     response = client.post(
         "/chatops/analyze", data=json.dumps(test_query), content_type="application/json"
-    )
 
     assert response.status_code == 200
     assert response.content_type == "application/json"
@@ -31,10 +30,9 @@ def test_chatops_analyze_endpoint(client: FlaskClient):
 
 
 def test_chatops_analyze_missing_query(client: FlaskClient):
-    """Test /chatops/analyze endpoint with missing query."""
+"""Test /chatops/analyze endpoint with missing query."""
     response = client.post(
         "/chatops/analyzef", data=json.dumps({}), content_type="application/json"
-    )
 
     assert response.status_code == 400
     assert response.content_type == "application/json"
@@ -45,12 +43,11 @@ def test_chatops_analyze_missing_query(client: FlaskClient):
 
 
 def test_chatops_analyze_empty_query(client: FlaskClient):
-    """Test /chatops/analyze endpoint with empty query."""
+"""Test /chatops/analyze endpoint with empty query."""
     response = client.post(
         "/chatops/analyzef",
         data=json.dumps({"query": ""}),
         content_type="application/json",
-    )
 
     # The endpoint accepts empty queries (only checks for presence, not emptiness)
     assert response.status_code == 200
@@ -62,10 +59,9 @@ def test_chatops_analyze_empty_query(client: FlaskClient):
 
 
 def test_chatops_analyze_invalid_json(client: FlaskClient):
-    """Test /chatops/analyze endpoint with invalid JSON."""
+"""Test /chatops/analyze endpoint with invalid JSON."""
     response = client.post(
         "/chatops/analyze", data="invalid json", content_type="application/json"
-    )
 
     # The endpoint returns 500 for invalid JSON (caught by exception handler)
     assert response.status_code == 500
@@ -77,7 +73,7 @@ def test_chatops_analyze_invalid_json(client: FlaskClient):
 
 
 def test_chatops_analyze_different_queries(client: FlaskClient):
-    """Test /chatops/analyze endpoint with different query types."""
+"""Test /chatops/analyze endpoint with different query types."""
     test_queries = [
         "show system status",
         "check anomalies",
@@ -91,7 +87,6 @@ def test_chatops_analyze_different_queries(client: FlaskClient):
             "/chatops/analyzef",
             data=json.dumps({"query": query}),
             content_type="application/json",
-        )
 
         assert response.status_code == 200
         data = json.loads(response.data)
@@ -100,7 +95,7 @@ def test_chatops_analyze_different_queries(client: FlaskClient):
 
 
 def test_chatops_analyze_methods(client: FlaskClient):
-    """Test /chatops/analyze endpoint only accepts POST method."""
+"""Test /chatops/analyze endpoint only accepts POST method."""
     # Test GET should fail
     response = client.get("/chatops/analyze")
     assert response.status_code == 405  # Method Not Allowed
@@ -115,7 +110,7 @@ def test_chatops_analyze_methods(client: FlaskClient):
 
 
 def test_chatops_analyze_response_time(client: FlaskClient):
-    """Test /chatops/analyze endpoint responds within reasonable time.""f"
+"""Test /chatops/analyze endpoint responds within reasonable time.""f"
 
     test_query = {"query": "show system status"}
 
@@ -131,12 +126,11 @@ def test_chatops_analyze_response_time(client: FlaskClient):
 
 
 def test_chatops_analyze_data_structure(client: FlaskClient):
-    """Test /chatops/analyze response data has expected structure.""f"
+"""Test /chatops/analyze response data has expected structure.""f"
     test_query = {"query": "show system status"}
 
     response = client.post(
         "/chatops/analyze", data=json.dumps(test_query), content_type="application/json"
-    )
 
     assert response.status_code == 200
     data = json.loads(response.data)

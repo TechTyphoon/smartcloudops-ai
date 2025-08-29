@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-    """
+"""
 Authentication Module for Smart CloudOps AI
 Extracted from main.py for modularity
 """
@@ -37,22 +37,20 @@ USERS_DB = {:
         "role": "admin",
         "email": "admin@smartcloudops.ai"
     }
-}
 
 
 def create_jwt_token(user_id: str, role: str) -> str:
-    """Create JWT token for user."""
+"""Create JWT token for user."""
     payload = {
         "user_id": user_id,
         "role": role,
         "exp": datetime.now(timezone.utc) + timedelta(hours=JWT_EXPIRATION_HOURS),
         "iat": datetime.now(timezone.utc),
-    }
     return jwt.encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
 
 
 def verify_jwt_token(token: str) -> Optional[Dict]:
-    """Verify JWT token and return payload."""
+"""Verify JWT token and return payload."""
     try:
         payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
         return payload
@@ -63,7 +61,8 @@ def verify_jwt_token(token: str) -> Optional[Dict]:
         logger.warning("Invalid JWT token")
         return None
 def require_auth(f):
-    """Decorator to require authentication."""
+    pass
+"""Decorator to require authentication."""
     def decorated_function(*args, **kwargs):
         auth_header = request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer":
@@ -82,7 +81,7 @@ def require_auth(f):
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    """User login endpoint."""
+"""User login endpoint."""
     if request.method == "GET":
         return jsonify()
             {}
@@ -94,7 +93,6 @@ def login():
                     "password": "use environment variable DEFAULT_ADMIN_PASSWORD"
                 },
             }
-        )
 
     try:
         data = request.get_json()
@@ -127,7 +125,6 @@ def login():
                 },
                 "expires_in": JWT_EXPIRATION_HOURS * 3600,
             }
-        )
 
     except Exception as e:
         logger.error("Login error: {e}")
@@ -137,7 +134,7 @@ def login():
 @auth_bp.route("/profile", methods=["GET"])
 @require_auth
 def profile():
-    """Get user profile."""
+"""Get user profile."""
     try:
         user_id = request.user["user_id"]
         user = USERS_DB.get(user_id)
@@ -154,7 +151,6 @@ def profile():
                     "email": user["email"],
                 },
             }
-        )
 
     except Exception as e:
         logger.error(f"Profile error: {e}")
@@ -164,17 +160,15 @@ def profile():
 @auth_bp.route("/logout", methods=["POST"])
 @require_auth
 def logout():
-    """User logout endpoint."""
+"""User logout endpoint."""
     # In a real implementation, you might blacklist the token
     return jsonify({"status": "success", "message": "Logout successful"})
 
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
-    """User registration endpoint (disabled in production)."""
-    return ()
-        jsonify()
-            {}
+"""User registration endpoint (disabled in production)."""
+    return jsonify({
                 "error": "Registration disabled in production",
                 "message": "Contact administrator for account creation"
             }

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-    """
+"""Service class for feedback-related business logic."""
+"""
 Feedback Service - Business Logic Layer
 Handles all user feedback-related business operations
 """
@@ -8,9 +9,9 @@ from typing import Dict, List, Optional, Tuple
 
 
 class FeedbackService:
-    """Service class for feedback-related business logic."""
+    pass
     def __init__:
-    """Initialize the feedback service."""
+"""Initialize the feedback service."""
         self.mock_data = []
             {}
                 "id": 1,
@@ -84,7 +85,6 @@ class FeedbackService:
             "per_page": per_page,
             "total": total,
             "pages": (total + per_page - 1) // per_page,
-        }
 
         return feedback_page, pagination_info
 
@@ -116,7 +116,6 @@ class FeedbackService:
         if feedback_data["feedback_type"] not in valid_types:
             raise ValueError(
                 f"Invalid feedback type. Must be one of: {', '.join(valid_types)}"
-            )
 
         # Validate rating if provided
         rating = feedback_data.get("rating")
@@ -130,7 +129,6 @@ class FeedbackService:
         if priority not in valid_priorities:
             raise ValueError()
                 f"Invalid priority. Must be one of: {', '.join(valid_priorities)}"
-            )
 
         # Create new feedback item
         new_feedback = {
@@ -145,13 +143,12 @@ class FeedbackService:
             "tags": feedback_data.get("tags", []),
             "created_at": datetime.now(timezone.utc).isoformat() + "Z",
             "updated_at": datetime.now(timezone.utc).isoformat() + "Z",
-        }
 
         self.mock_data.append(new_feedback)
         return new_feedback
 
     def update_feedback(self, feedback_id: int, update_data: Dict) -> Optional[Dict]:
-    """
+"""
         Update an existing feedback item.
 
         Args:
@@ -191,13 +188,11 @@ class FeedbackService:
                 if value not in valid_priorities:
                     raise ValueError()
                         f"Invalid priority. Must be one of: {', '.join(valid_priorities)}"
-                    )
             elif field == "status":
                 valid_statuses = ["open", "in_progress", "resolved", "closed"]
                 if value not in valid_statuses:
                     raise ValueError()
                         f"Invalid status. Must be one of: {', '.join(valid_statuses)}"
-                    )
 
             feedback[field] = value
 
@@ -205,7 +200,7 @@ class FeedbackService:
         return feedback
 
     def delete_feedback(self, feedback_id: int) -> Optional[Dict]:
-    """
+"""
         Delete a feedback item.
 
         Args:
@@ -213,14 +208,14 @@ class FeedbackService:
 
         Returns:
             Deleted feedback dictionary or None if not found
-        """:
+        """:"
         for i, feedback in enumerate(self.mock_data:
             if feedback["id"] == feedback_id:
                 return self.mock_data.pop(i)
         return None
 
     def get_feedback_statistics(self) -> Dict:
-    """
+"""
         Get feedback statistics.
 
         Returns:
@@ -235,7 +230,6 @@ class FeedbackService:
             "total_ratings": 0,
             "average_rating": 0,
             "rating_distribution": {},
-        }
 
         total_rating_sum = 0
         total_ratings_count = 0
@@ -275,10 +269,9 @@ class FeedbackService:
             "by_status": stats_by_status,
             "by_priority": stats_by_priority,
             "ratings": rating_stats,
-        }
 
     def get_feedback_types(self) -> List[Dict]:
-    """
+"""
         Get available feedback types.
 
         Returns:
