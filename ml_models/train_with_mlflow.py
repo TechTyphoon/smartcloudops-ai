@@ -27,6 +27,12 @@ from ml_models.mlflow_config import get_mlflow_manager
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Set default MLflow configuration for GitHub Actions
+if not os.getenv("MLFLOW_TRACKING_URI"):
+    os.environ["MLFLOW_TRACKING_URI"] = "http://localhost:5000"
+if not os.getenv("MLFLOW_REGISTRY_URI"):
+    os.environ["MLFLOW_REGISTRY_URI"] = "http://localhost:5000"
+
 
 class MLTrainingPipeline:
     """ML training pipeline with MLflow integration."""
