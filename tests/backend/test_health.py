@@ -1,5 +1,15 @@
 """Test health endpoint."""
 
+import json
+import time
+from typing import Any
+
+try:
+    # In test environments the test client fixture provides a Flask test client
+    from werkzeug.test import Client as FlaskClient  # type: ignore
+except Exception:  # pragma: no cover - import fallbacks for static analysis
+    FlaskClient = Any  # type: ignore
+
 
 def test_health_endpoint(client: FlaskClient):
     """Test /health endpoint returns 200 and expected structure."""

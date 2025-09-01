@@ -8,7 +8,7 @@ import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -36,8 +36,7 @@ os.environ.update(
 )
 
 from app import create_app
-from app.database import db_session, init_db
-from app.models import Anomaly, RemediationAction, User
+from app.database import init_db
 
 
 @pytest.fixture(scope="session")

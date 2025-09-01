@@ -1,7 +1,20 @@
 """Test status endpoint."""
 
+import json
+import time
+from typing import Any, TYPE_CHECKING
 
-def test_status_endpoint(client: FlaskClient):
+if TYPE_CHECKING:
+    try:
+        from werkzeug.test import Client as FlaskClient  # type: ignore
+    except Exception:  # pragma: no cover - optional test dependency
+        FlaskClient = Any
+else:
+    # At runtime tests will provide client fixture; keep FlaskClient as Any for runtime
+    FlaskClient = Any
+
+
+def test_status_endpoint(client):
     """Test /status endpoint returns 200 and expected structure."""
     response = client.get("/status")
 
@@ -36,7 +49,7 @@ def test_status_endpoint(client: FlaskClient):
         assert component in components
 
 
-def test_status_components_structure(client: FlaskClient):
+def test_status_components_structure(client):
     """Test status components have expected structure."""
     response = client.get("/status")
     data = json.loads(response.data)
@@ -72,7 +85,7 @@ def test_status_components_structure(client: FlaskClient):
         assert isinstance(remediation_engine, dict)
 
 
-def test_api_status_endpoint(client: FlaskClient):
+def test_api_status_endpoint(client):
     """Test /api/status endpoint returns same as /status."""
     response = client.get("/api/status")
 
@@ -89,7 +102,7 @@ def test_api_status_endpoint(client: FlaskClient):
     assert data["status"] == "healthy"
 
 
-def test_status_endpoint_methods(client: FlaskClient):
+def test_status_endpoint_methods(client):
     """Test status endpoint only accepts GET method."""
     # Test POST should fail
     response = client.post("/status")
@@ -104,7 +117,7 @@ def test_status_endpoint_methods(client: FlaskClient):
     assert response.status_code == 405
 
 
-def test_status_response_time(client: FlaskClient):
+def test_status_response_time(client):
     """Test status endpoint responds within reasonable time."""
 
     start_time = time.time()
@@ -116,7 +129,7 @@ def test_status_response_time(client: FlaskClient):
     assert (end_time - start_time) < 2.0
 
 
-def test_status_timestamp_format(client: FlaskClient):
+def test_status_timestamp_format(client):
     """Test status timestamp is recent."""
 
     response = client.get("/status")

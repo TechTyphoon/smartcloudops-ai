@@ -4,8 +4,6 @@ Anomaly API Endpoints for Smart CloudOps AI - Refactored with Service Layer
 Phase 7: Production Launch & Feedback - Backend Completion
 """
 
-from datetime import datetime
-
 from flask import Blueprint, jsonify, request
 
 from app.services.anomaly_service import AnomalyService

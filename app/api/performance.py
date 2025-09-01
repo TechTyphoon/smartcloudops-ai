@@ -4,18 +4,17 @@ Performance API Endpoints
 Phase 5: Performance & Cost Optimization - Performance Monitoring API
 """
 
-import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Optional
 
-from flask import Blueprint, current_app, jsonify, request
+from flask import Blueprint, jsonify, request
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from app.observability.enhanced_logging import get_logger, log_business_event
-from app.performance.anomaly_optimization import AnomalyConfig, get_anomaly_detector
-from app.performance.database_optimization import DatabaseConfig, get_optimized_database
-from app.performance.log_optimization import LogConfig, get_log_manager
-from app.performance.redis_cache import RedisCacheConfig, get_redis_cache
+from app.performance.anomaly_optimization import get_anomaly_detector
+from app.performance.database_optimization import get_optimized_database
+from app.performance.log_optimization import get_log_manager
+from app.performance.redis_cache import get_redis_cache
 
 # Create blueprint
 performance_bp = Blueprint("performance", __name__)

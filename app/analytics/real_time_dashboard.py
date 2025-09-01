@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
+import asyncio
+import json
+import logging
+import os
+import sqlite3
+import threading
+import time
+import uuid
 from collections import defaultdict, deque
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Set
 
@@ -10,12 +18,7 @@ Advanced real-time monitoring with WebSocket support, predictive analytics,
 and interactive visualizations
 """
 
-import logging
-import os
-import sqlite3
-import threading
-import uuid
-
+import numpy as np
 import psutil
 import websockets
 

@@ -5,6 +5,8 @@ Safely manage environment variables without direct file editing
 """
 
 import os
+import sys
+from pathlib import Path
 
 
 def show_env_status():

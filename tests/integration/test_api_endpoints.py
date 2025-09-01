@@ -6,9 +6,29 @@ Tests complete API workflows, authentication, and data persistence
 
 import os
 import tempfile
+import time
 from datetime import datetime
 
 import pytest
+
+from unittest.mock import patch
+
+try:
+    from app.database import get_db_session
+    from app.models import User, Anomaly, RemediationAction
+except Exception:
+    # Provide minimal placeholders for static analysis
+    def get_db_session():
+        raise NotImplementedError()
+
+    class User:  # pragma: no cover - placeholder
+        pass
+
+    class Anomaly:  # pragma: no cover - placeholder
+        pass
+
+    class RemediationAction:  # pragma: no cover - placeholder
+        pass
 
 # Import Flask app and database functions
 try:
@@ -75,7 +95,7 @@ class TestAPIEndpointsIntegration:
         )
 
         token = response.json["token"]
-        return {"Authorization": "Bearer {token}"}
+        return {"Authorization": f"Bearer {token}"}
 
     def test_health_endpoint_integration(self, client):
         """Test health endpoint with database connection."""
@@ -108,13 +128,21 @@ class TestAPIEndpointsIntegration:
         assert "token" in response.json
         assert "refresh_token" in response.json
 
-        # Test token verification
-        token = response.json["token"]
-        headers = {"Authorization": "Bearer {token}"}
+    def test_token_verification(self, client):
+        """Test token verification endpoint."""
+        # Ensure login works and token is valid
+        response = client.post(
+            "/auth/login", json={"username": "newuser", "password": "securepass123"}
+        )
+        assert response.status_code == 200
+
+        token = response.json.get("token")
+        assert token is not None
+        headers = {"Authorization": f"Bearer {token}"}
 
         response = client.get("/auth/verify", headers=headers)
         assert response.status_code == 200
-        assert response.json["valid"] is True
+        assert response.json.get("valid") is True
 
     def test_anomaly_detection_workflow(self, client, auth_headers):
         """Test complete anomaly detection workflow."""
@@ -535,7 +563,7 @@ class TestEndToEndWorkflow:
                     "target_resource": "web_servers",
                     "parameters": {
                         "instances": 2,
-                        "reason": "High {anomaly_data['severity']} anomaly detected",
+                        "reason": f"High {anomaly_data['severity']} anomaly detected",
                     },
                 },
                 headers=headers,

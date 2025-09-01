@@ -5,7 +5,6 @@ AI-powered analysis, recommendations, and chat operations
 """
 
 import random
-from datetime import datetime
 
 from flask import Blueprint, jsonify, request
 

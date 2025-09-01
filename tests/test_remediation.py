@@ -7,8 +7,6 @@ import os
 import sys
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 

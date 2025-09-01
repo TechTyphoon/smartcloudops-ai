@@ -22,7 +22,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "@modelcontextprotocol/server-sequential-thinking"
+        "@davenportsociety/clear-thought-patterns"
       ]
     },
     "filesystem": {

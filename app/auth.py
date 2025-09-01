@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 """
 Authentication System for Smart CloudOps AI
@@ -11,6 +11,10 @@ from functools import wraps
 
 import jwt
 from flask import jsonify, request
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from app.database import get_db_session
+from app.models import AuditLog, User
 
 
 class AuthManager:

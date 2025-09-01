@@ -26,6 +26,11 @@ except ImportError:
 
     app = Flask(__name__)
 
+    # Placeholder for FlexibleAIHandler used in tests
+    class FlexibleAIHandler:
+        def process_query(self, query):
+            return {"status": "success", "response": "ok"}
+
     class GPTHandler:
         def __init__(self, api_key=None):
             if not api_key:

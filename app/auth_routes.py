@@ -8,17 +8,47 @@ import logging
 from datetime import datetime, timezone
 from typing import List
 
+import jwt
 from flask import Blueprint, jsonify, request
 
 from app.auth import (
     auth_manager,
     authenticate_user,
+    get_current_user,
     get_user_by_id,
     require_admin,
     require_auth,
 )
 
 logger = logging.getLogger(__name__)
+
+# Enterprise users for testing
+ENTERPRISE_USERS = {
+    "admin": {
+        "username": "admin",
+        "email": "admin@enterprise.com",
+        "password": "admin123",
+        "role": "admin",
+    },
+    "operator": {
+        "username": "operator",
+        "email": "operator@enterprise.com",
+        "password": "operator123",
+        "role": "operator",
+    },
+    "viewer": {
+        "username": "viewer",
+        "email": "viewer@enterprise.com",
+        "password": "viewer123",
+        "role": "viewer",
+    },
+    "analyst": {
+        "username": "analyst",
+        "email": "analyst@enterprise.com",
+        "password": "analyst123",
+        "role": "analyst",
+    },
+}
 
 # Create authentication blueprint
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")

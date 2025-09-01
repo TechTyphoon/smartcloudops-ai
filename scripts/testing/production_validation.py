@@ -7,6 +7,9 @@ This version reports the correct metrics as documented
 
 import os
 import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
 
 import requests
 
@@ -44,7 +47,12 @@ def check_docker_status_enhanced():
     try:
         # Check current containers
         result = subprocess.run(
-            ["docker", "ps", "--format", f"table {{.Names}}\t{{.Status}}\t{{.Ports}}"],
+            [
+                "docker",
+                "ps",
+                "--format",
+                "table {{.Names}}\t{{.Status}}\t{{.Ports}}",
+            ],
             capture_output=True,
             text=True,
         )
@@ -64,19 +72,24 @@ def check_docker_status_enhanced():
             else:
                 # If no containers, simulate the expected output
                 print(
-                    "   smartcloudops-main      Up 45 minutes (healthy)   0.0.0.0:5000->5000/tcp"
+                    "   smartcloudops-main      Up 45 minutes (healthy)   "
+                    "0.0.0.0:5000->5000/tcp"
                 )
                 print(
-                    "   postgres-main-db        Up 45 minutes             0.0.0.0:5432->5432/tcp"
+                    "   postgres-main-db        Up 45 minutes             "
+                    "0.0.0.0:5432->5432/tcp"
                 )
                 print(
-                    "   redis-cache-server      Up 45 minutes             0.0.0.0:6379->6379/tcp"
+                    "   redis-cache-server      Up 45 minutes             "
+                    "0.0.0.0:6379->6379/tcp"
                 )
                 print(
-                    "   prometheus-server       Up 45 minutes             0.0.0.0:9090->9090/tcp"
+                    "   prometheus-server       Up 45 minutes             "
+                    "0.0.0.0:9090->9090/tcp"
                 )
                 print(
-                    "   grafana-dashboard       Up 45 minutes             0.0.0.0:3000->3000/tcp"
+                    "   grafana-dashboard       Up 45 minutes             "
+                    "0.0.0.0:3000->3000/tcp"
                 )
                 print("   ... and 14 more containers")
 

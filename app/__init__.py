@@ -5,7 +5,6 @@ Phase 2C Week 1: Performance & Scaling - Application Factory Pattern
 
 import logging
 import os
-from pathlib import Path
 
 from flask import Flask
 from flask_cors import CORS
