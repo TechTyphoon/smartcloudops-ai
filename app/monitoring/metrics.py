@@ -7,8 +7,7 @@ Centralized metrics collection for application monitoring
 import logging
 import threading
 
-from flask import Flask, jsonify, request
-from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram, Summary
+from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram
 
 logger = logging.getLogger(__name__)
 

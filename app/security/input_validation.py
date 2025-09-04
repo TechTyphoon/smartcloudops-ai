@@ -8,7 +8,7 @@ import logging
 import re
 import secrets
 import string
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +73,14 @@ class InputValidator:
         r"pg_sleep\s*\(",  # PostgreSQL sleep
         r"dbms_pipe",  # Oracle
         r"utl_http",  # Oracle
+        r"\bOR\s+\d+\s*=\s*\d+",  # OR 1=1, OR 2=2, etc.
+        r"\bAND\s+\d+\s*=\s*\d+",  # AND 1=1, AND 2=2, etc.
+        r"'\s*OR\s*'",  # ' OR '
+        r"'\s*AND\s*'",  # ' AND '
+        r"'\s*;\s*",  # '; (semicolon after quote)
+        r"'\s*--\s*",  # '-- (comment after quote)
+        r"'\s*/\*",  # '/* (block comment after quote)
+        r"\*\s*/\s*'",  # */' (block comment before quote)
     ]
 
     # NoSQL injection patterns
@@ -109,6 +117,12 @@ class InputValidator:
         r"eval\s*\(",
         r"execfile\s*\(",
         r"raw_input\s*\(",
+        r";\s+\w+",  # ; command
+        r"\|\s+\w+",  # | command
+        r"&&\s+\w+",  # && command
+        r"\|\|\s+\w+",  # || command
+        r"`\w+`",  # `command`
+        r"\$\(\w+\)",  # $(command)
     ]
 
     def __init__(self):
@@ -325,6 +339,81 @@ class InputValidator:
             )
 
         return value
+
+    def validate_input(
+        self, value: str, validation_type: str = "general"
+    ) -> Dict[str, Any]:
+        """
+        Validate input based on the specified validation type.
+
+        Args:
+            value: The input string to validate
+            validation_type: Type of validation ('sql', 'xss', 'command', 'path', 'general')
+
+        Returns:
+            Dict with 'is_valid' boolean and optional 'error' string
+        """
+        if not isinstance(value, str):
+            return {"is_valid": False, "error": "Input must be a string"}
+
+        try:
+            if validation_type == "sql":
+                # Check for SQL injection patterns
+                for pattern in self.compiled_patterns["sql"]:
+                    if pattern.search(value):
+                        return {
+                            "is_valid": False,
+                            "error": "SQL injection pattern detected",
+                        }
+
+            elif validation_type == "xss":
+                # Check for XSS patterns
+                for pattern in self.compiled_patterns["xss"]:
+                    if pattern.search(value):
+                        return {"is_valid": False, "error": "XSS pattern detected"}
+
+            elif validation_type == "command":
+                # Check for command injection patterns
+                for pattern in self.compiled_patterns["command"]:
+                    if pattern.search(value):
+                        return {
+                            "is_valid": False,
+                            "error": "Command injection pattern detected",
+                        }
+
+            elif validation_type == "path":
+                # Check for path traversal patterns
+                path_traversal_patterns = [
+                    r"\.\./",
+                    r"\.\.\\",
+                    r"\.\.%2f",
+                    r"\.\.%5c",
+                    r"\.\.%2e%2e",
+                    r"\.\.%252e%252e",
+                    r"/etc/passwd",
+                    r"/etc/shadow",
+                    r"C:\\Windows\\System32",
+                    r"file:///",
+                    r"file://",
+                ]
+                for pattern in path_traversal_patterns:
+                    if re.search(pattern, value, re.IGNORECASE):
+                        return {
+                            "is_valid": False,
+                            "error": "Path traversal pattern detected",
+                        }
+
+            else:  # general validation
+                # Check all dangerous patterns
+                try:
+                    self._check_dangerous_patterns(value)
+                except SecurityValidationError as e:
+                    return {"is_valid": False, "error": str(e)}
+
+            return {"is_valid": True}
+
+        except Exception as e:
+            return {"is_valid": False, "error": f"Validation error: {str(e)}"}
 
     def generate_secure_token(self, length: int = 32) -> str:
         """Generate a secure random token."""

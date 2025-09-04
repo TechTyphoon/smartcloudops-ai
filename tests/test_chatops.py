@@ -13,18 +13,16 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 # Import the classes to test
 try:
-    from app import app
+    from app.chatops.ai_handler import FlexibleAIHandler
     from app.chatops.gpt_handler import GPTHandler
     from app.chatops.utils import (
+        LogRetriever,
         SystemContextGatherer,
         format_response,
         validate_query_params,
     )
 except ImportError:
     # Mock the classes for testing
-    from flask import Flask
-
-    app = Flask(__name__)
 
     # Placeholder for FlexibleAIHandler used in tests
     class FlexibleAIHandler:
@@ -70,11 +68,16 @@ except ImportError:
             }
 
     def format_response(response, data=None, message=None, status="success"):
+        from datetime import datetime, timezone
+
         result = {"status": status, "response": response}
         if data is not None:
             result["data"] = data
         if message is not None:
             result["message"] = message
+        result["timestamp"] = (
+            datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        )
         return result
 
     def validate_query_params(hours=None, level=None):
@@ -118,15 +121,13 @@ class TestGPTHandler:
     @pytest.fixture
     def gpt_handler(self, mock_openai_client):
         """Create GPT handler with mocked client."""
-        with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}):
-            return GPTHandler()
+        return GPTHandler(api_key="test-key")
 
     def test_gpt_handler_initialization(self, mock_openai_client):
         """Test GPT handler initialization."""
-        with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}):
-            handler = GPTHandler()
-            assert handler.api_key == "test-key"
-            assert handler.conversation_history == []
+        handler = GPTHandler(api_key="test-key")
+        assert handler.api_key == "test-key"
+        assert handler.conversation_history == []
 
     def test_gpt_handler_missing_api_key(self):
         """Test GPT handler initialization without API key."""
@@ -163,9 +164,7 @@ class TestGPTHandler:
         ]
 
         for dangerous_input in dangerous_inputs:
-            with pytest.raises(
-                ValueError, match="Query contains potentially unsafe content"
-            ):
+            with pytest.raises(ValueError, match="Query contains potentially unsafe"):
                 gpt_handler.sanitize_input(dangerous_input)
 
     def test_process_query_success(self, gpt_handler, mock_openai_client):
@@ -317,7 +316,7 @@ class TestUtilityFunctions:
         result = format_response("success", {"test": "data"}, "Test message")
 
         assert result["status"] == "success"
-        assert result["dataf"] == {"test": "data"}
+        assert result["data"] == {"test": "data"}
         assert result["message"] == "Test message"
         assert "timestamp" in result
 
@@ -334,17 +333,6 @@ class TestChatOpsIntegration:
     """Test ChatOps integration with Flask app."""
 
     @pytest.fixture
-    def test_app(self):
-        """Create test app."""
-        app.config["TESTING"] = True
-        return app
-
-    @pytest.fixture
-    def client(self, test_app):
-        """Create test client."""
-        return test_app.test_client()
-
-    @pytest.fixture
     def mock_ai_handler(self):
         """Mock AI handler for testing."""
         handler = Mock(spec=FlexibleAIHandler)
@@ -356,42 +344,55 @@ class TestChatOpsIntegration:
         handler.provider = Mock()  # Add provider attribute
         return handler
 
-    def test_query_endpoint_success(self, client, mock_ai_handler):
+    def test_query_endpoint_success(self, client, mock_ai_handler, auth_headers):
         """Test successful query endpoint."""
-        with patch("app.main.ai_handler", mock_ai_handler):
-            response = client.post("/query", json={"query": "test query"})
+        with patch("app.api.chatops.GPTHandler") as mock_gpt_class:
+            mock_handler = Mock()
+            mock_handler.process_query.return_value = {
+                "status": "success",
+                "response": "Test AI response",
+                "timestamp": "2025-08-09T00:00:00Z",
+            }
+            mock_gpt_class.return_value = mock_handler
+
+            response = client.post(
+                "/api/chatops", json={"query": "test query"}, headers=auth_headers
+            )
             assert response.status_code == 200
             data = response.get_json()
             assert data["status"] == "success"
-            assert "data" in data
+            assert "response" in data
+            assert data["response"] == "Test AI response"
 
-    def test_query_endpoint_missing_query(self, client):
+    def test_query_endpoint_missing_query(self, client, auth_headers):
         """Test query endpoint with missing query."""
-        response = client.post("/query", json={})
+        response = client.post("/api/chatops/query", json={}, headers=auth_headers)
         assert response.status_code == 400
         data = response.get_json()
         assert data["status"] == "error"
         assert "error" in data
 
-    def test_logs_endpoint(self, client):
+    def test_logs_endpoint(self, client, auth_headers):
         """Test logs endpoint."""
-        response = client.get("/logs")
+        response = client.get("/chatops/logs", headers=auth_headers)
         assert response.status_code == 200
         data = response.get_json()
         assert data["status"] == "success"
-        assert "data" in data
+        assert "logs" in data
+        assert "count" in data
 
-    def test_logs_endpoint_with_filters(self, client):
+    def test_logs_endpoint_with_filters(self, client, auth_headers):
         """Test logs endpoint with filters."""
-        response = client.get("/logs?hours=1&level=INFO")
+        response = client.get("/chatops/logs?hours=1&level=INFO", headers=auth_headers)
         assert response.status_code == 200
         data = response.get_json()
         assert data["status"] == "success"
-        assert "data" in data
+        assert "logs" in data
+        assert "count" in data
 
-    def test_chat_history_endpoint(self, client):
+    def test_chat_history_endpoint(self, client, auth_headers):
         """Test chat history endpoint."""
-        response = client.get("/chatops/history")
+        response = client.get("/chatops/history", headers=auth_headers)
 
         assert response.status_code == 200
         data = response.get_json()
@@ -399,26 +400,28 @@ class TestChatOpsIntegration:
         assert data["status"]["count"] >= 0
         assert "history" in data["status"]
 
-    def test_clear_history_endpoint(self, client):
+    def test_clear_history_endpoint(self, client, auth_headers):
         """Test clear history endpoint."""
-        response = client.post("/chatops/clear")
+        response = client.post("/chatops/clear", headers=auth_headers)
 
         assert response.status_code == 200
         data = response.get_json()
         assert data["status"] == "success"
 
-    def test_system_summary_endpoint(self, client):
+    def test_system_summary_endpoint(self, client, auth_headers):
         """Test system summary endpoint."""
-        response = client.get("/chatops/system-summary")
+        response = client.get("/chatops/system-summary", headers=auth_headers)
 
         assert response.status_code == 200
         data = response.get_json()
         assert data["status"] == "success"
         assert "summary" in data["data"]
 
-    def test_analyze_endpoint(self, client):
+    def test_analyze_endpoint(self, client, auth_headers):
         """Test query analysis endpoint."""
-        response = client.post("/chatops/analyze", json={"query": "test query"})
+        response = client.post(
+            "/chatops/analyze", json={"query": "test query"}, headers=auth_headers
+        )
 
         assert response.status_code == 200
         data = response.get_json()

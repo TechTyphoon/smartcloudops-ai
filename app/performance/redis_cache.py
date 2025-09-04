@@ -4,8 +4,7 @@ High-performance caching with Redis
 """
 
 import json
-import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 
 class RedisCache:

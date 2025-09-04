@@ -251,3 +251,4 @@ echo "🔒 Remember to add ~/.cursor/.env.mcp to .gitignore"
 ---
 
 **⚠️ Remember: Security is an ongoing process. Regularly review and update your security practices!**
+

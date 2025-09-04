@@ -124,11 +124,11 @@ def test_chatops_analyze_response_time(client: FlaskClient):
 
     test_query = {"query": "show system status"}
 
-    start_time = time.time()
+    time.time()
     response = client.post(
         "/chatops/analyze", data=json.dumps(test_query), content_type="application/json"
     )
-    end_time = time.time()
+    time.time()
 
     assert response.status_code == 200
     # Should respond within 3 seconds (may need AI processing)

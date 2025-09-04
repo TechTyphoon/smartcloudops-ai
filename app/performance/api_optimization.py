@@ -5,7 +5,7 @@ Response time monitoring and optimization
 
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from flask import Flask, g, request
 
@@ -120,7 +120,6 @@ def setup_api_optimization(app: Flask) -> None:
 def shutdown_performance_monitoring() -> None:
     """Shutdown performance monitoring"""
     # This would clean up any resources
-    pass
 
 
 def get_performance_stats() -> Dict[str, Any]:

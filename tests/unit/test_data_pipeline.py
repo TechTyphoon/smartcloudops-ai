@@ -4,19 +4,15 @@ Unit tests for Enhanced Data Pipeline
 Phase 2A Week 3: Comprehensive testing for data pipeline automation
 """
 
-import json
 import shutil
 import tempfile
-from datetime import datetime
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 
 from app.mlops.data_pipeline import (
     DataPipelineManager,
     DataQualityStatus,
-    DataVersion,
     PipelineStage,
     QualityReport,
     get_data_pipeline_manager,
@@ -187,7 +183,7 @@ class TestDataPipelineManager:
             df1 = pd.DataFrame({"col": [1, 2]})
             df2 = pd.DataFrame({"col": [1, 2, 3]})
 
-            version1 = self.pipeline_manager.ingest_data(df1, "multi_version_test")
+            self.pipeline_manager.ingest_data(df1, "multi_version_test")
             version2 = self.pipeline_manager.ingest_data(df2, "multi_version_test")
 
             latest = self.pipeline_manager.get_latest_version("multi_version_test")
@@ -245,7 +241,7 @@ class TestDataPipelineManager:
                     "id": range(100),
                     "value": np.random.randn(100),
                     "category": np.random.choice(["A", "B", "C"], 100),
-                    "timestamp": pd.date_range("2024-01-01", periods=100, freq="H"),
+                    "timestamp": pd.date_range("2024-01-01", periods=100, freq="h"),
                 }
             )
 
@@ -471,7 +467,7 @@ class TestDataPipelineEdgeCases:
             df = pd.DataFrame({"col": [1, 2, 3]})
 
             # Ingest data should create a pipeline run
-            version = self.pipeline_manager.ingest_data(df, "run_tracking_test")
+            self.pipeline_manager.ingest_data(df, "run_tracking_test")
 
             # Check that run was tracked in database
             import sqlite3

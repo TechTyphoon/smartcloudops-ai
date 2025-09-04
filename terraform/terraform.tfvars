@@ -26,7 +26,7 @@ public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC..."
 
 # Monitoring Configuration
 prometheus_retention_days = 15
-grafana_admin_password    = "${GRAFANA_ADMIN_PASSWORD}"
+grafana_admin_password    = GRAFANA_ADMIN_PASSWORD
 
 # Application Configuration
 flask_debug    = true

@@ -45,11 +45,19 @@ def timed_cache(seconds: int = 300):
 
             # Clean old entries periodically
             if len(cache) > 100:  # Prevent cache from growing too large
+                # Remove expired entries first
                 expired_keys = [
                     k for k, (_, ts) in cache.items() if now - ts > seconds * 2
                 ]
-                for k in expired_keys[:50]:  # Remove up to 50 expired entries
+                for k in expired_keys:
                     cache.pop(k, None)
+
+                # If still too large, remove oldest entries
+                if len(cache) > 100:
+                    # Sort by timestamp and remove oldest entries
+                    sorted_keys = sorted(cache.keys(), key=lambda k: cache[k][1])
+                    for k in sorted_keys[: len(cache) - 100]:
+                        cache.pop(k, None)
 
             return result
 
@@ -74,6 +82,38 @@ class AdvancedContextManager:
         self.system_state_history = deque(maxlen=50)
         self.last_context_update = 0
 
+    def _enforce_size_limit(self):
+        """Enforce max_context_size limit by removing oldest entries."""
+        if len(self.context_cache) > self.max_context_size:
+            # Remove oldest entries to maintain size limit
+            items_to_remove = len(self.context_cache) - self.max_context_size
+            # For simplicity, remove the first items (oldest)
+            keys_to_remove = list(self.context_cache.keys())[:items_to_remove]
+            for key in keys_to_remove:
+                self.context_cache.pop(key, None)
+
+    def __setattr__(self, name, value):
+        """Override to enforce size limit when context_cache is modified."""
+        if name == "context_cache" and isinstance(value, dict):
+            # Create a custom dict that enforces size limit
+            class SizeLimitedDict(dict):
+                def __init__(self, max_size, *args, **kwargs):
+                    self.max_size = max_size
+                    super().__init__(*args, **kwargs)
+
+                def __setitem__(self, key, value):
+                    super().__setitem__(key, value)
+                    if len(self) > self.max_size:
+                        # Remove oldest entries
+                        items_to_remove = len(self) - self.max_size
+                        keys_to_remove = list(self.keys())[:items_to_remove]
+                        for k in keys_to_remove:
+                            self.pop(k, None)
+
+            value = SizeLimitedDict(self.max_context_size, value)
+
+        super().__setattr__(name, value)
+
     @timed_cache(seconds=300)  # 5-minute cache for expensive system context gathering
     def get_system_context(self) -> Dict[str, Any]:
         """Get comprehensive system context with advanced caching."""
@@ -93,6 +133,7 @@ class AdvancedContextManager:
 
             # Update cache
             self.context_cache["system_context"] = context
+            self._enforce_size_limit()  # Enforce size limit
             self.last_context_update = current_time
 
             # Add to history
@@ -303,3 +344,146 @@ class QueryProcessor:
 # Global instances
 context_manager = AdvancedContextManager()
 query_processor = QueryProcessor()
+
+
+def format_response(
+    response: Any,
+    data: Any = None,
+    message: str = None,
+    status: str = "success",
+    error: str = None,
+) -> Dict[str, Any]:
+    """Format API response with consistent structure."""
+    formatted = {
+        "status": status,
+        "timestamp": datetime.now().isoformat(),
+    }
+
+    # Handle different response types
+    if isinstance(response, dict):
+        formatted.update(response)
+    elif isinstance(response, str):
+        formatted["response"] = response
+
+    if data is not None:
+        formatted["data"] = data
+
+    if message:
+        formatted["message"] = message
+
+    if error:
+        formatted["error"] = error
+        formatted["status"] = "error"
+
+    return formatted
+
+
+def validate_query_params(data: Dict[str, Any] = None, **kwargs) -> Tuple[bool, str]:
+    """Validate query parameters."""
+    if data is None:
+        data = kwargs
+
+    # Validate hours parameter
+    if "hours" in data:
+        hours = data["hours"]
+        if not isinstance(hours, int):
+            return False, "hours must be an integer"
+        if hours < 1 or hours > 168:
+            return False, "hours must be between 1 and 168"
+
+    # Validate level parameter
+    if "level" in data:
+        level = data["level"]
+        if level is not None:  # Only validate if level is provided
+            valid_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+            if level not in valid_levels:
+                return False, f"level must be one of {valid_levels}"
+
+    # Basic validation - can be extended
+    if "query" in data and not isinstance(data["query"], str):
+        return False, "Query must be a string"
+
+    return True, ""
+
+
+class LogRetriever:
+    """Retrieve logs from the system."""
+
+    def create_sample_log(self) -> Dict[str, Any]:
+        """Create a sample log entry for testing."""
+        return {
+            "message": "Sample log entry for testing",
+            "level": "INFO",
+            "source": "chatops",
+            "timestamp": datetime.now().isoformat(),
+        }
+
+    def get_recent_logs(
+        self, hours: int = 24, level: str = None
+    ) -> List[Dict[str, Any]]:
+        """Get recent logs."""
+        # Placeholder implementation
+        return [
+            {
+                "timestamp": datetime.now().isoformat(),
+                "level": "INFO",
+                "message": "Log retrieval placeholder",
+                "source": "system",
+            }
+        ]
+
+
+class SystemContextGatherer:
+    """Gather system context."""
+
+    def get_system_context(self) -> Dict[str, Any]:
+        """Get system context."""
+        return {
+            "status": "healthy",
+            "timestamp": datetime.now().isoformat(),
+        }
+
+    def get_system_health(self) -> Dict[str, Any]:
+        """Get system health status."""
+        return {
+            "system_health": "healthy",
+            "components": {
+                "database": "connected",
+                "cache": "available",
+                "mlflow": "fallback_mode",
+                "ai_handler": "initialized",
+            },
+            "timestamp": datetime.now().isoformat(),
+        }
+
+    def get_context_for_query(self, query: str) -> Dict[str, Any]:
+        """Get context relevant to a specific query."""
+        return {
+            "query_analysis": {
+                "query": query,
+                "intent": "system_status",
+                "confidence": 0.85,
+            },
+            "relevant_context": {
+                "system_status": "healthy",
+                "components": {"database": "connected", "cache": "available"},
+            },
+            "system_summary": self.get_system_summary(),
+        }
+
+    def get_system_summary(self) -> Dict[str, Any]:
+        """Get system summary."""
+        return {
+            "status": "healthy",
+            "components": {
+                "database": "connected",
+                "cache": "available",
+                "mlflow": "fallback_mode",
+                "ai_handler": "initialized",
+            },
+            "timestamp": datetime.now().isoformat(),
+        }
+
+
+# Additional utility functions
+conversation_manager = AdvancedContextManager()  # Alias for backward compatibility

@@ -1,0 +1,563 @@
+[1mapp/__init__.py[m[36m:[m210[36m:[m1[36m:[m [1m[31mC901[m '_register_blueprints' is too complex (13)
+[1mapp/ai_handler.py[m[36m:[m10[36m:[m89[36m:[m [1m[31mE501[m line too long (584 > 88 characters)
+[1mapp/ai_handler.py[m[36m:[m11[36m:[m89[36m:[m [1m[31mE501[m line too long (516 > 88 characters)
+[1mapp/ai_handler.py[m[36m:[m14[36m:[m89[36m:[m [1m[31mE501[m line too long (504 > 88 characters)
+[1mapp/ai_handler.py[m[36m:[m15[36m:[m89[36m:[m [1m[31mE501[m line too long (443 > 88 characters)
+[1mapp/ai_handler.py[m[36m:[m18[36m:[m89[36m:[m [1m[31mE501[m line too long (562 > 88 characters)
+[1mapp/ai_handler.py[m[36m:[m21[36m:[m89[36m:[m [1m[31mE501[m line too long (548 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m181[36m:[m89[36m:[m [1m[31mE501[m line too long (91 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m184[36m:[m89[36m:[m [1m[31mE501[m line too long (95 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m192[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m372[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m374[36m:[m23[36m:[m [1m[31mE261[m at least two spaces before inline comment
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m381[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m383[36m:[m23[36m:[m [1m[31mE261[m at least two spaces before inline comment
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m390[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m392[36m:[m23[36m:[m [1m[31mE261[m at least two spaces before inline comment
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m399[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m401[36m:[m21[36m:[m [1m[31mE261[m at least two spaces before inline comment
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m437[36m:[m89[36m:[m [1m[31mE501[m line too long (104 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m439[36m:[m89[36m:[m [1m[31mE501[m line too long (107 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m443[36m:[m89[36m:[m [1m[31mE501[m line too long (117 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m445[36m:[m89[36m:[m [1m[31mE501[m line too long (112 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m449[36m:[m89[36m:[m [1m[31mE501[m line too long (111 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m451[36m:[m89[36m:[m [1m[31mE501[m line too long (106 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m455[36m:[m89[36m:[m [1m[31mE501[m line too long (112 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m457[36m:[m89[36m:[m [1m[31mE501[m line too long (115 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m459[36m:[m89[36m:[m [1m[31mE501[m line too long (97 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m524[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m543[36m:[m89[36m:[m [1m[31mE501[m line too long (96 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m627[36m:[m89[36m:[m [1m[31mE501[m line too long (99 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m672[36m:[m36[36m:[m [1m[31mE231[m missing whitespace after ','
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m680[36m:[m89[36m:[m [1m[31mE501[m line too long (94 > 88 characters)
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m727[36m:[m43[36m:[m [1m[31mE231[m missing whitespace after ','
+[1mapp/analytics/real_time_dashboard.py[m[36m:[m730[36m:[m35[36m:[m [1m[31mE231[m missing whitespace after ','
+[1mapp/api/ai.py[m[36m:[m111[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mapp/api/ai.py[m[36m:[m156[36m:[m1[36m:[m [1m[31mC901[m 'analyze_metrics' is too complex (11)
+[1mapp/api/ai.py[m[36m:[m239[36m:[m89[36m:[m [1m[31mE501[m line too long (141 > 88 characters)
+[1mapp/api/ai.py[m[36m:[m306[36m:[m89[36m:[m [1m[31mE501[m line too long (161 > 88 characters)
+[1mapp/api/ai.py[m[36m:[m317[36m:[m89[36m:[m [1m[31mE501[m line too long (151 > 88 characters)
+[1mapp/api/ai.py[m[36m:[m328[36m:[m89[36m:[m [1m[31mE501[m line too long (146 > 88 characters)
+[1mapp/api/ai.py[m[36m:[m339[36m:[m89[36m:[m [1m[31mE501[m line too long (215 > 88 characters)
+[1mapp/api/ai.py[m[36m:[m350[36m:[m89[36m:[m [1m[31mE501[m line too long (199 > 88 characters)
+[1mapp/api/anomalies.py[m[36m:[m318[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mapp/api/anomalies.py[m[36m:[m381[36m:[m9[36m:[m [1m[31mF841[m local variable 'days' is assigned to but never used
+[1mapp/api/anomalies.py[m[36m:[m382[36m:[m9[36m:[m [1m[31mF841[m local variable 'source' is assigned to but never used
+[1mapp/api/anomalies.py[m[36m:[m425[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mapp/api/anomalies_refactored.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'datetime.datetime' imported but unused
+[1mapp/api/anomalies_refactored.py[m[36m:[m232[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mapp/api/anomalies_refactored.py[m[36m:[m339[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mapp/api/chat.py[m[36m:[m93[36m:[m9[36m:[m [1m[31mF841[m local variable 'ai_handler' is assigned to but never used
+[1mapp/api/chatops.py[m[36m:[m6[36m:[m1[36m:[m [1m[31mF401[m 'app.chatops.gpt_handler' imported but unused
+[1mapp/api/core.py[m[36m:[m271[36m:[m89[36m:[m [1m[31mE501[m line too long (126 > 88 characters)
+[1mapp/api/core.py[m[36m:[m388[36m:[m9[36m:[m [1m[31mF841[m local variable 'db_url' is assigned to but never used
+[1mapp/api/core.py[m[36m:[m558[36m:[m9[36m:[m [1m[31mF401[m 'app.performance.api_optimization' imported but unused
+[1mapp/api/core.py[m[36m:[m558[36m:[m9[36m:[m [1m[31mF401[m 'app.performance.caching' imported but unused
+[1mapp/api/core.py[m[36m:[m558[36m:[m9[36m:[m [1m[31mF401[m 'app.performance.database_optimization' imported but unused
+[1mapp/api/feedback.py[m[36m:[m21[36m:[m89[36m:[m [1m[31mE501[m line too long (95 > 88 characters)
+[1mapp/api/feedback.py[m[36m:[m34[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mapp/api/feedback.py[m[36m:[m386[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mapp/api/ml.py[m[36m:[m518[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mapp/api/mlops.py[m[36m:[m5[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mapp/api/mlops.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mF401[m 'typing.List' imported but unused
+[1mapp/api/mlops.py[m[36m:[m27[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1mapp/api/mlops.py[m[36m:[m39[36m:[m1[36m:[m [1m[31mE302[m expected 2 blank lines, found 1
+[1mapp/api/mlops.py[m[36m:[m192[36m:[m22[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m241[36m:[m22[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m290[36m:[m15[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m328[36m:[m89[36m:[m [1m[31mE501[m line too long (96 > 88 characters)
+[1mapp/api/mlops.py[m[36m:[m337[36m:[m22[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m358[36m:[m89[36m:[m [1m[31mE501[m line too long (94 > 88 characters)
+[1mapp/api/mlops.py[m[36m:[m425[36m:[m22[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m485[36m:[m22[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m524[36m:[m27[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m572[36m:[m20[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m622[36m:[m20[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m679[36m:[m24[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m734[36m:[m30[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m773[36m:[m17[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m802[36m:[m17[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m864[36m:[m17[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m902[36m:[m22[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m942[36m:[m21[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m979[36m:[m20[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m1008[36m:[m18[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m1092[36m:[m18[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m1136[36m:[m17[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m1162[36m:[m26[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m1228[36m:[m26[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/mlops.py[m[36m:[m1298[36m:[m21[36m:[m [1m[31mF821[m undefined name 'service'
+[1mapp/api/performance.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'typing.Optional' imported but unused
+[1mapp/api/performance.py[m[36m:[m157[36m:[m89[36m:[m [1m[31mE501[m line too long (91 > 88 characters)
+[1mapp/api/performance.py[m[36m:[m201[36m:[m9[36m:[m [1m[31mF841[m local variable 'data' is assigned to but never used
+[1mapp/api/remediation.py[m[36m:[m410[36m:[m89[36m:[m [1m[31mE501[m line too long (94 > 88 characters)
+[1mapp/api/remediation.py[m[36m:[m524[36m:[m89[36m:[m [1m[31mE501[m line too long (100 > 88 characters)
+[1mapp/api/slos.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'typing.Dict' imported but unused
+[1mapp/api/slos.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'typing.List' imported but unused
+[1mapp/api/slos.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'typing.Optional' imported but unused
+[1mapp/api/slos.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mF401[m 'flask.current_app' imported but unused
+[1mapp/api/slos.py[m[36m:[m11[36m:[m1[36m:[m [1m[31mF401[m 'prometheus_client.generate_latest' imported but unused
+[1mapp/api/slos.py[m[36m:[m357[36m:[m89[36m:[m [1m[31mE501[m line too long (110 > 88 characters)
+[1mapp/api/slos.py[m[36m:[m362[36m:[m89[36m:[m [1m[31mE501[m line too long (103 > 88 characters)
+[1mapp/auth.py[m[36m:[m132[36m:[m1[36m:[m [1m[31mC901[m 'require_auth' is too complex (12)
+[1mapp/auth.py[m[36m:[m184[36m:[m9[36m:[m [1m[31mF841[m local variable 'e' is assigned to but never used
+[1mapp/auth.py[m[36m:[m186[36m:[m9[36m:[m [1m[31mF841[m local variable 'e' is assigned to but never used
+[1mapp/auth.py[m[36m:[m212[36m:[m89[36m:[m [1m[31mE501[m line too long (96 > 88 characters)
+[1mapp/auth.py[m[36m:[m260[36m:[m1[36m:[m [1m[31mC901[m 'register_auth_endpoints' is too complex (30)
+[1mapp/auth_routes.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'typing.List' imported but unused
+[1mapp/chatops/ai_handler.py[m[36m:[m120[36m:[m89[36m:[m [1m[31mE501[m line too long (180 > 88 characters)
+[1mapp/chatops/ai_handler.py[m[36m:[m127[36m:[m89[36m:[m [1m[31mE501[m line too long (218 > 88 characters)
+[1mapp/chatops/ai_handler.py[m[36m:[m134[36m:[m89[36m:[m [1m[31mE501[m line too long (220 > 88 characters)
+[1mapp/chatops/ai_handler.py[m[36m:[m141[36m:[m89[36m:[m [1m[31mE501[m line too long (173 > 88 characters)
+[1mapp/chatops/ai_handler.py[m[36m:[m148[36m:[m89[36m:[m [1m[31mE501[m line too long (263 > 88 characters)
+[1mapp/chatops/gpt_handler.py[m[36m:[m33[36m:[m1[36m:[m [1m[31mF401[m 'flask.Flask' imported but unused
+[1mapp/chatops/gpt_handler.py[m[36m:[m33[36m:[m1[36m:[m [1m[31mF401[m 'flask.jsonify' imported but unused
+[1mapp/chatops/gpt_handler.py[m[36m:[m33[36m:[m1[36m:[m [1m[31mF401[m 'flask.request' imported but unused
+[1mapp/chatops/gpt_handler.py[m[36m:[m78[36m:[m89[36m:[m [1m[31mE501[m line too long (99 > 88 characters)
+[1mapp/chatops/gpt_handler.py[m[36m:[m79[36m:[m89[36m:[m [1m[31mE501[m line too long (97 > 88 characters)
+[1mapp/chatops/gpt_handler.py[m[36m:[m93[36m:[m89[36m:[m [1m[31mE501[m line too long (97 > 88 characters)
+[1mapp/chatops/gpt_handler.py[m[36m:[m96[36m:[m5[36m:[m [1m[31mC901[m 'GPTHandler.sanitize_input' is too complex (12)
+[1mapp/chatops/gpt_handler.py[m[36m:[m97[36m:[m89[36m:[m [1m[31mE501[m line too long (91 > 88 characters)
+[1mapp/chatops/gpt_handler.py[m[36m:[m124[36m:[m89[36m:[m [1m[31mE501[m line too long (99 > 88 characters)
+[1mapp/chatops/gpt_handler.py[m[36m:[m125[36m:[m89[36m:[m [1m[31mE501[m line too long (104 > 88 characters)
+[1mapp/chatops/gpt_handler.py[m[36m:[m130[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mapp/chatops_module.py[m[36m:[m21[36m:[m5[36m:[m [1m[31mF401[m 'app.chatops.utils.conversation_manager' imported but unused
+[1mapp/chatops_module.py[m[36m:[m46[36m:[m1[36m:[m [1m[31mC901[m 'chatops_analyze' is too complex (11)
+[1mapp/chatops_module.py[m[36m:[m137[36m:[m1[36m:[m [1m[31mC901[m 'chatops_query' is too complex (11)
+[1mapp/chatops_module.py[m[36m:[m285[36m:[m17[36m:[m [1m[31mF601[m dictionary key 'status' repeated with different values
+[1mapp/chatops_module.py[m[36m:[m287[36m:[m17[36m:[m [1m[31mF601[m dictionary key 'status' repeated with different values
+[1mapp/config.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'secrets' imported but unused
+[1mapp/config.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'typing.Optional' imported but unused
+[1mapp/config.py[m[36m:[m41[36m:[m89[36m:[m [1m[31mE501[m line too long (97 > 88 characters)
+[1mapp/main.py[m[36m:[m12[36m:[m1[36m:[m [1m[31mF401[m 'flask.Flask' imported but unused
+[1mapp/main.py[m[36m:[m12[36m:[m1[36m:[m [1m[31mF401[m 'flask.jsonify' imported but unused
+[1mapp/main.py[m[36m:[m12[36m:[m1[36m:[m [1m[31mF401[m 'flask.request' imported but unused
+[1mapp/main.py[m[36m:[m41[36m:[m89[36m:[m [1m[31mE501[m line too long (96 > 88 characters)
+[1mapp/main.py[m[36m:[m70[36m:[m9[36m:[m [1m[31mF401[m 'app.performance.api_optimization.performance_collector' imported but unused
+[1mapp/ml_service.py[m[36m:[m32[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mapp/mlops/__init__.py[m[36m:[m3[36m:[m89[36m:[m [1m[31mE501[m line too long (103 > 88 characters)
+[1mapp/mlops/__init__.py[m[36m:[m10[36m:[m5[36m:[m [1m[31mF401[m '.experiment_tracker.ExperimentTracker' imported but unused
+[1mapp/mlops/__init__.py[m[36m:[m10[36m:[m5[36m:[m [1m[31mF401[m '.experiment_tracker.get_experiment_tracker' imported but unused
+[1mapp/mlops/__init__.py[m[36m:[m17[36m:[m5[36m:[m [1m[31mF401[m '.model_registry.ModelRegistry' imported but unused
+[1mapp/mlops/__init__.py[m[36m:[m17[36m:[m5[36m:[m [1m[31mF401[m '.model_registry.get_model_registry' imported but unused
+[1mapp/mlops/autonomous_ops.py[m[36m:[m11[36m:[m1[36m:[m [1m[31mF401[m 'typing.Optional' imported but unused
+[1mapp/mlops/autonomous_ops.py[m[36m:[m11[36m:[m1[36m:[m [1m[31mF401[m 'typing.Tuple' imported but unused
+[1mapp/mlops/autonomous_ops.py[m[36m:[m44[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mapp/mlops/data_pipeline.py[m[36m:[m12[36m:[m1[36m:[m [1m[31mF401[m 'datetime.timedelta' imported but unused
+[1mapp/mlops/data_pipeline.py[m[36m:[m15[36m:[m1[36m:[m [1m[31mF401[m 'typing.Tuple' imported but unused
+[1mapp/mlops/data_pipeline.py[m[36m:[m28[36m:[m9[36m:[m [1m[31mF401[m 'sklearn.metrics.cross_val_score' imported but unused
+[1mapp/mlops/data_pipeline.py[m[36m:[m334[36m:[m89[36m:[m [1m[31mE501[m line too long (95 > 88 characters)
+[1mapp/mlops/data_pipeline.py[m[36m:[m513[36m:[m5[36m:[m [1m[31mC901[m 'DataPipelineManager.ingest_data' is too complex (23)
+[1mapp/mlops/data_pipeline.py[m[36m:[m520[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mapp/mlops/data_pipeline.py[m[36m:[m523[36m:[m89[36m:[m [1m[31mE501[m line too long (103 > 88 characters)
+[1mapp/mlops/data_pipeline.py[m[36m:[m599[36m:[m89[36m:[m [1m[31mE501[m line too long (190 > 88 characters)
+[1mapp/mlops/data_pipeline.py[m[36m:[m687[36m:[m89[36m:[m [1m[31mE501[m line too long (112 > 88 characters)
+[1mapp/mlops/data_pipeline.py[m[36m:[m692[36m:[m89[36m:[m [1m[31mE501[m line too long (102 > 88 characters)
+[1mapp/mlops/data_pipeline.py[m[36m:[m712[36m:[m89[36m:[m [1m[31mE501[m line too long (162 > 88 characters)
+[1mapp/mlops/data_pipeline.py[m[36m:[m734[36m:[m89[36m:[m [1m[31mE501[m line too long (111 > 88 characters)
+[1mapp/mlops/data_pipeline.py[m[36m:[m746[36m:[m89[36m:[m [1m[31mE501[m line too long (106 > 88 characters)
+[1mapp/mlops/data_pipeline.py[m[36m:[m791[36m:[m5[36m:[m [1m[31mC901[m 'DataPipelineManager.transform_data' is too complex (12)
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m11[36m:[m1[36m:[m [1m[31mF401[m 'dataclasses.asdict' imported but unused
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m12[36m:[m1[36m:[m [1m[31mF401[m 'datetime.timedelta' imported but unused
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m338[36m:[m89[36m:[m [1m[31mE501[m line too long (92 > 88 characters)
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m592[36m:[m89[36m:[m [1m[31mE501[m line too long (123 > 88 characters)
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m763[36m:[m53[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m764[36m:[m79[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m765[36m:[m74[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m817[36m:[m89[36m:[m [1m[31mE501[m line too long (97 > 88 characters)
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m823[36m:[m55[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m824[36m:[m80[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m825[36m:[m72[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m826[36m:[m67[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m827[36m:[m78[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m862[36m:[m37[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m910[36m:[m89[36m:[m [1m[31mE501[m line too long (94 > 88 characters)
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m911[36m:[m39[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m920[36m:[m89[36m:[m [1m[31mE501[m line too long (94 > 88 characters)
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m921[36m:[m39[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m946[36m:[m53[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m947[36m:[m41[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/data_pipeline_enhanced.py[m[36m:[m975[36m:[m89[36m:[m [1m[31mE501[m line too long (94 > 88 characters)
+[1mapp/mlops/dataset_manager.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mF401[m 'dataclasses.asdict' imported but unused
+[1mapp/mlops/dataset_manager.py[m[36m:[m14[36m:[m1[36m:[m [1m[31mF401[m 'typing.Union' imported but unused
+[1mapp/mlops/dataset_manager.py[m[36m:[m16[36m:[m1[36m:[m [1m[31mF401[m 'numpy as np' imported but unused
+[1mapp/mlops/dataset_manager.py[m[36m:[m153[36m:[m89[36m:[m [1m[31mE501[m line too long (99 > 88 characters)
+[1mapp/mlops/dataset_manager.py[m[36m:[m304[36m:[m52[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/dataset_manager.py[m[36m:[m305[36m:[m80[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/dataset_manager.py[m[36m:[m306[36m:[m81[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/dataset_manager.py[m[36m:[m307[36m:[m89[36m:[m [1m[31mE501[m line too long (99 > 88 characters)
+[1mapp/mlops/dataset_manager.py[m[36m:[m388[36m:[m89[36m:[m [1m[31mE501[m line too long (96 > 88 characters)
+[1mapp/mlops/experiment_tracker.py[m[36m:[m13[36m:[m1[36m:[m [1m[31mF401[m 'enum.Enum' imported but unused
+[1mapp/mlops/experiment_tracker.py[m[36m:[m274[36m:[m47[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/experiment_tracker.py[m[36m:[m275[36m:[m89[36m:[m [1m[31mE501[m line too long (96 > 88 characters)
+[1mapp/mlops/experiment_tracker.py[m[36m:[m300[36m:[m40[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/experiment_tracker.py[m[36m:[m301[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mapp/mlops/experiment_tracker.py[m[36m:[m302[36m:[m89[36m:[m [1m[31mE501[m line too long (94 > 88 characters)
+[1mapp/mlops/knowledge_base.py[m[36m:[m14[36m:[m1[36m:[m [1m[31mF401[m 'numpy as np' imported but unused
+[1mapp/mlops/knowledge_base.py[m[36m:[m137[36m:[m89[36m:[m [1m[31mE501[m line too long (97 > 88 characters)
+[1mapp/mlops/knowledge_base.py[m[36m:[m138[36m:[m89[36m:[m [1m[31mE501[m line too long (97 > 88 characters)
+[1mapp/mlops/knowledge_base.py[m[36m:[m147[36m:[m9[36m:[m [1m[31mE722[m do not use bare 'except'
+[1mapp/mlops/knowledge_base.py[m[36m:[m328[36m:[m89[36m:[m [1m[31mE501[m line too long (114 > 88 characters)
+[1mapp/mlops/model_monitor.py[m[36m:[m487[36m:[m40[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/model_monitor.py[m[36m:[m639[36m:[m89[36m:[m [1m[31mE501[m line too long (114 > 88 characters)
+[1mapp/mlops/model_monitor.py[m[36m:[m665[36m:[m42[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/model_monitor.py[m[36m:[m666[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mapp/mlops/model_monitor.py[m[36m:[m768[36m:[m13[36m:[m [1m[31mE722[m do not use bare 'except'
+[1mapp/mlops/model_monitor.py[m[36m:[m800[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mapp/mlops/model_registry.py[m[36m:[m12[36m:[m1[36m:[m [1m[31mF401[m 'dataclasses.asdict' imported but unused
+[1mapp/mlops/model_registry.py[m[36m:[m14[36m:[m1[36m:[m [1m[31mF401[m 'enum.Enum' imported but unused
+[1mapp/mlops/model_registry.py[m[36m:[m16[36m:[m1[36m:[m [1m[31mF401[m 'typing.Optional' imported but unused
+[1mapp/mlops/model_registry.py[m[36m:[m251[36m:[m42[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/reinforcement_learning.py[m[36m:[m12[36m:[m1[36m:[m [1m[31mF401[m 'datetime.timedelta' imported but unused
+[1mapp/mlops/reinforcement_learning.py[m[36m:[m176[36m:[m13[36m:[m [1m[31mF841[m local variable 'q_value' is assigned to but never used
+[1mapp/mlops/reinforcement_learning.py[m[36m:[m365[36m:[m13[36m:[m [1m[31mF841[m local variable 'metrics' is assigned to but never used
+[1mapp/mlops/reinforcement_learning.py[m[36m:[m371[36m:[m13[36m:[m [1m[31mF841[m local variable 'hyperparameters' is assigned to but never used
+[1mapp/mlops/reinforcement_learning.py[m[36m:[m373[36m:[m13[36m:[m [1m[31mF841[m local variable 'feature_names' is assigned to but never used
+[1mapp/mlops/reproducibility.py[m[36m:[m120[36m:[m89[36m:[m [1m[31mE501[m line too long (96 > 88 characters)
+[1mapp/mlops/reproducibility.py[m[36m:[m121[36m:[m89[36m:[m [1m[31mE501[m line too long (96 > 88 characters)
+[1mapp/mlops/reproducibility.py[m[36m:[m155[36m:[m89[36m:[m [1m[31mE501[m line too long (108 > 88 characters)
+[1mapp/mlops/reproducibility.py[m[36m:[m294[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mapp/mlops/reproducibility.py[m[36m:[m332[36m:[m15[36m:[m [1m[31mF541[m f-string is missing placeholders
+[1mapp/mlops/reproducibility.py[m[36m:[m361[36m:[m89[36m:[m [1m[31mE501[m line too long (100 > 88 characters)
+[1mapp/mlops/reproducibility.py[m[36m:[m406[36m:[m54[36m:[m [1m[31mW291[m trailing whitespace
+[1mapp/mlops/reproducibility.py[m[36m:[m458[36m:[m89[36m:[m [1m[31mE501[m line too long (92 > 88 characters)
+[1mapp/mlops/reproducibility.py[m[36m:[m605[36m:[m9[36m:[m [1m[31mE722[m do not use bare 'except'
+[1mapp/mlops/reproducibility.py[m[36m:[m653[36m:[m9[36m:[m [1m[31mE722[m do not use bare 'except'
+[1mapp/mlops/reproducibility.py[m[36m:[m699[36m:[m9[36m:[m [1m[31mE722[m do not use bare 'except'
+[1mapp/mlops/reproducibility.py[m[36m:[m832[36m:[m89[36m:[m [1m[31mE501[m line too long (125 > 88 characters)
+[1mapp/mlops/reproducibility.py[m[36m:[m843[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mapp/mlops/reproducibility.py[m[36m:[m855[36m:[m89[36m:[m [1m[31mE501[m line too long (106 > 88 characters)
+[1mapp/mlops/reproducibility.py[m[36m:[m926[36m:[m89[36m:[m [1m[31mE501[m line too long (110 > 88 characters)
+[1mapp/mlops/reproducibility.py[m[36m:[m936[36m:[m19[36m:[m [1m[31mF541[m f-string is missing placeholders
+[1mapp/mlops/reproducibility.py[m[36m:[m947[36m:[m89[36m:[m [1m[31mE501[m line too long (100 > 88 characters)
+[1mapp/mlops/reproducibility.py[m[36m:[m1038[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mapp/mlops/reproducibility.py[m[36m:[m1073[36m:[m89[36m:[m [1m[31mE501[m line too long (94 > 88 characters)
+[1mapp/mlops/training_pipeline.py[m[36m:[m280[36m:[m89[36m:[m [1m[31mE501[m line too long (91 > 88 characters)
+[1mapp/mlops/training_pipeline.py[m[36m:[m302[36m:[m5[36m:[m [1m[31mC901[m 'TrainingPipeline.run_training_job' is too complex (15)
+[1mapp/mlops/training_pipeline.py[m[36m:[m861[36m:[m9[36m:[m [1m[31mE722[m do not use bare 'except'
+[1mapp/models.py[m[36m:[m6[36m:[m1[36m:[m [1m[31mF401[m 'datetime.datetime' imported but unused
+[1mapp/monitoring/metrics.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mF401[m 'flask.Flask' imported but unused
+[1mapp/monitoring/metrics.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mF401[m 'flask.jsonify' imported but unused
+[1mapp/monitoring/metrics.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mF401[m 'flask.request' imported but unused
+[1mapp/monitoring/metrics.py[m[36m:[m11[36m:[m1[36m:[m [1m[31mF401[m 'prometheus_client.Summary' imported but unused
+[1mapp/observability/dashboards.py[m[36m:[m64[36m:[m89[36m:[m [1m[31mE501[m line too long (111 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m68[36m:[m89[36m:[m [1m[31mE501[m line too long (111 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m72[36m:[m89[36m:[m [1m[31mE501[m line too long (111 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m113[36m:[m89[36m:[m [1m[31mE501[m line too long (97 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m125[36m:[m89[36m:[m [1m[31mE501[m line too long (116 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m194[36m:[m89[36m:[m [1m[31mE501[m line too long (118 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m218[36m:[m89[36m:[m [1m[31mE501[m line too long (110 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m230[36m:[m89[36m:[m [1m[31mE501[m line too long (101 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m242[36m:[m89[36m:[m [1m[31mE501[m line too long (96 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m289[36m:[m89[36m:[m [1m[31mE501[m line too long (113 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m375[36m:[m89[36m:[m [1m[31mE501[m line too long (116 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m379[36m:[m89[36m:[m [1m[31mE501[m line too long (112 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m430[36m:[m89[36m:[m [1m[31mE501[m line too long (92 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m435[36m:[m89[36m:[m [1m[31mE501[m line too long (127 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m440[36m:[m89[36m:[m [1m[31mE501[m line too long (132 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m445[36m:[m89[36m:[m [1m[31mE501[m line too long (94 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m450[36m:[m89[36m:[m [1m[31mE501[m line too long (113 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m455[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mapp/observability/dashboards.py[m[36m:[m465[36m:[m89[36m:[m [1m[31mE501[m line too long (103 > 88 characters)
+[1mapp/observability/enhanced_logging.py[m[36m:[m6[36m:[m1[36m:[m [1m[31mF401[m 'json' imported but unused
+[1mapp/observability/enhanced_logging.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'os' imported but unused
+[1mapp/observability/enhanced_logging.py[m[36m:[m12[36m:[m1[36m:[m [1m[31mF401[m 'typing.Any' imported but unused
+[1mapp/observability/enhanced_logging.py[m[36m:[m12[36m:[m1[36m:[m [1m[31mF401[m 'typing.Dict' imported but unused
+[1mapp/observability/enhanced_logging.py[m[36m:[m12[36m:[m1[36m:[m [1m[31mF401[m 'typing.Optional' imported but unused
+[1mapp/observability/metrics.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'typing.Optional' imported but unused
+[1mapp/observability/metrics.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mF401[m 'prometheus_client.Summary' imported but unused
+[1mapp/observability/middleware.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'werkzeug.serving.WSGIRequestHandler' imported but unused
+[1mapp/observability/opentelemetry_config.py[m[36m:[m55[36m:[m89[36m:[m [1m[31mE501[m line too long (97 > 88 characters)
+[1mapp/observability/tracing.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'typing.Optional' imported but unused
+[1mapp/observability/tracing.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mF401[m 'flask.request' imported but unused
+[1mapp/performance/__init__.py[m[36m:[m7[36m:[m5[36m:[m [1m[31mF401[m '.api_optimization.init_performance_monitoring' imported but unused
+[1mapp/performance/__init__.py[m[36m:[m7[36m:[m5[36m:[m [1m[31mF401[m '.api_optimization.performance_collector' imported but unused
+[1mapp/performance/__init__.py[m[36m:[m8[36m:[m5[36m:[m [1m[31mF401[m '.caching.CacheWarmup' imported but unused
+[1mapp/performance/__init__.py[m[36m:[m8[36m:[m5[36m:[m [1m[31mF401[m '.caching.cache_manager' imported but unused
+[1mapp/performance/__init__.py[m[36m:[m8[36m:[m5[36m:[m [1m[31mF401[m '.caching.cached' imported but unused
+[1mapp/performance/__init__.py[m[36m:[m9[36m:[m5[36m:[m [1m[31mF401[m '.database_optimization.get_database' imported but unused
+[1mapp/performance/__init__.py[m[36m:[m9[36m:[m5[36m:[m [1m[31mF401[m '.database_optimization.init_optimized_database' imported but unused
+[1mapp/performance/anomaly_optimization.py[m[36m:[m11[36m:[m1[36m:[m [1m[31mF401[m 'os' imported but unused
+[1mapp/performance/anomaly_optimization.py[m[36m:[m15[36m:[m1[36m:[m [1m[31mF401[m 'concurrent.futures.ProcessPoolExecutor' imported but unused
+[1mapp/performance/anomaly_optimization.py[m[36m:[m17[36m:[m1[36m:[m [1m[31mF401[m 'datetime.timedelta' imported but unused
+[1mapp/performance/anomaly_optimization.py[m[36m:[m18[36m:[m1[36m:[m [1m[31mF401[m 'functools.wraps' imported but unused
+[1mapp/performance/anomaly_optimization.py[m[36m:[m19[36m:[m1[36m:[m [1m[31mF401[m 'typing.Callable' imported but unused
+[1mapp/performance/api_optimization.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'typing.Optional' imported but unused
+[1mapp/performance/caching.py[m[36m:[m14[36m:[m1[36m:[m [1m[31mF401[m 'datetime.datetime' imported but unused
+[1mapp/performance/caching.py[m[36m:[m14[36m:[m1[36m:[m [1m[31mF401[m 'datetime.timedelta' imported but unused
+[1mapp/performance/caching.py[m[36m:[m16[36m:[m1[36m:[m [1m[31mF401[m 'typing.Tuple' imported but unused
+[1mapp/performance/caching.py[m[36m:[m160[36m:[m13[36m:[m [1m[31mE722[m do not use bare 'except'
+[1mapp/performance/caching.py[m[36m:[m364[36m:[m89[36m:[m [1m[31mE501[m line too long (102 > 88 characters)
+[1mapp/performance/log_optimization.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mF401[m 'os' imported but unused
+[1mapp/performance/log_optimization.py[m[36m:[m17[36m:[m1[36m:[m [1m[31mF401[m 'datetime.timedelta' imported but unused
+[1mapp/performance/log_optimization.py[m[36m:[m20[36m:[m1[36m:[m [1m[31mF401[m 'typing.List' imported but unused
+[1mapp/performance/log_optimization.py[m[36m:[m153[36m:[m13[36m:[m [1m[31mF841[m local variable 'files_to_keep' is assigned to but never used
+[1mapp/performance/redis_cache.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'time' imported but unused
+[1mapp/performance/redis_cache.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'typing.Optional' imported but unused
+[1mapp/remediation/actions.py[m[36m:[m86[36m:[m89[36m:[m [1m[31mE501[m line too long (96 > 88 characters)
+[1mapp/remediation/engine.py[m[36m:[m191[36m:[m5[36m:[m [1m[31mC901[m 'RemediationEngine._analyze_metrics' is too complex (11)
+[1mapp/remediation/engine.py[m[36m:[m331[36m:[m5[36m:[m [1m[31mC901[m 'RemediationEngine.execute_remediation' is too complex (11)
+[1mapp/remediation/engine.py[m[36m:[m347[36m:[m89[36m:[m [1m[31mE501[m line too long (95 > 88 characters)
+[1mapp/remediation/engine.py[m[36m:[m360[36m:[m89[36m:[m [1m[31mE501[m line too long (107 > 88 characters)
+[1mapp/remediation/notifications.py[m[36m:[m187[36m:[m89[36m:[m [1m[31mE501[m line too long (92 > 88 characters)
+[1mapp/security/caching.py[m[36m:[m11[36m:[m1[36m:[m [1m[31mF401[m 'typing.List' imported but unused
+[1mapp/security/config.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 're' imported but unused
+[1mapp/security/config.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'datetime.datetime' imported but unused
+[1mapp/security/config.py[m[36m:[m161[36m:[m89[36m:[m [1m[31mE501[m line too long (91 > 88 characters)
+[1mapp/security/config.py[m[36m:[m175[36m:[m89[36m:[m [1m[31mE501[m line too long (101 > 88 characters)
+[1mapp/security/config.py[m[36m:[m188[36m:[m89[36m:[m [1m[31mE501[m line too long (122 > 88 characters)
+[1mapp/security/config.py[m[36m:[m194[36m:[m89[36m:[m [1m[31mE501[m line too long (101 > 88 characters)
+[1mapp/security/error_handling.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'datetime.timedelta' imported but unused
+[1mapp/security/error_handling.py[m[36m:[m18[36m:[m5[36m:[m [1m[31mE731[m do not assign a lambda expression, use a def
+[1mapp/security/error_handling.py[m[36m:[m195[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mapp/security/error_handling.py[m[36m:[m312[36m:[m13[36m:[m [1m[31mF841[m local variable 'error_type' is assigned to but never used
+[1mapp/security/error_handling.py[m[36m:[m357[36m:[m13[36m:[m [1m[31mF841[m local variable 'error_type' is assigned to but never used
+[1mapp/security/input_validation.py[m[36m:[m11[36m:[m1[36m:[m [1m[31mF401[m 'typing.Optional' imported but unused
+[1mapp/security/input_validation.py[m[36m:[m11[36m:[m1[36m:[m [1m[31mF401[m 'typing.Union' imported but unused
+[1mapp/security/input_validation.py[m[36m:[m343[36m:[m5[36m:[m [1m[31mC901[m 'InputValidator.validate_input' is too complex (18)
+[1mapp/security/input_validation.py[m[36m:[m351[36m:[m89[36m:[m [1m[31mE501[m line too long (92 > 88 characters)
+[1mapp/security/logging_security.py[m[36m:[m3[36m:[m1[36m:[m [1m[31mF401[m 'typing.Union' imported but unused
+[1mapp/security/rate_limiting.py[m[36m:[m21[36m:[m5[36m:[m [1m[31mE731[m do not assign a lambda expression, use a def
+[1mapp/security/rate_limiting.py[m[36m:[m148[36m:[m13[36m:[m [1m[31mF841[m local variable 'current_time' is assigned to but never used
+[1mapp/security/rate_limiting.py[m[36m:[m224[36m:[m1[36m:[m [1m[31mC901[m 'rate_limit' is too complex (11)
+[1mapp/security/rate_limiting.py[m[36m:[m250[36m:[m89[36m:[m [1m[31mE501[m line too long (123 > 88 characters)
+[1mapp/security/secrets_manager.py[m[36m:[m49[36m:[m89[36m:[m [1m[31mE501[m line too long (92 > 88 characters)
+[1mapp/security/secrets_manager.py[m[36m:[m91[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mapp/services/ai_service.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'datetime.datetime' imported but unused
+[1mapp/services/ai_service.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'typing.List' imported but unused
+[1mapp/services/ai_service.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'typing.Optional' imported but unused
+[1mapp/services/ai_service.py[m[36m:[m42[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mapp/services/ai_service.py[m[36m:[m106[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mapp/services/ai_service.py[m[36m:[m211[36m:[m89[36m:[m [1m[31mE501[m line too long (141 > 88 characters)
+[1mapp/services/ai_service.py[m[36m:[m261[36m:[m89[36m:[m [1m[31mE501[m line too long (161 > 88 characters)
+[1mapp/services/ai_service.py[m[36m:[m272[36m:[m89[36m:[m [1m[31mE501[m line too long (151 > 88 characters)
+[1mapp/services/ai_service.py[m[36m:[m283[36m:[m89[36m:[m [1m[31mE501[m line too long (146 > 88 characters)
+[1mapp/services/ai_service.py[m[36m:[m294[36m:[m89[36m:[m [1m[31mE501[m line too long (215 > 88 characters)
+[1mapp/services/ai_service.py[m[36m:[m305[36m:[m89[36m:[m [1m[31mE501[m line too long (199 > 88 characters)
+[1mapp/services/anomaly_service.py[m[36m:[m16[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mapp/services/anomaly_service.py[m[36m:[m185[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mapp/services/feedback_service.py[m[36m:[m22[36m:[m89[36m:[m [1m[31mE501[m line too long (103 > 88 characters)
+[1mapp/services/feedback_service.py[m[36m:[m35[36m:[m89[36m:[m [1m[31mE501[m line too long (97 > 88 characters)
+[1mapp/services/feedback_service.py[m[36m:[m194[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mapp/services/ml_service.py[m[36m:[m142[36m:[m89[36m:[m [1m[31mE501[m line too long (101 > 88 characters)
+[1mapp/services/ml_service.py[m[36m:[m175[36m:[m89[36m:[m [1m[31mE501[m line too long (95 > 88 characters)
+[1mapp/services/mlops_service.py[m[36m:[m16[36m:[m5[36m:[m [1m[31mF401[m 'app.mlops.experiment_tracker.ExperimentTracker' imported but unused
+[1mapp/services/mlops_service.py[m[36m:[m23[36m:[m5[36m:[m [1m[31mF401[m 'app.mlops.model_registry.ModelRegistry' imported but unused
+[1mapp/services/mlops_service.py[m[36m:[m30[36m:[m5[36m:[m [1m[31mF401[m 'app.mlops.data_pipeline.DataPipelineManager' imported but unused
+[1mapp/services/mlops_service.py[m[36m:[m37[36m:[m5[36m:[m [1m[31mF401[m 'ml_models.mlflow_config.MLflowManager' imported but unused
+[1mapp/services/mlops_service.py[m[36m:[m45[36m:[m89[36m:[m [1m[31mE501[m line too long (114 > 88 characters)
+[1mapp/services/mlops_service.py[m[36m:[m327[36m:[m89[36m:[m [1m[31mE501[m line too long (96 > 88 characters)
+[1mapp/services/mlops_service.py[m[36m:[m434[36m:[m9[36m:[m [1m[31mF841[m local variable 'e' is assigned to but never used
+[1mapp/services/remediation_service.py[m[36m:[m212[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mscripts/deployment/deploy_flask_app.py[m[36m:[m158[36m:[m89[36m:[m [1m[31mE501[m line too long (107 > 88 characters)
+[1mscripts/deployment/deploy_flask_app.py[m[36m:[m175[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mscripts/deployment/deploy_flask_app.py[m[36m:[m179[36m:[m89[36m:[m [1m[31mE501[m line too long (105 > 88 characters)
+[1mscripts/deployment/deploy_flask_app.py[m[36m:[m183[36m:[m89[36m:[m [1m[31mE501[m line too long (94 > 88 characters)
+[1mscripts/deployment/deploy_flask_app.py[m[36m:[m193[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mscripts/mlops/demo_mlops_integration.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'datetime.datetime' imported but unused
+[1mscripts/mlops/demo_mlops_integration.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'pathlib.Path' imported but unused
+[1mscripts/mlops/demo_mlops_integration.py[m[36m:[m153[36m:[m15[36m:[m [1m[31mF541[m f-string is missing placeholders
+[1mscripts/mlops/demo_mlops_integration.py[m[36m:[m218[36m:[m15[36m:[m [1m[31mF541[m f-string is missing placeholders
+[1mscripts/mlops/demo_mlops_integration.py[m[36m:[m257[36m:[m11[36m:[m [1m[31mF541[m f-string is missing placeholders
+[1mscripts/monitoring/continuous_health_monitor.py[m[36m:[m131[36m:[m5[36m:[m [1m[31mC901[m 'ContinuousHealthMonitor.check_endpoint' is too complex (12)
+[1mscripts/monitoring/continuous_health_monitor.py[m[36m:[m222[36m:[m89[36m:[m [1m[31mE501[m line too long (98 > 88 characters)
+[1mscripts/monitoring/continuous_health_monitor.py[m[36m:[m257[36m:[m89[36m:[m [1m[31mE501[m line too long (105 > 88 characters)
+[1mscripts/monitoring/continuous_health_monitor.py[m[36m:[m302[36m:[m13[36m:[m [1m[31mF841[m local variable 'error' is assigned to but never used
+[1mscripts/monitoring/real_system_monitor.py[m[36m:[m96[36m:[m17[36m:[m [1m[31mF541[m f-string is missing placeholders
+[1mscripts/monitoring/real_system_monitor.py[m[36m:[m168[36m:[m89[36m:[m [1m[31mE501[m line too long (156 > 88 characters)
+[1mscripts/monitoring/real_system_monitor.py[m[36m:[m171[36m:[m89[36m:[m [1m[31mE501[m line too long (148 > 88 characters)
+[1mscripts/monitoring/real_system_monitor.py[m[36m:[m182[36m:[m89[36m:[m [1m[31mE501[m line too long (108 > 88 characters)
+[1mscripts/monitoring/real_system_monitor.py[m[36m:[m192[36m:[m89[36m:[m [1m[31mE501[m line too long (96 > 88 characters)
+[1mscripts/performance/locust_load_test.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'json' imported but unused
+[1mscripts/performance/locust_load_test.py[m[36m:[m489[36m:[m5[36m:[m [1m[31mF401[m 'sys' imported but unused
+[1mscripts/performance/optimization_engine.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'json' imported but unused
+[1mscripts/performance/optimization_engine.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'statistics' imported but unused
+[1mscripts/performance/optimization_engine.py[m[36m:[m15[36m:[m1[36m:[m [1m[31mF401[m 'typing.Any' imported but unused
+[1mscripts/performance/optimization_engine.py[m[36m:[m15[36m:[m1[36m:[m [1m[31mF401[m 'typing.Tuple' imported but unused
+[1mscripts/performance/optimization_engine.py[m[36m:[m127[36m:[m89[36m:[m [1m[31mE501[m line too long (243 > 88 characters)
+[1mscripts/performance/optimization_engine.py[m[36m:[m250[36m:[m89[36m:[m [1m[31mE501[m line too long (91 > 88 characters)
+[1mscripts/performance/optimization_engine.py[m[36m:[m339[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mscripts/performance/optimization_engine.py[m[36m:[m377[36m:[m89[36m:[m [1m[31mE501[m line too long (97 > 88 characters)
+[1mscripts/performance/optimization_engine.py[m[36m:[m463[36m:[m89[36m:[m [1m[31mE501[m line too long (92 > 88 characters)
+[1mscripts/performance/optimization_engine.py[m[36m:[m530[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mscripts/performance/optimization_engine.py[m[36m:[m547[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mscripts/performance/optimization_engine.py[m[36m:[m572[36m:[m5[36m:[m [1m[31mC901[m 'PerformanceOptimizer.generate_optimization_report' is too complex (20)
+[1mscripts/performance/optimization_engine.py[m[36m:[m594[36m:[m62[36m:[m [1m[31mW291[m trailing whitespace
+[1mscripts/performance/optimization_engine.py[m[36m:[m595[36m:[m40[36m:[m [1m[31mW291[m trailing whitespace
+[1mscripts/performance/optimization_engine.py[m[36m:[m596[36m:[m48[36m:[m [1m[31mW291[m trailing whitespace
+[1mscripts/performance/optimization_engine.py[m[36m:[m604[36m:[m89[36m:[m [1m[31mE501[m line too long (101 > 88 characters)
+[1mscripts/performance/optimization_engine.py[m[36m:[m613[36m:[m89[36m:[m [1m[31mE501[m line too long (124 > 88 characters)
+[1mscripts/performance/optimization_engine.py[m[36m:[m638[36m:[m89[36m:[m [1m[31mE501[m line too long (106 > 88 characters)
+[1mscripts/performance/optimization_engine.py[m[36m:[m664[36m:[m89[36m:[m [1m[31mE501[m line too long (125 > 88 characters)
+[1mscripts/performance/optimization_engine.py[m[36m:[m675[36m:[m89[36m:[m [1m[31mE501[m line too long (99 > 88 characters)
+[1mscripts/performance/optimization_engine.py[m[36m:[m676[36m:[m89[36m:[m [1m[31mE501[m line too long (97 > 88 characters)
+[1mscripts/performance/optimization_engine.py[m[36m:[m678[36m:[m89[36m:[m [1m[31mE501[m line too long (95 > 88 characters)
+[1mscripts/performance/optimization_engine.py[m[36m:[m680[36m:[m89[36m:[m [1m[31mE501[m line too long (99 > 88 characters)
+[1mscripts/performance/optimization_engine.py[m[36m:[m686[36m:[m89[36m:[m [1m[31mE501[m line too long (103 > 88 characters)
+[1mscripts/performance/performance_analyzer.py[m[36m:[m14[36m:[m1[36m:[m [1m[31mF401[m 'dataclasses.asdict' imported but unused
+[1mscripts/performance/performance_analyzer.py[m[36m:[m15[36m:[m1[36m:[m [1m[31mF401[m 'datetime.timedelta' imported but unused
+[1mscripts/performance/performance_analyzer.py[m[36m:[m142[36m:[m89[36m:[m [1m[31mE501[m line too long (97 > 88 characters)
+[1mscripts/performance/performance_analyzer.py[m[36m:[m206[36m:[m9[36m:[m [1m[31mE722[m do not use bare 'except'
+[1mscripts/performance/performance_analyzer.py[m[36m:[m232[36m:[m9[36m:[m [1m[31mE722[m do not use bare 'except'
+[1mscripts/performance/performance_analyzer.py[m[36m:[m405[36m:[m5[36m:[m [1m[31mC901[m 'PerformanceMonitor._identify_bottlenecks' is too complex (11)
+[1mscripts/performance/performance_analyzer.py[m[36m:[m459[36m:[m5[36m:[m [1m[31mC901[m 'PerformanceMonitor._generate_recommendations' is too complex (13)
+[1mscripts/performance/performance_analyzer.py[m[36m:[m605[36m:[m5[36m:[m [1m[31mC901[m 'PerformanceMonitor.generate_report' is too complex (13)
+[1mscripts/performance/performance_analyzer.py[m[36m:[m614[36m:[m62[36m:[m [1m[31mW291[m trailing whitespace
+[1mscripts/performance/performance_analyzer.py[m[36m:[m615[36m:[m55[36m:[m [1m[31mW291[m trailing whitespace
+[1mscripts/performance/performance_analyzer.py[m[36m:[m634[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mscripts/performance/performance_analyzer.py[m[36m:[m651[36m:[m89[36m:[m [1m[31mE501[m line too long (103 > 88 characters)
+[1mscripts/performance/performance_analyzer.py[m[36m:[m652[36m:[m89[36m:[m [1m[31mE501[m line too long (102 > 88 characters)
+[1mscripts/performance/performance_analyzer.py[m[36m:[m716[36m:[m89[36m:[m [1m[31mE501[m line too long (112 > 88 characters)
+[1mscripts/performance/performance_analyzer.py[m[36m:[m769[36m:[m89[36m:[m [1m[31mE501[m line too long (95 > 88 characters)
+[1mscripts/performance/performance_analyzer.py[m[36m:[m772[36m:[m89[36m:[m [1m[31mE501[m line too long (120 > 88 characters)
+[1mscripts/performance/performance_analyzer.py[m[36m:[m777[36m:[m89[36m:[m [1m[31mE501[m line too long (114 > 88 characters)
+[1mscripts/security/pin_dependencies.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'os' imported but unused
+[1mscripts/security/pin_dependencies.py[m[36m:[m78[36m:[m15[36m:[m [1m[31mF541[m f-string is missing placeholders
+[1mscripts/security/pin_dependencies.py[m[36m:[m80[36m:[m13[36m:[m [1m[31mF541[m f-string is missing placeholders
+[1mscripts/security/pin_dependencies.py[m[36m:[m80[36m:[m89[36m:[m [1m[31mE501[m line too long (99 > 88 characters)
+[1mscripts/security/pin_dependencies.py[m[36m:[m149[36m:[m89[36m:[m [1m[31mE501[m line too long (92 > 88 characters)
+[1mscripts/security/validate_security.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'os' imported but unused
+[1mscripts/security/validate_security.py[m[36m:[m14[36m:[m1[36m:[m [1m[31mF401[m 'typing.Tuple' imported but unused
+[1mscripts/security/validate_security.py[m[36m:[m19[36m:[m1[36m:[m [1m[31mF401[m 'security.config.SecurityConfig' imported but unused
+[1mscripts/security/validate_security.py[m[36m:[m19[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1mscripts/security/validate_security.py[m[36m:[m156[36m:[m89[36m:[m [1m[31mE501[m line too long (104 > 88 characters)
+[1mscripts/security/validate_security.py[m[36m:[m219[36m:[m89[36m:[m [1m[31mE501[m line too long (94 > 88 characters)
+[1mscripts/security/validate_security.py[m[36m:[m288[36m:[m89[36m:[m [1m[31mE501[m line too long (107 > 88 characters)
+[1mscripts/security/validate_security.py[m[36m:[m315[36m:[m89[36m:[m [1m[31mE501[m line too long (110 > 88 characters)
+[1mscripts/security/validate_security.py[m[36m:[m328[36m:[m89[36m:[m [1m[31mE501[m line too long (97 > 88 characters)
+[1mscripts/security/validate_security.py[m[36m:[m360[36m:[m89[36m:[m [1m[31mE501[m line too long (112 > 88 characters)
+[1mscripts/security/validate_security.py[m[36m:[m440[36m:[m15[36m:[m [1m[31mF541[m f-string is missing placeholders
+[1mscripts/security/validate_security_phase1.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'os' imported but unused
+[1mscripts/security/validate_security_phase1.py[m[36m:[m166[36m:[m89[36m:[m [1m[31mE501[m line too long (101 > 88 characters)
+[1mscripts/security/validate_security_phase1.py[m[36m:[m175[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mscripts/security/validate_security_phase1.py[m[36m:[m258[36m:[m89[36m:[m [1m[31mE501[m line too long (94 > 88 characters)
+[1mscripts/security/validate_security_phase1.py[m[36m:[m326[36m:[m13[36m:[m [1m[31mF601[m dictionary key 'warnings' repeated with different values
+[1mscripts/security/validate_security_phase1.py[m[36m:[m329[36m:[m13[36m:[m [1m[31mF601[m dictionary key 'warnings' repeated with different values
+[1mscripts/security/validate_security_phase1.py[m[36m:[m358[36m:[m89[36m:[m [1m[31mE501[m line too long (113 > 88 characters)
+[1mscripts/security/validate_security_phase1.py[m[36m:[m374[36m:[m89[36m:[m [1m[31mE501[m line too long (101 > 88 characters)
+[1mscripts/security/validate_security_phase1.py[m[36m:[m380[36m:[m89[36m:[m [1m[31mE501[m line too long (102 > 88 characters)
+[1mscripts/security/validate_security_phase1.py[m[36m:[m389[36m:[m89[36m:[m [1m[31mE501[m line too long (94 > 88 characters)
+[1mscripts/testing/health_check.py[m[36m:[m2[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mscripts/testing/health_check.py[m[36m:[m36[36m:[m89[36m:[m [1m[31mE501[m line too long (135 > 88 characters)
+[1mscripts/testing/production_validation.py[m[36m:[m25[36m:[m5[36m:[m [1m[31mF841[m local variable 'expected_containers' is assigned to but never used
+[1mscripts/testing/production_validation.py[m[36m:[m206[36m:[m5[36m:[m [1m[31mF841[m local variable 'e' is assigned to but never used
+[1mscripts/testing/production_validation.py[m[36m:[m289[36m:[m5[36m:[m [1m[31mF841[m local variable 'checks' is assigned to but never used
+[1mscripts/testing/production_validation.py[m[36m:[m301[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mscripts/testing/verify_setup.py[m[36m:[m65[36m:[m1[36m:[m [1m[31mC901[m 'verify_phase_0' is too complex (11)
+[1mscripts/utils/fix_metrics_file.py[m[36m:[m15[36m:[m89[36m:[m [1m[31mE501[m line too long (123 > 88 characters)
+[1mscripts/utils/fix_metrics_file.py[m[36m:[m18[36m:[m89[36m:[m [1m[31mE501[m line too long (135 > 88 characters)
+[1mscripts/utils/fix_metrics_file.py[m[36m:[m19[36m:[m89[36m:[m [1m[31mE501[m line too long (138 > 88 characters)
+[1mscripts/utils/fix_metrics_file.py[m[36m:[m23[36m:[m89[36m:[m [1m[31mE501[m line too long (137 > 88 characters)
+[1mscripts/utils/fix_metrics_file.py[m[36m:[m24[36m:[m89[36m:[m [1m[31mE501[m line too long (140 > 88 characters)
+[1mscripts/utils/fix_metrics_file.py[m[36m:[m28[36m:[m89[36m:[m [1m[31mE501[m line too long (133 > 88 characters)
+[1mscripts/utils/fix_metrics_file.py[m[36m:[m29[36m:[m89[36m:[m [1m[31mE501[m line too long (136 > 88 characters)
+[1mscripts/utils/fix_metrics_file.py[m[36m:[m33[36m:[m89[36m:[m [1m[31mE501[m line too long (135 > 88 characters)
+[1mscripts/utils/fix_metrics_file.py[m[36m:[m34[36m:[m89[36m:[m [1m[31mE501[m line too long (138 > 88 characters)
+[1mscripts/utils/fix_metrics_file.py[m[36m:[m40[36m:[m89[36m:[m [1m[31mE501[m line too long (101 > 88 characters)
+[1mscripts/utils/fix_syntax_errors.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'os' imported but unused
+[1mscripts/utils/fix_syntax_errors.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'sys' imported but unused
+[1mscripts/utils/fix_syntax_errors.py[m[36m:[m13[36m:[m1[36m:[m [1m[31mC901[m 'fix_syntax_errors' is too complex (11)
+[1mscripts/utils/fix_syntax_errors.py[m[36m:[m199[36m:[m11[36m:[m [1m[31mF541[m f-string is missing placeholders
+[1mscripts/utils/fix_truncated_strings.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'os' imported but unused
+[1mscripts/utils/fix_truncated_strings.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'sys' imported but unused
+[1mscripts/utils/fix_truncated_strings.py[m[36m:[m13[36m:[m1[36m:[m [1m[31mC901[m 'fix_truncated_strings' is too complex (14)
+[1mscripts/utils/fix_truncated_strings.py[m[36m:[m24[36m:[m89[36m:[m [1m[31mE501[m line too long (526 > 88 characters)
+[1mscripts/utils/fix_truncated_strings.py[m[36m:[m30[36m:[m89[36m:[m [1m[31mE501[m line too long (99 > 88 characters)
+[1mscripts/utils/fix_truncated_strings.py[m[36m:[m36[36m:[m89[36m:[m [1m[31mE501[m line too long (101 > 88 characters)
+[1mscripts/utils/fix_truncated_strings.py[m[36m:[m129[36m:[m11[36m:[m [1m[31mF541[m f-string is missing placeholders
+[1mscripts/utils/start_app.py[m[36m:[m12[36m:[m1[36m:[m [1m[31mC901[m 'check_environment' is too complex (12)
+[1mscripts/utils/start_app.py[m[36m:[m48[36m:[m9[36m:[m [1m[31mF401[m 'flask' imported but unused
+[1mscripts/utils/start_app.py[m[36m:[m56[36m:[m9[36m:[m [1m[31mF401[m 'openai' imported but unused
+[1mscripts/utils/start_app.py[m[36m:[m63[36m:[m9[36m:[m [1m[31mF401[m 'google.generativeai' imported but unused
+[1mtests/backend/test_chatops.py[m[36m:[m127[36m:[m5[36m:[m [1m[31mF841[m local variable 'start_time' is assigned to but never used
+[1mtests/backend/test_chatops.py[m[36m:[m131[36m:[m5[36m:[m [1m[31mF841[m local variable 'end_time' is assigned to but never used
+[1mtests/conftest.py[m[36m:[m38[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1mtests/conftest.py[m[36m:[m39[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1mtests/integration/test_api_contracts.py[m[36m:[m6[36m:[m1[36m:[m [1m[31mF401[m 'datetime.timezone' imported but unused
+[1mtests/integration/test_api_endpoints.py[m[36m:[m270[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mtests/integration/test_api_endpoints.py[m[36m:[m586[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mtests/integration/test_api_endpoints.py[m[36m:[m607[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mtests/integration/test_api_endpoints.py[m[36m:[m651[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mtests/integration/test_api_routes.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'datetime.datetime' imported but unused
+[1mtests/integration/test_api_routes.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'datetime.timezone' imported but unused
+[1mtests/integration/test_api_routes.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.MagicMock' imported but unused
+[1mtests/test_ai_handler.py[m[36m:[m13[36m:[m1[36m:[m [1m[31mC901[m 'TryExcept 13' is too complex (17)
+[1mtests/test_ai_handler.py[m[36m:[m95[36m:[m9[36m:[m [1m[31mF841[m local variable 'mock_client' is assigned to but never used
+[1mtests/test_chatops.py[m[36m:[m15[36m:[m1[36m:[m [1m[31mC901[m 'TryExcept 15' is too complex (27)
+[1mtests/test_chatops.py[m[36m:[m156[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mtests/test_config.py[m[36m:[m49[36m:[m1[36m:[m [1m[31mF811[m redefinition of unused 'TestConfig' from line 20
+[1mtests/test_database_integration.py[m[36m:[m86[36m:[m89[36m:[m [1m[31mE501[m line too long (98 > 88 characters)
+[1mtests/test_database_integration.py[m[36m:[m97[36m:[m44[36m:[m [1m[31mE712[m comparison to True should be 'if cond is True:' or 'if cond:'
+[1mtests/test_gpt_integration.py[m[36m:[m39[36m:[m17[36m:[m [1m[31mF841[m local variable 'handler' is assigned to but never used
+[1mtests/test_gpt_integration.py[m[36m:[m54[36m:[m17[36m:[m [1m[31mF841[m local variable 'handler' is assigned to but never used
+[1mtests/test_integration.py[m[36m:[m18[36m:[m1[36m:[m [1m[31mC901[m 'TryExcept 18' is too complex (14)
+[1mtests/test_integration.py[m[36m:[m176[36m:[m89[36m:[m [1m[31mE501[m line too long (94 > 88 characters)
+[1mtests/test_integration.py[m[36m:[m238[36m:[m89[36m:[m [1m[31mE501[m line too long (118 > 88 characters)
+[1mtests/test_integration.py[m[36m:[m319[36m:[m89[36m:[m [1m[31mE501[m line too long (98 > 88 characters)
+[1mtests/test_integration.py[m[36m:[m375[36m:[m89[36m:[m [1m[31mE501[m line too long (90 > 88 characters)
+[1mtests/test_ml_anomaly_detection.py[m[36m:[m19[36m:[m1[36m:[m [1m[31mC901[m 'TryExcept 19' is too complex (23)
+[1mtests/test_ml_endpoints.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mF401[m 'pytest' imported but unused
+[1mtests/test_ml_endpoints.py[m[36m:[m28[36m:[m45[36m:[m [1m[31mE712[m comparison to True should be 'if cond is True:' or 'if cond:'
+[1mtests/test_remediation.py[m[36m:[m150[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mtests/test_remediation.py[m[36m:[m528[36m:[m89[36m:[m [1m[31mE501[m line too long (93 > 88 characters)
+[1mtests/test_remediation.py[m[36m:[m554[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mtests/test_remediation.py[m[36m:[m579[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mtests/test_remediation.py[m[36m:[m619[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)
+[1mtests/unit/test_anomaly_service.py[m[36m:[m18[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1mtests/unit/test_chatops_gpt_handler.py[m[36m:[m6[36m:[m1[36m:[m [1m[31mF401[m 'json' imported but unused
+[1mtests/unit/test_chatops_gpt_handler.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'datetime.datetime' imported but unused
+[1mtests/unit/test_chatops_gpt_handler.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'datetime.timezone' imported but unused
+[1mtests/unit/test_chatops_gpt_handler.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.MagicMock' imported but unused
+[1mtests/unit/test_chatops_utils.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'datetime.timedelta' imported but unused
+[1mtests/unit/test_chatops_utils.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'typing.List' imported but unused
+[1mtests/unit/test_chatops_utils.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.MagicMock' imported but unused
+[1mtests/unit/test_chatops_utils.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.Mock' imported but unused
+[1mtests/unit/test_chatops_utils.py[m[36m:[m119[36m:[m9[36m:[m [1m[31mF841[m local variable 'result1' is assigned to but never used
+[1mtests/unit/test_chatops_utils.py[m[36m:[m123[36m:[m9[36m:[m [1m[31mF841[m local variable 'result2' is assigned to but never used
+[1mtests/unit/test_chatops_utils.py[m[36m:[m130[36m:[m9[36m:[m [1m[31mF841[m local variable 'result3' is assigned to but never used
+[1mtests/unit/test_data_pipeline.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'json' imported but unused
+[1mtests/unit/test_data_pipeline.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mF401[m 'datetime.datetime' imported but unused
+[1mtests/unit/test_data_pipeline.py[m[36m:[m12[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.MagicMock' imported but unused
+[1mtests/unit/test_data_pipeline.py[m[36m:[m12[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.patch' imported but unused
+[1mtests/unit/test_data_pipeline.py[m[36m:[m16[36m:[m1[36m:[m [1m[31mF401[m 'app.mlops.data_pipeline.DataVersion' imported but unused
+[1mtests/unit/test_data_pipeline.py[m[36m:[m190[36m:[m13[36m:[m [1m[31mF841[m local variable 'version1' is assigned to but never used
+[1mtests/unit/test_data_pipeline.py[m[36m:[m474[36m:[m13[36m:[m [1m[31mF841[m local variable 'version' is assigned to but never used
+[1mtests/unit/test_enhanced_mlflow.py[m[36m:[m11[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.MagicMock' imported but unused
+[1mtests/unit/test_feedback_service.py[m[36m:[m11[36m:[m1[36m:[m [1m[31mF401[m 'datetime.datetime' imported but unused
+[1mtests/unit/test_feedback_service.py[m[36m:[m12[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.patch' imported but unused
+[1mtests/unit/test_feedback_service.py[m[36m:[m18[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1mtests/unit/test_ml_models_comprehensive.py[m[36m:[m6[36m:[m1[36m:[m [1m[31mF401[m 'datetime.datetime' imported but unused
+[1mtests/unit/test_ml_models_comprehensive.py[m[36m:[m6[36m:[m1[36m:[m [1m[31mF401[m 'datetime.timedelta' imported but unused
+[1mtests/unit/test_ml_models_comprehensive.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'typing.Any' imported but unused
+[1mtests/unit/test_ml_models_comprehensive.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'typing.Dict' imported but unused
+[1mtests/unit/test_ml_models_comprehensive.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'typing.List' imported but unused
+[1mtests/unit/test_ml_models_comprehensive.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'typing.Tuple' imported but unused
+[1mtests/unit/test_ml_models_comprehensive.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.MagicMock' imported but unused
+[1mtests/unit/test_ml_models_comprehensive.py[m[36m:[m99[36m:[m89[36m:[m [1m[31mE501[m line too long (98 > 88 characters)
+[1mtests/unit/test_ml_models_comprehensive.py[m[36m:[m104[36m:[m9[36m:[m [1m[31mF841[m local variable 'df' is assigned to but never used
+[1mtests/unit/test_mlops_api.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.MagicMock' imported but unused
+[1mtests/unit/test_mlops_api.py[m[36m:[m9[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.patch' imported but unused
+[1mtests/unit/test_mlops_api.py[m[36m:[m400[36m:[m89[36m:[m [1m[31mE501[m line too long (95 > 88 characters)
+[1mtests/unit/test_mlops_service.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'datetime.datetime' imported but unused
+[1mtests/unit/test_performance_integration.py[m[36m:[m6[36m:[m1[36m:[m [1m[31mF401[m 'threading' imported but unused
+[1mtests/unit/test_performance_integration.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.MagicMock' imported but unused
+[1mtests/unit/test_performance_integration.py[m[36m:[m10[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.Mock' imported but unused
+[1mtests/unit/test_remediation_engine.py[m[36m:[m132[36m:[m13[36m:[m [1m[31mF841[m local variable 'engine' is assigned to but never used
+[1mtests/unit/test_remediation_service.py[m[36m:[m11[36m:[m1[36m:[m [1m[31mF401[m 'datetime.datetime' imported but unused
+[1mtests/unit/test_remediation_service.py[m[36m:[m18[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1mtests/unit/test_security.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.MagicMock' imported but unused
+[1mtests/unit/test_security.py[m[36m:[m8[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.patch' imported but unused
+[1mtests/unit/test_security.py[m[36m:[m366[36m:[m89[36m:[m [1m[31mE501[m line too long (91 > 88 characters)
+[1mtests/unit/test_security_validation.py[m[36m:[m4[36m:[m89[36m:[m [1m[31mE501[m line too long (107 > 88 characters)
+[1mtests/unit/test_security_validation.py[m[36m:[m7[36m:[m1[36m:[m [1m[31mF401[m 'json' imported but unused
+[1mtests/unit/test_security_validation.py[m[36m:[m13[36m:[m1[36m:[m [1m[31mF401[m 'unittest.mock.patch' imported but unused
+[1mtests/unit/test_security_validation.py[m[36m:[m19[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1mtests/unit/test_security_validation.py[m[36m:[m20[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1mtests/unit/test_security_validation.py[m[36m:[m21[36m:[m1[36m:[m [1m[31mE402[m module level import not at top of file
+[1mtests/unit/test_security_validation.py[m[36m:[m58[36m:[m89[36m:[m [1m[31mE501[m line too long (112 > 88 characters)
+[1mtests/unit/test_security_validation.py[m[36m:[m116[36m:[m89[36m:[m [1m[31mE501[m line too long (102 > 88 characters)
+[1mtests/unit/test_security_validation.py[m[36m:[m119[36m:[m89[36m:[m [1m[31mE501[m line too long (101 > 88 characters)
+[1mtests/unit/test_security_validation.py[m[36m:[m231[36m:[m89[36m:[m [1m[31mE501[m line too long (94 > 88 characters)
+[1mtests/unit/test_security_validation.py[m[36m:[m232[36m:[m89[36m:[m [1m[31mE501[m line too long (91 > 88 characters)
+[1mtests/unit/test_security_validation.py[m[36m:[m263[36m:[m89[36m:[m [1m[31mE501[m line too long (92 > 88 characters)
+[1mtests/unit/test_security_validation.py[m[36m:[m392[36m:[m89[36m:[m [1m[31mE501[m line too long (89 > 88 characters)

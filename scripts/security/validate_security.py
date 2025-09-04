@@ -6,17 +6,16 @@ Comprehensive security checks and validation
 
 import json
 import logging
-import os
 import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 # Add the app directory to the path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "app"))
 
-from security.config import SecurityConfig, validate_environment_security
+from security.config import validate_environment_security
 
 # Configure logging
 logging.basicConfig(

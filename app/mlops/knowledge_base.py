@@ -11,7 +11,6 @@ from dataclasses import asdict, dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
-import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -144,7 +143,7 @@ class KnowledgeGraph:
             tfidf_matrix = self.vectorizer.fit_transform([text1, text2])
             similarity = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
             return float(similarity)
-        except:
+        except (Exception,):
             return 0.0
 
     def save_knowledge_base(self):

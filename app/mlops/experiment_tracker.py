@@ -10,7 +10,6 @@ import time
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -271,7 +270,7 @@ class ExperimentTracker:
 
         cursor.execute(
             """
-            INSERT OR REPLACE INTO experiments 
+            INSERT OR REPLACE INTO experiments
             (experiment_id, name, description, objective, tags, created_at, status, best_run_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """,
@@ -297,7 +296,7 @@ class ExperimentTracker:
 
         cursor.execute(
             """
-            INSERT OR REPLACE INTO runs 
+            INSERT OR REPLACE INTO runs
             (run_id, experiment_id, name, status, start_time, end_time, duration_seconds,
              parameters, metrics, artifacts, logs, tags, notes, git_commit, environment, seed)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -332,19 +331,16 @@ class ExperimentTracker:
     def _save_parameter(self, run_id: str, param_name: str, param_value: Any):
         """Save parameter to database"""
         # In this minimal version, parameters are stored as JSON in the run record
-        pass
 
     def _save_metric(
         self, run_id: str, metric_name: str, metric_value: float, step: int = None
     ):
         """Save metric to database"""
         # In this minimal version, metrics are stored as JSON in the run record
-        pass
 
     def _update_best_run(self, run: ExperimentRun):
         """Update best run for experiment if this run is better"""
         # Simplified best run tracking for minimal version
-        pass
 
     def _get_git_commit(self) -> Optional[str]:
         """Get current git commit hash"""

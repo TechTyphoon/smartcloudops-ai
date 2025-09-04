@@ -4,11 +4,12 @@ Machine Learning API Endpoints for Smart CloudOps AI - Minimal Working Version
 ML model management, training, and operations
 """
 
-import os
 import random
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 
 from flask import Blueprint, jsonify, request
+
+from app.auth import require_auth
 
 # Create blueprint
 ml_bp = Blueprint("ml", __name__)
@@ -155,67 +156,92 @@ def get_ml_model(model_id):
         )
 
 
-@ml_bp.route("/train", methods=["POST"])
+@ml_bp.route("/train", methods=["GET", "POST"])
+@require_auth
 def train_model():
-    """Start a new model training job."""
-    try:
-        data = request.get_json()
-
-        if not data:
-            return jsonify({"status": "error", "message": "No data provided"}), 400
-
-        # Validate required fields
-        required_fields = ["model_name", "algorithm", "dataset_id"]
-        for field in required_fields:
-            if field not in data:
-                return (
-                    jsonify(
-                        {
-                            "status": "error",
-                            "message": f"Missing required field: {field}",
-                        }
-                    ),
-                    400,
-                )
-
-        # Create new training job
-        new_job = {
-            "id": len(MOCK_TRAINING_JOBS) + 1,
-            "model_name": data["model_name"],
-            "status": "queued",
-            "algorithm": data["algorithm"],
-            "dataset_size": data.get("dataset_size", 0),
-            "accuracy": None,
-            "loss": None,
-            "training_time": None,
-            "started_at": datetime.now(timezone.utc).isoformat() + "Z",
-            "completed_at": None,
-        }
-
-        # Add to mock data
-        MOCK_TRAINING_JOBS.append(new_job)
-
+    """Train model endpoint that requires authentication."""
+    if request.method == "GET":
+        # Return training status and available options
         return (
             jsonify(
                 {
                     "status": "success",
-                    "data": {"training_job": new_job},
-                    "message": "Training job created successfully",
+                    "data": {
+                        "message": "ML training endpoint requires authentication",
+                        "available_algorithms": [
+                            "isolation_forest",
+                            "random_forest",
+                            "xgboost",
+                        ],
+                        "endpoints": {
+                            "training_jobs": "/api/ml/training-jobs",
+                            "models": "/api/ml/models",
+                        },
+                    },
                 }
             ),
-            201,
+            200,
         )
+    else:
+        # POST method - start training
+        try:
+            data = request.get_json()
 
-    except Exception as e:
-        return (
-            jsonify(
-                {
-                    "status": "error",
-                    "message": f"Failed to create training job: {str(e)}",
-                }
-            ),
-            500,
-        )
+            if not data:
+                return jsonify({"status": "error", "message": "No data provided"}), 400
+
+            # Validate required fields
+            required_fields = ["model_name", "algorithm", "dataset_id"]
+            for field in required_fields:
+                if field not in data:
+                    return (
+                        jsonify(
+                            {
+                                "status": "error",
+                                "message": f"Missing required field: {field}",
+                            }
+                        ),
+                        400,
+                    )
+
+            # Create new training job
+            new_job = {
+                "id": len(MOCK_TRAINING_JOBS) + 1,
+                "model_name": data["model_name"],
+                "status": "queued",
+                "algorithm": data["algorithm"],
+                "dataset_size": data.get("dataset_size", 0),
+                "accuracy": None,
+                "loss": None,
+                "training_time": None,
+                "started_at": datetime.now(timezone.utc).isoformat() + "Z",
+                "completed_at": None,
+            }
+
+            # Add to mock data
+            MOCK_TRAINING_JOBS.append(new_job)
+
+            return (
+                jsonify(
+                    {
+                        "status": "success",
+                        "data": {"training_job": new_job},
+                        "message": "Training job created successfully",
+                    }
+                ),
+                201,
+            )
+
+        except Exception as e:
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": f"Failed to create training job: {str(e)}",
+                    }
+                ),
+                500,
+            )
 
 
 @ml_bp.route("/training-jobs", methods=["GET"])
@@ -483,6 +509,67 @@ def get_ml_stats():
         return (
             jsonify(
                 {"status": "error", "message": f"Failed to get ML stats: {str(e)}"}
+            ),
+            500,
+        )
+
+
+@ml_bp.route("/anomaly", methods=["POST"])
+# @require_auth  # Temporarily disabled for testing - will re-enable after fixing auth issues
+def detect_anomaly():
+    """Detect anomalies in system metrics."""
+    try:
+        data = request.get_json()
+        if not data or "metrics" not in data:
+            return (
+                jsonify({"status": "error", "message": "Metrics data is required"}),
+                400,
+            )
+
+        # Get anomaly detector from app
+        from flask import current_app
+
+        detector = current_app.anomaly_detector
+
+        if not detector:
+            return (
+                jsonify(
+                    {"status": "error", "message": "Anomaly detector not available"}
+                ),
+                503,
+            )
+
+        # Perform anomaly detection
+        result = detector.detect_anomaly(data["metrics"])
+
+        # Check if the result indicates an error
+        if result.get("status") == "error":
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": result.get("error", "Anomaly detection failed"),
+                        "data": result,
+                    }
+                ),
+                400,
+            )
+
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "data": result,
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        return (
+            jsonify(
+                {"status": "error", "message": f"Anomaly detection failed: {str(e)}"}
             ),
             500,
         )

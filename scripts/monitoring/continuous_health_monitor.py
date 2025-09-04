@@ -299,7 +299,7 @@ class ContinuousHealthMonitor:
 
         for failure in critical_failures:
             endpoint = failure["endpoint"]
-            error = failure.get("error", "unknown")
+            failure.get("error", "unknown")
 
             # Simple retry logic
             logger.info(f"Retrying failed endpoint: {endpoint}")

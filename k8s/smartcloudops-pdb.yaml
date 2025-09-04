@@ -1,0 +1,46 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: smartcloudops-main-pdb
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: pdb
+spec:
+  minAvailable: 2  # Always keep at least 2 pods running
+  selector:
+    matchLabels:
+      app: smartcloudops
+      component: main
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: smartcloudops-worker-pdb
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: worker-pdb
+spec:
+  minAvailable: 1  # Always keep at least 1 worker pod running
+  selector:
+    matchLabels:
+      app: smartcloudops
+      component: worker
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: smartcloudops-critical-pdb
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: critical-pdb
+spec:
+  maxUnavailable: 1  # Allow only 1 pod to be unavailable during disruptions
+  selector:
+    matchLabels:
+      app: smartcloudops
+      component: critical

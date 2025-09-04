@@ -329,7 +329,7 @@ class ReproducibilityManager:
         # Save report
         self._save_report(report)
 
-        print(f"📊 Comparison complete:")
+        print("📊 Comparison complete:")
         print(f"   Reproducible: {'✅ Yes' if is_reproducible else '❌ No'}")
         print(f"   Compatibility: {compatibility_score:.1%}")
         print(f"   Risk Level: {risk_level}")
@@ -403,7 +403,7 @@ class ReproducibilityManager:
         if snapshot_id:
             cursor.execute(
                 """
-                SELECT * FROM reproducibility_reports 
+                SELECT * FROM reproducibility_reports
                 WHERE target_snapshot_id = ? OR current_snapshot_id = ?
                 ORDER BY timestamp DESC
             """,
@@ -602,7 +602,11 @@ class ReproducibilityManager:
             )
             if result.returncode == 0:
                 return result.stdout
-        except:
+        except (
+            subprocess.SubprocessError,
+            FileNotFoundError,
+            subprocess.TimeoutExpired,
+        ):
             pass
         return None
 
@@ -650,7 +654,11 @@ class ReproducibilityManager:
                     if line.strip():
                         kernel = line.split()[0]
                         kernels.append(kernel)
-        except:
+        except (
+            subprocess.SubprocessError,
+            FileNotFoundError,
+            subprocess.TimeoutExpired,
+        ):
             pass
 
         return kernels
@@ -696,7 +704,11 @@ class ReproducibilityManager:
                         cuda_info["cuda_version"] = line.split()[-1].rstrip(",")
                         break
 
-        except:
+        except (
+            subprocess.SubprocessError,
+            FileNotFoundError,
+            subprocess.TimeoutExpired,
+        ):
             pass
 
         return cuda_info if cuda_info else None
@@ -933,7 +945,7 @@ python = "^{snapshot.python_version}"
 
     def _export_pipenv_requirements(self, snapshot: EnvironmentSnapshot) -> str:
         """Export Pipenv Pipfile format"""
-        content = f"""[[source]]
+        content = """[[source]]
 url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"

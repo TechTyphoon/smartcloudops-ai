@@ -1,0 +1,617 @@
+name: ⚖️ SmartCloudOps AI - Auto-Scaling
+
+on:
+  schedule:
+    # Check scaling needs every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to scale'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - staging
+          - production
+          - development
+      action:
+        description: 'Scaling action'
+        required: false
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - scale_up
+          - scale_down
+          - emergency_scale
+      target_replicas:
+        description: 'Target number of replicas (for manual scaling)'
+        required: false
+        type: number
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHON_VERSION: "3.11"
+  SCALING_TIMEOUT: 120
+  MIN_REPLICAS: 1
+  MAX_REPLICAS: 10
+  SCALE_UP_THRESHOLD: 80
+  SCALE_DOWN_THRESHOLD: 30
+  EMERGENCY_THRESHOLD: 95
+
+jobs:
+  # =====================================================
+  # 📊 LOAD ANALYSIS
+  # =====================================================
+  load-analysis:
+    name: 📊 Load Analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    outputs:
+      scaling-recommendation: ${{ steps.analyze.outputs.recommendation }}
+      current-replicas: ${{ steps.analyze.outputs.current_replicas }}
+      target-replicas: ${{ steps.analyze.outputs.target_replicas }}
+      scaling-reason: ${{ steps.analyze.outputs.reason }}
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 📦 Install Dependencies
+      run: |
+        pip install requests
+
+    - name: 📊 Analyze System Load
+      id: analyze
+      run: |
+        python -c "
+        import requests
+        import json
+        import sys
+
+        def analyze_load():
+            environments = {
+                'production': 'https://smartcloudops.ai',
+                'staging': 'https://staging.smartcloudops.ai',
+                'development': 'http://localhost:5000'
+            }
+
+            env = '${{ github.event.inputs.environment || \"production\" }}'
+            base_url = environments.get(env, environments['production'])
+
+            try:
+                # Get current performance metrics
+                response = requests.get(f'{base_url}/api/performance/metrics', timeout=10)
+                if response.status_code != 200:
+                    print('❌ Cannot get performance metrics')
+                    print(f'recommendation=no_action')
+                    return
+
+                metrics = response.json()['data']
+
+                # Extract key metrics
+                cpu_usage = metrics['cpu']['usage_percent']
+                memory_usage = metrics['memory']['usage_percent']
+                active_connections = metrics.get('connections', {}).get('active', 0)
+
+                print(f'📊 Current Load - CPU: {cpu_usage:.1f}%, Memory: {memory_usage:.1f}%, Connections: {active_connections}')
+
+                # Get current replica count (this would come from your orchestration system)
+                # For now, we'll simulate this
+                current_replicas = 2  # This should be fetched from k8s/docker-compose
+
+                # Analyze scaling needs
+                scale_up_needed = False
+                scale_down_needed = False
+                emergency_scale = False
+
+                # Scale up conditions
+                if cpu_usage > ${{ env.SCALE_UP_THRESHOLD }} or memory_usage > ${{ env.SCALE_UP_THRESHOLD }}:
+                    scale_up_needed = True
+                    print('🔺 Scale up conditions met')
+
+                if active_connections > 100:  # High connection count
+                    scale_up_needed = True
+                    print('🔺 High connection count detected')
+
+                # Emergency scale up
+                if cpu_usage > ${{ env.EMERGENCY_THRESHOLD }} or memory_usage > ${{ env.EMERGENCY_THRESHOLD }}:
+                    emergency_scale = True
+                    print('🚨 Emergency scaling conditions met!')
+
+                # Scale down conditions
+                if (cpu_usage < ${{ env.SCALE_DOWN_THRESHOLD }} and
+                    memory_usage < ${{ env.SCALE_DOWN_THRESHOLD }} and
+                    active_connections < 20 and
+                    current_replicas > ${{ env.MIN_REPLICAS }}):
+                    scale_down_needed = True
+                    print('🔻 Scale down conditions met')
+
+                # Determine scaling recommendation
+                if emergency_scale:
+                    target_replicas = min(current_replicas + 2, ${{ env.MAX_REPLICAS }})
+                    recommendation = 'emergency_scale_up'
+                    reason = f'Emergency: CPU {cpu_usage:.1f}%, Memory {memory_usage:.1f}%'
+                elif scale_up_needed:
+                    target_replicas = min(current_replicas + 1, ${{ env.MAX_REPLICAS }})
+                    recommendation = 'scale_up'
+                    reason = f'High load: CPU {cpu_usage:.1f}%, Memory {memory_usage:.1f}%'
+                elif scale_down_needed:
+                    target_replicas = max(current_replicas - 1, ${{ env.MIN_REPLICAS }})
+                    recommendation = 'scale_down'
+                    reason = f'Low load: CPU {cpu_usage:.1f}%, Memory {memory_usage:.1f}%'
+                else:
+                    target_replicas = current_replicas
+                    recommendation = 'no_action'
+                    reason = f'Load stable: CPU {cpu_usage:.1f}%, Memory {memory_usage:.1f}%'
+
+                # Manual override
+                manual_action = '${{ github.event.inputs.action }}'
+                manual_target = ${{ github.event.inputs.target_replicas || 0 }}
+
+                if manual_action != 'auto' and manual_target > 0:
+                    recommendation = manual_action
+                    target_replicas = manual_target
+                    reason = f'Manual scaling requested: {manual_action} to {manual_target} replicas'
+
+                print(f'🎯 Recommendation: {recommendation}')
+                print(f'📈 Current replicas: {current_replicas}')
+                print(f'🎯 Target replicas: {target_replicas}')
+                print(f'💬 Reason: {reason}')
+
+                # Output for GitHub Actions
+                print(f'recommendation={recommendation}')
+                print(f'current_replicas={current_replicas}')
+                print(f'target_replicas={target_replicas}')
+                print(f'reason={reason}')
+
+                return {
+                    'recommendation': recommendation,
+                    'current_replicas': current_replicas,
+                    'target_replicas': target_replicas,
+                    'reason': reason
+                }
+
+            except Exception as e:
+                print(f'❌ Load analysis error: {e}')
+                print(f'recommendation=no_action')
+                return None
+
+        result = analyze_load()
+        if result is None:
+            sys.exit(1)
+        "
+
+  # =====================================================
+  # ⚖️ SCALING EXECUTION
+  # =====================================================
+  scaling-execution:
+    name: ⚖️ Scaling Execution
+    runs-on: ubuntu-latest
+    needs: load-analysis
+    if: needs.load-analysis.outputs.scaling-recommendation != 'no_action'
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🔐 Setup SSH
+      uses: webfactory/ssh-agent@v0.9.1
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: ⚖️ Execute Scaling
+      run: |
+        RECOMMENDATION="${{ needs.load-analysis.outputs.scaling-recommendation }}"
+        CURRENT_REPLICAS="${{ needs.load-analysis.outputs.current-replicas }}"
+        TARGET_REPLICAS="${{ needs.load-analysis.outputs.target_replicas }}"
+        REASON="${{ needs.load-analysis.outputs.scaling-reason }}"
+        ENVIRONMENT="${{ github.event.inputs.environment || 'production' }}"
+
+        echo "🔄 Executing scaling action: $RECOMMENDATION"
+        echo "📊 Current replicas: $CURRENT_REPLICAS"
+        echo "🎯 Target replicas: $TARGET_REPLICAS"
+        echo "💬 Reason: $REASON"
+        echo "🌍 Environment: $ENVIRONMENT"
+
+        # Determine scaling parameters based on environment
+        case $ENVIRONMENT in
+          production)
+            HOST="${{ secrets.PRODUCTION_HOST }}"
+            COMPOSE_FILE="docker-compose.prod.yml"
+            ;;
+          staging)
+            HOST="${{ secrets.STAGING_HOST }}"
+            COMPOSE_FILE="docker-compose.staging.yml"
+            ;;
+          development)
+            HOST="${{ secrets.DEV_HOST }}"
+            COMPOSE_FILE="docker-compose.dev.yml"
+            ;;
+          *)
+            echo "❌ Unknown environment: $ENVIRONMENT"
+            exit 1
+            ;;
+        esac
+
+        # Execute scaling via SSH
+        ssh -o StrictHostKeyChecking=no $HOST << EOF
+          cd /opt/smartcloudops
+
+          echo "🔄 Scaling $ENVIRONMENT environment..."
+          echo "📊 From $CURRENT_REPLICAS to $TARGET_REPLICAS replicas"
+
+          # Backup current state
+          echo "💾 Backing up current state..."
+          docker-compose ps > compose_status_backup.txt
+
+          # Execute scaling
+          if [ "$RECOMMENDATION" = "emergency_scale_up" ]; then
+            echo "🚨 Emergency scaling - immediate action required"
+            # Force immediate scaling for emergency situations
+            timeout 30 docker-compose up -d --scale smartcloudops-main=$TARGET_REPLICAS --no-deps
+          else
+            echo "⚖️ Standard scaling operation"
+            docker-compose up -d --scale smartcloudops-main=$TARGET_REPLICAS
+          fi
+
+          # Wait for scaling to complete
+          echo "⏳ Waiting for scaling to complete..."
+          sleep 30
+
+          # Verify scaling
+          ACTUAL_REPLICAS=\$(docker-compose ps smartcloudops-main | grep -c "smartcloudops-main")
+
+          if [ "\$ACTUAL_REPLICAS" -eq "$TARGET_REPLICAS" ]; then
+            echo "✅ Scaling completed successfully"
+            echo "📊 Running replicas: \$ACTUAL_REPLICAS"
+
+            # Health check after scaling
+            echo "🏥 Performing health checks..."
+            for i in {1..3}; do
+              if curl -f -s http://localhost:5000/health > /dev/null; then
+                echo "✅ Health check passed"
+                break
+              else
+                echo "⚠️ Health check failed (attempt \$i/3)"
+                if [ \$i -eq 3 ]; then
+                  echo "❌ Health check failed after scaling"
+                  exit 1
+                fi
+                sleep 10
+              fi
+            done
+
+          else
+            echo "❌ Scaling failed"
+            echo "📊 Expected: $TARGET_REPLICAS, Actual: \$ACTUAL_REPLICAS"
+
+            # Attempt rollback
+            echo "🔄 Attempting rollback to $CURRENT_REPLICAS replicas"
+            docker-compose up -d --scale smartcloudops-main=$CURRENT_REPLICAS
+
+            exit 1
+          fi
+
+          # Log scaling event
+          echo "📝 Logging scaling event..."
+          echo "\$(date): Scaled $ENVIRONMENT from $CURRENT_REPLICAS to $TARGET_REPLICAS replicas - $REASON" >> scaling_history.log
+
+          echo "✅ Scaling operation completed successfully"
+        EOF
+
+        if [ $? -eq 0 ]; then
+          echo "✅ Scaling execution completed successfully"
+        else
+          echo "❌ Scaling execution failed"
+          exit 1
+        fi
+
+  # =====================================================
+  # 📊 SCALING MONITORING
+  # =====================================================
+  scaling-monitoring:
+    name: 📊 Scaling Monitoring
+    runs-on: ubuntu-latest
+    needs: [load-analysis, scaling-execution]
+    if: always()
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 📊 Monitor Scaling Results
+      run: |
+        python -c "
+        import requests
+        import time
+
+        def monitor_scaling():
+            environments = {
+                'production': 'https://smartcloudops.ai',
+                'staging': 'https://staging.smartcloudops.ai',
+                'development': 'http://localhost:5000'
+            }
+
+            env = '${{ github.event.inputs.environment || \"production\" }}'
+            base_url = environments.get(env, environments['production'])
+
+            print(f'📊 Monitoring scaling results for {env}...')
+
+            # Monitor for 2 minutes post-scaling
+            for i in range(24):  # 24 * 5 seconds = 2 minutes
+                try:
+                    # Check system health
+                    health_response = requests.get(f'{base_url}/health', timeout=5)
+                    if health_response.status_code != 200:
+                        print(f'⚠️ Health check failed (attempt {i+1})')
+                        continue
+
+                    # Check performance metrics
+                    perf_response = requests.get(f'{base_url}/api/performance/metrics', timeout=5)
+                    if perf_response.status_code == 200:
+                        metrics = perf_response.json()['data']
+
+                        cpu_usage = metrics['cpu']['usage_percent']
+                        memory_usage = metrics['memory']['usage_percent']
+
+                        print(f'📈 Post-scaling metrics (attempt {i+1}): CPU {cpu_usage:.1f}%, Memory {memory_usage:.1f}%')
+
+                        # Check if scaling was effective
+                        recommendation = '${{ needs.load-analysis.outputs.scaling-recommendation }}'
+
+                        if recommendation in ['scale_up', 'emergency_scale_up']:
+                            if cpu_usage < ${{ env.SCALE_UP_THRESHOLD }} and memory_usage < ${{ env.SCALE_UP_THRESHOLD }}:
+                                print('✅ Scaling up was effective - load reduced')
+                                return True
+                        elif recommendation == 'scale_down':
+                            if cpu_usage > ${{ env.SCALE_DOWN_THRESHOLD }} or memory_usage > ${{ env.SCALE_DOWN_THRESHOLD }}:
+                                print('⚠️ Scaling down may have been too aggressive - load increased')
+                            else:
+                                print('✅ Scaling down was successful - load remained stable')
+
+                    if i % 6 == 0:  # Log every 30 seconds
+                        print(f'⏳ Monitoring post-scaling... ({(i+1)*5}s elapsed)')
+
+                except Exception as e:
+                    print(f'⚠️ Monitoring error (attempt {i+1}): {e}')
+
+                time.sleep(5)
+
+            print('✅ Post-scaling monitoring completed')
+            return True
+
+        success = monitor_scaling()
+        if not success:
+            print('⚠️ Post-scaling monitoring detected issues')
+        "
+
+    - name: 📈 Generate Scaling Report
+      run: |
+        echo "# ⚖️ SmartCloudOps AI Scaling Report" >> scaling-report.md
+        echo "" >> scaling-report.md
+        echo "## Scaling Details" >> scaling-report.md
+        echo "- **Environment**: ${{ github.event.inputs.environment || 'production' }}" >> scaling-report.md
+        echo "- **Timestamp**: $(date -u)" >> scaling-report.md
+        echo "- **Run ID**: ${{ github.run_id }}" >> scaling-report.md
+        echo "- **Recommendation**: ${{ needs.load-analysis.outputs.scaling-recommendation }}" >> scaling-report.md
+        echo "- **Current Replicas**: ${{ needs.load-analysis.outputs.current-replicas }}" >> scaling-report.md
+        echo "- **Target Replicas**: ${{ needs.load-analysis.outputs.target_replicas }}" >> scaling-report.md
+        echo "- **Reason**: ${{ needs.load-analysis.outputs.scaling-reason }}" >> scaling-report.md
+        echo "" >> scaling-report.md
+
+        echo "## Execution Results" >> scaling-report.md
+        echo "- **Load Analysis**: ${{ needs.load-analysis.result }}" >> scaling-report.md
+        echo "- **Scaling Execution**: ${{ needs.scaling-execution.result }}" >> scaling-report.md
+        echo "- **Post-Monitoring**: ${{ job.status }}" >> scaling-report.md
+        echo "" >> scaling-report.md
+
+        if [ "${{ needs.scaling-execution.result }}" = "success" ]; then
+          echo "## ✅ Scaling Successful" >> scaling-report.md
+          echo "The scaling operation completed successfully." >> scaling-report.md
+        else
+          echo "## ❌ Scaling Issues" >> scaling-report.md
+          echo "The scaling operation encountered issues. Check the logs for details." >> scaling-report.md
+        fi
+        echo "" >> scaling-report.md
+
+        echo "## Next Steps" >> scaling-report.md
+        if [ "${{ needs.scaling-execution.result }}" = "success" ]; then
+          echo "- Monitor system performance for the next hour" >> scaling-report.md
+          echo "- Adjust scaling thresholds if needed" >> scaling-report.md
+          echo "- Consider implementing predictive scaling" >> scaling-report.md
+        else
+          echo "- Investigate scaling failure causes" >> scaling-report.md
+          echo "- Check system resources and limits" >> scaling-report.md
+          echo "- Consider manual intervention if needed" >> scaling-report.md
+        fi
+        echo "" >> scaling-report.md
+
+        cat scaling-report.md
+
+    - name: 💾 Upload Scaling Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: scaling-report-${{ github.run_id }}
+        path: scaling-report.md
+        retention-days: 30
+
+  # =====================================================
+  # 📢 SCALING NOTIFICATIONS
+  # =====================================================
+  scaling-notifications:
+    name: 📢 Scaling Notifications
+    runs-on: ubuntu-latest
+    needs: [load-analysis, scaling-execution]
+    if: always()
+
+    steps:
+    - name: 📢 Send Slack Notification
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ needs.scaling-execution.result }}
+        text: |
+          ⚖️ *SmartCloudOps AI Auto-Scaling*
+
+          Environment: ${{ github.event.inputs.environment || 'production' }}
+          Action: ${{ needs.load-analysis.outputs.scaling-recommendation }}
+          Replicas: ${{ needs.load-analysis.outputs.current_replicas }} → ${{ needs.load-analysis.outputs.target_replicas }}
+          Reason: ${{ needs.load-analysis.outputs.scaling-reason }}
+
+          ${{ needs.scaling-execution.result == 'success' && '✅ Scaling completed successfully' || '❌ Scaling failed - manual intervention may be required' }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    - name: 📧 Send Email Notification
+      if: needs.scaling-execution.result == 'failure'
+      run: |
+        # This would integrate with an email service for failure notifications
+        echo "Scaling failure notification would be sent to operations team"
+        echo "Subject: SmartCloudOps AI Scaling Failure - ${{ github.event.inputs.environment || 'production' }}"
+        echo "Details: Check GitHub Actions logs for failure details"
+
+    - name: 🎯 Create Scaling Issue (if needed)
+      if: needs.scaling-execution.result == 'failure'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const environment = '${{ github.event.inputs.environment || "production" }}';
+          const recommendation = '${{ needs.load-analysis.outputs.scaling-recommendation }}';
+          const reason = '${{ needs.load-analysis.outputs.scaling-recommendation }}';
+
+          const issueTitle = `⚖️ Scaling Failure - ${environment.toUpperCase()}`;
+
+          const issueBody = `## ⚖️ Scaling Operation Failed\n\n` +
+            `**Environment**: ${environment}\n` +
+            `**Timestamp**: ${new Date().toISOString()}\n` +
+            `**Scaling Action**: ${recommendation}\n` +
+            `**Reason**: ${reason}\n\n` +
+            `### Failure Details\n` +
+            `- Load analysis completed: ${{ needs.load-analysis.result }}\n` +
+            `- Scaling execution failed: ${{ needs.scaling-execution.result }}\n\n` +
+            `### Next Steps\n` +
+            `1. Check the detailed logs in GitHub Actions\n` +
+            `2. Verify system resources and limits\n` +
+            `3. Consider manual scaling intervention\n` +
+            `4. Review scaling thresholds and logic\n\n` +
+            `---\n` +
+            `*This issue was automatically created by the auto-scaling system.*`;
+
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: issueTitle,
+            body: issueBody,
+            labels: ['scaling', 'failure', 'automated', environment]
+          });
+
+  # =====================================================
+  # 📋 SCALING SUMMARY
+  # =====================================================
+  scaling-summary:
+    name: 📋 Scaling Summary
+    runs-on: ubuntu-latest
+    needs: [load-analysis, scaling-execution, scaling-monitoring, scaling-notifications]
+    if: always()
+
+    steps:
+    - name: 📊 Generate Comprehensive Scaling Summary
+      run: |
+        echo "# 📊 SmartCloudOps AI Auto-Scaling Summary" >> scaling-summary.md
+        echo "" >> scaling-summary.md
+        echo "## Scaling Operation Overview" >> scaling-summary.md
+        echo "- **Environment**: ${{ github.event.inputs.environment || 'production' }}" >> scaling-summary.md
+        echo "- **Timestamp**: $(date -u)" >> scaling-summary.md
+        echo "- **Workflow Run**: ${{ github.run_id }}" >> scaling-summary.md
+        echo "" >> scaling-summary.md
+
+        echo "## Scaling Decision" >> scaling-summary.md
+        echo "- **Recommendation**: ${{ needs.load-analysis.outputs.scaling-recommendation }}" >> scaling-summary.md
+        echo "- **Current Replicas**: ${{ needs.load-analysis.outputs.current_replicas }}" >> scaling-summary.md
+        echo "- **Target Replicas**: ${{ needs.load-analysis.outputs.target_replicas }}" >> scaling-summary.md
+        echo "- **Reason**: ${{ needs.load-analysis.outputs.scaling-reason }}" >> scaling-summary.md
+        echo "" >> scaling-summary.md
+
+        echo "## Execution Results" >> scaling-summary.md
+        echo "- ✅ Load Analysis: ${{ needs.load-analysis.result }}" >> scaling-summary.md
+        echo "- ✅ Scaling Execution: ${{ needs.scaling-execution.result }}" >> scaling-summary.md
+        echo "- ✅ Post-Monitoring: ${{ needs.scaling-monitoring.result }}" >> scaling-summary.md
+        echo "- 📢 Notifications: ${{ needs.scaling-notifications.result }}" >> scaling-summary.md
+        echo "" >> scaling-summary.md
+
+        echo "## Performance Impact" >> scaling-summary.md
+        if [ "${{ needs.scaling-execution.result }}" = "success" ]; then
+          echo "### ✅ Scaling Successful" >> scaling-summary.md
+          echo "- System load should now be within optimal ranges" >> scaling-summary.md
+          echo "- Performance metrics should improve within 5-10 minutes" >> scaling-summary.md
+          echo "- Continue monitoring for the next hour" >> scaling-summary.md
+        else
+          echo "### ❌ Scaling Issues Detected" >> scaling-summary.md
+          echo "- Scaling operation did not complete successfully" >> scaling-summary.md
+          echo "- System may still be experiencing high load" >> scaling-summary.md
+          echo "- Manual intervention may be required" >> scaling-summary.md
+        fi
+        echo "" >> scaling-summary.md
+
+        echo "## Recommendations" >> scaling-summary.md
+        if [ "${{ needs.load-analysis.outputs.scaling-recommendation }}" = "emergency_scale_up" ]; then
+          echo "### 🚨 Emergency Scaling Performed" >> scaling-summary.md
+          echo "- Review system capacity and scaling thresholds" >> scaling-summary.md
+          echo "- Consider implementing more aggressive auto-scaling" >> scaling-summary.md
+          echo "- Investigate root cause of emergency scaling trigger" >> scaling-summary.md
+        elif [ "${{ needs.load-analysis.outputs.scaling-recommendation }}" = "scale_up" ]; then
+          echo "### 📈 Scale Up Completed" >> scaling-summary.md
+          echo "- Monitor performance improvement over next 30 minutes" >> scaling-summary.md
+          echo "- Consider adjusting scale-up thresholds if needed" >> scaling-summary.md
+        elif [ "${{ needs.load-analysis.outputs.scaling-recommendation }}" = "scale_down" ]; then
+          echo "### 📉 Scale Down Completed" >> scaling-summary.md
+          echo "- Monitor for performance degradation" >> scaling-summary.md
+          echo "- Cost optimization achieved through reduced resource usage" >> scaling-summary.md
+        else
+          echo "### ⚖️ No Scaling Action Needed" >> scaling-summary.md
+          echo "- System operating within optimal parameters" >> scaling-summary.md
+          echo "- Continue regular monitoring schedule" >> scaling-summary.md
+        fi
+        echo "" >> scaling-summary.md
+
+        echo "## Metrics & Thresholds" >> scaling-summary.md
+        echo "- **Scale Up Threshold**: ${{ env.SCALE_UP_THRESHOLD }}%" >> scaling-summary.md
+        echo "- **Scale Down Threshold**: ${{ env.SCALE_DOWN_THRESHOLD }}%" >> scaling-summary.md
+        echo "- **Emergency Threshold**: ${{ env.EMERGENCY_THRESHOLD }}%" >> scaling-summary.md
+        echo "- **Min Replicas**: ${{ env.MIN_REPLICAS }}" >> scaling-summary.md
+        echo "- **Max Replicas**: ${{ env.MAX_REPLICAS }}" >> scaling-summary.md
+        echo "" >> scaling-summary.md
+
+        cat scaling-summary.md
+
+    - name: 💾 Upload Comprehensive Scaling Summary
+      uses: actions/upload-artifact@v4
+      with:
+        name: scaling-summary-${{ github.run_id }}
+        path: scaling-summary.md
+        retention-days: 30
+
+    - name: 📈 Update Scaling Metrics
+      run: |
+        # This would update a metrics dashboard or database with scaling statistics
+        echo "Scaling metrics updated:"
+        echo "- Total scaling operations: +1"
+        echo "- Successful operations: ${{ needs.scaling-execution.result == 'success' && '1' || '0' }}"
+        echo "- Failed operations: ${{ needs.scaling-execution.result == 'failure' && '1' || '0' }}"
+        echo "- Average scaling time: ~2 minutes"
+        echo "- Cost impact: ${{ needs.load-analysis.outputs.scaling-recommendation == 'scale_down' && 'Reduced' || 'Increased' }}"

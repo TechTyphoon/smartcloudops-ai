@@ -4,7 +4,6 @@ Pin Python dependencies with SHA256 hashes for security.
 This script generates a requirements.lock file with pinned versions and hashes.
 """
 
-import os
 import subprocess
 import sys
 from pathlib import Path

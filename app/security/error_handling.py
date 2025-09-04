@@ -6,7 +6,7 @@ Enterprise-grade error handling with structured logging and monitoring
 
 import logging
 import traceback
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from functools import wraps
 from typing import Any, Dict, List, Optional
 
@@ -15,7 +15,10 @@ try:
 except ImportError:
     # Handle case where Flask is not available
     request = None
-    jsonify = lambda x: x
+
+    def jsonify(x):
+        return x
+
     current_app = None
 
 logger = logging.getLogger(__name__)
@@ -309,7 +312,7 @@ def handle_database_errors(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            error_type = type(e).__name__
+            type(e).__name__
 
             # Handle specific database errors
             if "connection" in str(e).lower():
@@ -354,7 +357,7 @@ def handle_authentication_errors(func):
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            error_type = type(e).__name__
+            type(e).__name__
 
             # Handle specific authentication errors
             if "token" in str(e).lower():

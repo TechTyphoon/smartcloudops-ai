@@ -129,7 +129,7 @@ class TestRemediationEngine:
     ):
         """Test that all engine components are properly initialized."""
         with patch("app.remediation.engine.get_config", return_value=mock_config):
-            engine = RemediationEngine(mock_config)
+            RemediationEngine(mock_config)
 
             mock_safety.assert_called_once_with(
                 max_actions_per_hour=10,
@@ -141,30 +141,39 @@ class TestRemediationEngine:
 
     def test_analyze_metrics_cpu_issue(self, engine):
         """Test metrics analysis for CPU issues."""
-        metrics = {"cpu_usage": 95.0, "memory_usage": 60.0, "disk_usage": 45.0}
+        metrics = {
+            "cpu_usage_avg": 95.0,
+            "memory_usage_pct": 60.0,
+            "disk_usage_pct": 45.0,
+        }
 
         issues = engine._analyze_metrics(metrics)
 
-        assert "cpu_high" in issues
-        assert issues["cpu_high"] is True
+        assert "high_cpu_usage" in issues
 
     def test_analyze_metrics_memory_issue(self, engine):
         """Test metrics analysis for memory issues."""
-        metrics = {"cpu_usage": 50.0, "memory_usage": 92.0, "disk_usage": 45.0}
+        metrics = {
+            "cpu_usage_avg": 50.0,
+            "memory_usage_pct": 92.0,
+            "disk_usage_pct": 45.0,
+        }
 
         issues = engine._analyze_metrics(metrics)
 
-        assert "memory_high" in issues
-        assert issues["memory_high"] is True
+        assert "high_memory_usage" in issues
 
     def test_analyze_metrics_disk_issue(self, engine):
         """Test metrics analysis for disk issues."""
-        metrics = {"cpu_usage": 50.0, "memory_usage": 60.0, "disk_usage": 88.0}
+        metrics = {
+            "cpu_usage_avg": 50.0,
+            "memory_usage_pct": 60.0,
+            "disk_usage_pct": 88.0,
+        }
 
         issues = engine._analyze_metrics(metrics)
 
-        assert "disk_high" in issues
-        assert issues["disk_high"] is True
+        assert "high_disk_usage" in issues
 
     @patch("app.remediation.engine.SafetyManager")
     @patch("app.remediation.engine.ActionManager")
@@ -175,8 +184,8 @@ class TestRemediationEngine:
         """Test complete remediation workflow."""
         # Setup mocks
         mock_safety_instance = Mock()
-        mock_safety_instance.check_safety.return_value = {
-            "safe": True,
+        mock_safety_instance.check_safety_conditions.return_value = {
+            "safe_to_proceed": True,
             "reason": "All checks passed",
         }
         mock_safety.return_value = mock_safety_instance
@@ -196,13 +205,13 @@ class TestRemediationEngine:
             engine = RemediationEngine(mock_config)
 
             # Test anomaly evaluation
-            result = engine.evaluate_anomaly(0.85, {"cpu_usage": 90.0})
+            result = engine.evaluate_anomaly(0.85, {"cpu_usage_avg": 90.0})
 
             assert result["severity"] == "high"
             assert result.get("needs_remediation", False) is True
 
             # Verify safety check was called
-            mock_safety_instance.check_safety.assert_called()
+            mock_safety_instance.check_safety_conditions.assert_called()
 
     def test_engine_with_real_config_class(self):
         """Test engine with real configuration class."""
@@ -276,8 +285,21 @@ class TestRemediationEnginePerformance:
             "APPROVAL_SSM_PARAM": "/test/approvals/auto",
         }
 
-    def test_evaluation_performance(self, mock_config):
+    @patch("app.remediation.engine.SafetyManager")
+    @patch("app.remediation.engine.ActionManager")
+    @patch("app.remediation.engine.NotificationManager")
+    def test_evaluation_performance(
+        self, mock_notification, mock_action, mock_safety, mock_config
+    ):
         """Test anomaly evaluation performance."""
+
+        # Setup mocks for performance
+        mock_safety_instance = Mock()
+        mock_safety_instance.check_safety_conditions.return_value = {
+            "safe_to_proceed": True,
+            "reason": "All checks passed",
+        }
+        mock_safety.return_value = mock_safety_instance
 
         with patch("app.remediation.engine.get_config", return_value=mock_config):
             engine = RemediationEngine(mock_config)

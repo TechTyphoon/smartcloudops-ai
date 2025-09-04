@@ -1,48 +1,9 @@
 # Smart CloudOps AI - Terraform Infrastructure Configuration
 # Phase 1.1: AWS Infrastructure Setup
 
-terraform {
-  required_version = ">= 1.0"
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.1"
-    }
-    null = {
-      source  = "hashicorp/null"
-      version = "~> 3.1"
-    }
-  }
+# Terraform configuration moved to backend.tf to avoid duplication
 
-  # Remote state configuration for production
-  # Uncomment and configure for production use
-  # backend "s3" {
-  #   bucket         = "your-terraform-state-bucket-name"
-  #   key            = "smartcloudops-ai/terraform.tfstate"
-  #   region         = "us-west-2"
-  #   encrypt        = true
-  #   dynamodb_table = "terraform-locks"
-  #   kms_key_id     = "arn:aws:kms:us-west-2:ACCOUNT_ID:key/your-kms-key-id"
-  # }
-}
-
-# AWS Provider Configuration
-provider "aws" {
-  region = var.aws_region
-
-  default_tags {
-    tags = {
-      Project     = "SmartCloudOpsAI"
-      Environment = var.environment
-      ManagedBy   = "Terraform"
-      Owner       = var.project_owner
-    }
-  }
-}
+# AWS Provider Configuration moved to backend.tf to avoid duplication
 
 # Data source for availability zones
 data "aws_availability_zones" "available" {
@@ -271,7 +232,7 @@ resource "aws_instance" "ec2_monitoring" {
     encrypted   = true
   }
 
-  user_data = base64encode(file("${path.module}/scripts/monitoring_setup.sh"))
+  user_data = base64encode(file("${path.module}/scripts/configure_monitoring.sh"))
 
   tags = {
     Name = "${var.project_name}-monitoring"

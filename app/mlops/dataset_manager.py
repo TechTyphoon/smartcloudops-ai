@@ -7,13 +7,12 @@ import hashlib
 import json
 import shutil
 import sqlite3
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
-import numpy as np
 import pandas as pd
 
 
@@ -301,9 +300,9 @@ class DatasetManager:
 
         cursor.execute(
             """
-            INSERT OR REPLACE INTO dataset_versions 
-            (dataset_id, version, dataset_type, description, source, file_path, 
-             file_format, size_bytes, row_count, column_count, checksum, schema, 
+            INSERT OR REPLACE INTO dataset_versions
+            (dataset_id, version, dataset_type, description, source, file_path,
+             file_format, size_bytes, row_count, column_count, checksum, schema,
              statistics, created_at, created_by, parent_version, tags, validation_status, metadata)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,

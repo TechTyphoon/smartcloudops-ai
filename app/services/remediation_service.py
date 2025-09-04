@@ -114,7 +114,7 @@ class RemediationService:
         required_fields = ["action_type", "action_name", "description"]
         for field in required_fields:
             if field not in action_data or not action_data[field]:
-                raise ValueError(f"Required field '{field}' is missing or empty")
+                raise ValueError(f"Missing required field: {field}")
 
         # Validate action type
         valid_action_types = [
@@ -124,11 +124,10 @@ class RemediationService:
             "cleanup_logs",
             "update_config",
             "rollback",
+            "custom",
         ]
         if action_data["action_type"] not in valid_action_types:
-            raise ValueError(
-                f"Invalid action type. Must be one of: {', '.join(valid_action_types)}"
-            )
+            raise ValueError("Invalid action_type")
 
         # Validate priority
         valid_priorities = ["low", "medium", "high", "critical"]
@@ -196,6 +195,7 @@ class RemediationService:
             if field == "status":
                 valid_statuses = [
                     "pending",
+                    "approved",
                     "in_progress",
                     "completed",
                     "failed",
@@ -231,8 +231,8 @@ class RemediationService:
         if not action:
             return None
 
-        if action["status"] != "pending":
-            raise ValueError("Action can only be executed if status is 'pending'")
+        if action["status"] not in ["pending", "approved"]:
+            raise ValueError(f"Cannot execute action with status: {action['status']}")
 
         # Update status to in_progress
         action["status"] = "in_progress"
@@ -261,7 +261,7 @@ class RemediationService:
             action["execution_result"] = execution_result
 
         action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
-        return execution_result
+        return action
 
     def approve_remediation_action(self, action_id: int) -> Optional[Dict]:
         """
@@ -278,7 +278,7 @@ class RemediationService:
             return None
 
         if action["status"] != "pending":
-            raise ValueError("Action can only be approved if status is 'pending'")
+            raise ValueError(f"Cannot approve action with status: {action['status']}")
 
         action["status"] = "approved"
         action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"
@@ -299,9 +299,7 @@ class RemediationService:
             return None
 
         if action["status"] not in ["pending", "approved"]:
-            raise ValueError(
-                "Action can only be cancelled if status is 'pending' or 'approved'"
-            )
+            raise ValueError(f"Cannot cancel action with status: {action['status']}")
 
         action["status"] = "cancelled"
         action["updated_at"] = datetime.now(timezone.utc).isoformat() + "Z"

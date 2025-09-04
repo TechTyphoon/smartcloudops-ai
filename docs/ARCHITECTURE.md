@@ -478,13 +478,13 @@ PROMETHEUS_RETENTION=15d
 
 ## 📚 Related Documentation
 
-- **[Getting Started Guide](GETTING_STARTED.md)** - Quick setup instructions
-- **[API Reference](API_REFERENCE.md)** - Complete API documentation
+- **[Getting Started Guide](../USAGE.md)** - Quick setup instructions
+- **[API Reference](API_REFERENCE_COMPLETE.md)** - Complete API documentation
 - **[Installation Guide](../INSTALLATION.md)** - Detailed installation instructions
-- **[Usage Guide](../USAGE.md)** - Practical usage examples
+- **[Usage Guide](USER_GUIDE.md)** - Practical usage examples
 - **[Security Guide](SECURITY_HARDENING_GUIDE.md)** - Security implementation details
-- **[Performance Tuning](PERFORMANCE_TUNING.md)** - Optimization guidelines
-- **[Deployment Guide](CLOUD_DEPLOYMENT.md)** - Production deployment patterns
+- **[Performance Testing](PERFORMANCE_TESTING.md)** - Performance guidelines
+- **[Deployment Guide](DEPLOYMENT.md)** - Production deployment patterns
 
 ---
 
@@ -492,6 +492,6 @@ PROMETHEUS_RETENTION=15d
 
 **🏗️ Built for Scale • Designed for Security • Optimized for Performance 🏗️**
 
-[Back to Main README](../README.md) | [Next: API Reference](API_REFERENCE.md)
+[Back to Main README](../README.md) | [Next: API Reference](API_REFERENCE_COMPLETE.md)
 
 </div>

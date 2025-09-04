@@ -4,9 +4,7 @@ Fix Truncated Strings Script
 Fixes truncated string literals that were broken during automated formatting
 """
 
-import os
 import re
-import sys
 from pathlib import Path
 
 

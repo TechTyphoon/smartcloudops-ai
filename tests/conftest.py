@@ -54,6 +54,31 @@ def app():
 
     with app.app_context():
         init_db()
+        # Seed a test user so auth lookups succeed without the TESTING shortcut
+        from werkzeug.security import generate_password_hash
+
+        from app.database import get_db_session
+        from app.models import User
+
+        with get_db_session() as session:
+            # Only insert if not present
+            existing = session.query(User).filter_by(id=1).first()
+            if not existing:
+                user = User(
+                    id=1,
+                    username="testuser",
+                    email="test@example.com",
+                    password_hash=generate_password_hash("test-password"),
+                    role="admin",
+                    is_active=True,
+                )
+                session.add(user)
+
+        # Reinitialize auth manager with test secret key
+        from app.auth import auth_manager
+
+        auth_manager.__init__(secret_key=os.environ.get("JWT_SECRET_KEY"))
+
         yield app
         # Cleanup handled by init_db
 
@@ -72,11 +97,26 @@ def runner(app):
 
 @pytest.fixture(scope="function")
 def auth_headers():
-    """Generate authentication headers for testing."""
-    return {
-        "Authorization": "Bearer test-jwt-token",
-        "Content-Type": "application/json",
+    """Generate authentication headers for testing using a valid JWT.
+
+    Creates a short-lived access token signed with the test JWT_SECRET_KEY so
+    protected endpoints in integration tests receive a valid token.
+    """
+    from datetime import datetime, timedelta, timezone
+
+    import jwt
+
+    payload = {
+        "user_id": 1,
+        "username": "testuser",
+        "role": "admin",
+        "exp": datetime.now(timezone.utc) + timedelta(hours=1),
+        "type": "access",
     }
+
+    token = jwt.encode(payload, os.environ.get("JWT_SECRET_KEY"), algorithm="HS256")
+
+    return {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
 
 
 @pytest.fixture(scope="function")
@@ -170,6 +210,40 @@ def sample_user():
 
 
 @pytest.fixture(scope="function")
+def mock_anomaly_detector():
+    """Mock anomaly detector for testing."""
+    from unittest.mock import MagicMock
+
+    mock = MagicMock()
+    # Configure the mock to return proper dictionaries instead of MagicMocks
+    mock.detect_anomaly.return_value = {
+        "is_anomaly": True,
+        "score": 0.85,
+        "severity": "high",
+        "explanation": "High CPU usage detected",
+    }
+    mock.batch_detect.return_value = [
+        {"is_anomaly": True, "score": 0.85, "severity": "high"},
+        {"is_anomaly": False, "score": 0.15, "severity": "normal"},
+    ]
+    # Fix: Use get_system_status for the status endpoint
+    mock.get_system_status.return_value = {
+        "initialized": True,
+        "model_exists": True,
+        "model_path": "models/anomaly_detector.pkl",
+        "status": "operational",
+        "config": {"contamination": 0.1},
+    }
+    # Fix: Use train instead of train_model
+    mock.train.return_value = {
+        "status": "success",
+        "f1_score": 0.95,
+        "training_time": 120.5,
+    }
+    return mock
+
+
+@pytest.fixture(scope="function")
 def mock_aws_services():
     """Mock AWS services for testing."""
     with patch("boto3.client") as mock_client:
@@ -228,9 +302,27 @@ def reset_environment():
 # Markers for test categorization
 def pytest_configure(config):
     """Configure custom markers."""
-    config.addinivalue_line("markers", "critical: Critical tests that must pass")
-    config.addinivalue_line("markers", "auth: Authentication and authorization tests")
-    config.addinivalue_line("markers", "smoke: Quick smoke tests")
+    # Add all markers defined in pytest.ini to prevent UnknownMarkWarning
+    markers = [
+        "unit: Unit tests for individual functions and classes",
+        "integration: Integration tests for component interactions",
+        "e2e: End-to-end tests for complete workflows",
+        "slow: Slow running tests (>1 second)",
+        "security: Security-focused tests",
+        "performance: Performance and load tests",
+        "api: API endpoint tests",
+        "ml: Machine learning model tests",
+        "chatops: ChatOps functionality tests",
+        "database: Database integration tests",
+        "monitoring: Monitoring and metrics tests",
+        "remediation: Auto-remediation tests",
+        "critical: Critical tests that must pass",
+        "auth: Authentication and authorization tests",
+        "smoke: Quick smoke tests",
+    ]
+
+    for marker in markers:
+        config.addinivalue_line("markers", marker)
 
 
 # Test utilities

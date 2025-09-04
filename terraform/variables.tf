@@ -70,7 +70,7 @@ variable "allowed_cidr_blocks" {
   type        = list(string)
   # WARNING: For production, this should be restricted to specific office/team IPs only
   # Current setting allows access from anywhere - CHANGE FOR PRODUCTION!
-  default = ["0.0.0.0/0"]  # TEMPORARY FOR DEVELOPMENT - RESTRICT FOR PRODUCTION
+  default = ["0.0.0.0/0"] # TEMPORARY FOR DEVELOPMENT - RESTRICT FOR PRODUCTION
 }
 
 # EC2 Configuration

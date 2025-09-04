@@ -101,7 +101,23 @@ class MLflowManager:
             "MLFLOW_REGISTRY_URI", "sqlite:///ml_models/mlruns.db"
         )
         self.enable_fallback_logging = enable_fallback_logging
-        self.available = MLFLOW_AVAILABLE
+        # During test runs, force fallback logging to avoid network calls
+        # to a local MLflow tracking server (which generates noisy connection
+        # refused logs). Detect common test environment signals.
+        testing_env = (
+            os.getenv("ENVIRONMENT", "").lower() in ("test", "testing")
+            or os.getenv("TESTING", "").lower() in ("1", "true", "yes")
+            or os.getenv("FLASK_ENV", "").lower() in ("test", "testing")
+            or bool(os.getenv("PYTEST_CURRENT_TEST"))
+            or "pytest" in os.getenv("_", "").lower()
+            or any(
+                "pytest" in arg.lower()
+                for arg in os.sys.argv
+                if hasattr(os, "sys") and hasattr(os.sys, "argv")
+            )
+        )
+
+        self.available = MLFLOW_AVAILABLE and not testing_env
 
         # Fallback storage for when MLflow is not available
         self.fallback_storage_path = os.path.join("ml_models", "fallback_logs")
@@ -111,7 +127,10 @@ class MLflowManager:
         if self.available:
             self._configure_mlflow()
         else:
-            logger.warning("MLflow not available - using fallback logging")
+            # Ensure fallback storage exists if enabled
+            if self.enable_fallback_logging:
+                os.makedirs(self.fallback_storage_path, exist_ok=True)
+            logger.info("MLflow manager running in fallback mode (no network calls)")
 
         logger.info(f"MLflowManager initialized (available: {self.available})")
         logger.info(f"Tracking URI: {self.tracking_uri}")

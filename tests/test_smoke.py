@@ -15,65 +15,45 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 def test_app_import():
     """Test that the main app can be imported"""
-    try:
-        # Test importing the main app module
-        import app.main
+    # Test importing the main app module
+    import app.main
 
-        assert hasattr(app.main, "app")
-        print("✅ App module imported successfully")
-        return True
-    except ImportError as e:
-        print(f"❌ Failed to import app: {e}")
-        return False
+    assert hasattr(app.main, "app")
+    print("✅ App module imported successfully")
 
 
 def test_config_import():
     """Test that the config can be imported"""
-    try:
-        from app.config import get_config
+    from app.config import get_config
 
-        config = get_config()
-        assert config is not None
-        print("✅ Config imported successfully")
-        return True
-    except ImportError as e:
-        print(f"❌ Failed to import config: {e}")
-        return False
+    config = get_config()
+    assert config is not None
+    print("✅ Config imported successfully")
 
 
 def test_basic_functionality():
     """Test basic functionality without external services"""
-    try:
-        # Test that we can create a basic Flask app
-        app = Flask(__name__)
+    # Test that we can create a basic Flask app
+    app = Flask(__name__)
 
-        @app.route("/health")
-        def health():
-            return {"status": "healthy"}
+    @app.route("/health")
+    def health():
+        return {"status": "healthy"}
 
-        # Test that the app can be created
-        assert app is not None
-        assert hasattr(app, "route")
-        print("✅ Basic Flask functionality works")
-        return True
-    except Exception as e:
-        print(f"❌ Basic functionality test failed: {e}")
-        return False
+    # Test that the app can be created
+    assert app is not None
+    assert hasattr(app, "route")
+    print("✅ Basic Flask functionality works")
 
 
 def test_environment_variables():
     """Test that environment variables can be read"""
-    try:
-        import os
+    import os
 
-        # Test that we can read environment variables
-        test_var = os.getenv("TEST_VAR", "default_value")
-        assert test_var == "default_value"
-        print("✅ Environment variable reading works")
-        return True
-    except Exception as e:
-        print(f"❌ Environment variable test failed: {e}")
-        return False
+    # Test that we can read environment variables
+    test_var = os.getenv("TEST_VAR", "default_value")
+    assert test_var == "default_value"
+    print("✅ Environment variable reading works")
 
 
 if __name__ == "__main__":

@@ -8,8 +8,8 @@ import hashlib
 import json
 import logging
 import sqlite3
-from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta, timezone
+from dataclasses import dataclass
+from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -760,9 +760,9 @@ class EnhancedDataPipeline:
             cursor = conn.cursor()
             cursor.execute(
                 """
-                INSERT OR REPLACE INTO data_versions 
-                (version_id, dataset_name, created_at, data_hash, source_hash, 
-                 row_count, column_count, file_size_bytes, quality_score, 
+                INSERT OR REPLACE INTO data_versions
+                (version_id, dataset_name, created_at, data_hash, source_hash,
+                 row_count, column_count, file_size_bytes, quality_score,
                  quality_status, transformation_log, metadata, tags)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
@@ -820,11 +820,11 @@ class EnhancedDataPipeline:
             cursor = conn.cursor()
             cursor.execute(
                 """
-                INSERT OR REPLACE INTO quality_reports 
-                (report_id, dataset_name, version_id, timestamp, overall_score, 
-                 overall_status, completeness_score, consistency_score, 
-                 accuracy_score, timeliness_score, validity_score, 
-                 missing_values, duplicate_rows, outliers, schema_violations, 
+                INSERT OR REPLACE INTO quality_reports
+                (report_id, dataset_name, version_id, timestamp, overall_score,
+                 overall_status, completeness_score, consistency_score,
+                 accuracy_score, timeliness_score, validity_score,
+                 missing_values, duplicate_rows, outliers, schema_violations,
                  data_drift_detected, issues_found, recommendations)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
@@ -859,7 +859,7 @@ class EnhancedDataPipeline:
             cursor = conn.cursor()
             cursor.execute(
                 """
-                UPDATE data_versions 
+                UPDATE data_versions
                 SET quality_score = ?, quality_status = ?
                 WHERE version_id = ?
             """,
@@ -908,7 +908,7 @@ class EnhancedDataPipeline:
                 cursor.execute(
                     """
                     SELECT version_id, dataset_name, created_at, quality_score, quality_status
-                    FROM data_versions 
+                    FROM data_versions
                     WHERE dataset_name = ?
                     ORDER BY created_at DESC
                 """,
@@ -918,7 +918,7 @@ class EnhancedDataPipeline:
                 cursor.execute(
                     """
                     SELECT version_id, dataset_name, created_at, quality_score, quality_status
-                    FROM data_versions 
+                    FROM data_versions
                     ORDER BY created_at DESC
                 """
                 )
@@ -943,8 +943,8 @@ class EnhancedDataPipeline:
             # Get versions to delete
             cursor.execute(
                 """
-                SELECT version_id FROM data_versions 
-                ORDER BY created_at DESC 
+                SELECT version_id FROM data_versions
+                ORDER BY created_at DESC
                 LIMIT -1 OFFSET ?
             """,
                 (keep_count,),

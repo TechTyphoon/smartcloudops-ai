@@ -8,7 +8,7 @@ import hashlib
 import json
 import logging
 import pickle
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, Optional
 
 import redis
 

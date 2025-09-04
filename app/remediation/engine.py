@@ -89,7 +89,7 @@ class RemediationEngine:
         try:
             # Define severity thresholds
             severity_thresholds = {
-                "critical": 0.8,
+                "critical": 0.9,
                 "high": 0.6,
                 "medium": 0.4,
                 "low": 0.2,
@@ -113,6 +113,13 @@ class RemediationEngine:
                 severity, issues, metrics
             )
 
+            # Check safety if remediation is needed
+            safety_check = None
+            if needs_remediation and self.safety_manager:
+                safety_check = self.safety_manager.check_safety_conditions(
+                    severity, recommended_actions
+                )
+
             evaluation = {
                 "timestamp": datetime.now().isoformat(),
                 "anomaly_score": anomaly_score,
@@ -121,6 +128,7 @@ class RemediationEngine:
                 "issues": issues,
                 "recommended_actions": recommended_actions,
                 "metrics": metrics,
+                "safety_check": safety_check,
             }
 
             logger.info(
@@ -135,7 +143,7 @@ class RemediationEngine:
                 "anomaly_score": anomaly_score,
                 "severity": "unknown",
                 "needs_remediation": False,
-                "issues": ["evaluation_error"],
+                "issues": {"evaluation_error": True},
                 "recommended_actions": [],
                 "error": str(e),
             }
@@ -185,11 +193,34 @@ class RemediationEngine:
         issues = []
 
         try:
-            self._analyze_cpu_metrics(metrics, issues)
-            self._analyze_memory_metrics(metrics, issues)
-            self._analyze_disk_metrics(metrics, issues)
-            self._analyze_network_metrics(metrics, issues)
-            self._analyze_response_metrics(metrics, issues)
+            # CPU analysis
+            cpu_usage = metrics.get("cpu_usage_avg", 0)
+            if cpu_usage > 90:
+                issues.append("high_cpu_usage")
+            elif cpu_usage > 80:
+                issues.append("elevated_cpu_usage")
+
+            # Memory analysis
+            memory_usage = metrics.get("memory_usage_pct", 0)
+            if memory_usage > 95:
+                issues.append("critical_memory_usage")
+            elif memory_usage > 85:
+                issues.append("high_memory_usage")
+
+            # Disk analysis
+            disk_usage = metrics.get("disk_usage_pct", 0)
+            if disk_usage > 95:
+                issues.append("critical_disk_usage")
+            elif disk_usage > 85:
+                issues.append("high_disk_usage")
+
+            # Network analysis
+            if metrics.get("network_bytes_total", 0) > 1000000000:  # 1GB
+                issues.append("high_network_usage")
+
+            # Response time analysis
+            if metrics.get("response_time_p95", 0) > 5.0:  # 5 seconds
+                issues.append("slow_response_time")
 
         except Exception as e:
             logger.error(f"Error analyzing metrics: {e}")
@@ -308,10 +339,32 @@ class RemediationEngine:
             Dict with execution results
         """
         try:
+            # Validate input data
+            if not evaluation or not isinstance(evaluation, dict):
+                return {
+                    "status": "error",
+                    "action_executed": None,
+                    "error": "Invalid anomaly data: evaluation must be a non-empty dictionary",
+                    "timestamp": datetime.now().isoformat(),
+                }
+
+            # Check for required fields
+            required_fields = ["anomaly_score", "severity"]
+            missing_fields = [
+                field for field in required_fields if field not in evaluation
+            ]
+            if missing_fields:
+                return {
+                    "status": "error",
+                    "action_executed": None,
+                    "error": f"Invalid anomaly data: missing required fields: {', '.join(missing_fields)}",
+                    "timestamp": datetime.now().isoformat(),
+                }
             if not evaluation.get("needs_remediation", False):
                 logger.info("No remediation needed for this anomaly")
                 return {
-                    "executed": False,
+                    "status": "no_actions",
+                    "action_executed": None,
                     "reason": "No remediation needed",
                     "timestamp": datetime.now().isoformat(),
                 }
@@ -328,9 +381,10 @@ class RemediationEngine:
             if not safety_check["safe_to_proceed"]:
                 logger.warning(f"Safety check failed: {safety_check['reason']}")
                 return {
-                    "executed": False,
+                    "status": "blocked",
+                    "action_executed": None,
                     "reason": safety_check["reason"],
-                    "safety_check": safety_check,
+                    "safety_check": "failed",
                     "timestamp": datetime.now().isoformat(),
                 }
 
@@ -388,19 +442,50 @@ class RemediationEngine:
             # Clean up old actions (keep last 24 hours)
             self._cleanup_old_actions()
 
+            # Determine if any actions were successfully executed
+            successful_actions = [
+                result
+                for result in execution_results
+                if result["result"].get("status") == "success"
+            ]
+
+            failed_actions = [
+                result
+                for result in execution_results
+                if result["result"].get("status") == "failed"
+            ]
+
+            # Get error message from first failed action if any
+            error_message = None
+            if failed_actions:
+                error_message = failed_actions[0]["result"].get("error")
+
             return {
-                "executed": True,
-                "safety_check": safety_check,
+                "status": "success" if successful_actions else "failed",
+                "action_executed": (
+                    successful_actions[0]["action"]["action"]
+                    if successful_actions
+                    else (
+                        failed_actions[0]["action"]["action"]
+                        if failed_actions
+                        else None
+                    )
+                ),
+                "error": error_message,
+                "safety_check": (
+                    "passed" if safety_check["safe_to_proceed"] else "failed"
+                ),
+                "notification_sent": notification_result.get("status") == "sent",
                 "execution_results": execution_results,
-                "notification_result": notification_result,
                 "timestamp": datetime.now().isoformat(),
             }
 
         except Exception as e:
             logger.error(f"Error executing remediation: {e}")
             return {
-                "executed": False,
-                "reason": f"Execution error: {str(e)}",
+                "status": "error",
+                "action_executed": None,
+                "error": f"Execution error: {str(e)}",
                 "timestamp": datetime.now().isoformat(),
             }
 
@@ -415,6 +500,74 @@ class RemediationEngine:
             ]
         except Exception as e:
             logger.error(f"Error cleaning up old actions: {e}")
+
+    def get_remediation_history(self) -> List[Dict[str, Any]]:
+        """Get remediation action history."""
+        try:
+            # Convert recent_actions to the expected format
+            history = []
+            for action in self.recent_actions:
+                history.append(
+                    {
+                        "timestamp": (
+                            action["timestamp"].isoformat()
+                            if hasattr(action["timestamp"], "isoformat")
+                            else str(action["timestamp"])
+                        ),
+                        "action": action["action"],
+                        "status": action.get("status", "unknown"),
+                    }
+                )
+            return history
+        except Exception as e:
+            logger.error(f"Error getting remediation history: {e}")
+            return []
+
+    def get_remediation_stats(self) -> Dict[str, Any]:
+        """Get remediation statistics."""
+        try:
+            total_actions = len(self.recent_actions)
+            successful_actions = len(
+                [
+                    action
+                    for action in self.recent_actions
+                    if action.get("status") == "success"
+                ]
+            )
+            failed_actions = len(
+                [
+                    action
+                    for action in self.recent_actions
+                    if action.get("status") == "failed"
+                ]
+            )
+
+            success_rate = (
+                successful_actions / total_actions if total_actions > 0 else 0
+            )
+
+            return {
+                "total_actions": total_actions,
+                "successful_actions": successful_actions,
+                "failed_actions": failed_actions,
+                "success_rate": success_rate,
+            }
+        except Exception as e:
+            logger.error(f"Error getting remediation stats: {e}")
+            return {
+                "total_actions": 0,
+                "successful_actions": 0,
+                "failed_actions": 0,
+                "success_rate": 0,
+            }
+
+    def clear_remediation_history(self) -> None:
+        """Clear remediation history."""
+        try:
+            self.recent_actions = []
+            logger.info("Remediation history cleared")
+        except Exception as e:
+            logger.error(f"Error clearing remediation history: {e}")
 
     def get_status(self) -> Dict[str, Any]:
         """Get current status of the remediation engine."""

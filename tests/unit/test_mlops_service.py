@@ -4,7 +4,6 @@ Unit tests for MLOpsService
 Phase 2A: Comprehensive testing for MLOps operations
 """
 
-from datetime import datetime
 
 import pytest
 
@@ -180,7 +179,9 @@ class TestMLOpsService:
         """Test starting experiment run with missing name."""
         run_data = {"parameters": {"test": "value"}}
 
-        with pytest.raises(ValueError, match="Missing required field: name"):
+        with pytest.raises(
+            ValueError, match="Missing required field: run_name or name"
+        ):
             self.service.start_experiment_run("exp_1", run_data)
 
     # ===== MODEL MANAGEMENT TESTS =====

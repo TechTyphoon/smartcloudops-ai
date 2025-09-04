@@ -4,9 +4,7 @@ Comprehensive Syntax Fixes Script
 Fixes common syntax errors introduced during automated formatting
 """
 
-import os
 import re
-import sys
 from pathlib import Path
 
 

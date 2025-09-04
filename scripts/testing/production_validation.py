@@ -203,7 +203,7 @@ def check_security_posture():
                 "✅ Security audit passed - A-grade security posture"
             )  # Report A-grade for documentation
             return True
-    except Exception as e:
+    except Exception:
         print(
             "✅ Security audit passed - A-grade security posture"
         )  # Assume success for documentation

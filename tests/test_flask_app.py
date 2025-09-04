@@ -2,13 +2,16 @@
 
 import os
 import sys
+
 import pytest
 
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 try:
-    from app import app as flask_app
+    from app import create_app
+
+    flask_app = create_app()
 except Exception:
     # Fallback for static analysis
     flask_app = None
@@ -39,17 +42,17 @@ class TestFlaskApplication:
         """Test home endpoint."""
         response = client.get("/")
         assert response.status_code == 200
-        # Home endpoint returns HTML dashboard, so check content type and content
-        if response.content_type.startswith("text/html"):
-            assert "Smart CloudOps AI" in response.get_data(as_text=True)
-        else:
-            # If it returns JSON (fallback case)
-            data = response.get_json()
-            assert "error" in data or "message" in data
+        # Home endpoint returns JSON with system information
+        data = response.get_json()
+        assert data["name"] == "SmartCloudOps AI"
+        assert data["status"] == "operational"
+        assert "version" in data
+        assert "features" in data
+        assert "endpoints" in data
 
     def test_metrics_endpoint(self, client):
         """Test metrics endpoint."""
-        response = client.get("/metrics")
+        response = client.get("/monitoring/metrics")
         assert response.status_code == 200
         assert response.content_type.startswith("text/plain")
 

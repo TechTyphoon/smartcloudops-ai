@@ -3,13 +3,10 @@ Enhanced Structured Logging with OpenTelemetry Integration
 Phase 4: Observability & Operability
 """
 
-import json
 import logging
-import os
 import sys
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
 
 import structlog
 from flask import Flask, g, request

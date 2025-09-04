@@ -36,7 +36,7 @@ class TestGPTIntegration:
         """Test GPT handler initialization without API key."""
         with patch.dict(os.environ, {}, clear=True):
             with pytest.raises(ValueError, match="OpenAI API key is required"):
-                handler = GPTHandler()
+                GPTHandler()
 
     def test_gpt_handler_init_with_api_key(self):
         """Test GPT handler initialization with API key."""
@@ -51,7 +51,7 @@ class TestGPTIntegration:
         """Test query processing when GPT client is not available."""
         with patch.dict(os.environ, {}, clear=True):
             with pytest.raises(ValueError, match="OpenAI API key is required"):
-                handler = GPTHandler()
+                GPTHandler()
 
     @patch("app.chatops.gpt_handler.OpenAI")
     def test_process_query_with_client(self, mock_openai):
@@ -87,11 +87,12 @@ class TestGPTIntegration:
             assert result == "What's the CPU usage?"
 
             # Test input with dangerous characters
-            result = handler.sanitize_input(
-                "What's the CPU usage? <script>alert('xss')</script>"
-            )
-            assert "<script>" not in result
-            assert "alert('xss')" not in result
+            with pytest.raises(
+                ValueError, match="Query contains potentially unsafe command content"
+            ):
+                handler.sanitize_input(
+                    "What's the CPU usage? <script>alert('xss')</script>"
+                )
 
             # Test input length limit
             long_input = "A" * 2000
@@ -129,6 +130,6 @@ class TestGPTIntegration:
 
             # Test dangerous patterns
             with pytest.raises(
-                ValueError, match="Query contains potentially unsafe content"
+                ValueError, match="Query contains potentially unsafe command content"
             ):
                 handler.sanitize_input("system('rm -rf /')")

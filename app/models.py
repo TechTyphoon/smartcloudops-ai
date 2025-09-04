@@ -3,7 +3,6 @@
 SQLAlchemy Models for Smart CloudOps AI - Minimal Working Version
 """
 
-from datetime import datetime
 
 from sqlalchemy import (
     JSON,
@@ -17,10 +16,12 @@ from sqlalchemy import (
     Text,
     func,
 )
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-Base = declarative_base()
+# Use the shared declarative base from the database module so that
+# init_db() (which calls Base.metadata.create_all) creates the same
+# tables defined by these models.
+from app.database import Base
 
 
 class User(Base):
@@ -39,8 +40,16 @@ class User(Base):
 
     # Relationships
     feedback = relationship("Feedback", back_populates="user")
+    # Remediation actions executed by this user. Specify foreign_keys to
+    # disambiguate multiple ForeignKey columns on RemediationAction that
+    # reference the users table (approved_by, executed_by, etc.).
     remediation_actions = relationship(
-        "RemediationAction", back_populates="executed_by_user"
+        "RemediationAction",
+        back_populates="executed_by_user",
+        # Use a string reference here because RemediationAction is defined
+        # later in the file; SQLAlchemy will resolve it when configuring
+        # mappers.
+        foreign_keys="RemediationAction.executed_by",
     )
 
 
@@ -106,7 +115,15 @@ class RemediationAction(Base):
 
     # Relationships
     anomaly = relationship("Anomaly", back_populates="remediation_actions")
-    executed_by_user = relationship("User", back_populates="remediation_actions")
+    # Relationship to the user who executed the remediation. Specify
+    # the foreign key explicitly so SQLAlchemy can determine the join.
+    executed_by_user = relationship(
+        "User",
+        back_populates="remediation_actions",
+        # executed_by is a Column defined above on this class, so refer to
+        # it directly (as a Python name) inside a list.
+        foreign_keys=[executed_by],
+    )
 
 
 class Feedback(Base):

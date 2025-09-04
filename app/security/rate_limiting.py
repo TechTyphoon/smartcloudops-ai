@@ -18,7 +18,10 @@ try:
     from flask import current_app, jsonify, request
 except ImportError:
     request = None
-    jsonify = lambda x: x
+
+    def jsonify(x):
+        return x
+
     current_app = None
 
 logger = logging.getLogger(__name__)
@@ -145,7 +148,7 @@ class RateLimiter:
             return True
 
         try:
-            current_time = int(time.time())
+            int(time.time())
             limits = self._get_limits(endpoint)
 
             for window in limits.keys():

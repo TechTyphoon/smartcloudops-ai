@@ -1,0 +1,235 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smartcloudops-main
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: main
+    version: v2.0.0
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: smartcloudops
+      component: main
+  template:
+    metadata:
+      labels:
+        app: smartcloudops
+        component: main
+        version: v2.0.0
+    spec:
+      # Security Context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+
+      # Affinity and Anti-affinity rules for high availability
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - smartcloudops
+              - key: component
+                operator: In
+                values:
+                - main
+            topologyKey: kubernetes.io/hostname
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - smartcloudops
+              topologyKey: topology.kubernetes.io/zone
+
+      # Node affinity for production nodes
+      nodeSelector:
+        environment: production
+        node-type: application
+
+      # Tolerations for production workloads
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "smartcloudops"
+        effect: "NoSchedule"
+      - key: "production"
+        operator: "Exists"
+        effect: "NoExecute"
+
+      # Init containers for setup
+      initContainers:
+      - name: init-db-migration
+        image: smartcloudops/smartcloudops:latest
+        command: ['python', 'scripts/init_db.py']
+        envFrom:
+        - configMapRef:
+            name: smartcloudops-config
+        - secretRef:
+            name: smartcloudops-secrets
+        volumeMounts:
+        - name: shared-data
+          mountPath: /app/shared
+
+      # Main containers
+      containers:
+      - name: smartcloudops-app
+        image: smartcloudops/smartcloudops:latest
+        imagePullPolicy: Always
+
+        # Resource limits and requests
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+
+        # Health checks
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+          successThreshold: 1
+
+        # Startup probe for slow-starting apps
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
+          successThreshold: 1
+
+        # Ports
+        ports:
+        - name: http
+          containerPort: 5000
+          protocol: TCP
+        - name: metrics
+          containerPort: 8000
+          protocol: TCP
+
+        # Environment variables
+        env:
+        - name: FLASK_ENV
+          value: "production"
+        - name: FLASK_DEBUG
+          value: "false"
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        - name: GUNICORN_WORKERS
+          value: "4"
+        - name: GUNICORN_THREADS
+          value: "2"
+
+        envFrom:
+        - configMapRef:
+            name: smartcloudops-config
+        - secretRef:
+            name: smartcloudops-secrets
+
+        # Volume mounts
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app/config
+          readOnly: true
+        - name: logs-volume
+          mountPath: /app/logs
+        - name: cache-volume
+          mountPath: /app/cache
+        - name: ml-models-volume
+          mountPath: /app/ml_models
+        - name: shared-data
+          mountPath: /app/shared
+
+      # Sidecar containers
+      - name: metrics-exporter
+        image: prom/node-exporter:latest
+        ports:
+        - name: metrics
+          containerPort: 9100
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 200m
+            memory: 200Mi
+        volumeMounts:
+        - name: host-fs
+          mountPath: /host
+          readOnly: true
+
+      - name: log-shipper
+        image: fluent/fluent-bit:latest
+        resources:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 200Mi
+        volumeMounts:
+        - name: logs-volume
+          mountPath: /app/logs
+          readOnly: true
+        - name: fluent-bit-config
+          mountPath: /fluent-bit/etc
+          readOnly: true
+
+      # Volumes
+      volumes:
+      - name: config-volume
+        configMap:
+          name: smartcloudops-config
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: smartcloudops-logs-pvc
+      - name: cache-volume
+        persistentVolumeClaim:
+          claimName: smartcloudops-cache-pvc
+      - name: ml-models-volume
+        persistentVolumeClaim:
+          claimName: smartcloudops-ml-models-pvc
+      - name: shared-data
+        emptyDir: {}
+      - name: host-fs
+        hostPath:
+          path: /
+      - name: fluent-bit-config
+        configMap:
+          name: fluent-bit-config

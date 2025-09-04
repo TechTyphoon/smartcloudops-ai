@@ -228,12 +228,7 @@ jobs:
       run: |
         echo "::group::Coverage Validation"
         if [ -f "coverage.xml" ]; then
-          COVERAGE=$(python -c "
-import xml.etree.ElementTree as ET
-root = ET.parse('coverage.xml').getroot()
-coverage = float(root.attrib.get('line-rate', 0)) * 100
-print(f'{coverage:.1f}')
-")
+          COVERAGE=$(python -c "import xml.etree.ElementTree as ET; root = ET.parse('coverage.xml').getroot(); coverage = float(root.attrib.get('line-rate', 0)) * 100; print(f'{coverage:.1f}')")
           echo "📊 Coverage: ${COVERAGE}%"
           echo "🎯 Required: ${{ env.QUALITY_THRESHOLD_COVERAGE }}%"
           

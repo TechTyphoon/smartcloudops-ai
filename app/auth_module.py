@@ -66,7 +66,7 @@ def verify_jwt_token(token: str) -> Optional[Dict]:
 
 
 def require_auth(f):
-    """Decorator to require authentication."""
+    """Decorator to require authentication from auth_module."""
 
     def decorated_function(*args, **kwargs):
         auth_header = request.headers.get("Authorization")

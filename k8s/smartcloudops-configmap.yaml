@@ -1,0 +1,179 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smartcloudops-config
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: config
+data:
+  # Flask Configuration
+  FLASK_APP: "app.main"
+  FLASK_ENV: "production"
+  FLASK_DEBUG: "false"
+  FLASK_HOST: "0.0.0.0"
+  FLASK_PORT: "5000"
+
+  # Gunicorn Configuration
+  GUNICORN_WORKERS: "4"
+  GUNICORN_THREADS: "2"
+  GUNICORN_BIND: "0.0.0.0:5000"
+  GUNICORN_WORKER_CLASS: "sync"
+  GUNICORN_WORKER_CONNECTIONS: "1000"
+  GUNICORN_MAX_REQUESTS: "1000"
+  GUNICORN_MAX_REQUESTS_JITTER: "50"
+  GUNICORN_TIMEOUT: "30"
+  GUNICORN_KEEPALIVE: "10"
+
+  # Database Configuration
+  DATABASE_URL: "postgresql://smartcloudops:smartcloudops-password@postgres:5432/smartcloudops"
+  DB_POOL_SIZE: "20"
+  DB_MAX_OVERFLOW: "30"
+  DB_POOL_TIMEOUT: "30"
+  DB_POOL_RECYCLE: "3600"
+
+  # Redis Configuration
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+  REDIS_DB: "0"
+  REDIS_PASSWORD: ""
+  CACHE_BACKEND: "redis"
+  CACHE_DEFAULT_TIMEOUT: "300"
+  CACHE_KEY_PREFIX: "smartcloudops"
+
+  # MLflow Configuration
+  MLFLOW_TRACKING_URI: "http://mlflow:5001"
+  MLFLOW_EXPERIMENT_NAME: "smartcloudops-production"
+  MLFLOW_RUN_NAME: "production-deployment"
+
+  # Prometheus Configuration
+  PROMETHEUS_PUSHGATEWAY_URL: "http://prometheus-pushgateway:9091"
+  PROMETHEUS_JOB_NAME: "smartcloudops-app"
+
+  # Logging Configuration
+  LOG_LEVEL: "INFO"
+  LOG_FORMAT: "json"
+  LOG_MAX_SIZE: "100MB"
+  LOG_BACKUP_COUNT: "5"
+
+  # Performance Configuration
+  ENABLE_PERFORMANCE_MONITORING: "true"
+  PERFORMANCE_SAMPLING_RATE: "0.1"
+  PERFORMANCE_SLOW_QUERY_THRESHOLD: "1.0"
+  PERFORMANCE_CACHE_ENABLED: "true"
+  PERFORMANCE_OPTIMIZATION_ENABLED: "true"
+
+  # Security Configuration
+  SECRET_KEY_MIN_LENGTH: "32"
+  JWT_ACCESS_TOKEN_EXPIRE_MINUTES: "15"
+  JWT_REFRESH_TOKEN_EXPIRE_DAYS: "7"
+  BCRYPT_ROUNDS: "12"
+  ENABLE_RATE_LIMITING: "true"
+  MAX_REQUESTS_PER_MINUTE: "100"
+  ENABLE_CORS: "true"
+
+  # Feature Flags
+  ENABLE_MLOPS: "true"
+  ENABLE_ANOMALY_DETECTION: "true"
+  ENABLE_AUTO_REMEDIATION: "true"
+  ENABLE_CHATOPS: "true"
+  ENABLE_WEBSOCKETS: "true"
+  ENABLE_METRICS_COLLECTION: "true"
+
+  # External Services
+  SLACK_WEBHOOK_URL: ""
+  EMAIL_SMTP_SERVER: ""
+  EMAIL_SMTP_PORT: "587"
+  EMAIL_USE_TLS: "true"
+
+  # Monitoring Configuration
+  HEALTH_CHECK_INTERVAL: "30"
+  METRICS_COLLECTION_INTERVAL: "60"
+  LOG_SHIPPING_ENABLED: "true"
+  ALERTING_ENABLED: "true"
+
+  # Scaling Configuration
+  AUTOSCALING_ENABLED: "true"
+  MIN_REPLICAS: "2"
+  MAX_REPLICAS: "20"
+  SCALE_UP_THRESHOLD_CPU: "80"
+  SCALE_DOWN_THRESHOLD_CPU: "30"
+  SCALE_UP_THRESHOLD_MEMORY: "85"
+  SCALE_DOWN_THRESHOLD_MEMORY: "40"
+
+  # Resource Limits
+  CPU_REQUEST: "500m"
+  CPU_LIMIT: "2000m"
+  MEMORY_REQUEST: "1Gi"
+  MEMORY_LIMIT: "4Gi"
+
+  # Network Configuration
+  NETWORK_TIMEOUT: "30"
+  NETWORK_MAX_RETRIES: "3"
+  NETWORK_RETRY_DELAY: "1"
+
+  # File Upload Configuration
+  MAX_UPLOAD_SIZE: "50MB"
+  UPLOAD_FOLDER: "/app/uploads"
+  ALLOWED_EXTENSIONS: "txt,csv,json,pkl,joblib"
+
+  # Model Configuration
+  MODEL_CACHE_SIZE: "100"
+  MODEL_MAX_LOAD_TIME: "300"
+  MODEL_HEALTH_CHECK_INTERVAL: "60"
+
+  # Queue Configuration
+  QUEUE_BACKEND: "redis"
+  QUEUE_MAX_RETRIES: "3"
+  QUEUE_RETRY_DELAY: "60"
+  QUEUE_WORKER_CONCURRENCY: "4"
+
+  # Notification Configuration
+  NOTIFICATION_EMAIL_ENABLED: "true"
+  NOTIFICATION_SLACK_ENABLED: "true"
+  NOTIFICATION_WEBHOOK_ENABLED: "true"
+
+  # Backup Configuration
+  BACKUP_ENABLED: "true"
+  BACKUP_SCHEDULE: "0 2 * * *"
+  BACKUP_RETENTION_DAYS: "30"
+  BACKUP_COMPRESSION: "gzip"
+
+  # Maintenance Configuration
+  MAINTENANCE_MODE_ENABLED: "false"
+  MAINTENANCE_MESSAGE: "System is under maintenance. Please try again later."
+  MAINTENANCE_ALLOWED_IPS: ""
+
+  # API Configuration
+  API_VERSION: "v2"
+  API_PREFIX: "/api"
+  API_DOCS_ENABLED: "true"
+  API_RATE_LIMIT_ENABLED: "true"
+
+  # WebSocket Configuration
+  WEBSOCKET_ENABLED: "true"
+  WEBSOCKET_MAX_CONNECTIONS: "1000"
+  WEBSOCKET_HEARTBEAT_INTERVAL: "30"
+
+  # CDN Configuration
+  CDN_ENABLED: "false"
+  CDN_PROVIDER: "cloudflare"
+  CDN_ZONE_ID: ""
+
+  # Analytics Configuration
+  ANALYTICS_ENABLED: "true"
+  ANALYTICS_RETENTION_DAYS: "90"
+  ANALYTICS_SAMPLING_RATE: "0.1"
+
+  # Compliance Configuration
+  COMPLIANCE_LOGGING_ENABLED: "true"
+  COMPLIANCE_AUDIT_ENABLED: "true"
+  COMPLIANCE_DATA_RETENTION_DAYS: "2555"  # 7 years for compliance
+
+  # Environment Metadata
+  ENVIRONMENT_NAME: "production"
+  ENVIRONMENT_REGION: "us-east-1"
+  ENVIRONMENT_ZONE: "us-east-1a"
+  DEPLOYMENT_TIMESTAMP: ""
+  BUILD_VERSION: ""
+  GIT_COMMIT_SHA: ""

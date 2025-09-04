@@ -5,9 +5,9 @@ Comprehensive test coverage for utility functions and context management
 
 import time
 from collections import deque
-from datetime import datetime, timedelta
-from typing import Any, Dict, List
-from unittest.mock import MagicMock, Mock, patch
+from datetime import datetime
+from typing import Any, Dict
+from unittest.mock import patch
 
 import pytest
 

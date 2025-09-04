@@ -29,8 +29,8 @@ def test_health_endpoint(client: FlaskClient):
     # Check status is healthy
     assert data["status"] == "healthy"
 
-    # Check timestamp is numeric
-    assert isinstance(data["timestamp"], (int, float))
+    # Check timestamp is string
+    assert isinstance(data["timestamp"], str)
 
     # Check version format
     assert isinstance(data["version"], str)

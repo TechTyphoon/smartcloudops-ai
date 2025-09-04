@@ -5,8 +5,6 @@ MLOps Integration Demo - Complete end-to-end ML lifecycle demonstration
 
 import os
 import sys
-from datetime import datetime
-from pathlib import Path
 
 import numpy as np
 import pandas as pd

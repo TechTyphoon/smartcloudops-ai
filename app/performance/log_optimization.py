@@ -7,17 +7,16 @@ Phase 5: Performance & Cost Optimization - Log Optimization
 import gzip
 import json
 import logging
-import os
 import queue
 import shutil
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from functools import wraps
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -150,7 +149,7 @@ class LogRotator:
             log_files.sort(key=lambda x: x.stat().st_mtime, reverse=True)
 
             # Keep only the most recent files
-            files_to_keep = log_files[: self.config.max_files]
+            # files_to_keep = log_files[: self.config.max_files]  # Not used, keeping for documentation
             files_to_delete = log_files[self.config.max_files :]
 
             # Delete old files

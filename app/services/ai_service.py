@@ -5,8 +5,7 @@ Handles all AI/ML analysis, recommendations, and chat operations
 """
 
 import random
-from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict
 
 
 class AIService:

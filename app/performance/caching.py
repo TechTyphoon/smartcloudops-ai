@@ -11,9 +11,8 @@ import threading
 import time
 from collections import OrderedDict
 from contextlib import contextmanager
-from datetime import datetime, timedelta
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 logger = logging.getLogger
 
@@ -157,7 +156,7 @@ class LRUCache:
             # Calculate approximate size
             try:
                 size = len(pickle.dumps(value))
-            except:
+            except (TypeError, AttributeError, ImportError):
                 size = len(str(value))
 
             # Remove existing entry if present

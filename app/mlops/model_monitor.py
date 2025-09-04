@@ -484,7 +484,7 @@ class ModelMonitor:
 
         cursor.execute(
             """
-            SELECT * FROM model_metrics 
+            SELECT * FROM model_metrics
             WHERE model_id = ? AND model_version = ? AND timestamp >= ?
             ORDER BY timestamp DESC
             """,
@@ -662,7 +662,7 @@ class ModelMonitor:
 
         cursor.execute(
             """
-            SELECT * FROM prediction_logs 
+            SELECT * FROM prediction_logs
             WHERE model_id = ? AND model_version = ? AND timestamp >= ? AND timestamp <= ?
             ORDER BY timestamp DESC
             """,
@@ -765,7 +765,7 @@ class ModelMonitor:
                     ):
                         quality_issues += 1
                         break
-            except:
+            except (Exception,):
                 pass
 
         return max(0.0, 1.0 - (quality_issues / total_checks))
