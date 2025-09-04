@@ -1,0 +1,99 @@
+{
+  "mcpServers": {
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "-e",
+        "GITHUB_TOOLSETS",
+        "ghcr.io/github/github-mcp-server",
+        "stdio"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}",
+        "GITHUB_TOOLSETS": "${GITHUB_TOOLSETS}"
+      }
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@davenportsociety/clear-thought-patterns"
+      ]
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/home/reddy/Desktop"
+      ]
+    },
+    "web-search": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "duckduckgo-mcp-server"
+      ]
+    },
+    "firecrawl": {
+      "command": "npx",
+      "args": ["-y", "firecrawl-mcp"],
+      "env": {
+        "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}"
+      }
+    },
+    "aws": {
+      "command": "npx",
+      "args": ["-y", "@imazhar101/mcp-aws-server"],
+      "env": {
+        "AWS_REGION": "${AWS_REGION}"
+      }
+    },
+    "kubernetes": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-kubernetes"]
+    },
+    "terraform": {
+      "command": "npx",
+      "args": ["-y", "terraform-mcp-server"]
+    },
+    "docker": {
+      "command": "npx",
+      "args": ["-y", "@0xshariq/docker-mcp-server"]
+    },
+    "prometheus": {
+      "command": "npx",
+      "args": ["-y", "prometheus-mcp"],
+      "env": {
+        "PROMETHEUS_URL": "${PROMETHEUS_URL}"
+      }
+    },
+    "grafana": {
+      "command": "npx",
+      "args": ["-y", "grafana-mcp-analyzer"],
+      "env": {
+        "GRAFANA_URL": "${GRAFANA_URL}"
+      }
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@henkey/postgres-mcp-server"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "${POSTGRES_CONNECTION_STRING}"
+      }
+    },
+    "redis": {
+      "command": "npx",
+      "args": ["-y", "@pickstar-2002/redis-mcp"],
+      "env": {
+        "REDIS_URL": "${REDIS_URL}"
+      }
+    }
+  }
+}
+

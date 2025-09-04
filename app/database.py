@@ -9,8 +9,7 @@ from contextlib import contextmanager
 from datetime import datetime
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import declarative_base, scoped_session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.config import get_config
@@ -18,7 +17,7 @@ from app.config import get_config
 # Get configuration
 config = get_config()
 
-# Create declarative base for models
+# Create declarative base for models (SQLAlchemy 2.0 style)
 Base = declarative_base()
 
 

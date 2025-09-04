@@ -11,8 +11,8 @@ import statistics
 import sys
 import threading
 import time
-from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta
+from dataclasses import dataclass
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import psutil

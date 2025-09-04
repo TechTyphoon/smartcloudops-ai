@@ -274,3 +274,9 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
+
+# MCP Configuration and Secrets
+~/.cursor/.env.mcp
+~/.cursor/mcp.json
+.cursor/.env.mcp
+.cursor/mcp.json

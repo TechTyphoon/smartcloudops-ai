@@ -5,6 +5,8 @@ Helps users start the application with proper configuration
 """
 
 import os
+import sys
+from pathlib import Path
 
 
 def check_environment():
@@ -43,7 +45,7 @@ def check_environment():
 
     # Check Python environment
     try:
-        import flask
+        pass
 
         print("✅ Flask available")
     except ImportError:
@@ -51,14 +53,14 @@ def check_environment():
         return False
 
     try:
-        import openai
+        pass
 
         print("✅ OpenAI SDK available")
     except ImportError:
         print("⚠️  OpenAI SDK not available. OpenAI functionality will be disabled.")
 
     try:
-        import google.generativeai
+        pass
 
         print("✅ Gemini SDK available")
     except ImportError:

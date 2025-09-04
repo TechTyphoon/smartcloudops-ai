@@ -431,4 +431,4 @@ When adding new performance tests:
 
 ---
 
-**Next**: See [AI/ML Performance Guide](./ML_PERFORMANCE.md) for machine learning specific optimizations.
+**Next**: See [Architecture Guide](./ARCHITECTURE.md) for system performance considerations.

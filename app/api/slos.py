@@ -4,11 +4,10 @@ Phase 4: Observability & Operability - SLO monitoring and reporting
 """
 
 import time
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional
+from datetime import datetime, timedelta, timezone
 
-from flask import Blueprint, current_app, jsonify, request
-from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+from flask import Blueprint, jsonify, request
+from prometheus_client import CONTENT_TYPE_LATEST
 
 from app.observability.enhanced_logging import get_logger, log_business_event
 from app.observability.slos import (
@@ -68,7 +67,7 @@ def get_slo_status_endpoint():
                             if s.get("status") == "critical"
                         ),
                     },
-                    "timestamp": datetime.utcnow().isoformat() + "Z",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 "error": None,
             }
@@ -170,7 +169,7 @@ def get_error_budget():
                 "data": {
                     "error_budgets": error_budgets,
                     "total_error_budget": total_error_budget,
-                    "timestamp": datetime.utcnow().isoformat() + "Z",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 "error": None,
             }
@@ -198,7 +197,7 @@ def get_slo_history():
 
         # Generate mock historical data
         history_data = []
-        end_date = datetime.utcnow()
+        end_date = datetime.now(timezone.utc)
         start_date = end_date - timedelta(days=days)
 
         current_date = start_date
@@ -289,7 +288,7 @@ def get_slo_trends():
                             "Review error rate patterns",
                         ],
                     },
-                    "timestamp": datetime.utcnow().isoformat() + "Z",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 "error": None,
             }
@@ -320,7 +319,7 @@ def get_slo_alerts():
                 "data": {
                     "alerts": alerts,
                     "count": len(alerts),
-                    "timestamp": datetime.utcnow().isoformat() + "Z",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 "error": None,
             }
@@ -432,7 +431,7 @@ def slo_health_check():
                     "slo_count": len(slo_status),
                     "critical_slos": critical_count,
                     "alert_slos": alert_count,
-                    "timestamp": datetime.utcnow().isoformat() + "Z",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 },
                 "error": None,
             }

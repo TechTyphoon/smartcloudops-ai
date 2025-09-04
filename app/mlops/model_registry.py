@@ -9,11 +9,10 @@ import json
 import pickle
 import sqlite3
 import time
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 
 class ModelStatus:
@@ -248,7 +247,7 @@ class ModelRegistry:
 
         cursor.execute(
             """
-            INSERT OR REPLACE INTO models 
+            INSERT OR REPLACE INTO models
             (model_id, name, version, description, model_type, algorithm, framework,
              input_features, output_schema, training_data_hash, hyperparameters,
              metrics, created_at, created_by, status, tags, size_bytes, checksum)

@@ -4,13 +4,44 @@ SmartCloudOps AI - Advanced Load Testing with Locust
 Comprehensive performance testing with realistic user behavior patterns
 """
 
-import json
 import logging
 import random
 import time
 
-from locust import HttpUser, between, events, task
-from locust.runners import MasterRunner
+try:
+    from locust import HttpUser, between, events, task
+    from locust.runners import MasterRunner
+
+    LOCUST_AVAILABLE = True
+except Exception:
+    # Locust is an optional dev dependency used only for load testing. When
+    # running the full pytest suite in environments without locust installed,
+    # avoid import-time failures by providing lightweight fallbacks.
+    LOCUST_AVAILABLE = False
+
+    # Define minimal fallbacks so the module can be imported during test
+    # collection without executing locust behavior.
+    class HttpUser:
+        pass
+
+    def between(a, b):
+        def _decorator(func):
+            return func
+
+        return _decorator
+
+    def task(*args, **kwargs):
+        def _decorator(func):
+            return func
+
+        return _decorator
+
+    class events:
+        pass
+
+    class MasterRunner:
+        pass
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -421,40 +452,39 @@ class AdminUser(HttpUser):
 # ================================
 
 
-@events.request.add_listener
-def on_request(
-    request_type, name, response_time, response_length, exception, context, **kwargs
-):
-    """Track detailed request metrics"""
-    if exception:
-        logger.error(f"Request failed: {name} - {exception}")
-    elif response_time > 5000:  # Log slow requests (>5s)
-        logger.warning(f"Slow request: {name} - {response_time}ms")
+if LOCUST_AVAILABLE:
 
+    @events.request.add_listener
+    def on_request(
+        request_type, name, response_time, response_length, exception, context, **kwargs
+    ):
+        """Track detailed request metrics"""
+        if exception:
+            logger.error(f"Request failed: {name} - {exception}")
+        elif response_time > 5000:  # Log slow requests (>5s)
+            logger.warning(f"Slow request: {name} - {response_time}ms")
 
-@events.test_start.add_listener
-def on_test_start(environment, **kwargs):
-    """Log test start"""
-    logger.info("Load test started")
+    @events.test_start.add_listener
+    def on_test_start(environment, **kwargs):
+        """Log test start"""
+        logger.info("Load test started")
 
+    @events.test_stop.add_listener
+    def on_test_stop(environment, **kwargs):
+        """Log test completion and summary"""
+        logger.info("Load test completed")
 
-@events.test_stop.add_listener
-def on_test_stop(environment, **kwargs):
-    """Log test completion and summary"""
-    logger.info("Load test completed")
-
-    # Log final statistics
-    stats = environment.stats.total
-    logger.info(f"Total requests: {stats.num_requests}")
-    logger.info(f"Total failures: {stats.num_failures}")
-    logger.info(f"Average response time: {stats.avg_response_time:.2f}ms")
-    logger.info(f"RPS: {stats.current_rps:.2f}")
+        # Log final statistics
+        stats = environment.stats.total
+        logger.info(f"Total requests: {stats.num_requests}")
+        logger.info(f"Total failures: {stats.num_failures}")
+        logger.info(f"Average response time: {stats.avg_response_time:.2f}ms")
+        logger.info(f"RPS: {stats.current_rps:.2f}")
 
 
 if __name__ == "__main__":
     # Can be run directly for testing
     import subprocess
-    import sys
 
     # Run locust with this file
     cmd = [

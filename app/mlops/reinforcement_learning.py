@@ -9,7 +9,7 @@ import logging
 import os
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
 import numpy as np
@@ -173,7 +173,7 @@ class ReinforcementLearningAgent:
         recommendations = []
 
         for action in available_actions:
-            q_value = self.q_table[current_state][action]
+            self.q_table[current_state][action]
             confidence = self._calculate_confidence(current_state, action)
             recommendations.append((action, confidence))
 
@@ -362,15 +362,15 @@ class ActiveLearningSystem:
             accuracy = np.mean(y_pred == y)
 
             # Register new model version
-            metrics = {
-                "accuracy": accuracy,
-                "training_samples": len(X),
-                "feedback_samples": len(labeled_samples),
-            }
+            # metrics = {
+            #     "accuracy": accuracy,
+            #     "training_samples": len(X),
+            #     "feedback_samples": len(labeled_samples),
+            # }  # TODO: Use metrics in model registration
 
-            hyperparameters = {"n_estimators": 100, "random_state": 42}
+            # hyperparameters = {"n_estimators": 100, "random_state": 42}  # TODO: Use hyperparameters in model registration
 
-            feature_names = list(labeled_samples[0]["features"].keys())
+            list(labeled_samples[0]["features"].keys())
 
             logger.info(f"Retrained model with user feedback. Accuracy: {accuracy:.3f}")
 

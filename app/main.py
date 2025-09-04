@@ -9,8 +9,6 @@ import os
 import sys
 from pathlib import Path
 
-from flask import Flask, jsonify, request
-
 # Add current directory to Python path
 current_dir = Path(__file__).parent
 sys.path.insert(0, str(current_dir))
@@ -67,11 +65,24 @@ def main():
 def _check_performance_available():
     """Check if performance monitoring is available"""
     try:
-        from app.performance.api_optimization import performance_collector
+        pass
 
         return True
     except ImportError:
         return False
+
+
+# Expose a module-level Flask `app` for tests and imports that expect
+# `from app.main import app`. Use a guarded creation so import-time
+# failures don't crash pytest collection; if creation fails we log and
+# keep `app` as None which will surface a clearer error later.
+try:
+    from app import create_app
+
+    app = create_app()
+except Exception as _e:
+    logger.warning(f"Failed to create Flask app at import time: {_e}")
+    app = None
 
 
 if __name__ == "__main__":

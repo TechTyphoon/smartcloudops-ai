@@ -1,0 +1,681 @@
+name: 📊 SmartCloudOps AI - Monitoring & Alerting
+
+on:
+  schedule:
+    # Run monitoring checks every 15 minutes
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to monitor'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - staging
+          - production
+          - development
+      alert_level:
+        description: 'Alert sensitivity level'
+        required: false
+        default: 'normal'
+        type: choice
+        options:
+          - low
+          - normal
+          - high
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+env:
+  PYTHON_VERSION: "3.11"
+  MONITORING_TIMEOUT: 30
+  ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+jobs:
+  # =====================================================
+  # 🏥 HEALTH MONITORING
+  # =====================================================
+  health-monitoring:
+    name: 🏥 Health Monitoring
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    outputs:
+      health-status: ${{ steps.health-check.outputs.status }}
+      alerts-triggered: ${{ steps.alert-check.outputs.count }}
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 📦 Install Dependencies
+      run: |
+        pip install requests
+
+    - name: 🏥 Health Check
+      id: health-check
+      run: |
+        python -c "
+        import requests
+        import json
+        import sys
+
+        def check_health():
+            environments = {
+                'production': 'https://smartcloudops.ai',
+                'staging': 'https://staging.smartcloudops.ai',
+                'development': 'http://localhost:5000'
+            }
+
+            env = '${{ github.event.inputs.environment || \"production\" }}'
+            base_url = environments.get(env, environments['production'])
+
+            try:
+                # Basic health check
+                response = requests.get(f'{base_url}/health', timeout=${{ env.MONITORING_TIMEOUT }})
+                health_data = response.json()
+
+                if response.status_code == 200:
+                    checks = health_data['data']['checks']
+
+                    # Check individual services
+                    failed_services = []
+                    for service, status in checks.items():
+                        if not status:
+                            failed_services.append(service)
+
+                    if failed_services:
+                        print(f'❌ Health check failed for services: {failed_services}')
+                        print(f'health-status=unhealthy')
+                        return False
+                    else:
+                        print(f'✅ All services healthy')
+                        print(f'health-status=healthy')
+                        return True
+                else:
+                    print(f'❌ Health check failed with status: {response.status_code}')
+                    print(f'health-status=unhealthy')
+                    return False
+
+            except Exception as e:
+                print(f'❌ Health check error: {e}')
+                print(f'health-status=error')
+                return False
+
+        success = check_health()
+        if not success:
+            sys.exit(1)
+        "
+
+    - name: 📊 Performance Monitoring
+      run: |
+        python -c "
+        import requests
+        import json
+
+        def check_performance():
+            environments = {
+                'production': 'https://smartcloudops.ai',
+                'staging': 'https://staging.smartcloudops.ai',
+                'development': 'http://localhost:5000'
+            }
+
+            env = '${{ github.event.inputs.environment || \"production\" }}'
+            base_url = environments.get(env, environments['production'])
+
+            try:
+                # Get performance metrics
+                response = requests.get(f'{base_url}/api/performance/metrics', timeout=10)
+                if response.status_code == 200:
+                    metrics = response.json()['data']
+
+                    cpu_usage = metrics['cpu']['usage_percent']
+                    memory_usage = metrics['memory']['usage_percent']
+                    disk_usage = metrics['disk']['usage_percent']
+
+                    alert_level = '${{ github.event.inputs.alert_level || \"normal\" }}'
+
+                    # Define thresholds based on alert level
+                    if alert_level == 'low':
+                        cpu_threshold, memory_threshold, disk_threshold = 95, 95, 95
+                    elif alert_level == 'high':
+                        cpu_threshold, memory_threshold, disk_threshold = 70, 80, 85
+                    else:  # normal
+                        cpu_threshold, memory_threshold, disk_threshold = 85, 90, 90
+
+                    alerts = []
+
+                    if cpu_usage > cpu_threshold:
+                        alerts.append(f'High CPU usage: {cpu_usage:.1f}% (threshold: {cpu_threshold}%)')
+
+                    if memory_usage > memory_threshold:
+                        alerts.append(f'High memory usage: {memory_usage:.1f}% (threshold: {memory_threshold}%)')
+
+                    if disk_usage > disk_threshold:
+                        alerts.append(f'High disk usage: {disk_usage:.1f}% (threshold: {disk_threshold}%)')
+
+                    if alerts:
+                        print('🚨 Performance Alerts:')
+                        for alert in alerts:
+                            print(f'  - {alert}')
+                        return alerts
+                    else:
+                        print('✅ Performance within normal ranges')
+                        print(f'  - CPU: {cpu_usage:.1f}%')
+                        print(f'  - Memory: {memory_usage:.1f}%')
+                        print(f'  - Disk: {disk_usage:.1f}%')
+                        return []
+
+                else:
+                    print(f'❌ Failed to get performance metrics: {response.status_code}')
+                    return ['Unable to retrieve performance metrics']
+
+            except Exception as e:
+                print(f'❌ Performance monitoring error: {e}')
+                return [f'Performance monitoring error: {e}']
+
+        alerts = check_performance()
+        # Store alerts count for later use
+        print(f'::set-output name=alerts::{len(alerts)}')
+        "
+
+    - name: 🔍 Anomaly Detection Monitoring
+      run: |
+        python -c "
+        import requests
+        import json
+
+        def check_anomalies():
+            environments = {
+                'production': 'https://smartcloudops.ai',
+                'staging': 'https://staging.smartcloudops.ai',
+                'development': 'http://localhost:5000'
+            }
+
+            env = '${{ github.event.inputs.environment || \"production\" }}'
+            base_url = environments.get(env, environments['production'])
+
+            try:
+                # Get recent anomalies
+                response = requests.get(f'{base_url}/api/anomalies?status=open&limit=10', timeout=10)
+                if response.status_code == 200:
+                    data = response.json()['data']
+                    anomalies = data['anomalies']
+
+                    if anomalies:
+                        print(f'🚨 Found {len(anomalies)} open anomalies:')
+                        for anomaly in anomalies[:5]:  # Show first 5
+                            severity_icon = {'critical': '🔴', 'high': '🟠', 'medium': '🟡', 'low': '🟢'}.get(anomaly.get('severity'), '⚪')
+                            print(f'  {severity_icon} {anomaly[\"title\"]} ({anomaly[\"severity\"]})')
+                        return anomalies
+                    else:
+                        print('✅ No open anomalies detected')
+                        return []
+
+                else:
+                    print(f'❌ Failed to get anomalies: {response.status_code}')
+                    return []
+
+            except Exception as e:
+                print(f'❌ Anomaly monitoring error: {e}')
+                return []
+
+        anomalies = check_anomalies()
+        "
+
+    - name: ⚡ API Response Time Monitoring
+      run: |
+        python -c "
+        import requests
+        import time
+        import statistics
+
+        def check_api_performance():
+            environments = {
+                'production': 'https://smartcloudops.ai',
+                'staging': 'https://staging.smartcloudops.ai',
+                'development': 'http://localhost:5000'
+            }
+
+            env = '${{ github.event.inputs.environment || \"production\" }}'
+            base_url = environments.get(env, environments['production'])
+
+            endpoints = [
+                '/health',
+                '/api/status',
+                '/api/performance/metrics',
+                '/api/anomalies?limit=1'
+            ]
+
+            response_times = []
+
+            print('⏱️ API Response Time Check:')
+
+            for endpoint in endpoints:
+                try:
+                    start_time = time.time()
+                    response = requests.get(f'{base_url}{endpoint}', timeout=15)
+                    end_time = time.time()
+
+                    response_time = (end_time - start_time) * 1000  # Convert to milliseconds
+                    response_times.append(response_time)
+
+                    status_icon = '✅' if response.status_code == 200 else '❌'
+                    print(f'  {status_icon} {endpoint}: {response_time:.0f}ms ({response.status_code})')
+
+                except Exception as e:
+                    print(f'  ❌ {endpoint}: Error - {e}')
+                    response_times.append(999)  # High value for failed requests
+
+            if response_times:
+                avg_time = statistics.mean(response_times)
+                max_time = max(response_times)
+
+                if avg_time > 2000:  # 2 seconds
+                    print(f'⚠️ Slow API responses - Average: {avg_time:.0f}ms, Max: {max_time:.0f}ms')
+                elif avg_time > 500:  # 500ms
+                    print(f'⚡ Moderate API response times - Average: {avg_time:.0f}ms')
+                else:
+                    print(f'✅ Good API response times - Average: {avg_time:.0f}ms')
+
+        check_api_performance()
+        "
+
+  # =====================================================
+  # 🚨 ALERT MANAGEMENT
+  # =====================================================
+  alert-management:
+    name: 🚨 Alert Management
+    runs-on: ubuntu-latest
+    needs: health-monitoring
+    if: needs.health-monitoring.outputs.health-status != 'healthy'
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 🚨 Create GitHub Issue for Alerts
+      if: needs.health-monitoring.outputs.alerts-triggered > 0
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const alertsTriggered = ${{ needs.health-monitoring.outputs.alerts-triggered }};
+          const environment = '${{ github.event.inputs.environment || "production" }}';
+
+          if (alertsTriggered > 0) {
+            // Create or update issue
+            const issueTitle = `🚨 SmartCloudOps AI Alert - ${environment.toUpperCase()}`;
+
+            // Check if issue already exists
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['alert', environment],
+              state: 'open'
+            });
+
+            let issueBody = `## 🚨 System Alert Detected\n\n`;
+            issueBody += `**Environment**: ${environment}\n`;
+            issueBody += `**Timestamp**: ${new Date().toISOString()}\n`;
+            issueBody += `**Alerts Triggered**: ${alertsTriggered}\n\n`;
+            issueBody += `### Alert Details\n`;
+            issueBody += `- Health status: ${{ needs.health-monitoring.outputs.health-status }}\n`;
+            issueBody += `- Monitoring run: ${context.runId}\n\n`;
+            issueBody += `### Next Steps\n`;
+            issueBody += `1. Check the monitoring logs for detailed information\n`;
+            issueBody += `2. Review system metrics at https://${environment}.smartcloudops.ai\n`;
+            issueBody += `3. Contact the on-call engineer if needed\n\n`;
+            issueBody += `---\n`;
+            issueBody += `*This issue was automatically created by the monitoring system.*`;
+
+            if (existingIssues.data.length > 0) {
+              // Update existing issue
+              const existingIssue = existingIssues.data[0];
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: `## 🔄 Alert Update\n\nNew alerts detected in the latest monitoring run.\n\n${issueBody}`
+              });
+            } else {
+              // Create new issue
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issueTitle,
+                body: issueBody,
+                labels: ['alert', 'automated', environment, 'monitoring']
+              });
+            }
+          }
+
+    - name: 📢 Send Slack Alert
+      if: needs.health-monitoring.outputs.alerts-triggered > 0
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        text: |
+          🚨 *SmartCloudOps AI Alert*
+
+          Environment: ${{ github.event.inputs.environment || "production" }}
+          Health Status: ${{ needs.health-monitoring.outputs.health-status }}
+          Alerts Triggered: ${{ needs.health-monitoring.outputs.alerts-triggered }}
+
+          Check the monitoring dashboard: https://${{ github.event.inputs.environment || "production" }}.smartcloudops.ai
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+    - name: 📧 Send Email Alert
+      if: needs.health-monitoring.outputs.alerts-triggered > 0
+      run: |
+        # This would integrate with an email service
+        echo "Email alert would be sent here"
+        echo "To: ${{ secrets.ALERT_EMAIL }}"
+        echo "Subject: SmartCloudOps AI Alert - ${{ github.event.inputs.environment || 'production' }}"
+        echo "Body: System health issues detected"
+
+  # =====================================================
+  # 📈 METRICS COLLECTION
+  # =====================================================
+  metrics-collection:
+    name: 📈 Metrics Collection
+    runs-on: ubuntu-latest
+    needs: health-monitoring
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 📊 Collect Detailed Metrics
+      run: |
+        python -c "
+        import requests
+        import json
+        import time
+
+        def collect_comprehensive_metrics():
+            environments = {
+                'production': 'https://smartcloudops.ai',
+                'staging': 'https://staging.smartcloudops.ai',
+                'development': 'http://localhost:5000'
+            }
+
+            env = '${{ github.event.inputs.environment || \"production\" }}'
+            base_url = environments.get(env, environments['production'])
+
+            metrics_report = {
+                'timestamp': time.time(),
+                'environment': env,
+                'run_id': '${{ github.run_id }}',
+                'metrics': {}
+            }
+
+            try:
+                # System metrics
+                sys_response = requests.get(f'{base_url}/api/performance/metrics', timeout=10)
+                if sys_response.status_code == 200:
+                    metrics_report['metrics']['system'] = sys_response.json()['data']
+
+                # Anomaly metrics
+                anomaly_response = requests.get(f'{base_url}/api/anomalies/stats', timeout=10)
+                if anomaly_response.status_code == 200:
+                    metrics_report['metrics']['anomalies'] = anomaly_response.json()['data']
+
+                # ML model metrics
+                ml_response = requests.get(f'{base_url}/api/ml/models', timeout=10)
+                if ml_response.status_code == 200:
+                    models = ml_response.json()['data']['models']
+                    metrics_report['metrics']['ml_models'] = {
+                        'count': len(models),
+                        'active': len([m for m in models if m.get('status') == 'active'])
+                    }
+
+                # SLO status
+                slo_response = requests.get(f'{base_url}/api/slos/status', timeout=10)
+                if slo_response.status_code == 200:
+                    metrics_report['metrics']['slos'] = slo_response.json()['data']
+
+                # Save metrics to file
+                with open('monitoring-metrics.json', 'w') as f:
+                    json.dump(metrics_report, f, indent=2)
+
+                print('✅ Comprehensive metrics collected')
+                print(f'📊 System CPU: {metrics_report[\"metrics\"].get(\"system\", {}).get(\"cpu\", {}).get(\"usage_percent\", \"N/A\")}%')
+                print(f'🚨 Open Anomalies: {metrics_report[\"metrics\"].get(\"anomalies\", {}).get(\"open_anomalies\", \"N/A\")}')
+                print(f'🤖 Active ML Models: {metrics_report[\"metrics\"].get(\"ml_models\", {}).get(\"active\", \"N/A\")}')
+
+            except Exception as e:
+                print(f'❌ Metrics collection error: {e}')
+                metrics_report['error'] = str(e)
+
+                with open('monitoring-metrics.json', 'w') as f:
+                    json.dump(metrics_report, f, indent=2)
+
+        collect_comprehensive_metrics()
+        "
+
+    - name: 💾 Upload Metrics Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: monitoring-metrics-${{ github.run_id }}
+        path: monitoring-metrics.json
+        retention-days: 30
+
+    - name: 📊 Store Metrics in GitHub
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+
+          try {
+            const metrics = JSON.parse(fs.readFileSync('monitoring-metrics.json', 'utf8'));
+
+            // Create a summary comment
+            const summary = `## 📊 Monitoring Report\n\n` +
+              `**Environment**: ${metrics.environment}\n` +
+              `**Timestamp**: ${new Date(metrics.timestamp * 1000).toISOString()}\n` +
+              `**Run ID**: ${metrics.run_id}\n\n` +
+              `### Key Metrics\n` +
+              `- **CPU Usage**: ${metrics.metrics?.system?.cpu?.usage_percent || 'N/A'}%\n` +
+              `- **Memory Usage**: ${metrics.metrics?.system?.memory?.usage_percent || 'N/A'}%\n` +
+              `- **Open Anomalies**: ${metrics.metrics?.anomalies?.open_anomalies || 'N/A'}\n` +
+              `- **Active ML Models**: ${metrics.metrics?.ml_models?.active || 'N/A'}\n\n` +
+              `### SLO Status\n` +
+              `- **API Response Time**: ${metrics.metrics?.slos?.slos?.find(s => s.name === 'api_response_time')?.current || 'N/A'} (${metrics.metrics?.slos?.slos?.find(s => s.name === 'api_response_time')?.status || 'N/A'})\n` +
+              `- **System Uptime**: ${metrics.metrics?.slos?.slos?.find(s => s.name === 'system_uptime')?.current || 'N/A'} (${metrics.metrics?.slos?.slos?.find(s => s.name === 'system_uptime')?.status || 'N/A'})\n\n` +
+              `*Full metrics available in artifacts.*`;
+
+            // This would be added to a monitoring issue or dashboard
+            console.log(summary);
+
+          } catch (error) {
+            console.log('Error processing metrics:', error);
+          }
+
+  # =====================================================
+  # 🔧 AUTO-REMEDIATION
+  # =====================================================
+  auto-remediation:
+    name: 🔧 Auto-Remediation
+    runs-on: ubuntu-latest
+    needs: health-monitoring
+    if: needs.health-monitoring.outputs.health-status != 'healthy' && github.event_name == 'schedule'
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 🔧 Attempt Auto-Remediation
+      run: |
+        python -c "
+        import requests
+        import json
+
+        def attempt_auto_remediation():
+            environments = {
+                'production': 'https://smartcloudops.ai',
+                'staging': 'https://staging.smartcloudops.ai',
+                'development': 'http://localhost:5000'
+            }
+
+            env = '${{ github.event.inputs.environment || \"production\" }}'
+            base_url = environments.get(env, environments['production'])
+
+            try:
+                # Get current system status
+                health_response = requests.get(f'{base_url}/health', timeout=10)
+                if health_response.status_code != 200:
+                    print('❌ Cannot perform remediation - system unreachable')
+                    return False
+
+                health_data = health_response.json()['data']['checks']
+
+                # Identify issues
+                issues = []
+                for service, status in health_data.items():
+                    if not status:
+                        issues.append(service)
+
+                if not issues:
+                    print('✅ No issues found for remediation')
+                    return True
+
+                print(f'🔧 Attempting to remediate issues: {issues}')
+
+                # Get performance metrics to understand the situation
+                perf_response = requests.get(f'{base_url}/api/performance/metrics', timeout=10)
+                if perf_response.status_code == 200:
+                    metrics = perf_response.json()['data']
+
+                    # Auto-remediation logic
+                    remediation_actions = []
+
+                    # High CPU remediation
+                    if metrics['cpu']['usage_percent'] > 85:
+                        remediation_actions.append({
+                            'type': 'scale_up',
+                            'reason': '.1f',
+                            'parameters': {'target_replicas': 3}
+                        })
+
+                    # High memory remediation
+                    if metrics['memory']['usage_percent'] > 90:
+                        remediation_actions.append({
+                            'type': 'clear_cache',
+                            'reason': '.1f'
+                        })
+
+                    # Execute remediation actions
+                    for action in remediation_actions:
+                        print(f'🚀 Executing: {action[\"type\"]}')
+
+                        # This would integrate with the actual remediation API
+                        # For now, just log the intended action
+                        print(f'   Reason: {action[\"reason\"]}')
+                        if 'parameters' in action:
+                            print(f'   Parameters: {action[\"parameters\"]}')
+
+                return True
+
+            except Exception as e:
+                print(f'❌ Auto-remediation error: {e}')
+                return False
+
+        success = attempt_auto_remediation()
+        if not success:
+            print('⚠️ Auto-remediation completed with issues')
+        else:
+            print('✅ Auto-remediation completed successfully')
+        "
+
+  # =====================================================
+  # 📋 MONITORING SUMMARY
+  # =====================================================
+  monitoring-summary:
+    name: 📋 Monitoring Summary
+    runs-on: ubuntu-latest
+    needs: [health-monitoring, metrics-collection, auto-remediation]
+    if: always()
+
+    steps:
+    - name: 📊 Generate Monitoring Report
+      run: |
+        echo "# 📊 SmartCloudOps AI Monitoring Report" >> monitoring-report.md
+        echo "" >> monitoring-report.md
+        echo "## Monitoring Details" >> monitoring-report.md
+        echo "- **Environment**: ${{ github.event.inputs.environment || 'production' }}" >> monitoring-report.md
+        echo "- **Timestamp**: $(date -u)" >> monitoring-report.md
+        echo "- **Run ID**: ${{ github.run_id }}" >> monitoring-report.md
+        echo "" >> monitoring-report.md
+
+        echo "## Health Status" >> monitoring-report.md
+        echo "- **Overall Health**: ${{ needs.health-monitoring.outputs.health-status }}" >> monitoring-report.md
+        echo "- **Alerts Triggered**: ${{ needs.health-monitoring.outputs.alerts-triggered }}" >> monitoring-report.md
+        echo "" >> monitoring-report.md
+
+        echo "## Job Results" >> monitoring-report.md
+        echo "- ✅ Health Monitoring: ${{ needs.health-monitoring.result }}" >> monitoring-report.md
+        echo "- ✅ Metrics Collection: ${{ needs.metrics-collection.result }}" >> monitoring-report.md
+        echo "- 🔧 Auto-Remediation: ${{ needs.auto-remediation.result }}" >> monitoring-report.md
+        echo "" >> monitoring-report.md
+
+        echo "## Next Steps" >> monitoring-report.md
+        if [ "${{ needs.health-monitoring.outputs.health-status }}" != "healthy" ]; then
+          echo "- Investigate health issues immediately" >> monitoring-report.md
+          echo "- Check detailed logs and metrics" >> monitoring-report.md
+          echo "- Consider manual intervention if auto-remediation fails" >> monitoring-report.md
+        else
+          echo "- System operating normally" >> monitoring-report.md
+          echo "- Continue regular monitoring" >> monitoring-report.md
+        fi
+        echo "" >> monitoring-report.md
+
+        cat monitoring-report.md
+
+    - name: 💾 Upload Monitoring Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: monitoring-report-${{ github.run_id }}
+        path: monitoring-report.md
+        retention-days: 7
+
+    - name: 📢 Monitoring Notification
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ needs.health-monitoring.outputs.health-status == 'healthy' && 'success' || 'failure' }}
+        text: |
+          📊 SmartCloudOps AI Monitoring Complete
+
+          Environment: ${{ github.event.inputs.environment || 'production' }}
+          Health Status: ${{ needs.health-monitoring.outputs.health-status }}
+          Alerts: ${{ needs.health-monitoring.outputs.alerts-triggered }}
+
+          ${{ needs.health-monitoring.outputs.health-status == 'healthy' && '✅ All systems operating normally' || '🚨 Issues detected - check monitoring report' }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: always()

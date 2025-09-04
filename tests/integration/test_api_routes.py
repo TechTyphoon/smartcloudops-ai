@@ -4,9 +4,8 @@ Comprehensive testing of API endpoints with full application context
 """
 
 import json
-from datetime import datetime, timezone
 from typing import Any, Dict
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -26,16 +25,15 @@ class TestAPIRoutes:
             yield client
 
     @pytest.fixture
-    def mock_gpt_handler(self):
+    def mock_gpt_handler(self, valid_chatops_request):
         """Mock GPT handler for testing."""
         mock_handler = Mock(spec=GPTHandler)
         mock_handler.process_query.return_value = {
             "status": "success",
             "response": "Test response from GPT",
             "query": "test query",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": "2023-01-01T00:00:00Z",
             "model": "gpt-3.5-turbo",
-            "tokens_used": 150,
         }
         return mock_handler
 
@@ -70,9 +68,14 @@ class TestAPIRoutes:
         assert "uptime" in data
         assert "version" in data
 
-    @patch("app.api.chatops.gpt_handler.GPTHandler")
+    @patch("app.api.chatops.GPTHandler")
     def test_chatops_endpoint_success(
-        self, mock_gpt_class, client, mock_gpt_handler, valid_chatops_request
+        self,
+        mock_gpt_class,
+        client,
+        mock_gpt_handler,
+        valid_chatops_request,
+        auth_headers,
     ):
         """Test successful ChatOps query processing."""
         mock_gpt_class.return_value = mock_gpt_handler
@@ -81,6 +84,7 @@ class TestAPIRoutes:
             "/api/chatops",
             data=json.dumps(valid_chatops_request),
             content_type="application/json",
+            headers=auth_headers,
         )
 
         assert response.status_code == 200
@@ -89,22 +93,26 @@ class TestAPIRoutes:
         assert data["response"] == "Test response from GPT"
         assert data["query"] == valid_chatops_request["query"]
 
-    def test_chatops_endpoint_invalid_json(self, client):
+    def test_chatops_endpoint_invalid_json(self, client, auth_headers):
         """Test ChatOps endpoint with invalid JSON."""
         response = client.post(
-            "/api/chatops", data="invalid json", content_type="application/json"
+            "/api/chatops",
+            data="invalid json",
+            content_type="application/json",
+            headers=auth_headers,
         )
 
         assert response.status_code == 400
         data = json.loads(response.data)
         assert "error" in data
 
-    def test_chatops_endpoint_missing_query(self, client):
+    def test_chatops_endpoint_missing_query(self, client, auth_headers):
         """Test ChatOps endpoint with missing query."""
         response = client.post(
             "/api/chatops",
             data=json.dumps({"context": {}}),
             content_type="application/json",
+            headers=auth_headers,
         )
 
         assert response.status_code == 400
@@ -112,9 +120,9 @@ class TestAPIRoutes:
         assert "error" in data
         assert "query" in data["error"].lower()
 
-    @patch("app.api.chatops.gpt_handler.GPTHandler")
+    @patch("app.api.chatops.GPTHandler")
     def test_chatops_endpoint_gpt_error(
-        self, mock_gpt_class, client, valid_chatops_request
+        self, mock_gpt_class, client, valid_chatops_request, auth_headers
     ):
         """Test ChatOps endpoint when GPT handler fails."""
         mock_handler = Mock(spec=GPTHandler)
@@ -129,6 +137,7 @@ class TestAPIRoutes:
             "/api/chatops",
             data=json.dumps(valid_chatops_request),
             content_type="application/json",
+            headers=auth_headers,
         )
 
         assert response.status_code == 500
@@ -136,8 +145,10 @@ class TestAPIRoutes:
         assert data["status"] == "error"
         assert "error" in data
 
-    @patch("app.api.chatops.gpt_handler.GPTHandler")
-    def test_chatops_endpoint_validation_error(self, mock_gpt_class, client):
+    @patch("app.api.chatops.GPTHandler")
+    def test_chatops_endpoint_validation_error(
+        self, mock_gpt_class, client, auth_headers
+    ):
         """Test ChatOps endpoint with validation error."""
         mock_handler = Mock(spec=GPTHandler)
         mock_handler.process_query.side_effect = ValueError("Invalid input")
@@ -147,6 +158,7 @@ class TestAPIRoutes:
             "/api/chatops",
             data=json.dumps({"query": "<script>alert('xss')</script>"}),
             content_type="application/json",
+            headers=auth_headers,
         )
 
         assert response.status_code == 400
@@ -160,9 +172,9 @@ class TestAPIRoutes:
 
         assert response.status_code == 405
 
-    @patch("app.api.chatops.gpt_handler.GPTHandler")
+    @patch("app.api.chatops.GPTHandler")
     def test_chatops_endpoint_with_context(
-        self, mock_gpt_class, client, mock_gpt_handler
+        self, mock_gpt_class, client, mock_gpt_handler, auth_headers
     ):
         """Test ChatOps endpoint with context data."""
         request_data = {
@@ -180,6 +192,7 @@ class TestAPIRoutes:
             "/api/chatops",
             data=json.dumps(request_data),
             content_type="application/json",
+            headers=auth_headers,
         )
 
         assert response.status_code == 200
@@ -224,9 +237,14 @@ class TestAPIRoutes:
         data = json.loads(response.data)
         assert "error" in data
 
-    @patch("app.api.chatops.gpt_handler.GPTHandler")
+    @patch("app.api.chatops.GPTHandler")
     def test_chatops_endpoint_rate_limiting(
-        self, mock_gpt_class, client, mock_gpt_handler, valid_chatops_request
+        self,
+        mock_gpt_class,
+        client,
+        mock_gpt_handler,
+        valid_chatops_request,
+        auth_headers,
     ):
         """Test ChatOps endpoint rate limiting."""
         mock_gpt_class.return_value = mock_gpt_handler
@@ -238,6 +256,7 @@ class TestAPIRoutes:
                 "/api/chatops",
                 data=json.dumps(valid_chatops_request),
                 content_type="application/json",
+                headers=auth_headers,
             )
             responses.append(response)
 
@@ -245,19 +264,22 @@ class TestAPIRoutes:
         success_count = sum(1 for r in responses if r.status_code == 200)
         assert success_count > 0
 
-    def test_chatops_endpoint_content_type_validation(self, client):
+    def test_chatops_endpoint_content_type_validation(self, client, auth_headers):
         """Test ChatOps endpoint content type validation."""
         response = client.post(
-            "/api/chatops", data='{"query": "test"}', content_type="text/plain"
+            "/api/chatops",
+            data='{"query": "test"}',
+            content_type="text/plain",
+            headers=auth_headers,
         )  # Wrong content type
 
         assert response.status_code == 400
         data = json.loads(response.data)
         assert "error" in data
 
-    @patch("app.api.chatops.gpt_handler.GPTHandler")
+    @patch("app.api.chatops.GPTHandler")
     def test_chatops_endpoint_large_query(
-        self, mock_gpt_class, client, mock_gpt_handler
+        self, mock_gpt_class, client, mock_gpt_handler, auth_headers
     ):
         """Test ChatOps endpoint with large query."""
         large_query = "a" * 2000  # Query larger than limit
@@ -269,23 +291,34 @@ class TestAPIRoutes:
             "/api/chatops",
             data=json.dumps(request_data),
             content_type="application/json",
+            headers=auth_headers,
         )
 
         assert response.status_code == 400
         data = json.loads(response.data)
         assert "error" in data
 
-    def test_chatops_endpoint_empty_body(self, client):
+    def test_chatops_endpoint_empty_body(self, client, auth_headers):
         """Test ChatOps endpoint with empty request body."""
-        response = client.post("/api/chatops", data="", content_type="application/json")
+        response = client.post(
+            "/api/chatops",
+            data="",
+            content_type="application/json",
+            headers=auth_headers,
+        )
 
         assert response.status_code == 400
         data = json.loads(response.data)
         assert "error" in data
 
-    @patch("app.api.chatops.gpt_handler.GPTHandler")
+    @patch("app.api.chatops.GPTHandler")
     def test_chatops_endpoint_conversation_history(
-        self, mock_gpt_class, client, mock_gpt_handler, valid_chatops_request
+        self,
+        mock_gpt_class,
+        client,
+        mock_gpt_handler,
+        valid_chatops_request,
+        auth_headers,
     ):
         """Test ChatOps endpoint maintains conversation history."""
         mock_gpt_class.return_value = mock_gpt_handler
@@ -301,6 +334,7 @@ class TestAPIRoutes:
                 "/api/chatops",
                 data=json.dumps(request_data),
                 content_type="application/json",
+                headers=auth_headers,
             )
 
             assert response.status_code == 200
@@ -329,9 +363,9 @@ class TestAPIRoutes:
         assert "database" in data["services"]
         assert "redis" in data["services"]
 
-    @patch("app.api.chatops.gpt_handler.GPTHandler")
+    @patch("app.api.chatops.GPTHandler")
     def test_chatops_endpoint_error_handling(
-        self, mock_gpt_class, client, valid_chatops_request
+        self, mock_gpt_class, client, valid_chatops_request, auth_headers
     ):
         """Test ChatOps endpoint error handling."""
         mock_handler = Mock(spec=GPTHandler)
@@ -342,6 +376,7 @@ class TestAPIRoutes:
             "/api/chatops",
             data=json.dumps(valid_chatops_request),
             content_type="application/json",
+            headers=auth_headers,
         )
 
         assert response.status_code == 500
@@ -367,7 +402,7 @@ class TestAPIRoutes:
         assert response.headers["X-Content-Type-Options"] == "nosniff"
         assert response.headers["X-Frame-Options"] == "DENY"
 
-    @patch("app.api.chatops.gpt_handler.GPTHandler")
+    @patch("app.api.chatops.GPTHandler")
     def test_chatops_endpoint_authentication(
         self, mock_gpt_class, client, mock_gpt_handler, valid_chatops_request
     ):
@@ -392,9 +427,14 @@ class TestAPIRoutes:
             response = client.get(endpoint)
             assert response.content_type == "application/json"
 
-    @patch("app.api.chatops.gpt_handler.GPTHandler")
+    @patch("app.api.chatops.GPTHandler")
     def test_chatops_endpoint_response_structure(
-        self, mock_gpt_class, client, mock_gpt_handler, valid_chatops_request
+        self,
+        mock_gpt_class,
+        client,
+        mock_gpt_handler,
+        valid_chatops_request,
+        auth_headers,
     ):
         """Test ChatOps endpoint response structure."""
         mock_gpt_class.return_value = mock_gpt_handler
@@ -403,6 +443,7 @@ class TestAPIRoutes:
             "/api/chatops",
             data=json.dumps(valid_chatops_request),
             content_type="application/json",
+            headers=auth_headers,
         )
 
         assert response.status_code == 200

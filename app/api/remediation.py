@@ -8,6 +8,8 @@ from datetime import datetime, timezone
 
 from flask import Blueprint, jsonify, request
 
+from app.auth import require_auth
+
 # Create blueprint
 remediation_bp = Blueprint("remediation", __name__)
 
@@ -42,6 +44,56 @@ MOCK_REMEDIATIONS = [
         "updated_at": "2024-01-15T09:50:00Z",
     },
 ]
+
+
+@remediation_bp.route("", methods=["GET", "POST"])
+@require_auth
+def remediation_root():
+    """Root remediation endpoint that requires authentication."""
+    if request.method == "GET":
+        # Return a list of available remediation endpoints
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "data": {
+                        "endpoints": {
+                            "actions": "/api/remediation/actions",
+                            "stats": "/api/remediation/stats",
+                            "export": "/api/remediation/export",
+                        },
+                        "message": "Remediation API requires authentication",
+                    },
+                }
+            ),
+            200,
+        )
+    else:
+        # POST method - create remediation
+        payload = request.get_json(silent=True) or {}
+        remediation_id = len(MOCK_REMEDIATIONS) + 1
+        remediation = {
+            "id": remediation_id,
+            "status": payload.get("status", "pending"),
+            "details": payload.get("details", {}),
+            "created_at": datetime.now(timezone.utc).isoformat() + "Z",
+        }
+        MOCK_REMEDIATIONS.append(remediation)
+        return jsonify({"status": "success", "data": remediation}), 201
+    """Minimal root remediation endpoint expected by tests.
+
+    Requires authentication; returns a lightweight remediation object.
+    """
+    payload = request.get_json(silent=True) or {}
+    remediation_id = len(MOCK_REMEDIATIONS) + 1
+    remediation = {
+        "id": remediation_id,
+        "status": payload.get("status", "pending"),
+        "details": payload.get("details", {}),
+        "created_at": datetime.now(timezone.utc).isoformat() + "Z",
+    }
+    MOCK_REMEDIATIONS.append(remediation)
+    return jsonify({"status": "success", "data": remediation}), 201
 
 
 @remediation_bp.route("/actions", methods=["GET"])

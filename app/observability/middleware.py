@@ -6,7 +6,6 @@ Flask Middleware for Observability Integration
 import time
 
 from flask import Flask, g, has_request_context, request, response
-from werkzeug.serving import WSGIRequestHandler
 
 from .logging_config import get_correlation_id, get_logger, set_correlation_id
 from .metrics import metrics_collector

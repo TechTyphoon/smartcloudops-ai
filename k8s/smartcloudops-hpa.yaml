@@ -1,0 +1,193 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: smartcloudops-main-hpa
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: smartcloudops-main
+  minReplicas: 2
+  maxReplicas: 20
+
+  # Scaling metrics
+  metrics:
+  # CPU utilization target
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+
+  # Memory utilization target
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+  # Custom metrics for application-specific scaling
+  - type: Pods
+    pods:
+      metric:
+        name: http_requests_per_second
+      target:
+        type: AverageValue
+        averageValue: 100
+
+  - type: Pods
+    pods:
+      metric:
+        name: response_time_p95
+      target:
+        type: AverageValue
+        averageValue: 500m  # 500 milliseconds
+
+  # Scale down stabilization
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300  # 5 minutes
+      policies:
+      - type: Percent
+        value: 20
+        periodSeconds: 60
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+      selectPolicy: Min
+
+    scaleUp:
+      stabilizationWindowSeconds: 60   # 1 minute for faster scale-up
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+      - type: Pods
+        value: 4
+        periodSeconds: 60
+      selectPolicy: Max
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: smartcloudops-worker-hpa
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: worker-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: smartcloudops-worker
+  minReplicas: 1
+  maxReplicas: 10
+
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 75
+
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 85
+
+  # Queue-based scaling for background jobs
+  - type: External
+    external:
+      metric:
+        name: queue_length
+        selector:
+          matchLabels:
+            queue: background-jobs
+      target:
+        type: AverageValue
+        averageValue: 10
+
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 600  # 10 minutes for workers
+      policies:
+      - type: Percent
+        value: 30
+        periodSeconds: 120
+    scaleUp:
+      stabilizationWindowSeconds: 120   # 2 minutes
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 60
+      selectPolicy: Max
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: smartcloudops-ml-hpa
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: ml-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: smartcloudops-ml-service
+  minReplicas: 1
+  maxReplicas: 5
+
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 60
+
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 70
+
+  # ML-specific metrics
+  - type: Pods
+    pods:
+      metric:
+        name: ml_inference_requests_total
+      target:
+        type: AverageValue
+        averageValue: 50
+
+  - type: Pods
+    pods:
+      metric:
+        name: gpu_memory_utilization
+      target:
+        type: AverageValue
+        averageValue: 80
+
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 900  # 15 minutes for ML workloads
+    scaleUp:
+      stabilizationWindowSeconds: 180   # 3 minutes
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 60
+      selectPolicy: Max

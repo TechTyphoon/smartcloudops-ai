@@ -72,4 +72,3 @@ def setup_test_environment():
     yield
 
     # Cleanup after test
-    pass

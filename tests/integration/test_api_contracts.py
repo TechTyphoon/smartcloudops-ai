@@ -3,8 +3,7 @@ API contract tests for SmartCloudOps AI.
 Phase 2: Testing Backbone - API validation
 """
 
-import json
-from datetime import datetime, timezone
+from datetime import datetime
 
 import pytest
 

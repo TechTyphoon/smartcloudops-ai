@@ -5,16 +5,13 @@ OpenTelemetry tracing integration
 
 import functools
 import time
-from typing import Any, Callable, Optional
-
-from flask import request
+from typing import Any, Callable
 
 
 def setup_tracing() -> None:
     """Setup distributed tracing"""
     # This would initialize OpenTelemetry tracing
     # For now, we'll use a simple implementation
-    pass
 
 
 def create_span(name: str, **attributes) -> "Span":

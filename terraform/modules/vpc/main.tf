@@ -50,7 +50,7 @@ resource "aws_subnet" "private" {
 
 # NAT Gateway
 resource "aws_eip" "nat" {
-  count = var.enable_nat_gateway ? 1 : 0
+  count  = var.enable_nat_gateway ? 1 : 0
   domain = "vpc"
 
   tags = {

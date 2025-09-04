@@ -674,4 +674,4 @@ echo "DR test completed at $(date)"
 
 ---
 
-*This runbook should be reviewed and updated monthly. Last updated: January 2024*
+*This runbook should be reviewed and updated monthly. Last updated: September 2025*

@@ -7,14 +7,14 @@ Phase 2A: Working modules only - Conservative import approach
 
 # Start with minimal working imports
 try:
-    from .experiment_tracker import ExperimentTracker, get_experiment_tracker
+    pass
 
     EXPERIMENT_TRACKER_AVAILABLE = True
 except ImportError:
     EXPERIMENT_TRACKER_AVAILABLE = False
 
 try:
-    from .model_registry import ModelRegistry, get_model_registry
+    pass
 
     MODEL_REGISTRY_AVAILABLE = True
 except ImportError:

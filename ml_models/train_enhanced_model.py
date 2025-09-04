@@ -6,9 +6,15 @@ Train the anomaly detection model with real AWS data and enhanced parameters
 
 import logging
 import os
+import sys
+from datetime import datetime, timedelta
 
 # Add the project root to the path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Import our components
+from ml_models.anomaly_detector import AnomalyDetector
+from ml_models.data_processor import DataProcessor
 
 # Configure logging
 logging.basicConfig(

@@ -1,7 +1,7 @@
 # =====================================================
 # 🏗️ BUILDER STAGE - Install dependencies and build
 # =====================================================
-FROM python:3.10-slim@sha256:a2c9b8dd30db99f3e0e2e7ca96a4f5c1f5e6c4b8e9b5c5e5f5e5f5e5f5e5f5e5 as builder
+FROM python:3.11-slim as builder
 # Note: Replace with actual digest from: docker pull python:3.10-slim && docker inspect python:3.10-slim
 
 # Set working directory
@@ -37,7 +37,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 # =====================================================
 # 🚀 FINAL STAGE - Production runtime
 # =====================================================
-FROM python:3.10-slim@sha256:a2c9b8dd30db99f3e0e2e7ca96a4f5c1f5e6c4b8e9b5c5e5f5e5f5e5f5e5f5e5
+FROM python:3.11-slim
 # Note: Replace with actual digest from: docker pull python:3.10-slim && docker inspect python:3.10-slim
 
 # Create non-root user for security with specific UID/GID
@@ -57,14 +57,13 @@ RUN apt-get update \
         && apt-get clean
 
 # Copy installed Python packages from builder stage
-COPY --from=builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application source code
 COPY app/ ./app/
 COPY scripts/ ./scripts/
 COPY ml_models/ ./ml_models/
-COPY templates/ ./templates/
 COPY gunicorn.conf.py ./
 COPY start.sh ./
 

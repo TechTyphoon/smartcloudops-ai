@@ -111,7 +111,7 @@ class FeedbackService:
         required_fields = ["feedback_type", "title", "description"]
         for field in required_fields:
             if field not in feedback_data or not feedback_data[field]:
-                raise ValueError(f"Required field '{field}' is missing or empty")
+                raise ValueError(f"Missing required field: {field}")
 
         # Validate feedback type
         valid_types = ["bug_report", "feature_request", "general", "performance"]
@@ -126,6 +126,12 @@ class FeedbackService:
                 1 <= feedback_data["rating"] <= 5
             ):
                 raise ValueError("Rating must be an integer between 1 and 5")
+
+        # Validate priority if provided
+        if "priority" in feedback_data and feedback_data["priority"] is not None:
+            valid_priorities = ["low", "medium", "high"]
+            if feedback_data["priority"] not in valid_priorities:
+                raise ValueError("Invalid priority")
 
         # Create new feedback
         new_feedback = {

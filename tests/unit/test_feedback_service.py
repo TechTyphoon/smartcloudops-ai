@@ -8,8 +8,6 @@ import os
 
 # Import the service we're testing
 import sys
-from datetime import datetime
-from unittest.mock import patch
 
 import pytest
 

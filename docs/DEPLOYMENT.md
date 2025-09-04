@@ -82,10 +82,11 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # 2. Install Node.js dependencies
+cd smartcloudops-ai
 npm install
 
 # 3. Setup environment variables
-cp env.example .env
+cp env.template .env
 # Edit .env with your configuration
 
 # 4. Initialize database
@@ -96,6 +97,7 @@ python scripts/init_db.py
 python -m flask run --debug
 
 # Terminal 2: Frontend
+cd smartcloudops-ai
 npm run dev
 ```
 
@@ -129,66 +131,72 @@ kubectl apply -f deploy/k8s/prod-configs/
 
 ## 🌐 Deployment Options
 
-### Option 1: Docker Compose (Development)
+### Option 1: Docker Compose (Development & Production)
 
-**Best for**: Local development, testing, small deployments
+**Best for**: Local development, testing, and production deployments
 
-```yaml
-# docker-compose.yml
-version: '3.8'
-services:
-  backend:
-    build: .
-    ports:
-      - "5000:5000"
-    environment:
-      - DATABASE_URL=postgresql://user:pass@db:5432/smartcloudops
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - db
-      - redis
+The project includes a comprehensive Docker Compose setup with:
 
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend
-    ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:5000
+- **7 Services**: Flask backend, Next.js frontend, PostgreSQL, Redis, Prometheus, Grafana, Node Exporter
+- **Resource Management**: CPU and memory limits for all services
+- **Persistent Storage**: Named volumes for data persistence
+- **Network Isolation**: Custom bridge network for service communication
+- **Environment Configuration**: Comprehensive environment variable setup
 
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: smartcloudops
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+#### Key Features
 
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
+- **Backend Service**: Flask application with comprehensive environment configuration
+- **Frontend Service**: Next.js React application with hot reloading
+- **Database**: PostgreSQL 17 with optimized configuration
+- **Cache**: Redis with authentication and persistence
+- **Monitoring**: Prometheus for metrics collection, Grafana for visualization
+- **System Metrics**: Node Exporter for hardware monitoring
 
-volumes:
-  postgres_data:
+#### Environment Setup
+
+Before running Docker Compose, create a `.env` file:
+
+```bash
+# Database
+POSTGRES_USER=smartcloudops
+POSTGRES_PASSWORD=secure_password_here
+POSTGRES_DB=smartcloudops
+
+# Redis
+REDIS_PASSWORD=secure_redis_password
+
+# Grafana
+GRAFANA_ADMIN_PASSWORD=secure_grafana_password
+
+# Application
+OPENAI_API_KEY=your_openai_key
+GEMINI_API_KEY=your_gemini_key
+
+# Optional AWS Services
+AWS_REGION=us-east-1
+SLACK_WEBHOOK_URL=https://hooks.slack.com/...
 ```
 
-#### Commands
+#### Quick Start Commands
 
 ```bash
 # Start all services
 docker-compose up -d
 
-# View logs
-docker-compose logs -f
+# View service status
+docker-compose ps
 
-# Stop services
+# View logs for specific service
+docker-compose logs smartcloudops-main
+
+# Stop all services
 docker-compose down
 
 # Rebuild and restart
 docker-compose up -d --build
+
+# Scale services (if needed)
+docker-compose up -d --scale smartcloudops-main=3
 ```
 
 ### Option 2: Kubernetes with Helm (Production)
@@ -478,7 +486,7 @@ curl -X POST \
 ```bash
 # Backend health check
 curl http://localhost:5000/health
-# Expected: {"status": "healthy", "timestamp": "2024-01-15T12:00:00Z"}
+# Expected: {"status": "healthy", "timestamp": "2025-09-01T00:00:00Z"}
 
 # Frontend health check
 curl http://localhost:3000/api/health

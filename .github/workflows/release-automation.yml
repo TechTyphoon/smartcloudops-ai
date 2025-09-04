@@ -181,15 +181,22 @@ jobs:
       uses: actions/checkout@v4
       
     - name: 🏷️ Create GitHub Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ needs.validate-release.outputs.version }}
-        release_name: Release ${{ needs.validate-release.outputs.version }}
-        body: ${{ needs.generate-changelog.outputs.release_notes }}
-        draft: ${{ inputs.draft || 'false' }}
-        prerelease: ${{ needs.validate-release.outputs.is_pre_release }}
+      run: |
+        echo "::group::Creating GitHub Release"
+        # Authenticate GitHub CLI
+        echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+        # Prepare release notes (escape newlines for CLI)
+        RELEASE_NOTES=$(echo "${{ needs.generate-changelog.outputs.release_notes }}" | sed 's/"/\\"/g' | tr '\n' '\\n')
+
+        # Create release using GitHub CLI (modern approach)
+        gh release create "${{ needs.validate-release.outputs.version }}" \
+          --title "Release ${{ needs.validate-release.outputs.version }}" \
+          --notes "$RELEASE_NOTES" \
+          --latest=false \
+          ${{ fromJSON(inputs.draft || 'false') && '--draft' || '' }} \
+          ${{ fromJSON(needs.validate-release.outputs.is_pre_release) && '--prerelease' || '' }}
+        echo "::endgroup::"
         
     - name: 📋 Upload release assets
       run: |

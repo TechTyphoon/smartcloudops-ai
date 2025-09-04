@@ -5,7 +5,7 @@ AI-powered chat interface for operational assistance
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from flask import Blueprint, jsonify, request
 
@@ -56,7 +56,7 @@ def process_chat_query():
                     "suggestions": response.get("suggestions", []),
                     "confidence": response.get("confidence", 0.0),
                     "query_type": response.get("query_type", "general"),
-                    "timestamp": datetime.utcnow().isoformat() + "Z",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             )
 
@@ -90,14 +90,14 @@ def chat_health():
         # Check if AI handler is available
         from app.ai_handler import AIHandler
 
-        ai_handler = AIHandler()
+        AIHandler()
 
         return jsonify(
             {
                 "status": "healthy",
                 "service": "chat",
                 "ai_handler_available": True,
-                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 
@@ -107,7 +107,7 @@ def chat_health():
                 "status": "degraded",
                 "service": "chat",
                 "ai_handler_available": False,
-                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 
@@ -119,7 +119,7 @@ def chat_health():
                 "service": "chat",
                 "ai_handler_available": False,
                 "error": str(e),
-                "timestamp": datetime.utcnow().isoformat() + "Z",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 

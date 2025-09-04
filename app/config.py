@@ -4,9 +4,8 @@ Configuration module for Smart CloudOps AI - Production Ready Configuration Mana
 
 import logging
 import os
-import secrets
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -184,7 +183,7 @@ class DevelopmentConfig(Config):
     LOG_LEVEL = "DEBUG"
 
 
-class TestingConfig(Config):
+class TestConfig(Config):
     """Testing configuration."""
 
     DEBUG = True
@@ -209,7 +208,7 @@ def get_config_by_env(env: str = None) -> Config:
 
     config_map = {
         "development": DevelopmentConfig,
-        "testing": TestingConfig,
+        "testing": TestConfig,
         "production": ProductionConfig,
     }
 

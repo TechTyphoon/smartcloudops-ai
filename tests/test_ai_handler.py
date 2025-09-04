@@ -92,8 +92,8 @@ class TestFlexibleAIHandler:
 
     def test_handler_init_with_openai_key(self):
         """Test handler initialization with OpenAI API key."""
-        mock_client = Mock()
-        with patch("app.chatops.ai_handler.OpenAIProviderf") as mock_provider_class:
+        Mock()
+        with patch("app.chatops.ai_handler.OpenAIProvider") as mock_provider_class:
             mock_provider = Mock()
             mock_provider_class.return_value = mock_provider
             mock_provider.initialize.return_value = True
@@ -109,7 +109,7 @@ class TestFlexibleAIHandler:
         mock_model = Mock()
         mock_genai.GenerativeModel.return_value = mock_model
 
-        with patch("app.chatops.ai_handler.GeminiProviderf") as mock_provider_class:
+        with patch("app.chatops.ai_handler.GeminiProvider") as mock_provider_class:
             mock_provider = Mock()
             mock_provider_class.return_value = mock_provider
             mock_provider.initialize.return_value = True

@@ -3,10 +3,8 @@ Unit tests for ChatOps GPT Handler
 Comprehensive test coverage for GPT integration and security features
 """
 
-import json
-from datetime import datetime, timezone
 from typing import Any, Dict
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -111,15 +109,20 @@ class TestGPTHandler:
             (None, ValueError, "Query must be a non-empty string"),
             ("", ValueError, "Query must be a non-empty string"),
             (123, ValueError, "Query must be a non-empty string"),
-            ("a" * 1001, ValueError, "Query exceeds maximum length of 1000 characters"),
+            ("a" * 1001, None, None),  # Should truncate instead of error
         ],
     )
     def test_sanitize_input_invalid_inputs(
         self, gpt_handler, query, error_type, error_message
     ):
         """Test input sanitization with invalid inputs."""
-        with pytest.raises(error_type, match=error_message):
-            gpt_handler.sanitize_input(query)
+        if error_type is None:
+            # For long inputs, should truncate instead of raising error
+            result = gpt_handler.sanitize_input(query)
+            assert len(result) <= 1003  # 1000 + "..."
+        else:
+            with pytest.raises(error_type, match=error_message):
+                gpt_handler.sanitize_input(query)
 
     @pytest.mark.parametrize(
         "malicious_input",

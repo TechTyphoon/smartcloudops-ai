@@ -6,13 +6,13 @@ Login, logout, token refresh, user management
 
 import logging
 from datetime import datetime, timezone
-from typing import List
 
+import jwt
 from flask import Blueprint, jsonify, request
 
 from app.auth import (
     auth_manager,
-    authenticate_user,
+    get_current_user,
     get_user_by_id,
     require_admin,
     require_auth,
@@ -20,8 +20,68 @@ from app.auth import (
 
 logger = logging.getLogger(__name__)
 
+# Enterprise users for testing
+ENTERPRISE_USERS = {
+    "admin": {
+        "username": "admin",
+        "email": "admin@enterprise.com",
+        "password": "admin123",
+        "role": "admin",
+    },
+    "operator": {
+        "username": "operator",
+        "email": "operator@enterprise.com",
+        "password": "operator123",
+        "role": "operator",
+    },
+    "viewer": {
+        "username": "viewer",
+        "email": "viewer@enterprise.com",
+        "password": "viewer123",
+        "role": "viewer",
+    },
+    "analyst": {
+        "username": "analyst",
+        "email": "analyst@enterprise.com",
+        "password": "analyst123",
+        "role": "analyst",
+    },
+}
+
+# In-memory storage for registered users (for testing)
+REGISTERED_USERS = {}
+
 # Create authentication blueprint
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
+
+
+def authenticate_enterprise_user(username: str, password: str):
+    """Authenticate user against enterprise users dictionary."""
+    # Check enterprise users first
+    if username in ENTERPRISE_USERS:
+        user = ENTERPRISE_USERS[username]
+        if user["password"] == password:  # Simple password check for demo
+            return {
+                "id": hash(username) % 10000,  # Simple ID generation
+                "username": username,
+                "email": user["email"],
+                "role": user["role"],
+                "is_active": True,
+            }
+
+    # Check registered users
+    if username in REGISTERED_USERS:
+        user = REGISTERED_USERS[username]
+        if user["password"] == password:  # Simple password check for demo
+            return {
+                "id": hash(username) % 10000,  # Simple ID generation
+                "username": username,
+                "email": user["email"],
+                "role": user["role"],
+                "is_active": True,
+            }
+
+    return None
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
@@ -85,7 +145,7 @@ def login():
             )
 
         # Authenticate user
-        user = authenticate_user(username, password)
+        user = authenticate_enterprise_user(username, password)
         if not user:
             logger.warning(f"Failed login attempt for username: {username}")
             return (
@@ -121,7 +181,8 @@ def login():
                         "role": user["role"],
                         "is_active": user["is_active"],
                     },
-                    "tokens": tokens,
+                    "token": tokens.get("access_token", ""),
+                    "refresh_token": tokens.get("refresh_token", ""),
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             ),
@@ -349,6 +410,169 @@ def get_user(user_id):
             jsonify(
                 {
                     "error": "Failed to get user",
+                    "message": "Internal server error",
+                    "status": "error",
+                }
+            ),
+            500,
+        )
+
+
+@auth_bp.route("/verify", methods=["GET"])
+def verify_token():
+    """Verify JWT token endpoint"""
+    try:
+        # Get token from Authorization header
+        auth_header = request.headers.get("Authorization", "")
+        if not auth_header.startswith("Bearer "):
+            return (
+                jsonify(
+                    {
+                        "valid": False,
+                        "error": "Missing or invalid Authorization header",
+                        "status": "error",
+                    }
+                ),
+                401,
+            )
+
+        token = auth_header.replace("Bearer ", "")
+        if not token:
+            return (
+                jsonify(
+                    {
+                        "valid": False,
+                        "error": "Missing token",
+                        "status": "error",
+                    }
+                ),
+                401,
+            )
+
+        # Verify token
+        try:
+            payload = auth_manager.verify_token(token)
+            return (
+                jsonify(
+                    {
+                        "valid": True,
+                        "user": {
+                            "id": payload.get("user_id"),
+                            "username": payload.get("username"),
+                            "role": payload.get("role"),
+                        },
+                        "token_type": payload.get("type"),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                    }
+                ),
+                200,
+            )
+        except Exception as e:
+            logger.warning(f"Token verification failed: {e}")
+            return (
+                jsonify(
+                    {
+                        "valid": False,
+                        "error": "Invalid or expired token",
+                        "status": "error",
+                    }
+                ),
+                401,
+            )
+
+    except Exception as e:
+        logger.error(f"Token verification error: {e}")
+        return (
+            jsonify(
+                {
+                    "valid": False,
+                    "error": "Token verification failed",
+                    "status": "error",
+                }
+            ),
+            500,
+        )
+
+
+@auth_bp.route("/register", methods=["POST"])
+def register():
+    """User registration endpoint"""
+    try:
+        data = request.get_json()
+        if not data:
+            return (
+                jsonify(
+                    {
+                        "error": "Invalid request",
+                        "message": "JSON data required",
+                        "status": "error",
+                    }
+                ),
+                400,
+            )
+
+        username = data.get("username", "").strip()
+        email = data.get("email", "").strip()
+        password = data.get("password", "")
+
+        if not username or not email or not password:
+            return (
+                jsonify(
+                    {
+                        "error": "Invalid data",
+                        "message": "Username, email, and password required",
+                        "status": "error",
+                    }
+                ),
+                400,
+            )
+
+        # Check if user already exists
+        for user in list(ENTERPRISE_USERS.values()) + list(REGISTERED_USERS.values()):
+            if user["username"] == username or user["email"] == email:
+                return (
+                    jsonify(
+                        {
+                            "error": "User exists",
+                            "message": "Username or email already registered",
+                            "status": "error",
+                        }
+                    ),
+                    409,
+                )
+
+        # For testing purposes, store the user in REGISTERED_USERS
+        REGISTERED_USERS[username] = {
+            "username": username,
+            "email": email,
+            "password": password,  # In production, this would be hashed
+            "role": "user",
+        }
+
+        logger.info(f"User registration attempted: {username}")
+
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": "User registered successfully",
+                    "user": {
+                        "username": username,
+                        "email": email,
+                        "role": "user",
+                    },
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                }
+            ),
+            201,
+        )
+
+    except Exception as e:
+        logger.error(f"Registration error: {e}")
+        return (
+            jsonify(
+                {
+                    "error": "Registration failed",
                     "message": "Internal server error",
                     "status": "error",
                 }

@@ -3,11 +3,10 @@ Unit Tests for Performance Integration
 Phase 2C Week 1: Performance & Scaling - Testing
 """
 
-import threading
 import time
 import unittest
 from datetime import datetime
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import patch
 
 
 class TestCachingSystem(unittest.TestCase):

@@ -4,34 +4,37 @@ MLOpsService - Business logic for MLOps operations
 Phase 2A: MLOps integration with service layer pattern
 """
 
+import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
+
+logger = logging.getLogger(__name__)
 
 # Import MLOps components
 # Import MLOps components with fallback
 try:
-    from app.mlops.experiment_tracker import ExperimentTracker, get_experiment_tracker
+    from app.mlops.experiment_tracker import get_experiment_tracker
 
     EXPERIMENT_TRACKER_AVAILABLE = True
 except ImportError:
     EXPERIMENT_TRACKER_AVAILABLE = False
 
 try:
-    from app.mlops.model_registry import ModelRegistry, get_model_registry
+    from app.mlops.model_registry import get_model_registry
 
     MODEL_REGISTRY_AVAILABLE = True
 except ImportError:
     MODEL_REGISTRY_AVAILABLE = False
 
 try:
-    from app.mlops.data_pipeline import DataPipelineManager, get_data_pipeline_manager
+    from app.mlops.data_pipeline import get_data_pipeline_manager
 
     DATA_PIPELINE_AVAILABLE = True
 except ImportError:
     DATA_PIPELINE_AVAILABLE = False
 
 try:
-    from ml_models.mlflow_config import MLflowManager, get_mlflow_manager
+    from ml_models.mlflow_config import get_mlflow_manager
 
     MLFLOW_AVAILABLE = True
 except ImportError:
@@ -47,7 +50,7 @@ class MLOpsService:
         self.experiment_tracker = None
         self.model_registry = None
         self.data_pipeline = None
-        self.mlflow_manager = None
+        self._mlflow_manager = None
 
         if EXPERIMENT_TRACKER_AVAILABLE:
             self.experiment_tracker = get_experiment_tracker()
@@ -58,8 +61,8 @@ class MLOpsService:
         if DATA_PIPELINE_AVAILABLE:
             self.data_pipeline = get_data_pipeline_manager()
 
-        if MLFLOW_AVAILABLE:
-            self.mlflow_manager = get_mlflow_manager()
+        # Lazy initialization for MLflow manager
+        self._mlflow_manager = None
 
         # Mock data for development (will be replaced with actual MLOps data)
         self.mock_experiments = [
@@ -115,6 +118,17 @@ class MLOpsService:
                 "size_mb": 3.1,
             },
         ]
+
+    @property
+    def mlflow_manager(self):
+        """Lazy initialization of MLflow manager to avoid blocking startup."""
+        if self._mlflow_manager is None and MLFLOW_AVAILABLE:
+            try:
+                self._mlflow_manager = get_mlflow_manager()
+            except Exception as e:
+                logger.warning(f"Failed to initialize MLflow manager: {e}")
+                self._mlflow_manager = None
+        return self._mlflow_manager
 
     # ===== EXPERIMENT MANAGEMENT =====
 
@@ -206,18 +220,17 @@ class MLOpsService:
         if not experiment:
             raise ValueError(f"Experiment {experiment_id} not found")
 
-        # Validate required fields
-        required_fields = ["name"]
-        for field in required_fields:
-            if field not in run_data:
-                raise ValueError(f"Missing required field: {field}")
+        # Handle field mapping (run_name -> name)
+        run_name = run_data.get("run_name") or run_data.get("name")
+        if not run_name:
+            raise ValueError("Missing required field: run_name or name")
 
         # Create new run
         run_id = f"run_{experiment_id}_{int(datetime.now(timezone.utc).timestamp())}"
         new_run = {
             "id": run_id,
             "experiment_id": experiment_id,
-            "name": run_data["name"],
+            "name": run_name,
             "status": "running",
             "parameters": run_data.get("parameters", {}),
             "metrics": {},
@@ -418,7 +431,7 @@ class MLOpsService:
 
             return version_dicts, pagination
 
-        except Exception as e:
+        except Exception:
             # Fallback to mock data
             mock_versions = [
                 {

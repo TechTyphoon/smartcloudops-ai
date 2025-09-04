@@ -6,8 +6,17 @@
         "run",
         "-i",
         "--rm",
-        "ghcr.io/github/github-mcp-server"
-      ]
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "-e",
+        "GITHUB_TOOLSETS",
+        "ghcr.io/github/github-mcp-server",
+        "stdio"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}",
+        "GITHUB_TOOLSETS": "${GITHUB_TOOLSETS}"
+      }
     },
     "sequential-thinking": {
       "command": "npx",
@@ -35,14 +44,14 @@
       "command": "npx",
       "args": ["-y", "firecrawl-mcp"],
       "env": {
-        "FIRECRAWL_API_KEY": "fc-a116623c95a64dc3867669da895cd1e0"
+        "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}"
       }
     },
     "aws": {
       "command": "npx",
       "args": ["-y", "@imazhar101/mcp-aws-server"],
       "env": {
-        "AWS_REGION": "us-west-2"
+        "AWS_REGION": "${AWS_REGION}"
       }
     },
     "kubernetes": {
@@ -61,28 +70,28 @@
       "command": "npx",
       "args": ["-y", "prometheus-mcp"],
       "env": {
-        "PROMETHEUS_URL": "http://localhost:9090"
+        "PROMETHEUS_URL": "${PROMETHEUS_URL}"
       }
     },
     "grafana": {
       "command": "npx",
       "args": ["-y", "grafana-mcp-analyzer"],
       "env": {
-        "GRAFANA_URL": "http://localhost:3000"
+        "GRAFANA_URL": "${GRAFANA_URL}"
       }
     },
     "postgres": {
       "command": "npx",
       "args": ["-y", "@henkey/postgres-mcp-server"],
       "env": {
-        "POSTGRES_CONNECTION_STRING": "postgresql+psycopg2://cloudops:cloudops@localhost:5432/cloudops"
+        "POSTGRES_CONNECTION_STRING": "${POSTGRES_CONNECTION_STRING}"
       }
     },
     "redis": {
       "command": "npx",
       "args": ["-y", "@pickstar-2002/redis-mcp"],
       "env": {
-        "REDIS_URL": "redis://localhost:6379"
+        "REDIS_URL": "${REDIS_URL}"
       }
     }
   }

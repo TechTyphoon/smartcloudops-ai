@@ -4,13 +4,11 @@ Security validation tests for SmartCloudOps AI services
 Tests security aspects of the service layer including input validation, sanitization, and security policies
 """
 
-import json
 import os
 import re
 
 # Import the services we're testing
 import sys
-from unittest.mock import patch
 
 import pytest
 

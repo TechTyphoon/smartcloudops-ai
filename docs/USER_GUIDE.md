@@ -537,9 +537,11 @@ Configure how and when you receive notifications:
 - Basic remediation actions
 - Offline capability for viewing recent data
 
-### Download
-- iOS: App Store (available Q2 2024)
-- Android: Google Play Store (available Q2 2024)
+### Access
+- **Web Application**: Access via any modern web browser
+- **Progressive Web App (PWA)**: Installable on mobile devices
+- **Responsive Design**: Optimized for tablets and smartphones
+- **Mobile-First**: Touch-friendly interface for mobile operations
 
 ---
 

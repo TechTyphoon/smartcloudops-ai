@@ -1,0 +1,16 @@
+Method,Name,Error,Occurrences
+GET,Admin - Health Report,HTTPError('404 Client Error: NOT FOUND for url: Admin - Health Report'),2
+GET,Anomalies - List,HTTPError('404 Client Error: NOT FOUND for url: Anomalies - List'),5
+POST,Remediation - Create Action,HTTPError('400 Client Error: BAD REQUEST for url: Remediation - Create Action'),3
+POST,/auth/login,HTTPError('400 Client Error: BAD REQUEST for url: /auth/login'),5
+POST,Anomalies - Create,HTTPError('404 Client Error: NOT FOUND for url: Anomalies - Create'),2
+GET,Dashboard - Summary,HTTPError('404 Client Error: NOT FOUND for url: Dashboard - Summary'),2
+GET,Admin - Dashboard,HTTPError('404 Client Error: NOT FOUND for url: Admin - Dashboard'),6
+GET,Health - Observability,HTTPError('404 Client Error: NOT FOUND for url: Health - Observability'),6
+POST,ML - Predict,HTTPError('400 Client Error: BAD REQUEST for url: ML - Predict'),1
+GET,ML - Model Info,HTTPError('404 Client Error: NOT FOUND for url: ML - Model Info'),2
+POST,Auth - Register,HTTPError('400 Client Error: BAD REQUEST for url: Auth - Register'),5
+POST,AI - Chat Query,HTTPError('404 Client Error: NOT FOUND for url: AI - Chat Query'),3
+POST,Auth - Login,HTTPError('400 Client Error: BAD REQUEST for url: Auth - Login'),5
+GET,ML - Model Metrics,HTTPError('404 Client Error: NOT FOUND for url: ML - Model Metrics'),2
+GET,Monitoring - Status,HTTPError('404 Client Error: NOT FOUND for url: Monitoring - Status'),1

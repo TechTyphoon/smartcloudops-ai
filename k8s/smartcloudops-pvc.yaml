@@ -1,0 +1,134 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: smartcloudops-database-pvc
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: database-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: fast-ssd
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: smartcloudops-redis-pvc
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: cache-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Gi
+  storageClassName: fast-ssd
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: smartcloudops-logs-pvc
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: logs-storage
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 200Gi
+  storageClassName: standard
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: smartcloudops-cache-pvc
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: application-cache
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: fast-ssd
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: smartcloudops-ml-models-pvc
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: ml-models-storage
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Gi
+  storageClassName: fast-ssd
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: smartcloudops-backup-pvc
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: backup-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Ti
+  storageClassName: standard
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: smartcloudops-monitoring-pvc
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: monitoring-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: standard
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: smartcloudops-mlflow-pvc
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: mlflow-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Gi
+  storageClassName: standard

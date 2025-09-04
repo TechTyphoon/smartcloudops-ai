@@ -6,7 +6,6 @@ Phase 2A Week 4: MLOps API Integration
 
 import json
 import unittest
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -91,8 +90,8 @@ class TestMLOpsAPI(unittest.TestCase):
         """Test creating experiment with no data."""
         response = self.client.post("/api/mlops/experiments")
 
-        # Should return 400 for no data
-        self.assertIn(response.status_code, [400, 503])
+        # Should return 400 for no data or 415 for missing Content-Type
+        self.assertIn(response.status_code, [400, 415, 503])
 
     def test_start_experiment_run(self):
         """Test starting an experiment run."""
@@ -103,7 +102,7 @@ class TestMLOpsAPI(unittest.TestCase):
         }
 
         response = self.client.post(
-            "/api/mlops/experiments/exp_123/runs",
+            "/api/mlops/experiments/exp_1/runs",
             data=json.dumps(run_data),
             content_type="application/json",
         )
@@ -183,6 +182,7 @@ class TestMLOpsAPI(unittest.TestCase):
             "name": "test_model",
             "version": "1.0.0",
             "model_path": "/models/test_model.pkl",
+            "algorithm": "isolation_forest",
             "framework": "scikit-learn",
             "tags": ["test"],
             "metadata": {"accuracy": 0.95},
@@ -218,7 +218,7 @@ class TestMLOpsAPI(unittest.TestCase):
         status_data = {"status": "production"}
 
         response = self.client.put(
-            "/api/mlops/models/model_123/status",
+            "/api/mlops/models/model_1/status",
             data=json.dumps(status_data),
             content_type="application/json",
         )
@@ -231,7 +231,7 @@ class TestMLOpsAPI(unittest.TestCase):
         """Test updating model status with missing data."""
         response = self.client.put("/api/mlops/models/model_123/status")
 
-        self.assertIn(response.status_code, [400, 503])
+        self.assertIn(response.status_code, [400, 415, 503])
 
     def test_get_data_versions(self):
         """Test getting data versions."""

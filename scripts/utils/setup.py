@@ -7,6 +7,8 @@ This script helps set up the development environment for the Smart CloudOps AI p
 import os
 import platform
 import subprocess
+import sys
+from pathlib import Path
 
 
 def run_command(command, description=""):
@@ -57,7 +59,7 @@ def check_prerequisites():
     missing_tools = []
 
     for tool, command in required_tools.items():
-        if run_command(command, "Checking {tool}"):
+        if run_command(command, f"Checking {tool}"):
             continue
         else:
             missing_tools.append(tool)

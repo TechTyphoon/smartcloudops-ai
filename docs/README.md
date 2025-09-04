@@ -27,16 +27,16 @@ docs/
 ### For New Users
 1. **[Installation Guide](../INSTALLATION.md)** - Get started with SmartCloudOps AI
 2. **[Getting Started](../USAGE.md)** - Learn how to use the platform
-3. **[Deployment Guide](../DEPLOYMENT_GUIDE.md)** - Deploy to production
+3. **[Deployment Guide](DEPLOYMENT.md)** - Deploy to production
 
 ### For Developers
-1. **[API Reference](API_REFERENCE.md)** - Complete API documentation
+1. **[API Reference](API_REFERENCE_COMPLETE.md)** - Complete API documentation
 2. **[Architecture Guide](ARCHITECTURE.md)** - System design and components
 3. **[Contributing Guide](../CONTRIBUTING.md)** - Development guidelines
 
 ### For Operators
 1. **[Production Runbook](PRODUCTION_DEPLOYMENT_RUNBOOK.md)** - Production operations
-2. **[Security Guide](../SECURITY.md)** - Security best practices
+2. **[Security Guide](SECURITY_HARDENING_GUIDE.md)** - Security best practices
 3. **[Troubleshooting Guide](troubleshooting.md)** - Common issues and solutions
 
 ---
@@ -45,7 +45,7 @@ docs/
 
 ### Core Documentation
 
-#### [API Reference](API_REFERENCE.md)
+#### [API Reference](API_REFERENCE_COMPLETE.md)
 Complete API documentation including:
 - **Authentication**: JWT token management
 - **Endpoints**: All REST API endpoints
@@ -165,8 +165,8 @@ Database model examples including:
 - **[Installation Guide](../INSTALLATION.md)** - Setup instructions
 - **[Usage Guide](../USAGE.md)** - Platform usage
 - **[Contributing Guide](../CONTRIBUTING.md)** - Development guidelines
-- **[Security Guide](../SECURITY.md)** - Security practices
-- **[Deployment Guide](../DEPLOYMENT_GUIDE.md)** - Deployment instructions
+- **[Security Guide](SECURITY_HARDENING_GUIDE.md)** - Security practices
+- **[Deployment Guide](DEPLOYMENT.md)** - Deployment instructions
 - **[Troubleshooting Guide](../TROUBLESHOOTING.md)** - Issue resolution
 
 ### Scripts Documentation

@@ -1,0 +1,203 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: smartcloudops-main-ingress
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: ingress
+  annotations:
+    # SSL/TLS Configuration
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+    # Rate Limiting
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+    nginx.ingress.kubernetes.io/rate-limit-burst: "20"
+
+    # Security Headers
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header X-Frame-Options "DENY" always;
+      add_header X-Content-Type-Options "nosniff" always;
+      add_header X-XSS-Protection "1; mode=block" always;
+      add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+      add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';" always;
+
+    # CORS Configuration
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://smartcloudops.ai,https://staging.smartcloudops.ai"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+
+    # Session Affinity (Sticky Sessions)
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/affinity-mode: "sticky"
+    nginx.ingress.kubernetes.io/cookie-name: "smartcloudops_session"
+
+    # Load Balancing
+    nginx.ingress.kubernetes.io/upstream-fail-timeout: "10"
+    nginx.ingress.kubernetes.io/upstream-max-fails: "3"
+    nginx.ingress.kubernetes.io/load-balance: "least_conn"
+
+    # Health Checks
+    nginx.ingress.kubernetes.io/health-check-path: "/health"
+    nginx.ingress.kubernetes.io/health-check-method: "GET"
+
+    # Proxy Configuration
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+
+    # WebSocket Support
+    nginx.ingress.kubernetes.io/websocket-services: "smartcloudops-main"
+
+    # Monitoring
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "10254"
+
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - smartcloudops.ai
+    - api.smartcloudops.ai
+    secretName: smartcloudops-tls
+
+  rules:
+  # Main application
+  - host: smartcloudops.ai
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: smartcloudops-main
+            port:
+              number: 80
+
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: smartcloudops-main
+            port:
+              number: 80
+
+      - path: /health
+        pathType: Exact
+        backend:
+          service:
+            name: smartcloudops-main
+            port:
+              number: 80
+
+      - path: /status
+        pathType: Exact
+        backend:
+          service:
+            name: smartcloudops-main
+            port:
+              number: 80
+
+  # API subdomain
+  - host: api.smartcloudops.ai
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: smartcloudops-main
+            port:
+              number: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: smartcloudops-monitoring-ingress
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: monitoring-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: monitoring-auth
+    nginx.ingress.kubernetes.io/auth-realm: 'SmartCloudOps Monitoring'
+
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - monitoring.smartcloudops.ai
+    secretName: monitoring-tls
+
+  rules:
+  - host: monitoring.smartcloudops.ai
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: grafana
+            port:
+              number: 3000
+
+      - path: /prometheus
+        pathType: Prefix
+        backend:
+          service:
+            name: prometheus
+            port:
+              number: 9090
+
+      - path: /alertmanager
+        pathType: Prefix
+        backend:
+          service:
+            name: alertmanager
+            port:
+              number: 9093
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: smartcloudops-websocket-ingress
+  namespace: smartcloudops
+  labels:
+    app: smartcloudops
+    component: websocket-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/websocket-services: "smartcloudops-main"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
+
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - ws.smartcloudops.ai
+    secretName: websocket-tls
+
+  rules:
+  - host: ws.smartcloudops.ai
+    http:
+      paths:
+      - path: /ws
+        pathType: Prefix
+        backend:
+          service:
+            name: smartcloudops-main
+            port:
+              number: 80

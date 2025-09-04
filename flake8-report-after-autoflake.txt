@@ -1,0 +1,116 @@
+app/__init__.py:210:1: C901 '_register_blueprints' is too complex (13)
+app/ai_handler.py:10:89: E501 line too long (584 > 88 characters)
+app/ai_handler.py:11:89: E501 line too long (516 > 88 characters)
+app/ai_handler.py:14:89: E501 line too long (504 > 88 characters)
+app/ai_handler.py:15:89: E501 line too long (443 > 88 characters)
+app/ai_handler.py:18:89: E501 line too long (562 > 88 characters)
+app/ai_handler.py:21:89: E501 line too long (548 > 88 characters)
+app/analytics/real_time_dashboard.py:181:89: E501 line too long (91 > 88 characters)
+app/analytics/real_time_dashboard.py:184:89: E501 line too long (95 > 88 characters)
+app/analytics/real_time_dashboard.py:192:89: E501 line too long (93 > 88 characters)
+app/analytics/real_time_dashboard.py:371:89: E501 line too long (93 > 88 characters)
+app/analytics/real_time_dashboard.py:373:23: E261 at least two spaces before inline comment
+app/analytics/real_time_dashboard.py:380:89: E501 line too long (93 > 88 characters)
+app/analytics/real_time_dashboard.py:382:23: E261 at least two spaces before inline comment
+app/analytics/real_time_dashboard.py:389:89: E501 line too long (93 > 88 characters)
+app/analytics/real_time_dashboard.py:391:23: E261 at least two spaces before inline comment
+app/analytics/real_time_dashboard.py:398:89: E501 line too long (93 > 88 characters)
+app/analytics/real_time_dashboard.py:400:21: E261 at least two spaces before inline comment
+app/analytics/real_time_dashboard.py:436:89: E501 line too long (104 > 88 characters)
+app/analytics/real_time_dashboard.py:438:89: E501 line too long (107 > 88 characters)
+app/analytics/real_time_dashboard.py:442:89: E501 line too long (117 > 88 characters)
+app/analytics/real_time_dashboard.py:444:89: E501 line too long (112 > 88 characters)
+app/analytics/real_time_dashboard.py:448:89: E501 line too long (111 > 88 characters)
+app/analytics/real_time_dashboard.py:450:89: E501 line too long (106 > 88 characters)
+app/analytics/real_time_dashboard.py:454:89: E501 line too long (112 > 88 characters)
+app/analytics/real_time_dashboard.py:456:89: E501 line too long (115 > 88 characters)
+app/analytics/real_time_dashboard.py:458:89: E501 line too long (97 > 88 characters)
+app/analytics/real_time_dashboard.py:523:89: E501 line too long (93 > 88 characters)
+app/analytics/real_time_dashboard.py:542:89: E501 line too long (96 > 88 characters)
+app/analytics/real_time_dashboard.py:626:89: E501 line too long (99 > 88 characters)
+app/analytics/real_time_dashboard.py:671:36: E231 missing whitespace after ','
+app/analytics/real_time_dashboard.py:679:89: E501 line too long (94 > 88 characters)
+app/analytics/real_time_dashboard.py:726:43: E231 missing whitespace after ','
+app/analytics/real_time_dashboard.py:729:35: E231 missing whitespace after ','
+app/api/ai.py:111:89: E501 line too long (89 > 88 characters)
+app/api/ai.py:156:1: C901 'analyze_metrics' is too complex (11)
+app/api/ai.py:239:89: E501 line too long (141 > 88 characters)
+app/api/ai.py:306:89: E501 line too long (161 > 88 characters)
+app/api/ai.py:317:89: E501 line too long (151 > 88 characters)
+app/api/ai.py:328:89: E501 line too long (146 > 88 characters)
+app/api/ai.py:339:89: E501 line too long (215 > 88 characters)
+app/api/ai.py:350:89: E501 line too long (199 > 88 characters)
+app/api/anomalies.py:318:89: E501 line too long (89 > 88 characters)
+app/api/anomalies.py:381:9: F841 local variable 'days' is assigned to but never used
+app/api/anomalies.py:425:89: E501 line too long (90 > 88 characters)
+app/api/anomalies_refactored.py:231:89: E501 line too long (89 > 88 characters)
+app/api/anomalies_refactored.py:338:89: E501 line too long (90 > 88 characters)
+app/api/core.py:271:89: E501 line too long (126 > 88 characters)
+app/api/feedback.py:21:89: E501 line too long (95 > 88 characters)
+app/api/feedback.py:34:89: E501 line too long (89 > 88 characters)
+app/api/feedback.py:386:89: E501 line too long (89 > 88 characters)
+app/api/ml.py:518:89: E501 line too long (93 > 88 characters)
+app/api/mlops.py:5:89: E501 line too long (93 > 88 characters)
+app/api/mlops.py:27:1: E302 expected 2 blank lines, found 1
+app/api/mlops.py:39:1: E302 expected 2 blank lines, found 1
+app/api/mlops.py:192:22: F821 undefined name 'service'
+app/api/mlops.py:241:22: F821 undefined name 'service'
+app/api/mlops.py:290:15: F821 undefined name 'service'
+app/api/mlops.py:328:89: E501 line too long (96 > 88 characters)
+app/api/mlops.py:337:22: F821 undefined name 'service'
+app/api/mlops.py:358:89: E501 line too long (94 > 88 characters)
+app/api/mlops.py:425:22: F821 undefined name 'service'
+app/api/mlops.py:485:22: F821 undefined name 'service'
+app/api/mlops.py:524:27: F821 undefined name 'service'
+app/api/mlops.py:572:20: F821 undefined name 'service'
+app/api/mlops.py:622:20: F821 undefined name 'service'
+app/api/mlops.py:679:24: F821 undefined name 'service'
+app/api/mlops.py:734:30: F821 undefined name 'service'
+app/api/mlops.py:773:17: F821 undefined name 'service'
+app/api/mlops.py:802:17: F821 undefined name 'service'
+app/api/mlops.py:864:17: F821 undefined name 'service'
+app/api/mlops.py:902:22: F821 undefined name 'service'
+app/api/mlops.py:942:21: F821 undefined name 'service'
+app/api/mlops.py:979:20: F821 undefined name 'service'
+app/api/mlops.py:1008:18: F821 undefined name 'service'
+app/api/mlops.py:1092:18: F821 undefined name 'service'
+app/api/mlops.py:1136:17: F821 undefined name 'service'
+app/api/mlops.py:1162:26: F821 undefined name 'service'
+app/api/mlops.py:1228:26: F821 undefined name 'service'
+app/api/mlops.py:1298:21: F821 undefined name 'service'
+app/api/performance.py:156:89: E501 line too long (91 > 88 characters)
+app/api/remediation.py:410:89: E501 line too long (94 > 88 characters)
+app/api/remediation.py:524:89: E501 line too long (100 > 88 characters)
+app/api/slos.py:356:89: E501 line too long (110 > 88 characters)
+app/api/slos.py:361:89: E501 line too long (103 > 88 characters)
+app/auth.py:132:1: C901 'require_auth' is too complex (12)
+app/auth.py:184:9: F841 local variable 'e' is assigned to but never used
+app/auth.py:212:89: E501 line too long (96 > 88 characters)
+app/auth.py:260:1: C901 'register_auth_endpoints' is too complex (30)
+app/chatops/ai_handler.py:120:89: E501 line too long (180 > 88 characters)
+app/chatops/ai_handler.py:127:89: E501 line too long (218 > 88 characters)
+app/chatops/ai_handler.py:134:89: E501 line too long (220 > 88 characters)
+app/chatops/ai_handler.py:141:89: E501 line too long (173 > 88 characters)
+app/chatops/ai_handler.py:148:89: E501 line too long (263 > 88 characters)
+app/chatops/gpt_handler.py:77:89: E501 line too long (99 > 88 characters)
+app/chatops/gpt_handler.py:78:89: E501 line too long (97 > 88 characters)
+app/chatops/gpt_handler.py:92:89: E501 line too long (97 > 88 characters)
+app/chatops/gpt_handler.py:95:5: C901 'GPTHandler.sanitize_input' is too complex (12)
+app/chatops/gpt_handler.py:96:89: E501 line too long (91 > 88 characters)
+app/chatops/gpt_handler.py:123:89: E501 line too long (99 > 88 characters)
+app/chatops/gpt_handler.py:124:89: E501 line too long (104 > 88 characters)
+app/chatops/gpt_handler.py:129:89: E501 line too long (93 > 88 characters)
+app/chatops_module.py:45:1: C901 'chatops_analyze' is too complex (11)
+app/chatops_module.py:136:1: C901 'chatops_query' is too complex (11)
+app/chatops_module.py:284:17: F601 dictionary key 'status' repeated with different values
+app/chatops_module.py:286:17: F601 dictionary key 'status' repeated with different values
+app/config.py:40:89: E501 line too long (97 > 88 characters)
+app/main.py:40:89: E501 line too long (96 > 88 characters)
+app/ml_service.py:32:89: E501 line too long (90 > 88 characters)
+app/mlops/__init__.py:3:89: E501 line too long (103 > 88 characters)
+app/mlops/autonomous_ops.py:44:89: E501 line too long (89 > 88 characters)
+app/mlops/data_pipeline.py:334:89: E501 line too long (95 > 88 characters)
+app/mlops/data_pipeline.py:513:5: C901 'DataPipelineManager.ingest_data' is too complex (23)
+app/mlops/data_pipeline.py:520:89: E501 line too long (90 > 88 characters)
+app/mlops/data_pipeline.py:523:89: E501 line too long (103 > 88 characters)
+app/mlops/data_pipeline.py:599:89: E501 line too long (190 > 88 characters)

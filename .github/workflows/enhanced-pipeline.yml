@@ -20,7 +20,7 @@ env:
   PYTHON_VERSION: "3.11"
   NODE_VERSION: "18"
   APP_PATH: ./app
-  FRONTEND_PATH: ./smartcloudops-ai
+  FRONTEND_PATH: ./Frontend
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

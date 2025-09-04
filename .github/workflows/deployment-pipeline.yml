@@ -1,0 +1,473 @@
+name: 🚀 SmartCloudOps AI - Deployment Pipeline
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'app/**'
+      - 'docker-compose.yml'
+      - 'Dockerfile*'
+      - 'requirements*.txt'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      version:
+        description: 'Version tag (optional)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+  deployments: write
+  actions: read
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/smartcloudops
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  # =====================================================
+  # 📦 BUILD & TEST
+  # =====================================================
+  build-and-test:
+    name: 🏗️ Build & Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    outputs:
+      image-digest: ${{ steps.build.outputs.digest }}
+      test-results: ${{ steps.test.outputs.results }}
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+
+    - name: 📦 Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+
+    - name: 🧪 Run Tests
+      id: test
+      run: |
+        python -m pytest tests/ -v --tb=short --cov=app --cov-report=xml --cov-report=term-missing
+        TEST_RESULTS=$?
+        echo "results=$TEST_RESULTS" >> $GITHUB_OUTPUT
+        exit $TEST_RESULTS
+
+    - name: 📊 Upload Coverage
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: false
+
+    - name: 🔍 Run Security Scan
+      uses: securecodewarrior/github-action-bandit@v1
+      with:
+        bandit_flags: "-r app/ --format json --output bandit-report.json"
+        exit_zero: false
+
+    - name: 🐳 Build Docker Image
+      id: build
+      run: |
+        # Generate version tag
+        if [ "${{ github.event.inputs.version }}" ]; then
+          VERSION="${{ github.event.inputs.version }}"
+        else
+          VERSION="${GITHUB_SHA::8}"
+        fi
+
+        # Build and tag image
+        docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$VERSION .
+        docker tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$VERSION ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+        # Get image digest
+        DIGEST=$(docker inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$VERSION | jq -r '.[0].RepoDigests[0]')
+        echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+    - name: 🔐 Login to Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: 📤 Push Docker Image
+      run: |
+        if [ "${{ github.event.inputs.version }}" ]; then
+          VERSION="${{ github.event.inputs.version }}"
+        else
+          VERSION="${GITHUB_SHA::8}"
+        fi
+
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$VERSION
+        docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+
+  # =====================================================
+  # 🚀 DEPLOY TO STAGING
+  # =====================================================
+  deploy-staging:
+    name: 🚀 Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging')
+    timeout-minutes: 15
+
+    environment:
+      name: staging
+      url: https://staging.smartcloudops.ai
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🔐 Setup SSH
+      uses: webfactory/ssh-agent@v0.9.1
+      with:
+        ssh-private-key: ${{ secrets.STAGING_SSH_KEY }}
+
+    - name: 🚀 Deploy to Staging
+      run: |
+        # Generate version tag
+        if [ "${{ github.event.inputs.version }}" ]; then
+          VERSION="${{ github.event.inputs.version }}"
+        else
+          VERSION="${GITHUB_SHA::8}"
+        fi
+
+        # Deploy using docker-compose
+        ssh -o StrictHostKeyChecking=no ${{ secrets.STAGING_HOST }} << EOF
+          cd /opt/smartcloudops
+
+          # Pull latest changes
+          git pull origin main
+
+          # Update environment variables
+          export IMAGE_TAG=$VERSION
+          export ENVIRONMENT=staging
+
+          # Deploy with new image
+          docker-compose pull
+          docker-compose up -d --scale smartcloudops-main=2
+
+          # Wait for services to be healthy
+          sleep 30
+
+          # Health check
+          if curl -f http://localhost:5000/health; then
+            echo "✅ Staging deployment successful"
+          else
+            echo "❌ Staging deployment failed"
+            docker-compose logs smartcloudops-main
+            exit 1
+          fi
+        EOF
+
+    - name: 🧪 Run Staging Tests
+      run: |
+        # Test staging deployment
+        sleep 10
+
+        # Health check
+        if curl -f https://staging.smartcloudops.ai/health; then
+          echo "✅ Staging health check passed"
+        else
+          echo "❌ Staging health check failed"
+          exit 1
+        fi
+
+        # API tests
+        if curl -f https://staging.smartcloudops.ai/api/status; then
+          echo "✅ Staging API test passed"
+        else
+          echo "❌ Staging API test failed"
+          exit 1
+        fi
+
+    - name: 📊 Create Deployment Status
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.repos.createDeploymentStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            deployment_id: ${{ github.event.deployment.id || 1 }},
+            state: 'success',
+            environment_url: 'https://staging.smartcloudops.ai',
+            description: 'Staging deployment completed successfully'
+          })
+
+  # =====================================================
+  # 🎯 DEPLOY TO PRODUCTION
+  # =====================================================
+  deploy-production:
+    name: 🎯 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build-and-test, deploy-staging]
+    if: (github.ref == 'refs/heads/main' && github.event_name == 'push') || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
+    timeout-minutes: 20
+
+    environment:
+      name: production
+      url: https://smartcloudops.ai
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🔐 Setup SSH
+      uses: webfactory/ssh-agent@v0.9.1
+      with:
+        ssh-private-key: ${{ secrets.PRODUCTION_SSH_KEY }}
+
+    - name: 🚀 Deploy to Production
+      run: |
+        # Generate version tag
+        if [ "${{ github.event.inputs.version }}" ]; then
+          VERSION="${{ github.event.inputs.version }}"
+        else
+          VERSION="${GITHUB_SHA::8}"
+        fi
+
+        # Deploy using docker-compose with blue-green strategy
+        ssh -o StrictHostKeyChecking=no ${{ secrets.PRODUCTION_HOST }} << EOF
+          cd /opt/smartcloudops
+
+          # Backup current deployment
+          docker tag smartcloudops_main:latest smartcloudops_main:backup-$(date +%Y%m%d_%H%M%S)
+
+          # Update environment
+          export IMAGE_TAG=$VERSION
+          export ENVIRONMENT=production
+
+          # Blue-green deployment
+          echo "Starting blue-green deployment..."
+
+          # Start new version alongside old
+          docker-compose up -d --scale smartcloudops-main=3
+
+          # Wait for new instances to be ready
+          sleep 60
+
+          # Health check all instances
+          HEALTHY_COUNT=0
+          for i in {1..3}; do
+            if curl -f -s http://localhost:500$i/health > /dev/null; then
+              HEALTHY_COUNT=$((HEALTHY_COUNT + 1))
+            fi
+          done
+
+          if [ \$HEALTHY_COUNT -ge 2 ]; then
+            echo "✅ New version healthy, switching traffic..."
+
+            # Update load balancer (if using nginx)
+            if [ -f /etc/nginx/sites-available/smartcloudops ]; then
+              sudo nginx -t && sudo nginx -s reload
+            fi
+
+            # Scale down old instances
+            docker-compose up -d --scale smartcloudops-main=3
+
+            echo "✅ Production deployment successful"
+          else
+            echo "❌ New version not healthy, rolling back..."
+            docker-compose up -d --scale smartcloudops-main=2
+            exit 1
+          fi
+        EOF
+
+    - name: 🧪 Run Production Tests
+      run: |
+        # Comprehensive production tests
+        sleep 30
+
+        # Health checks
+        if ! curl -f --max-time 10 https://smartcloudops.ai/health; then
+          echo "❌ Production health check failed"
+          exit 1
+        fi
+
+        # API functionality tests
+        API_ENDPOINTS=(
+          "/api/status"
+          "/api/anomalies"
+          "/api/performance/metrics"
+          "/api/ml/models"
+        )
+
+        for endpoint in "${API_ENDPOINTS[@]}"; do
+          if ! curl -f --max-time 10 "https://smartcloudops.ai$endpoint"; then
+            echo "❌ API endpoint $endpoint failed"
+            exit 1
+          fi
+        done
+
+        echo "✅ All production tests passed"
+
+    - name: 📊 Create Deployment Status
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.repos.createDeploymentStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            deployment_id: ${{ github.event.deployment.id || 1 }},
+            state: 'success',
+            environment_url: 'https://smartcloudops.ai',
+            description: 'Production deployment completed successfully'
+          })
+
+    - name: 📢 Notify Teams
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        text: "🚀 SmartCloudOps AI deployed to production successfully! Version: ${{ github.sha }}"
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: always()
+
+  # =====================================================
+  # 📊 POST-DEPLOYMENT MONITORING
+  # =====================================================
+  post-deployment-monitoring:
+    name: 📊 Post-Deployment Monitoring
+    runs-on: ubuntu-latest
+    needs: deploy-production
+    if: always()
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: 📊 Monitor Deployment Health
+      run: |
+        python -c "
+        import requests
+        import time
+        import sys
+
+        def monitor_deployment():
+            base_url = 'https://smartcloudops.ai'
+
+            # Monitor for 10 minutes post-deployment
+            for i in range(60):
+                try:
+                    # Health check
+                    health = requests.get(f'{base_url}/health', timeout=10)
+                    if health.status_code != 200:
+                        print(f'❌ Health check failed: {health.status_code}')
+                        return False
+
+                    # API responsiveness
+                    api = requests.get(f'{base_url}/api/status', timeout=10)
+                    if api.status_code != 200:
+                        print(f'❌ API check failed: {api.status_code}')
+                        return False
+
+                    # Performance check
+                    perf = requests.get(f'{base_url}/api/performance/metrics', timeout=10)
+                    if perf.status_code == 200:
+                        metrics = perf.json()['data']
+                        cpu = metrics['cpu']['usage_percent']
+                        memory = metrics['memory']['usage_percent']
+
+                        if cpu > 90 or memory > 90:
+                            print(f'⚠️ High resource usage - CPU: {cpu}%, Memory: {memory}%')
+
+                    if i % 10 == 0:  # Log every 10 checks
+                        print(f'✅ Deployment healthy - Check {i+1}/60')
+
+                except Exception as e:
+                    print(f'❌ Monitoring error: {e}')
+                    return False
+
+                time.sleep(10)
+
+            print('✅ Post-deployment monitoring completed successfully')
+            return True
+
+        if not monitor_deployment():
+            sys.exit(1)
+        "
+
+    - name: 🔄 Rollback on Failure
+      if: failure()
+      run: |
+        echo "❌ Post-deployment monitoring failed, initiating rollback..."
+
+        # This would trigger a rollback workflow
+        # For now, just log the failure
+        echo "Deployment rollback would be initiated here"
+
+  # =====================================================
+  # 📋 DEPLOYMENT SUMMARY
+  # =====================================================
+  deployment-summary:
+    name: 📋 Deployment Summary
+    runs-on: ubuntu-latest
+    needs: [build-and-test, deploy-staging, deploy-production, post-deployment-monitoring]
+    if: always()
+
+    steps:
+    - name: 📊 Generate Deployment Report
+      run: |
+        echo "# 🚀 SmartCloudOps AI Deployment Report" >> deployment-report.md
+        echo "" >> deployment-report.md
+        echo "## Deployment Details" >> deployment-report.md
+        echo "- **Commit**: ${{ github.sha }}" >> deployment-report.md
+        echo "- **Branch**: ${{ github.ref }}" >> deployment-report.md
+        echo "- **Triggered by**: ${{ github.actor }}" >> deployment-report.md
+        echo "- **Timestamp**: $(date -u)" >> deployment-report.md
+        echo "" >> deployment-report.md
+
+        echo "## Job Status" >> deployment-report.md
+        echo "- ✅ Build & Test: ${{ needs.build-and-test.result }}" >> deployment-report.md
+        echo "- ✅ Staging Deploy: ${{ needs.deploy-staging.result }}" >> deployment-report.md
+        echo "- ✅ Production Deploy: ${{ needs.deploy-production.result }}" >> deployment-report.md
+        echo "- ✅ Post-Deploy Monitoring: ${{ needs.post-deployment-monitoring.result }}" >> deployment-report.md
+        echo "" >> deployment-report.md
+
+        echo "## Environment URLs" >> deployment-report.md
+        echo "- **Staging**: https://staging.smartcloudops.ai" >> deployment-report.md
+        echo "- **Production**: https://smartcloudops.ai" >> deployment-report.md
+        echo "" >> deployment-report.md
+
+        cat deployment-report.md
+
+    - name: 💾 Upload Deployment Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: deployment-report
+        path: deployment-report.md
+
+    - name: 📢 Final Notification
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        text: "SmartCloudOps AI deployment completed. Check artifacts for detailed report."
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      if: always()

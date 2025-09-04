@@ -6,6 +6,8 @@ This script verifies that Phase 0 setup is complete and working correctly.
 
 import os
 import subprocess
+import sys
+from pathlib import Path
 
 
 def check_file_exists(file_path, description):

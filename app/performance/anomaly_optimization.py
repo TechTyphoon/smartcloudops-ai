@@ -8,15 +8,13 @@ import asyncio
 import hashlib
 import json
 import logging
-import os
 import queue
 import threading
 import time
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass
-from datetime import datetime, timedelta
-from functools import wraps
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     import numpy as np
@@ -161,7 +159,7 @@ class BatchProcessor:
                     confidence=0.0,
                     score=0.0,
                     features={},
-                    timestamp=datetime.utcnow(),
+                    timestamp=datetime.now(timezone.utc),
                     model_version="error",
                     processing_time=0.0,
                 )
@@ -186,7 +184,7 @@ class BatchProcessor:
                 confidence=confidence,
                 score=score,
                 features={"cpu_usage": cpu_usage, "memory_usage": memory_usage},
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
                 model_version="batch-v1",
                 processing_time=0.001,
             )
@@ -324,7 +322,7 @@ class OptimizedAnomalyDetector:
             confidence=confidence,
             score=score,
             features=features,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             model_version=self.model_version,
             processing_time=0.0,  # Will be set by caller
         )
@@ -424,7 +422,7 @@ def detect_anomaly(data: Dict[str, Any], use_cache: bool = True) -> AnomalyResul
             confidence=0.0,
             score=0.0,
             features={},
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             model_version="fallback",
             processing_time=0.0,
         )

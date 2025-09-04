@@ -4,15 +4,13 @@ SmartCloudOps AI - Performance Optimization Engine
 Automated performance optimization with before/after comparison
 """
 
-import json
 import os
-import statistics
 import subprocess
 import sys
 import time
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 # Add app to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "app"))

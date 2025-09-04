@@ -4,18 +4,16 @@ Performance API Endpoints
 Phase 5: Performance & Cost Optimization - Performance Monitoring API
 """
 
-import time
-from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from datetime import datetime, timezone
 
-from flask import Blueprint, current_app, jsonify, request
+from flask import Blueprint, jsonify, request
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from app.observability.enhanced_logging import get_logger, log_business_event
-from app.performance.anomaly_optimization import AnomalyConfig, get_anomaly_detector
-from app.performance.database_optimization import DatabaseConfig, get_optimized_database
-from app.performance.log_optimization import LogConfig, get_log_manager
-from app.performance.redis_cache import RedisCacheConfig, get_redis_cache
+from app.performance.anomaly_optimization import get_anomaly_detector
+from app.performance.database_optimization import get_database
+from app.performance.log_optimization import get_log_manager
+from app.performance.redis_cache import get_redis_cache
 
 # Create blueprint
 performance_bp = Blueprint("performance", __name__)
@@ -30,7 +28,7 @@ def health_check():
     try:
         health_status = {
             "status": "healthy",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "components": {},
         }
 
@@ -67,7 +65,7 @@ def health_check():
             health_status["components"]["log_manager"] = {"status": "not_initialized"}
 
         # Check database
-        db = get_optimized_database()
+        db = get_database()
         if db:
             health_status["components"]["database"] = {
                 "status": "healthy",
@@ -94,7 +92,7 @@ def health_check():
                 {
                     "status": "unhealthy",
                     "error": str(e),
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             ),
             500,
@@ -199,7 +197,7 @@ def get_metrics():
 def analyze_performance():
     """Analyze performance and provide optimization recommendations"""
     try:
-        data = request.get_json() or {}
+        request.get_json() or {}
 
         # Get performance analysis
         analysis = {
@@ -316,7 +314,7 @@ def get_performance_alerts():
                 "severity": "warning",
                 "title": "High Memory Usage",
                 "description": "Memory usage is above 80%",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "status": "active",
             },
             {
@@ -324,7 +322,7 @@ def get_performance_alerts():
                 "severity": "critical",
                 "title": "Database Connection Pool Exhausted",
                 "description": "All database connections are in use",
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "status": "active",
             },
         ]
@@ -360,7 +358,7 @@ def acknowledge_alert(alert_id):
         acknowledged_alert = {
             "id": alert_id,
             "status": "acknowledged",
-            "acknowledged_at": datetime.utcnow().isoformat(),
+            "acknowledged_at": datetime.now(timezone.utc).isoformat(),
         }
 
         # Log business event

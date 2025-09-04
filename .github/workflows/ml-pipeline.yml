@@ -269,55 +269,30 @@ jobs:
     - name: Compare with production model
       id: compare
       run: |
-        python -c "
+        decision=$(python - << 'PY'
         from mlflow.tracking import MlflowClient
-        client = MlflowClient()
-        
-        # Get staging and production models
-        staging_versions = client.get_latest_versions('anomaly-detector', stages=['Staging'])
-        production_versions = client.get_latest_versions('anomaly-detector', stages=['Production'])
-        
-        if not staging_versions:
-            print('No staging model found')
-            exit(1)
-            
-        staging_model = staging_versions[0]
-        
-        if production_versions:
-            production_model = production_versions[0]
-            
-            # Compare metrics
-            staging_metrics = client.get_run(staging_model.run_id).data.metrics
-            production_metrics = client.get_run(production_model.run_id).data.metrics
-            
-            staging_score = staging_metrics.get('mean_score', 0)
-            production_score = production_metrics.get('mean_score', 0)
-            
-            print(f'Staging score: {staging_score}')
-            print(f'Production score: {production_score}')
-            
-            # Promote if staging is better
-            if staging_score > production_score:
-                print('Staging model performs better - promoting')
-                client.transition_model_version_stage(
-                    'anomaly-detector',
-                    staging_model.version,
-                    'Production'
-                )
-                print('should_promote=true' >> $GITHUB_OUTPUT)
+        try:
+            client = MlflowClient()
+            staging_versions = client.get_latest_versions('anomaly-detector', stages=['Staging'])
+            production_versions = client.get_latest_versions('anomaly-detector', stages=['Production'])
+            if not staging_versions:
+                print('false')
             else:
-                print('Production model is better - keeping current')
-                print('should_promote=false' >> $GITHUB_OUTPUT)
-        else:
-            # No production model - promote staging
-            print('No production model - promoting staging model')
-            client.transition_model_version_stage(
-                'anomaly-detector',
-                staging_model.version,
-                'Production'
-            )
-            print('should_promote=true' >> $GITHUB_OUTPUT)
-        "
+                staging_model = staging_versions[0]
+                if production_versions:
+                    production_model = production_versions[0]
+                    s_metrics = client.get_run(staging_model.run_id).data.metrics
+                    p_metrics = client.get_run(production_model.run_id).data.metrics
+                    s = s_metrics.get('mean_score', 0)
+                    p = p_metrics.get('mean_score', 0)
+                    print('true' if s > p else 'false')
+                else:
+                    print('true')
+        except Exception:
+            print('false')
+        PY
+        )
+        echo "should_promote=$decision" >> "$GITHUB_OUTPUT"
         
     - name: Deploy to production
       if: steps.compare.outputs.should_promote == 'true'

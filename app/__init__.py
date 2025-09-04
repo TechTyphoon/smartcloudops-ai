@@ -5,7 +5,6 @@ Phase 2C Week 1: Performance & Scaling - Application Factory Pattern
 
 import logging
 import os
-from pathlib import Path
 
 from flask import Flask
 from flask_cors import CORS
@@ -36,7 +35,14 @@ def create_app(config=None) -> Flask:
         app.config["FLASK_ENV"] = os.getenv("FLASK_ENV", "development")
 
     # CORS configuration
-    CORS(app, origins=["http://localhost:3000", "https://smartcloudops.netlify.app"])
+    CORS(
+        app,
+        origins=["http://localhost:3000", "https://smartcloudops.netlify.app"],
+        methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+        expose_headers=["Content-Type", "X-Total-Count"],
+        supports_credentials=True,
+    )
 
     # Initialize Phase 4 Observability components (with error handling)
     _init_enhanced_logging(app)
@@ -46,9 +52,49 @@ def create_app(config=None) -> Flask:
     # Initialize Phase 5 Performance Optimization components (with error handling)
     _init_performance_optimization(app)
 
-    # Initialize existing components
-    _init_performance_monitoring(app)
+    # Initialize request counter for testing
+    app.request_count = 0
+
+    # Initialize anomaly detector
+    try:
+        from ml_models.anomaly_detector import AnomalyDetector
+
+        app.anomaly_detector = AnomalyDetector()
+        logger.info("✅ Anomaly detector initialized")
+    except Exception as e:
+        logger.warning(f"Anomaly detector initialization failed: {e}")
+        app.anomaly_detector = None
+
+    # Initialize MLOps service
     _init_mlops_service(app)
+
+    @app.before_request
+    def increment_request_count():
+        app.request_count += 1
+
+    @app.after_request
+    def add_security_headers(response):
+        """Add security headers to all responses"""
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains"
+        )
+        response.headers["Content-Security-Policy"] = "default-src 'self'"
+
+        # Add CORS headers if not already set
+        if "Access-Control-Allow-Methods" not in response.headers:
+            response.headers["Access-Control-Allow-Methods"] = (
+                "GET, POST, PUT, DELETE, OPTIONS"
+            )
+        if "Access-Control-Allow-Headers" not in response.headers:
+            response.headers["Access-Control-Allow-Headers"] = (
+                "Content-Type, Authorization, X-Requested-With"
+            )
+
+        return response
+
     _register_blueprints(app)
     _register_error_handlers(app)
 
@@ -144,33 +190,71 @@ def _init_performance_monitoring(app: Flask):
 def _init_mlops_service(app: Flask):
     """Initialize MLOps service"""
     try:
-        from app.services.mlops_service import mlops_bp
+        # mlops blueprint is defined in app.api.mlops; import from there to avoid
+        # circular imports between the api module and the service implementation.
+        from app.api import mlops as _mlops_module
 
-        app.register_blueprint(mlops_bp)
+        # Register the mlops blueprint and keep a reference to the service on the
+        # app object for other modules to inspect availability.
+        app.register_blueprint(_mlops_module.mlops_bp)
+        # Attach service instance for runtime checks elsewhere
+        try:
+            app.mlops_service = getattr(_mlops_module, "mlops_service", None)
+        except Exception:
+            app.mlops_service = None
         logger.info("✅ MLOps service enabled")
     except Exception as e:
         logger.warning(f"MLOps service initialization failed: {e}")
 
 
+def _register_core_blueprints(app: Flask):
+    """Register core application blueprints"""
+    import app.api.core as core_module
+    from app.auth_routes import auth_bp
+    from app.monitoring_module import monitoring_bp
+
+    app.register_blueprint(monitoring_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(core_module.core_bp)
+
+
+def _register_optional_blueprints(app: Flask):
+    """Register optional blueprints with error handling"""
+    optional_blueprints = [
+        ("app.api.anomalies", "anomalies_bp", "/api/anomalies"),
+        ("app.api.remediation", "remediation_bp", "/api/remediation"),
+        ("app.api.chatops", "chatops_bp", "/api/chatops"),
+        ("app.api.ml", "ml_bp", "/api/ml"),
+    ]
+
+    for module_name, bp_name, url_prefix in optional_blueprints:
+        try:
+            module = __import__(module_name, fromlist=[bp_name])
+            blueprint = getattr(module, bp_name)
+            app.register_blueprint(blueprint, url_prefix=url_prefix)
+        except Exception as e:
+            logger.warning(f"Failed to register {bp_name}: {e}")
+
+
+def _register_chatops_blueprint(app: Flask):
+    """Register the main chatops blueprint"""
+    try:
+        from app.chatops_module import chatops_bp as main_chatops_bp
+
+        app.register_blueprint(
+            main_chatops_bp, url_prefix="/chatops", name="main_chatops"
+        )
+    except Exception as e:
+        logger.warning(f"Failed to register main chatops blueprint: {e}")
+
+
 def _register_blueprints(app: Flask):
     """Register all application blueprints"""
     try:
-        # Register monitoring blueprint
-        from app.monitoring_module import monitoring_bp
+        _register_core_blueprints(app)
+        _register_optional_blueprints(app)
+        _register_chatops_blueprint(app)
 
-        app.register_blueprint(monitoring_bp)
-
-        # Register auth blueprint
-        from app.auth_routes import auth_bp
-
-        app.register_blueprint(auth_bp)
-
-        # Register API blueprints
-        from app.api.core import api_bp
-
-        app.register_blueprint(api_bp)
-
-        # Register other blueprints as needed
         logger.info("✅ All blueprints registered")
     except Exception as e:
         logger.warning(f"Blueprint registration failed: {e}")
@@ -182,6 +266,10 @@ def _register_error_handlers(app: Flask):
     @app.errorhandler(404)
     def not_found(error):
         return {"error": "Not found", "status": 404}, 404
+
+    @app.errorhandler(405)
+    def method_not_allowed(error):
+        return {"error": "Method not allowed", "status": 405}, 405
 
     @app.errorhandler(500)
     def internal_error(error):

@@ -4,12 +4,16 @@ Smart CloudOps AI - Continuous Health Monitor
 Parallel background verification of all production endpoints
 """
 
+import json
 import logging
 import os
 import threading
+import time
+from datetime import datetime
 
 import boto3
 import requests
+from botocore.exceptions import ClientError
 
 # Configure logging
 logging.basicConfig(
@@ -295,7 +299,7 @@ class ContinuousHealthMonitor:
 
         for failure in critical_failures:
             endpoint = failure["endpoint"]
-            error = failure.get("error", "unknown")
+            failure.get("error", "unknown")
 
             # Simple retry logic
             logger.info(f"Retrying failed endpoint: {endpoint}")
