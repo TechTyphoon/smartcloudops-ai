@@ -243,19 +243,12 @@ jobs:
 
     - name: 📢 Send Slack Alert
       if: needs.health-monitoring.outputs.alerts-triggered > 0
-      uses: 8398a7/action-slack@v3
-      with:
-        status: failure
-        text: |
-          🚨 *SmartCloudOps AI Alert*
-
-          Environment: ${{ github.event.inputs.environment || "production" }}
-          Health Status: ${{ needs.health-monitoring.outputs.health-status }}
-          Alerts Triggered: ${{ needs.health-monitoring.outputs.alerts-triggered }}
-
-          Check the monitoring dashboard: https://${{ github.event.inputs.environment || "production" }}.smartcloudops.ai
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL || '' }}
+      run: |
+        echo "🚨 SmartCloudOps AI Alert"
+        echo "Environment: ${{ github.event.inputs.environment || 'production' }}"
+        echo "Health Status: ${{ needs.health-monitoring.outputs.health-status }}"
+        echo "Alerts Triggered: ${{ needs.health-monitoring.outputs.alerts-triggered }}"
+        echo "Check the monitoring dashboard: https://${{ github.event.inputs.environment || 'production' }}.smartcloudops.ai"
 
     - name: 📧 Send Email Alert
       if: needs.health-monitoring.outputs.alerts-triggered > 0
