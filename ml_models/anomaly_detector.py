@@ -516,7 +516,7 @@ class AnomalyDetector:
             "network_bytes_sent_rate": np.random.uniform(
                 10000000, 50000000, anomaly_samples
             ),
-            "network_bytes_recv_ratef": np.random.uniform(
+            "network_bytes_recv_rate": np.random.uniform(
                 20000000, 100000000, anomaly_samples
             ),
         }
