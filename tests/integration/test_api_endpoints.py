@@ -134,6 +134,7 @@ class TestAPIEndpointsIntegration:
                 "memory_usage": 78.2,
                 "disk_usage": 45.1,
                 "network_io": 120.5,
+                "network_bytes_recv_rate": 2000000,
                 "response_time": 250.0,
             },
             "timestamp": datetime.now(timezone.utc).isoformat(),
