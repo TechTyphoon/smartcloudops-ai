@@ -671,17 +671,14 @@ jobs:
         retention-days: 7
 
     - name: 📢 Monitoring Notification
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ needs.health-monitoring.outputs.health-status == 'healthy' && 'success' || 'failure' }}
-        text: |
-          📊 SmartCloudOps AI Monitoring Complete
-
-          Environment: ${{ github.event.inputs.environment || 'production' }}
-          Health Status: ${{ needs.health-monitoring.outputs.health-status }}
-          Alerts: ${{ needs.health-monitoring.outputs.alerts-triggered }}
-
-          ${{ needs.health-monitoring.outputs.health-status == 'healthy' && '✅ All systems operating normally' || '🚨 Issues detected - check monitoring report' }}
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL || '' }}
+      run: |
+        echo "📊 SmartCloudOps AI Monitoring Complete"
+        echo "Environment: ${{ github.event.inputs.environment || 'production' }}"
+        echo "Health Status: ${{ needs.health-monitoring.outputs.health-status }}"
+        echo "Alerts: ${{ needs.health-monitoring.outputs.alerts-triggered }}"
+        if [ "${{ needs.health-monitoring.outputs.health-status }}" = "healthy" ]; then
+          echo "✅ All systems operating normally"
+        else
+          echo "🚨 Issues detected - check monitoring report"
+        fi
       if: always()

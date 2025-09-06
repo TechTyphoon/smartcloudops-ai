@@ -363,12 +363,8 @@ jobs:
           })
 
     - name: 📢 Notify Teams
-      uses: 8398a7/action-slack@v3
-      with:
-        status: success
-        text: "🚀 SmartCloudOps AI deployed to production successfully! Version: ${{ github.sha }}"
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      run: |
+        echo "🚀 SmartCloudOps AI deployed to production successfully! Version: ${{ github.sha }}"
       if: always()
 
   # =====================================================
@@ -486,10 +482,6 @@ jobs:
         path: deployment-report.md
 
     - name: 📢 Final Notification
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ job.status }}
-        text: "SmartCloudOps AI deployment completed. Check artifacts for detailed report."
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      run: |
+        echo "SmartCloudOps AI deployment completed. Check artifacts for detailed report."
       if: always()

@@ -519,20 +519,17 @@ jobs:
 
     steps:
     - name: 📢 Send Slack Notification
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ needs.scaling-execution.result }}
-        text: |
-          ⚖️ *SmartCloudOps AI Auto-Scaling*
-
-          Environment: ${{ github.event.inputs.environment || 'production' }}
-          Action: ${{ needs.load-analysis.outputs.scaling-recommendation }}
-          Replicas: ${{ needs.load-analysis.outputs.current_replicas }} → ${{ needs.load-analysis.outputs.target_replicas }}
-          Reason: ${{ needs.load-analysis.outputs.scaling-reason }}
-
-          ${{ needs.scaling-execution.result == 'success' && '✅ Scaling completed successfully' || '❌ Scaling failed - manual intervention may be required' }}
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL || '' }}
+      run: |
+        echo "⚖️ SmartCloudOps AI Auto-Scaling"
+        echo "Environment: ${{ github.event.inputs.environment || 'production' }}"
+        echo "Action: ${{ needs.load-analysis.outputs.scaling-recommendation }}"
+        echo "Replicas: ${{ needs.load-analysis.outputs.current_replicas }} → ${{ needs.load-analysis.outputs.target_replicas }}"
+        echo "Reason: ${{ needs.load-analysis.outputs.scaling-reason }}"
+        if [ "${{ needs.scaling-execution.result }}" = "success" ]; then
+          echo "✅ Scaling completed successfully"
+        else
+          echo "❌ Scaling failed - manual intervention may be required"
+        fi
 
     - name: 📧 Send Email Notification
       if: needs.scaling-execution.result == 'failure'
