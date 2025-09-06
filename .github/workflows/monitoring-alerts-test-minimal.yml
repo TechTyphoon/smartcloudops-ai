@@ -1,0 +1,43 @@
+name: 📊 SmartCloudOps AI - Monitoring & Alerting (Test Minimal)
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/monitoring-alerts-test-minimal.yml'
+  workflow_dispatch:
+
+jobs:
+  health-monitoring:
+    name: 🏥 Health Monitoring
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+
+    - name: 🏥 Health Check
+      run: |
+        echo "✅ Health check simulation passed"
+        echo "✅ All services simulation healthy"
+
+  alert-management:
+    name: 🚨 Alert Management
+    runs-on: ubuntu-latest
+    needs: health-monitoring
+    if: always()
+
+    steps:
+    - name: 📥 Checkout Code
+      uses: actions/checkout@v4
+
+    - name: 🚨 Alert Management
+      run: |
+        echo "🚨 Alert management simulation completed"
+        echo "✅ No alerts to process"
