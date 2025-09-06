@@ -212,7 +212,7 @@ jobs:
     name: ⚖️ Scaling Execution
     runs-on: ubuntu-latest
     needs: load-analysis
-    if: needs.load-analysis.outputs.scaling-recommendation != 'no_action'
+    if: always()
 
     steps:
     - name: 📥 Checkout Code

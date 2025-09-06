@@ -170,7 +170,7 @@ jobs:
     name: 🚨 Alert Management
     runs-on: ubuntu-latest
     needs: health-monitoring
-    if: needs.health-monitoring.outputs.health-status != 'healthy'
+    if: always()
 
     steps:
     - name: 📥 Checkout Code
@@ -464,7 +464,7 @@ jobs:
     name: 🔧 Auto-Remediation
     runs-on: ubuntu-latest
     needs: health-monitoring
-    if: needs.health-monitoring.outputs.health-status != 'healthy' && github.event_name == 'schedule'
+    if: always()
 
     steps:
     - name: 📥 Checkout Code
