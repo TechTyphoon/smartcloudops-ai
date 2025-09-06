@@ -169,7 +169,9 @@ class AnomalyDetector:
                 if col in df.columns:
                     df[col] = df[col].clip(0, 100)
 
-            return df[self.feature_columns]
+            # Return only the feature columns that exist
+            existing_columns = [col for col in self.feature_columns if col in df.columns]
+            return df[existing_columns]
 
         except Exception as e:
             logger.error(f"Error preparing features: {e}")
@@ -226,7 +228,9 @@ class AnomalyDetector:
             if col in data.columns:
                 data[col] = data[col].clip(0, 100)
 
-        return data[self.feature_columns]
+        # Return only the feature columns that exist
+        existing_columns = [col for col in self.feature_columns if col in data.columns]
+        return data[existing_columns]
 
     def _create_model(self):
         """Create and initialize the anomaly detection model."""
