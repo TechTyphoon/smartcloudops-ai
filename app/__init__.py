@@ -10,6 +10,9 @@ from flask import Flask
 from flask_cors import CORS
 
 # Configure logging
+# Ensure logs directory exists
+os.makedirs("logs", exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
