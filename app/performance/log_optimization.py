@@ -151,7 +151,7 @@ class LogRotator:
             # Keep only the most recent files
             # files_to_keep = log_files[: self.config.max_files]
             # Not used, keeping for documentation
-            files_to_delete = log_files[self.config.max_files :]
+            files_to_delete = log_files[self.config.max_files:]
 
             # Delete old files
             for file_path in files_to_delete:

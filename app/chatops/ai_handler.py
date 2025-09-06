@@ -337,7 +337,7 @@ class FlexibleAIHandler:
                 # Trim history if too long
                 if len(self.conversation_history) > self.max_history:
                     self.conversation_history = self.conversation_history[
-                        -self.max_history :
+                        -self.max_history:
                     ]
 
                 return {
