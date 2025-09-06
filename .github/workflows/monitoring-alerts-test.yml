@@ -1,0 +1,17 @@
+name: 📊 SmartCloudOps AI - Monitoring & Alerting (Test)
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/monitoring-alerts-test.yml'
+      - 'app/**'
+  workflow_dispatch:
+
+jobs:
+  test-job:
+    name: Test Job
+    runs-on: ubuntu-latest
+    steps:
+    - name: Test Step
+      run: echo "This is a test monitoring workflow"
