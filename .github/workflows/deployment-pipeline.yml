@@ -80,7 +80,7 @@ jobs:
         fail_ci_if_error: false
 
     - name: 🔍 Run Security Scan
-      uses: securecodewarrior/github-action-bandit@v1
+      uses: pyupio/bandit-action@master
       with:
         bandit_flags: "-r app/ --format json --output bandit-report.json"
         exit_zero: false
@@ -364,6 +364,7 @@ jobs:
 
     - name: 📊 Monitor Deployment Health
       run: |
+        pip install requests
         python -c "
         import requests
         import time
