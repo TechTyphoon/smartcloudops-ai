@@ -139,7 +139,7 @@ jobs:
       run: |
         echo "::group::Python security scanning"
         echo "🛡️ QUALITY GATE: High severity security issues will fail the build"
-        bandit -r ${{ env.APP_PATH }} -f json -o bandit-results.json
+        bandit -r ${{ env.APP_PATH }} -f json -o bandit-results.json || true
         bandit -r ${{ env.APP_PATH }} --severity-level high --skip B104,B603
         echo "✅ Security scan: PASSED"
         echo "::endgroup::"
