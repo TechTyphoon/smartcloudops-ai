@@ -155,7 +155,9 @@ class AnomalyDetector:
                         df[col] = 0
 
             # Fill any NaN values and ensure reasonable ranges
-            df[self.feature_columns] = df[self.feature_columns].fillna(50)
+            for col in self.feature_columns:
+                if col in df.columns:
+                    df[col] = df[col].fillna(50)
 
             # Ensure percentage values are in 0-100 range
             percentage_cols = [
