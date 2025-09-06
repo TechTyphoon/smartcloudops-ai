@@ -124,13 +124,18 @@ class AnomalyDetector:
             DataFrame with prepared features
         """
         try:
-            # Debug: Log the input data
-            logger.info(f"Input metrics_data: {metrics_data}")
-            logger.info(f"Type of metrics_data: {type(metrics_data)}")
+            # Ensure metrics_data is a list
+            if not isinstance(metrics_data, list):
+                metrics_data = [metrics_data]
             
-            df = pd.DataFrame(metrics_data)
-            logger.info(f"Created DataFrame with columns: {df.columns.tolist()}")
-            logger.info(f"DataFrame shape: {df.shape}")
+            # Create DataFrame with error handling
+            try:
+                df = pd.DataFrame(metrics_data)
+            except Exception as e:
+                logger.error(f"Failed to create DataFrame: {e}")
+                # Return default DataFrame with all required columns
+                default_data = {col: 0 for col in self.feature_columns}
+                df = pd.DataFrame([default_data])
 
             # Map common metric names to expected feature columns
             mapping = {
@@ -140,13 +145,14 @@ class AnomalyDetector:
                 "network_io": "network_bytes_sent_rate",
             }
 
-            # Apply mapping
+            # Apply mapping with error handling
             for old_name, new_name in mapping.items():
                 if old_name in df.columns:
-                    df[new_name] = df[old_name]
-
-            logger.info(f"After mapping, DataFrame columns: {df.columns.tolist()}")
-            logger.info(f"Required feature columns: {self.feature_columns}")
+                    try:
+                        df[new_name] = df[old_name]
+                    except Exception as e:
+                        logger.warning(f"Failed to map {old_name} to {new_name}: {e}")
+                        df[new_name] = 0
 
             # Ensure all required columns exist with default values
             for col in self.feature_columns:
@@ -155,7 +161,11 @@ class AnomalyDetector:
                         # Calculate rate columns if missing
                         base_col = col.replace("_rate", "")
                         if base_col in df.columns:
-                            df[col] = df[base_col].diff().fillna(df[base_col])
+                            try:
+                                df[col] = df[base_col].diff().fillna(df[base_col])
+                            except Exception as e:
+                                logger.warning(f"Failed to calculate rate for {col}: {e}")
+                                df[col] = 50  # Default network rate
                         else:
                             df[col] = 50  # Default network rate
                     elif col == "load_avg_1min":
@@ -166,7 +176,11 @@ class AnomalyDetector:
             # Fill any NaN values and ensure reasonable ranges
             for col in self.feature_columns:
                 if col in df.columns:
-                    df[col] = df[col].fillna(50)
+                    try:
+                        df[col] = df[col].fillna(50)
+                    except Exception as e:
+                        logger.warning(f"Failed to fill NaN for {col}: {e}")
+                        df[col] = 50
 
             # Ensure percentage values are in 0-100 range
             percentage_cols = [
@@ -176,10 +190,19 @@ class AnomalyDetector:
             ]
             for col in percentage_cols:
                 if col in df.columns:
-                    df[col] = df[col].clip(0, 100)
+                    try:
+                        df[col] = df[col].clip(0, 100)
+                    except Exception as e:
+                        logger.warning(f"Failed to clip {col}: {e}")
 
             # Return only the feature columns that exist
             existing_columns = [col for col in self.feature_columns if col in df.columns]
+            if not existing_columns:
+                # Fallback: return all feature columns with default values
+                logger.warning("No existing columns found, returning default DataFrame")
+                default_data = {col: 0 for col in self.feature_columns}
+                return pd.DataFrame([default_data])
+            
             return df[existing_columns]
 
         except Exception as e:
