@@ -188,10 +188,10 @@ jobs:
             print(f'💬 Reason: {reason}')
 
             # Output for GitHub Actions
-            print(f'recommendation={recommendation}')
-            print(f'current_replicas={current_replicas}')
-            print(f'target_replicas={target_replicas}')
-            print(f'reason={reason}')
+            print(f'::set-output name=recommendation::{recommendation}')
+            print(f'::set-output name=current_replicas::{current_replicas}')
+            print(f'::set-output name=target_replicas::{target_replicas}')
+            print(f'::set-output name=reason::{reason}')
 
             return {
                 'recommendation': recommendation,
