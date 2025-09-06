@@ -124,9 +124,13 @@ class AnomalyDetector:
             DataFrame with prepared features
         """
         try:
+            # Debug: Log the input data
+            logger.info(f"Input metrics_data: {metrics_data}")
+            logger.info(f"Type of metrics_data: {type(metrics_data)}")
+            
             df = pd.DataFrame(metrics_data)
-            logger.debug(f"Created DataFrame with columns: {df.columns.tolist()}")
-            logger.debug(f"DataFrame shape: {df.shape}")
+            logger.info(f"Created DataFrame with columns: {df.columns.tolist()}")
+            logger.info(f"DataFrame shape: {df.shape}")
 
             # Map common metric names to expected feature columns
             mapping = {
@@ -141,8 +145,8 @@ class AnomalyDetector:
                 if old_name in df.columns:
                     df[new_name] = df[old_name]
 
-            logger.debug(f"After mapping, DataFrame columns: {df.columns.tolist()}")
-            logger.debug(f"Required feature columns: {self.feature_columns}")
+            logger.info(f"After mapping, DataFrame columns: {df.columns.tolist()}")
+            logger.info(f"Required feature columns: {self.feature_columns}")
 
             # Ensure all required columns exist with default values
             for col in self.feature_columns:
