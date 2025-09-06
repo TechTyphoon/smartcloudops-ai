@@ -188,39 +188,29 @@ class RemediationEngine:
         if metrics.get("response_time_p95", 0) > 5.0:  # 5 seconds
             issues.append("slow_response_time")
 
+    def _analyze_response_time_metrics(self, metrics: Dict[str, Any]) -> List[str]:
+        """Analyze response time metrics."""
+        issues = []
+
+        if metrics.get("response_time_p95", 0) > 5.0:  # 5 seconds
+            issues.append("slow_response_time")
+
+        return issues
+
     def _analyze_metrics(self, metrics: Dict[str, Any]) -> List[str]:
         """Analyze metrics to identify specific issues."""
         issues = []
 
         try:
-            # CPU analysis
-            cpu_usage = metrics.get("cpu_usage_avg", 0)
-            if cpu_usage > 90:
-                issues.append("high_cpu_usage")
-            elif cpu_usage > 80:
-                issues.append("elevated_cpu_usage")
+            # Methods that modify issues list in place
+            self._analyze_cpu_metrics(metrics, issues)
+            self._analyze_memory_metrics(metrics, issues)
+            self._analyze_disk_metrics(metrics, issues)
+            self._analyze_network_metrics(metrics, issues)
+            self._analyze_response_metrics(metrics, issues)
 
-            # Memory analysis
-            memory_usage = metrics.get("memory_usage_pct", 0)
-            if memory_usage > 95:
-                issues.append("critical_memory_usage")
-            elif memory_usage > 85:
-                issues.append("high_memory_usage")
-
-            # Disk analysis
-            disk_usage = metrics.get("disk_usage_pct", 0)
-            if disk_usage > 95:
-                issues.append("critical_disk_usage")
-            elif disk_usage > 85:
-                issues.append("high_disk_usage")
-
-            # Network analysis
-            if metrics.get("network_bytes_total", 0) > 1000000000:  # 1GB
-                issues.append("high_network_usage")
-
-            # Response time analysis
-            if metrics.get("response_time_p95", 0) > 5.0:  # 5 seconds
-                issues.append("slow_response_time")
+            # Method that returns a list
+            issues.extend(self._analyze_response_time_metrics(metrics))
 
         except Exception as e:
             logger.error(f"Error analyzing metrics: {e}")
@@ -328,153 +318,189 @@ class RemediationEngine:
 
         return actions
 
+    def _validate_evaluation_input(self, evaluation: Dict[str, Any]) -> Dict[str, Any]:
+        """Validate input evaluation data."""
+        if not evaluation or not isinstance(evaluation, dict):
+            return {
+                "status": "error",
+                "action_executed": None,
+                "error": "Invalid anomaly data: evaluation must be a non-empty dictionary",
+                "timestamp": datetime.now().isoformat(),
+            }
+
+        required_fields = ["anomaly_score", "severity"]
+        missing_fields = [field for field in required_fields if field not in evaluation]
+
+        if missing_fields:
+            return {
+                "status": "error",
+                "action_executed": None,
+                "error": f"Invalid anomaly data: missing required fields: {', '.join(missing_fields)}",
+                "timestamp": datetime.now().isoformat(),
+            }
+
+        return None
+
+    def _check_remediation_needed(self, evaluation: Dict[str, Any]) -> Dict[str, Any]:
+        """Check if remediation is needed."""
+        if not evaluation.get("needs_remediation", False):
+            logger.info("No remediation needed for this anomaly")
+            return {
+                "status": "no_actions",
+                "action_executed": None,
+                "reason": "No remediation needed",
+                "timestamp": datetime.now().isoformat(),
+            }
+        return None
+
+    def _perform_safety_check(self, evaluation: Dict[str, Any]) -> Dict[str, Any]:
+        """Perform safety check before executing actions."""
+        safety_check = (
+            self.safety_manager.check_safety_conditions(
+                evaluation["severity"], evaluation["recommended_actions"]
+            )
+            if self.safety_manager
+            else {"safe_to_proceed": True, "reason": "No safety manager"}
+        )
+
+        if not safety_check["safe_to_proceed"]:
+            logger.warning(f"Safety check failed: {safety_check['reason']}")
+            return {
+                "status": "blocked",
+                "action_executed": None,
+                "reason": safety_check["reason"],
+                "safety_check": "failed",
+                "timestamp": datetime.now().isoformat(),
+            }
+
+        return None
+
+    def _execute_single_action(self, action: Dict, evaluation: Dict[str, Any]) -> Dict:
+        """Execute a single action and return result."""
+        try:
+            result = (
+                self.action_manager.execute_action(action)
+                if self.action_manager
+                else {"status": "no_action_manager"}
+            )
+
+            execution_result = {
+                "action": action,
+                "result": result,
+                "timestamp": datetime.now().isoformat(),
+            }
+
+            # Update safety tracking
+            self.recent_actions.append(
+                {
+                    "action": action["action"],
+                    "severity": evaluation["severity"],
+                    "timestamp": datetime.now(),
+                }
+            )
+            self.last_action_time = datetime.now()
+
+            logger.info(
+                f"Executed action {action['action']}: {result.get('status', 'unknown')}"
+            )
+            return execution_result
+
+        except Exception as e:
+            logger.error(f"Error executing action {action['action']}: {e}")
+            return {
+                "action": action,
+                "result": {"status": "error", "error": str(e)},
+                "timestamp": datetime.now().isoformat(),
+            }
+
+    def _execute_all_actions(self, evaluation: Dict[str, Any]) -> List[Dict]:
+        """Execute all recommended actions."""
+        execution_results = []
+        for action in evaluation["recommended_actions"]:
+            execution_results.append(self._execute_single_action(action, evaluation))
+        return execution_results
+
+    def _send_notifications(
+        self, evaluation: Dict[str, Any], execution_results: List[Dict]
+    ) -> Dict:
+        """Send remediation notifications."""
+        return (
+            self.notification_manager.send_remediation_notification(
+                evaluation, execution_results
+            )
+            if self.notification_manager
+            else {"status": "no_notification_manager"}
+        )
+
+    def _analyze_execution_results(self, execution_results: List[Dict]) -> Dict:
+        """Analyze execution results and determine outcome."""
+        successful_actions = [
+            result
+            for result in execution_results
+            if result["result"].get("status") == "success"
+        ]
+
+        failed_actions = [
+            result
+            for result in execution_results
+            if result["result"].get("status") == "failed"
+        ]
+
+        error_message = None
+        if failed_actions:
+            error_message = failed_actions[0]["result"].get("error")
+
+        return {
+            "successful_actions": successful_actions,
+            "failed_actions": failed_actions,
+            "error_message": error_message,
+        }
+
     def execute_remediation(self, evaluation: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Execute remediation based on anomaly evaluation.
-
-        Args:
-            evaluation: Result from evaluate_anomaly()
-
-        Returns:
-            Dict with execution results
-        """
+        """Execute remediation based on anomaly evaluation."""
         try:
             # Validate input data
-            if not evaluation or not isinstance(evaluation, dict):
-                return {
-                    "status": "error",
-                    "action_executed": None,
-                    "error": "Invalid anomaly data: evaluation must be a non-empty dictionary",
-                    "timestamp": datetime.now().isoformat(),
-                }
+            error_result = self._validate_evaluation_input(evaluation)
+            if error_result:
+                return error_result
 
-            # Check for required fields
-            required_fields = ["anomaly_score", "severity"]
-            missing_fields = [
-                field for field in required_fields if field not in evaluation
-            ]
-            if missing_fields:
-                return {
-                    "status": "error",
-                    "action_executed": None,
-                    "error": f"Invalid anomaly data: missing required fields: {', '.join(missing_fields)}",
-                    "timestamp": datetime.now().isoformat(),
-                }
-            if not evaluation.get("needs_remediation", False):
-                logger.info("No remediation needed for this anomaly")
-                return {
-                    "status": "no_actions",
-                    "action_executed": None,
-                    "reason": "No remediation needed",
-                    "timestamp": datetime.now().isoformat(),
-                }
+            # Check if remediation is needed
+            no_action_result = self._check_remediation_needed(evaluation)
+            if no_action_result:
+                return no_action_result
 
-            # Check safety conditions
-            safety_check = (
-                self.safety_manager.check_safety_conditions(
-                    evaluation["severity"], evaluation["recommended_actions"]
-                )
-                if self.safety_manager
-                else {"safe_to_proceed": True, "reason": "No safety manager"}
-            )
-
-            if not safety_check["safe_to_proceed"]:
-                logger.warning(f"Safety check failed: {safety_check['reason']}")
-                return {
-                    "status": "blocked",
-                    "action_executed": None,
-                    "reason": safety_check["reason"],
-                    "safety_check": "failed",
-                    "timestamp": datetime.now().isoformat(),
-                }
+            # Perform safety check
+            safety_result = self._perform_safety_check(evaluation)
+            if safety_result:
+                return safety_result
 
             # Execute actions
-            execution_results = []
-            for action in evaluation["recommended_actions"]:
-                try:
-                    result = (
-                        self.action_manager.execute_action(action)
-                        if self.action_manager
-                        else {"status": "no_action_manager"}
-                    )
-                    execution_results.append(
-                        {
-                            "action": action,
-                            "result": result,
-                            "timestamp": datetime.now().isoformat(),
-                        }
-                    )
-
-                    # Update safety tracking
-                    self.recent_actions.append(
-                        {
-                            "action": action["action"],
-                            "severity": evaluation["severity"],
-                            "timestamp": datetime.now(),
-                        }
-                    )
-                    self.last_action_time = datetime.now()
-
-                    logger.info(
-                        f"Executed action {action['action']}: "
-                        f"{result.get('status', 'unknown')}"
-                    )
-
-                except Exception as e:
-                    logger.error(f"Error executing action {action['action']}: {e}")
-                    execution_results.append(
-                        {
-                            "action": action,
-                            "result": {"status": "error", "error": str(e)},
-                            "timestamp": datetime.now().isoformat(),
-                        }
-                    )
+            execution_results = self._execute_all_actions(evaluation)
 
             # Send notifications
-            notification_result = (
-                self.notification_manager.send_remediation_notification(
-                    evaluation, execution_results
-                )
-                if self.notification_manager
-                else {"status": "no_notification_manager"}
+            notification_result = self._send_notifications(
+                evaluation, execution_results
             )
 
-            # Clean up old actions (keep last 24 hours)
+            # Clean up old actions
             self._cleanup_old_actions()
 
-            # Determine if any actions were successfully executed
-            successful_actions = [
-                result
-                for result in execution_results
-                if result["result"].get("status") == "success"
-            ]
-
-            failed_actions = [
-                result
-                for result in execution_results
-                if result["result"].get("status") == "failed"
-            ]
-
-            # Get error message from first failed action if any
-            error_message = None
-            if failed_actions:
-                error_message = failed_actions[0]["result"].get("error")
+            # Analyze results
+            analysis = self._analyze_execution_results(execution_results)
 
             return {
-                "status": "success" if successful_actions else "failed",
+                "status": "success" if analysis["successful_actions"] else "failed",
                 "action_executed": (
-                    successful_actions[0]["action"]["action"]
-                    if successful_actions
+                    analysis["successful_actions"][0]["action"]["action"]
+                    if analysis["successful_actions"]
                     else (
-                        failed_actions[0]["action"]["action"]
-                        if failed_actions
+                        analysis["failed_actions"][0]["action"]["action"]
+                        if analysis["failed_actions"]
                         else None
                     )
                 ),
-                "error": error_message,
-                "safety_check": (
-                    "passed" if safety_check["safe_to_proceed"] else "failed"
-                ),
+                "error": analysis["error_message"],
+                "safety_check": "passed",
                 "notification_sent": notification_result.get("status") == "sent",
                 "execution_results": execution_results,
                 "timestamp": datetime.now().isoformat(),

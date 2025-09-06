@@ -195,7 +195,8 @@ def handle_errors(func):
                     jsonify(
                         {
                             "status": "error",
-                            "message": "An error occurred while processing your request",
+                            "message": "An error occurred while processing "
+                            "your request",
                             "error_type": type(e).__name__,
                         }
                     ),

@@ -209,7 +209,8 @@ class RemediationService:
                 valid_priorities = ["low", "medium", "high", "critical"]
                 if value not in valid_priorities:
                     raise ValueError(
-                        f"Invalid priority. Must be one of: {', '.join(valid_priorities)}"
+                        f"Invalid priority. Must be one of: "
+                        f"{', '.join(valid_priorities)}"
                     )
 
             action[field] = value

@@ -46,7 +46,8 @@ class SecretsManager:
             logger.info("AWS Secrets Manager client initialized successfully")
         except (NoCredentialsError, ClientError) as e:
             logger.warning(
-                f"AWS Secrets Manager not available: {e}. Using environment variables only."
+                f"AWS Secrets Manager not available: {e}. "
+                "Using environment variables only."
             )
             self.secrets_client = None
 
@@ -88,7 +89,8 @@ class SecretsManager:
                 return env_value
 
         logger.warning(
-            f"Secret {secret_name} not found in AWS Secrets Manager or environment variables"
+            f"Secret {secret_name} not found in AWS Secrets Manager or "
+            "environment variables"
         )
         return default
 

@@ -149,7 +149,8 @@ class LogRotator:
             log_files.sort(key=lambda x: x.stat().st_mtime, reverse=True)
 
             # Keep only the most recent files
-            # files_to_keep = log_files[: self.config.max_files]  # Not used, keeping for documentation
+            # files_to_keep = log_files[: self.config.max_files]
+            # Not used, keeping for documentation
             files_to_delete = log_files[self.config.max_files :]
 
             # Delete old files

@@ -331,7 +331,8 @@ class DataPipeline:
 
         self.quality_metrics.accuracy = type_accuracy
         logger.info(
-            f"Data validation completed. Completeness: {self.quality_metrics.completeness:.2f}"
+            f"Data validation completed. Completeness: "
+            f"{self.quality_metrics.completeness:.2f}"
         )
 
     def _transform_data(self):
@@ -510,46 +511,43 @@ class DataPipelineManager:
             )
             conn.commit()
 
-    def ingest_data(
-        self,
-        df,
-        dataset_name: str,
-        source_metadata: Optional[Dict[str, Any]] = None,
-        tags: Optional[List[str]] = None,
-    ):
-        """Ingest a pandas DataFrame (or compatible mock) and produce a version record."""
+    def _generate_version_id(self, dataset_name: str) -> str:
+        """Generate a unique version ID."""
         import uuid
 
-        version_id = f"{dataset_name}_{datetime.now().strftime('%Y%m%d%H%M%S')}_{uuid.uuid4().hex[:8]}"
+        return (
+            f"{dataset_name}_{datetime.now().strftime('%Y%m%d%H%M%S%f')}_"
+            f"{uuid.uuid4().hex[:8]}"
+        )
 
-        # Compute basic stats
+    def _compute_basic_stats(self, df) -> tuple:
+        """Compute basic statistics from dataframe."""
         try:
             row_count = int(len(df))
             column_count = int(len(df.columns)) if hasattr(df, "columns") else 0
         except Exception:
             row_count = 0
             column_count = 0
+        return row_count, column_count
 
-        tags = tags or []
-        metadata = source_metadata or {}
-
-        # Compute a more realistic quality score based on missing values,
-        # duplicates and infinite values when pandas is available.
+    def _compute_quality_metrics(self, df, row_count: int, column_count: int) -> tuple:
+        """Compute quality metrics from dataframe."""
         missing_cells = 0
         infinite_count = 0
         duplicate_rows = 0
+
         if PANDAS_AVAILABLE:
             try:
                 null_counts = df.isnull().sum().sum()
                 missing_cells = int(null_counts)
                 duplicate_rows = int(df.duplicated().sum())
-                # count infinite values in numeric columns
+
                 numeric = (
                     df.select_dtypes(include=["number"])
                     if hasattr(df, "select_dtypes")
                     else df
                 )
-                infinite_count = 0
+
                 try:
                     infinite_count = int(
                         (numeric == float("inf")).sum().sum()
@@ -562,41 +560,65 @@ class DataPipelineManager:
                 duplicate_rows = 0
                 infinite_count = 0
 
-        # Handle empty datasets explicitly
+        return missing_cells, infinite_count, duplicate_rows
+
+    def _calculate_quality_score(
+        self,
+        row_count: int,
+        column_count: int,
+        missing_cells: int,
+        duplicate_rows: int,
+        infinite_count: int,
+    ) -> float:
+        """Calculate quality score based on metrics."""
         if row_count == 0 or column_count == 0:
-            quality_score = 0.0
-        else:
-            total_cells = max(1, row_count * column_count)
-            missing_ratio = missing_cells / total_cells
-            duplicate_ratio = (duplicate_rows / row_count) if row_count > 0 else 0
-            infinite_ratio = infinite_count / total_cells
+            return 0.0
 
-            # weight factors
-            quality_score = max(
-                0.0,
-                1.0
-                - (missing_ratio * 0.7)
-                - (duplicate_ratio * 0.2)
-                - (infinite_ratio * 0.1),
-            )
+        total_cells = max(1, row_count * column_count)
+        missing_ratio = missing_cells / total_cells
+        duplicate_ratio = (duplicate_rows / row_count) if row_count > 0 else 0
+        infinite_ratio = infinite_count / total_cells
 
+        return max(
+            0.0,
+            1.0
+            - (missing_ratio * 0.7)
+            - (duplicate_ratio * 0.2)
+            - (infinite_ratio * 0.1),
+        )
+
+    def _determine_quality_status(self, quality_score: float) -> DataQualityStatus:
+        """Determine quality status based on score."""
         if quality_score >= 0.9:
-            quality_status = DataQualityStatus.EXCELLENT
+            return DataQualityStatus.EXCELLENT
         elif quality_score >= 0.8:
-            quality_status = DataQualityStatus.GOOD
+            return DataQualityStatus.GOOD
         elif quality_score >= 0.7:
-            quality_status = DataQualityStatus.WARNING
+            return DataQualityStatus.WARNING
         elif quality_score >= 0.6:
-            quality_status = DataQualityStatus.POOR
+            return DataQualityStatus.POOR
         else:
-            quality_status = DataQualityStatus.FAILED
+            return DataQualityStatus.FAILED
 
-        created_at = datetime.now().isoformat()
-
-        # Persist version record
+    def _persist_version_record(
+        self,
+        version_id: str,
+        dataset_name: str,
+        row_count: int,
+        column_count: int,
+        tags: list,
+        metadata: dict,
+        quality_score: float,
+        quality_status: DataQualityStatus,
+        created_at: str,
+    ):
+        """Persist version record to database."""
         with sqlite3.connect(self.db_path) as conn:
             conn.execute(
-                "INSERT INTO data_versions (version_id, dataset_name, row_count, column_count, tags, metadata, quality_score, quality_status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO data_versions (version_id, dataset_name, row_count, "
+                "column_count, tags, metadata, quality_score, quality_status, "
+                "created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     version_id,
                     dataset_name,
@@ -611,35 +633,45 @@ class DataPipelineManager:
             )
             conn.commit()
 
-        # Persist the dataframe to disk for later transformations/reports
+    def _persist_dataframe(
+        self, df, version_id: str, row_count: int, column_count: int
+    ):
+        """Persist dataframe to disk."""
         version_file = self.versions_path / f"{version_id}.parquet"
         try:
             if PANDAS_AVAILABLE:
-                # try parquet first, fallback to json
                 try:
                     df.to_parquet(version_file, index=False)
                 except Exception:
                     version_file = self.versions_path / f"{version_id}.json"
                     df.to_json(version_file, orient="records")
             else:
-                # No pandas: write a placeholder file
                 version_file.write_text(
                     json.dumps({"rows": row_count, "cols": column_count})
                 )
         except Exception:
-            # ignore persistence errors for test environments
             pass
 
-        # Create and persist a quality report
+    def _create_quality_report(
+        self,
+        df,
+        version_id: str,
+        dataset_name: str,
+        quality_score: float,
+        quality_status: DataQualityStatus,
+        created_at: str,
+    ) -> QualityReport:
+        """Create quality report."""
         missing_values = {}
         duplicate_rows = 0
         issues = []
+
         if PANDAS_AVAILABLE:
             try:
                 null_counts = df.isnull().sum().to_dict()
                 missing_values = {k: int(v) for k, v in null_counts.items()}
                 duplicate_rows = int(df.duplicated().sum())
-                # Simple issue detection
+
                 if duplicate_rows > 0:
                     issues.append("duplicates_found")
                 if any(
@@ -653,7 +685,7 @@ class DataPipelineManager:
                 missing_values = {}
                 duplicate_rows = 0
 
-        report = QualityReport(
+        return QualityReport(
             version_id=version_id,
             dataset_name=dataset_name,
             overall_score=float(quality_score),
@@ -665,7 +697,10 @@ class DataPipelineManager:
             created_at=created_at,
         )
 
-        # store report in DB with JSON-serializable dict
+    def _persist_quality_report(
+        self, report: QualityReport, version_id: str, dataset_name: str, created_at: str
+    ):
+        """Persist quality report to database."""
         report_dict = {
             "version_id": report.version_id,
             "dataset_name": report.dataset_name,
@@ -684,17 +719,63 @@ class DataPipelineManager:
 
         with sqlite3.connect(self.db_path) as conn:
             conn.execute(
-                "INSERT OR REPLACE INTO quality_reports (version_id, report_json, created_at) VALUES (?, ?, ?)",
+                "INSERT OR REPLACE INTO quality_reports (version_id, report_json, "
+                "created_at) VALUES (?, ?, ?)",
                 (version_id, json.dumps(report_dict), created_at),
             )
-            # track pipeline run
             conn.execute(
-                "INSERT INTO pipeline_runs (pipeline_name, result_json, created_at) VALUES (?, ?, ?)",
+                "INSERT INTO pipeline_runs (pipeline_name, result_json, "
+                "created_at) VALUES (?, ?, ?)",
                 (dataset_name, json.dumps({"version_id": version_id}), created_at),
             )
             conn.commit()
 
-        # Return a simple DataVersion object
+    def ingest_data(
+        self,
+        df,
+        dataset_name: str,
+        source_metadata: Optional[Dict[str, Any]] = None,
+        tags: Optional[List[str]] = None,
+    ):
+        """Ingest a pandas DataFrame (or compatible mock) and produce a
+        version record."""
+        version_id = self._generate_version_id(dataset_name)
+        row_count, column_count = self._compute_basic_stats(df)
+
+        tags = tags or []
+        metadata = source_metadata or {}
+
+        missing_cells, infinite_count, duplicate_rows = self._compute_quality_metrics(
+            df, row_count, column_count
+        )
+
+        quality_score = self._calculate_quality_score(
+            row_count, column_count, missing_cells, duplicate_rows, infinite_count
+        )
+
+        quality_status = self._determine_quality_status(quality_score)
+        created_at = datetime.now().isoformat()
+
+        self._persist_version_record(
+            version_id,
+            dataset_name,
+            row_count,
+            column_count,
+            tags,
+            metadata,
+            quality_score,
+            quality_status,
+            created_at,
+        )
+
+        self._persist_dataframe(df, version_id, row_count, column_count)
+
+        report = self._create_quality_report(
+            df, version_id, dataset_name, quality_score, quality_status, created_at
+        )
+
+        self._persist_quality_report(report, version_id, dataset_name, created_at)
+
         return DataVersion(
             version_id=version_id,
             dataset_name=dataset_name,
@@ -709,7 +790,9 @@ class DataPipelineManager:
     def get_data_version(self, version_id: str):
         with sqlite3.connect(self.db_path) as conn:
             cur = conn.execute(
-                "SELECT version_id, dataset_name, row_count, column_count, tags, metadata, quality_score, quality_status FROM data_versions WHERE version_id = ?",
+                "SELECT version_id, dataset_name, row_count, column_count, tags, "
+                "metadata, quality_score, quality_status FROM data_versions "
+                "WHERE version_id = ?",
                 (version_id,),
             )
             row = cur.fetchone()
@@ -731,7 +814,8 @@ class DataPipelineManager:
     def get_latest_version(self, dataset_name: str):
         with sqlite3.connect(self.db_path) as conn:
             cur = conn.execute(
-                "SELECT version_id FROM data_versions WHERE dataset_name = ? ORDER BY created_at DESC LIMIT 1",
+                "SELECT version_id FROM data_versions WHERE dataset_name = ? "
+                "ORDER BY created_at DESC LIMIT 1",
                 (dataset_name,),
             )
             row = cur.fetchone()
@@ -743,7 +827,8 @@ class DataPipelineManager:
         with sqlite3.connect(self.db_path) as conn:
             if dataset_name:
                 cur = conn.execute(
-                    "SELECT version_id FROM data_versions WHERE dataset_name = ? ORDER BY created_at ASC",
+                    "SELECT version_id FROM data_versions WHERE dataset_name = ? "
+                    "ORDER BY created_at ASC",
                     (dataset_name,),
                 )
             else:
@@ -783,10 +868,60 @@ class DataPipelineManager:
     def _get_quality_recommendations_internal(self, quality_score: float) -> List[str]:
         recs = []
         if quality_score < 0.9:
-            recs.append("Improve data completeness by addressing null values")
+            recs.append("Improve data completeness by addressing " "null values")
         if quality_score < 0.8:
-            recs.append("Improve data accuracy by validating data types")
+            recs.append("Improve data accuracy by validating " "data types")
         return recs
+
+    def _find_source_file(self, source_version_id: str):
+        """Find the source data file."""
+        src = self.versions_path / f"{source_version_id}.parquet"
+        if not src.exists():
+            src = self.versions_path / f"{source_version_id}.json"
+        if not src.exists():
+            raise ValueError("Data version not found")
+        return src
+
+    def _load_dataframe(self, src):
+        """Load dataframe from file."""
+        if not PANDAS_AVAILABLE:
+            raise ValueError("Pandas not available for transformations")
+
+        try:
+            if str(src).endswith(".parquet"):
+                return pd.read_parquet(src)
+            else:
+                return pd.read_json(src, orient="records")
+        except Exception:
+            raise
+
+    def _apply_filter_transformation(self, df, params):
+        """Apply filter transformation to dataframe."""
+        col = params.get("column")
+        cond = params.get("condition")
+        val = params.get("value")
+
+        if cond == "greater_than":
+            return df[df[col] > val]
+        elif cond == "less_than":
+            return df[df[col] < val]
+        elif cond == "equals":
+            return df[df[col] == val]
+        else:
+            raise ValueError("Unknown transformation condition")
+
+    def _apply_transformations(self, df, transformations):
+        """Apply all transformations to dataframe."""
+        for t in transformations:
+            ttype = t.get("type")
+            params = t.get("params", {})
+
+            if ttype == "filter":
+                df = self._apply_filter_transformation(df, params)
+            else:
+                raise ValueError("Unknown transformation type")
+
+        return df
 
     def transform_data(
         self,
@@ -794,44 +929,11 @@ class DataPipelineManager:
         transformations: List[Dict[str, Any]],
         target_dataset_name: Optional[str] = None,
     ):
-        # load source file
-        src = self.versions_path / f"{source_version_id}.parquet"
-        if not src.exists():
-            src = self.versions_path / f"{source_version_id}.json"
-        if not src.exists():
-            raise ValueError("Data version not found")
+        """Transform data by applying specified transformations."""
+        src = self._find_source_file(source_version_id)
+        df = self._load_dataframe(src)
+        df = self._apply_transformations(df, transformations)
 
-        if PANDAS_AVAILABLE:
-            try:
-                if str(src).endswith(".parquet"):
-                    df = pd.read_parquet(src)
-                else:
-                    df = pd.read_json(src, orient="records")
-            except Exception:
-                raise
-        else:
-            raise ValueError("Pandas not available for transformations")
-
-        # apply transformations (only filter implemented for tests)
-        for t in transformations:
-            ttype = t.get("type")
-            params = t.get("params", {})
-            if ttype == "filter":
-                col = params.get("column")
-                cond = params.get("condition")
-                val = params.get("value")
-                if cond == "greater_than":
-                    df = df[df[col] > val]
-                elif cond == "less_than":
-                    df = df[df[col] < val]
-                elif cond == "equals":
-                    df = df[df[col] == val]
-                else:
-                    raise ValueError("Unknown transformation type")
-            else:
-                raise ValueError("Unknown transformation type")
-
-        # ingest transformed dataset
         return self.ingest_data(
             df,
             target_dataset_name or f"transformed_{source_version_id}",

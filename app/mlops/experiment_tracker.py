@@ -271,7 +271,8 @@ class ExperimentTracker:
         cursor.execute(
             """
             INSERT OR REPLACE INTO experiments
-            (experiment_id, name, description, objective, tags, created_at, status, best_run_id)
+            (experiment_id, name, description, objective, tags, created_at,
+             status, best_run_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """,
             (
@@ -297,8 +298,9 @@ class ExperimentTracker:
         cursor.execute(
             """
             INSERT OR REPLACE INTO runs
-            (run_id, experiment_id, name, status, start_time, end_time, duration_seconds,
-             parameters, metrics, artifacts, logs, tags, notes, git_commit, environment, seed)
+            (run_id, experiment_id, name, status, start_time, end_time,
+             duration_seconds, parameters, metrics, artifacts, logs, tags,
+             notes, git_commit, environment, seed)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
             (

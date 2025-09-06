@@ -228,7 +228,8 @@ def acknowledge_anomaly(anomaly_id):
             jsonify(
                 {
                     "status": "success",
-                    "message": f"Anomaly with ID {anomaly_id} acknowledged successfully",
+                    "message": f"Anomaly with ID {anomaly_id} acknowledged "
+                    "successfully",
                 }
             ),
             200,
@@ -335,7 +336,8 @@ def export_anomalies():
                 {
                     "status": "success",
                     "data": {"export": export_data},
-                    "message": f"Anomalies exported successfully in {format_type} format",
+                    "message": f"Anomalies exported successfully in "
+                    f"{format_type} format",
                 }
             ),
             200,

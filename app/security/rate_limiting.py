@@ -224,6 +224,50 @@ except Exception as e:
     rate_limiter = RateLimiter()
 
 
+def _get_rate_limit_identifier(identifier_func):
+    """Get identifier for rate limiting."""
+    if identifier_func:
+        return identifier_func()
+    else:
+        return rate_limiter._get_user_identifier()
+
+
+def _create_rate_limit_response(result):
+    """Create rate limit exceeded response."""
+    response = jsonify(
+        {
+            "error": "Rate limit exceeded",
+            "message": f"Too many requests. Limit: {result['limits']}, "
+            f"Current: {result['current_usage']}",
+            "retry_after": result.get("retry_after", 60),
+            "reset_times": result.get("reset_times", {}),
+        }
+    )
+    response.status_code = 429
+    response.headers["X-RateLimit-Limit"] = str(max(result["limits"].values()))
+    response.headers["X-RateLimit-Remaining"] = "0"
+    response.headers["X-RateLimit-Reset"] = str(max(result["reset_times"].values()))
+    response.headers["Retry-After"] = str(result.get("retry_after", 60))
+    return response
+
+
+def _setup_rate_limit_headers(identifier, endpoint):
+    """Setup rate limit headers for successful responses."""
+    if current_app:
+
+        @current_app.after_request
+        def add_rate_limit_headers(response):
+            if response.status_code < 400:
+                info = rate_limiter.get_rate_limit_info(identifier, endpoint)
+                if "limits" in info and "current_usage" in info:
+                    remaining = min(
+                        limit - info["current_usage"].get(window, 0)
+                        for window, limit in info["limits"].items()
+                    )
+                    response.headers["X-RateLimit-Remaining"] = str(max(0, remaining))
+            return response
+
+
 def rate_limit(
     endpoint: str = "default",
     custom_limits: Optional[Dict[str, int]] = None,
@@ -236,10 +280,7 @@ def rate_limit(
         def decorated_function(*args, **kwargs):
             try:
                 # Get identifier
-                if identifier_func:
-                    identifier = identifier_func()
-                else:
-                    identifier = rate_limiter._get_user_identifier()
+                identifier = _get_rate_limit_identifier(identifier_func)
 
                 # Check rate limit
                 allowed, result = rate_limiter.check_and_increment(
@@ -247,46 +288,10 @@ def rate_limit(
                 )
 
                 if not allowed:
-                    response = jsonify(
-                        {
-                            "error": "Rate limit exceeded",
-                            "message": f"Too many requests. Limit: {result['limits']}, Current: {result['current_usage']}",
-                            "retry_after": result.get("retry_after", 60),
-                            "reset_times": result.get("reset_times", {}),
-                        }
-                    )
-                    response.status_code = 429
-                    response.headers["X-RateLimit-Limit"] = str(
-                        max(result["limits"].values())
-                    )
-                    response.headers["X-RateLimit-Remaining"] = "0"
-                    response.headers["X-RateLimit-Reset"] = str(
-                        max(result["reset_times"].values())
-                    )
-                    response.headers["Retry-After"] = str(result.get("retry_after", 60))
+                    return _create_rate_limit_response(result)
 
-                    return response
-
-                # Add rate limit headers to successful responses
-                if current_app:
-
-                    @current_app.after_request
-                    def add_rate_limit_headers(response):
-                        if response.status_code < 400:
-                            # Get current usage info
-                            info = rate_limiter.get_rate_limit_info(
-                                identifier, endpoint
-                            )
-                            if "limits" in info and "current_usage" in info:
-                                remaining = min(
-                                    limit - info["current_usage"].get(window, 0)
-                                    for window, limit in info["limits"].items()
-                                )
-                                response.headers["X-RateLimit-Remaining"] = str(
-                                    max(0, remaining)
-                                )
-
-                        return response
+                # Setup rate limit headers
+                _setup_rate_limit_headers(identifier, endpoint)
 
                 return f(*args, **kwargs)
 

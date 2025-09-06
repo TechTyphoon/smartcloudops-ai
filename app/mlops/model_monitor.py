@@ -636,7 +636,8 @@ class ModelMonitor:
 
                         # Log monitoring activity
                         self.logger.info(
-                            f"Monitored {model_id} v{model_version}: {len(alerts)} alerts, health: {health.value}"
+                            f"Monitored {model_id} v{model_version}: {len(alerts)} "
+                            f"alerts, health: {health.value}"
                         )
 
                         # Update last check time
@@ -663,7 +664,8 @@ class ModelMonitor:
         cursor.execute(
             """
             SELECT * FROM prediction_logs
-            WHERE model_id = ? AND model_version = ? AND timestamp >= ? AND timestamp <= ?
+            WHERE model_id = ? AND model_version = ? AND timestamp >= ?
+            AND timestamp <= ?
             ORDER BY timestamp DESC
             """,
             (model_id, model_version, start_time, end_time),
@@ -796,8 +798,10 @@ class ModelMonitor:
         model_version: str,
         current_predictions: List[Dict[str, Any]],
     ) -> Optional[float]:
-        """Calculate data drift score compared to reference data"""
-        # Simplified drift calculation - in practice, you'd compare with reference dataset
+        """Calculate data drift score compared to reference
+        data"""
+        # Simplified drift calculation - in practice, you'd compare with
+        # reference dataset
         # This is a placeholder that would need actual statistical drift detection
 
         if not current_predictions:

@@ -2,7 +2,8 @@
 """
 MLOps API Endpoints for Smart CloudOps AI
 Phase 2A Week 4: MLOps API Integration
-Provides comprehensive MLOps experiment tracking, model registry, and data pipeline endpoints
+Provides comprehensive MLOps experiment tracking, model registry,
+and data pipeline endpoints
 """
 
 import logging
@@ -307,7 +308,8 @@ def end_experiment_run(experiment_id, run_id):
                 jsonify(
                     {
                         "status": "error",
-                        "error": f"Invalid status. Must be one of: {', '.join(valid_statuses)}",
+                        "error": f"Invalid status. Must be one of: "
+                        f"{', '.join(valid_statuses)}",
                         "data": None,
                     }
                 ),
@@ -337,7 +339,8 @@ def end_experiment_run(experiment_id, run_id):
                 jsonify(
                     {
                         "status": "error",
-                        "error": f"Failed to end run {run_id} for experiment {experiment_id}",
+                        "error": f"Failed to end run {run_id} for experiment "
+                        f"{experiment_id}",
                         "data": None,
                     }
                 ),

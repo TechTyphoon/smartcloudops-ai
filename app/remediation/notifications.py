@@ -184,7 +184,8 @@ class NotificationManager:
     def send_remediation_notification(
         self, evaluation: Dict, execution_results: List[Dict]
     ) -> Dict:
-        """Send notification about remediation action with standardized return structure."""
+        """Send notification about remediation action with standardized
+        return structure."""
         try:
             if not self.slack_webhook_url:
                 logger.error(

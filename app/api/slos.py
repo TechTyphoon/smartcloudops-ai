@@ -353,12 +353,14 @@ def get_slo_metrics():
             if "error" not in status:
                 # SLO compliance metric
                 metrics.append(
-                    f'slo_compliance{{slo="{slo_name}"}} {status.get("compliance_percentage", 0)} {timestamp}'
+                    f'slo_compliance{{slo="{slo_name}"}} '
+                    f'{status.get("compliance_percentage", 0)} {timestamp}'
                 )
 
                 # SLO error budget metric
                 metrics.append(
-                    f'slo_error_budget{{slo="{slo_name}"}} {status.get("error_budget", 0)} {timestamp}'
+                    f'slo_error_budget{{slo="{slo_name}"}} '
+                    f'{status.get("error_budget", 0)} {timestamp}'
                 )
 
                 # SLO status metric (0=meeting, 1=warning, 2=alert, 3=critical)

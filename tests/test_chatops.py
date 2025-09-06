@@ -396,9 +396,10 @@ class TestChatOpsIntegration:
 
         assert response.status_code == 200
         data = response.get_json()
-        assert data["data"] == "success"
-        assert data["status"]["count"] >= 0
-        assert "history" in data["status"]
+        assert data["status"] == "success"
+        assert data["data"]["result"] == "success"
+        assert data["data"]["count"] >= 0
+        assert "history" in data["data"]
 
     def test_clear_history_endpoint(self, client, auth_headers):
         """Test clear history endpoint."""

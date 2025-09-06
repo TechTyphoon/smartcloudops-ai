@@ -133,8 +133,10 @@ class KnowledgeGraph:
     ) -> float:
         """Calculate similarity between two nodes."""
         # Simple similarity based on text properties
-        text1 = f"{node1.properties.get('description', '')} {node1.properties.get('source', '')}"
-        text2 = f"{node2.properties.get('description', '')} {node2.properties.get('source', '')}"
+        text1 = f"{node1.properties.get('description', '')} "
+        f"{node1.properties.get('source', '')}"
+        text2 = f"{node2.properties.get('description', '')} "
+        f"{node2.properties.get('source', '')}"
 
         if not text1 or not text2:
             return 0.0
@@ -324,7 +326,8 @@ class RecommendationEngine:
                                 "execution_time", 0
                             ),
                             "source_anomaly": similar_anomaly.properties,
-                            "reasoning": f"Similar anomaly resolved with {remediation.properties['action_type']}",
+                            "reasoning": f"Similar anomaly resolved with "
+                            f"{remediation.properties['action_type']}",
                         }
                         recommendations.append(recommendation)
 

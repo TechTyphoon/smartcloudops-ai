@@ -139,7 +139,8 @@ class MLService:
             return {
                 "id": model_id,
                 "name": "Anomaly Detection Model v1",
-                "description": "Isolation Forest-based anomaly detection for infrastructure metrics",
+                "description": "Isolation Forest-based anomaly detection for "
+                "infrastructure metrics",
                 "type": "anomaly_detection",
                 "algorithm": "isolation_forest",
                 "version": "1.0.0",
@@ -172,7 +173,8 @@ class MLService:
             return {
                 "id": model_id,
                 "name": "Remediation Recommendation Model v1",
-                "description": "Random Forest classifier for recommending remediation actions",
+                "description": "Random Forest classifier for recommending "
+                "remediation actions",
                 "type": "recommendation",
                 "algorithm": "random_forest",
                 "version": "1.0.0",
@@ -334,7 +336,7 @@ class MLService:
         # Add additional details
         dataset_details = {
             **dataset,
-            "feature_names": [f"feature_{i+1}" for i in range(dataset["features"])],
+            "feature_names": [f"feature_{i + 1}" for i in range(dataset["features"])],
             "statistics": {
                 "mean_value": round(random.uniform(0.4, 0.8), 3),
                 "std_deviation": round(random.uniform(0.1, 0.3), 3),

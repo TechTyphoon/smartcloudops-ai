@@ -153,7 +153,8 @@ def clear_cache():
             jsonify(
                 {
                     "status": "success",
-                    "message": f"Cache cleared successfully. {cleared_keys} keys removed.",
+                    "message": f"Cache cleared successfully. {cleared_keys} "
+                    "keys removed.",
                     "data": {"cleared_keys": cleared_keys},
                 }
             ),

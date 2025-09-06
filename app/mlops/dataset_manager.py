@@ -149,7 +149,8 @@ class DatasetManager:
                 issues TEXT,
                 summary TEXT,
                 validator_version TEXT,
-                FOREIGN KEY (dataset_id, version) REFERENCES dataset_versions (dataset_id, version)
+                FOREIGN KEY (dataset_id, version) REFERENCES dataset_versions
+                (dataset_id, version)
             )
         """
         )
@@ -302,8 +303,10 @@ class DatasetManager:
             """
             INSERT OR REPLACE INTO dataset_versions
             (dataset_id, version, dataset_type, description, source, file_path,
-             file_format, size_bytes, row_count, column_count, checksum, schema,
-             statistics, created_at, created_by, parent_version, tags, validation_status, metadata)
+             file_format, size_bytes, row_count, column_count, checksum,
+             schema,
+             statistics, created_at, created_by, parent_version, tags,
+             validation_status, metadata)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
             (
@@ -384,7 +387,8 @@ class DatasetManager:
 
         cursor.execute(
             """
-            SELECT dataset_id, version, dataset_type, description, created_at, validation_status
+            SELECT dataset_id, version, dataset_type, description, created_at,
+            validation_status
             FROM dataset_versions ORDER BY created_at DESC
         """
         )

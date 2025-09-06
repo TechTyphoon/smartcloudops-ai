@@ -368,7 +368,8 @@ class ActiveLearningSystem:
             #     "feedback_samples": len(labeled_samples),
             # }  # TODO: Use metrics in model registration
 
-            # hyperparameters = {"n_estimators": 100, "random_state": 42}  # TODO: Use hyperparameters in model registration
+            # hyperparameters = {"n_estimators": 100, "random_state": 42}
+            # TODO: Use hyperparameters in model registration
 
             list(labeled_samples[0]["features"].keys())
 

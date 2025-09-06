@@ -268,7 +268,8 @@ app_uptime_seconds 95400
 
 # HELP python_info Python version information
 # TYPE python_info gauge
-python_info{{version="{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",implementation="CPython"}} 1
+python_info{{version="{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",\n"
+"implementation="CPython"}} 1
 """
 
     return Response(prometheus_metrics, mimetype="text/plain")

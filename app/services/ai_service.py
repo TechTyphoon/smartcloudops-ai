@@ -38,7 +38,8 @@ class AIService:
             {
                 "action_type": "scale_up",
                 "confidence": 0.89,
-                "description": "Scale up application instances to handle increased load",
+                "description": "Scale up application instances to handle "
+                "increased load",
                 "estimated_impact": "high",
                 "execution_time": "2-5 minutes",
             },
@@ -102,7 +103,8 @@ class AIService:
                 {
                     **rec,
                     "confidence": round(adjusted_confidence, 3),
-                    "reasoning": f"Recommended for {severity} severity {source} anomaly",
+                    "reasoning": f"Recommended for {severity} severity "
+                    f"{source} anomaly",
                     "anomaly_match_score": round(random.uniform(0.7, 0.95), 3),
                 }
             )
@@ -207,7 +209,9 @@ class AIService:
 
             # Generate insights
             analysis_result["insights"] = [
-                f"{indicator['metric'].replace('_', ' ').title()} is {indicator['value']}%, exceeding threshold of {indicator['threshold']}%"
+                f"{indicator['metric'].replace('_', ' ').title()} is "
+                f"{indicator['value']}%, exceeding threshold of "
+                f"{indicator['threshold']}%"
                 for indicator in anomaly_indicators
             ]
 
@@ -257,7 +261,9 @@ class AIService:
         # Mock chatbot responses based on query content
         if "anomaly" in query_lower or "alert" in query_lower:
             response = {
-                "message": "I found 2 active anomalies: High CPU usage (89%) and increased error rate (8%). Would you like me to recommend remediation actions?",
+                "message": "I found 2 active anomalies: High CPU usage (89%) "
+                "and increased error rate (8%). Would you like me to "
+                "recommend remediation actions?",
                 "intent": "anomaly_inquiry",
                 "confidence": 0.92,
                 "suggested_actions": [
@@ -268,7 +274,8 @@ class AIService:
             }
         elif "status" in query_lower or "health" in query_lower:
             response = {
-                "message": "System health is currently GOOD. All critical services are running normally. CPU: 45%, Memory: 67%, Response time: 120ms.",
+                "message": "System health is currently GOOD. All critical services are "
+                "running normally. CPU: 45%, Memory: 67%, Response time: 120ms.",
                 "intent": "status_inquiry",
                 "confidence": 0.88,
                 "suggested_actions": [
@@ -279,7 +286,9 @@ class AIService:
             }
         elif "performance" in query_lower:
             response = {
-                "message": "Performance metrics show normal operation. Average response time is 120ms, with 99.8% uptime over the last 24 hours.",
+                "message": "Performance metrics show normal operation. "
+                "Average response time is 120ms, with 99.8% uptime "
+                "over the last 24 hours.",
                 "intent": "performance_inquiry",
                 "confidence": 0.85,
                 "suggested_actions": [
@@ -290,7 +299,10 @@ class AIService:
             }
         elif "help" in query_lower or "?" in query_lower:
             response = {
-                "message": "I can help you with: monitoring system health, investigating anomalies, recommending remediation actions, and answering questions about your infrastructure. What would you like to know?",
+                "message": "I can help you with: monitoring system health, "
+                "investigating anomalies, recommending remediation actions, "
+                "and answering questions about your infrastructure. "
+                "What would you like to know?",
                 "intent": "help_request",
                 "confidence": 0.95,
                 "suggested_actions": [
@@ -301,7 +313,9 @@ class AIService:
             }
         else:
             response = {
-                "message": "I understand you're asking about your infrastructure. Could you be more specific? I can help with system status, anomalies, performance metrics, and remediation actions.",
+                "message": "I understand you're asking about your infrastructure. "
+                "Could you be more specific? I can help with system status, "
+                "anomalies, performance metrics, and remediation actions.",
                 "intent": "general_inquiry",
                 "confidence": 0.60,
                 "suggested_actions": [

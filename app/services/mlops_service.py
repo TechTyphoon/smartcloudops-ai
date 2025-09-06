@@ -42,7 +42,9 @@ except ImportError:
 
 
 class MLOpsService:
-    "Business logic for MLOps operations including experiment tracking, model management, and MLflow integration."
+    "Business logic for MLOps operations including experiment tracking,"
+
+    "model management, and MLflow integration."
 
     def __init__(self):
         """Initialize MLOps service with components."""
@@ -324,7 +326,8 @@ class MLOpsService:
                 and model["version"] == model_data["version"]
             ):
                 raise ValueError(
-                    f"Model {model_data['name']} version {model_data['version']} already exists"
+                    f"Model {model_data['name']} version {model_data['version']} "
+                    "already exists"
                 )
 
         # Create new model

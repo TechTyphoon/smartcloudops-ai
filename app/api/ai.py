@@ -108,7 +108,8 @@ def get_recommendations():
                 {
                     **rec,
                     "confidence": round(adjusted_confidence, 3),
-                    "reasoning": f"Recommended for {severity} severity {source} anomaly",
+                    "reasoning": f"Recommended for {severity} severity "
+                    f"{source} anomaly",
                     "anomaly_match_score": round(random.uniform(0.7, 0.95), 3),
                 }
             )
@@ -152,108 +153,165 @@ def get_recommendations():
         )
 
 
+def _validate_analyze_request(data):
+    """Validate the analyze request data."""
+    if not data:
+        return None, jsonify({"status": "error", "message": "No data provided"}), 400
+
+    if "metrics" not in data:
+        return (
+            None,
+            jsonify({"status": "error", "message": "Missing required field: metrics"}),
+            400,
+        )
+
+    return data["metrics"], None, None
+
+
+def _check_metric_threshold(metric_value, threshold, high_threshold=None):
+    """Check if a metric exceeds its threshold."""
+    if metric_value <= threshold:
+        return None
+
+    severity = "medium"
+    if high_threshold and metric_value > high_threshold:
+        severity = "high"
+
+    return {
+        "value": metric_value,
+        "threshold": threshold,
+        "severity": severity,
+    }
+
+
+def _analyze_cpu_usage(cpu_usage):
+    """Analyze CPU usage metrics."""
+    return _check_metric_threshold(cpu_usage, 80, 90)
+
+
+def _analyze_memory_usage(memory_usage):
+    """Analyze memory usage metrics."""
+    return _check_metric_threshold(memory_usage, 85, 95)
+
+
+def _analyze_error_rate(error_rate):
+    """Analyze error rate metrics."""
+    if error_rate <= 5:
+        return None
+
+    severity = "high" if error_rate <= 15 else "critical"
+    return {
+        "value": error_rate,
+        "threshold": 5,
+        "severity": severity,
+    }
+
+
+def _detect_anomalies(metrics):
+    """Detect anomalies in the provided metrics."""
+    anomaly_indicators = []
+
+    cpu_usage = metrics.get("cpu_usage", 0)
+    memory_usage = metrics.get("memory_usage", 0)
+    error_rate = metrics.get("error_rate", 0)
+
+    cpu_anomaly = _analyze_cpu_usage(cpu_usage)
+    if cpu_anomaly:
+        cpu_anomaly["metric"] = "cpu_usage"
+        anomaly_indicators.append(cpu_anomaly)
+
+    memory_anomaly = _analyze_memory_usage(memory_usage)
+    if memory_anomaly:
+        memory_anomaly["metric"] = "memory_usage"
+        anomaly_indicators.append(memory_anomaly)
+
+    error_anomaly = _analyze_error_rate(error_rate)
+    if error_anomaly:
+        error_anomaly["metric"] = "error_rate"
+        anomaly_indicators.append(error_anomaly)
+
+    return anomaly_indicators
+
+
+def _determine_overall_severity(anomaly_indicators):
+    """Determine the overall severity based on anomaly indicators."""
+    severities = [indicator["severity"] for indicator in anomaly_indicators]
+    if "critical" in severities:
+        return "critical"
+    elif "high" in severities:
+        return "high"
+    else:
+        return "medium"
+
+
+def _generate_insights(anomaly_indicators):
+    """Generate insights from anomaly indicators."""
+    return [
+        f"{indicator['metric'].replace('_', ' ').title()} is "
+        f"{indicator['value']}%, exceeding threshold of "
+        f"{indicator['threshold']}%"
+        for indicator in anomaly_indicators
+    ]
+
+
+def _generate_predictions(anomaly_indicators, severity):
+    """Generate predictions based on anomalies."""
+    if anomaly_indicators:
+        return {
+            "trend": "increasing" if len(anomaly_indicators) > 1 else "stable",
+            "estimated_resolution_time": f"{random.randint(5, 30)} minutes",
+            "impact_level": severity,
+        }
+    else:
+        return {
+            "trend": "stable",
+            "estimated_resolution_time": "N/A",
+            "impact_level": "none",
+        }
+
+
+def _create_analysis_result(anomaly_indicators):
+    """Create the final analysis result."""
+    analysis_result = {
+        "anomaly_detected": False,
+        "anomaly_score": 0.0,
+        "confidence": 0.0,
+        "severity": "normal",
+        "insights": [],
+        "predictions": {},
+    }
+
+    if anomaly_indicators:
+        analysis_result["anomaly_detected"] = True
+        analysis_result["anomaly_score"] = min(
+            0.99, max(indicator["value"] / 100 for indicator in anomaly_indicators)
+        )
+        analysis_result["confidence"] = round(random.uniform(0.8, 0.95), 3)
+        analysis_result["severity"] = _determine_overall_severity(anomaly_indicators)
+        analysis_result["insights"] = _generate_insights(anomaly_indicators)
+    else:
+        analysis_result["confidence"] = round(random.uniform(0.6, 0.8), 3)
+        analysis_result["insights"] = ["All metrics are within normal ranges"]
+
+    analysis_result["predictions"] = _generate_predictions(
+        anomaly_indicators, analysis_result["severity"]
+    )
+
+    return analysis_result
+
+
 @ai_bp.route("/analyze", methods=["POST"])
 def analyze_metrics():
     "Analyze metrics data using AI/ML models."
     try:
         data = request.get_json()
+        metrics, error_response, error_code = _validate_analyze_request(data)
 
-        if not data:
-            return jsonify({"status": "error", "message": "No data provided"}), 400
+        if error_response:
+            return error_response, error_code
 
-        if "metrics" not in data:
-            return (
-                jsonify(
-                    {"status": "error", "message": "Missing required field: metrics"}
-                ),
-                400,
-            )
-
-        metrics = data["metrics"]
-
-        # Mock AI analysis
-        analysis_result = {
-            "anomaly_detected": False,
-            "anomaly_score": 0.0,
-            "confidence": 0.0,
-            "severity": "normal",
-            "insights": [],
-            "predictions": {},
-        }
-
-        # Simple rule-based analysis for demonstration
-        cpu_usage = metrics.get("cpu_usage", 0)
-        memory_usage = metrics.get("memory_usage", 0)
-        error_rate = metrics.get("error_rate", 0)
-
-        anomaly_indicators = []
-
-        if cpu_usage > 80:
-            anomaly_indicators.append(
-                {
-                    "metric": "cpu_usage",
-                    "value": cpu_usage,
-                    "threshold": 80,
-                    "severity": "high" if cpu_usage > 90 else "medium",
-                }
-            )
-
-        if memory_usage > 85:
-            anomaly_indicators.append(
-                {
-                    "metric": "memory_usage",
-                    "value": memory_usage,
-                    "threshold": 85,
-                    "severity": "high" if memory_usage > 95 else "medium",
-                }
-            )
-
-        if error_rate > 5:
-            anomaly_indicators.append(
-                {
-                    "metric": "error_rate",
-                    "value": error_rate,
-                    "threshold": 5,
-                    "severity": "critical" if error_rate > 15 else "high",
-                }
-            )
-
-        if anomaly_indicators:
-            analysis_result["anomaly_detected"] = True
-            analysis_result["anomaly_score"] = min(
-                0.99, max(indicator["value"] / 100 for indicator in anomaly_indicators)
-            )
-            analysis_result["confidence"] = round(random.uniform(0.8, 0.95), 3)
-
-            # Determine overall severity
-            severities = [indicator["severity"] for indicator in anomaly_indicators]
-            if "critical" in severities:
-                analysis_result["severity"] = "critical"
-            elif "high" in severities:
-                analysis_result["severity"] = "high"
-            else:
-                analysis_result["severity"] = "medium"
-
-            # Generate insights
-            analysis_result["insights"] = [
-                f"{indicator['metric'].replace('_', ' ').title()} is {indicator['value']}%, exceeding threshold of {indicator['threshold']}%"
-                for indicator in anomaly_indicators
-            ]
-
-            # Generate predictions
-            analysis_result["predictions"] = {
-                "trend": "increasing" if len(anomaly_indicators) > 1 else "stable",
-                "estimated_resolution_time": f"{random.randint(5, 30)} minutes",
-                "impact_level": analysis_result["severity"],
-            }
-        else:
-            analysis_result["confidence"] = round(random.uniform(0.6, 0.8), 3)
-            analysis_result["insights"] = ["All metrics are within normal ranges"]
-            analysis_result["predictions"] = {
-                "trend": "stable",
-                "estimated_resolution_time": "N/A",
-                "impact_level": "none",
-            }
+        anomaly_indicators = _detect_anomalies(metrics)
+        analysis_result = _create_analysis_result(anomaly_indicators)
 
         return (
             jsonify(
@@ -303,7 +361,9 @@ def chat_query():
         # Mock chatbot responses based on query content
         if "anomaly" in query or "alert" in query:
             response = {
-                "message": "I found 2 active anomalies: High CPU usage (89%) and increased error rate (8%). Would you like me to recommend remediation actions?",
+                "message": "I found 2 active anomalies: High CPU usage (89%) and "
+                "increased error rate (8%). Would you like me to recommend "
+                "remediation actions?",
                 "intent": "anomaly_inquiry",
                 "confidence": 0.92,
                 "suggested_actions": [
@@ -314,7 +374,8 @@ def chat_query():
             }
         elif "status" in query or "health" in query:
             response = {
-                "message": "System health is currently GOOD. All critical services are running normally. CPU: 45%, Memory: 67%, Response time: 120ms.",
+                "message": "System health is currently GOOD. All critical services are "
+                "running normally. CPU: 45%, Memory: 67%, Response time: 120ms.",
                 "intent": "status_inquiry",
                 "confidence": 0.88,
                 "suggested_actions": [
@@ -325,7 +386,9 @@ def chat_query():
             }
         elif "performance" in query:
             response = {
-                "message": "Performance metrics show normal operation. Average response time is 120ms, with 99.8% uptime over the last 24 hours.",
+                "message": "Performance metrics show normal operation. Average "
+                "response "
+                "time is 120ms, with 99.8% uptime over the last 24 hours.",
                 "intent": "performance_inquiry",
                 "confidence": 0.85,
                 "suggested_actions": [
@@ -336,7 +399,10 @@ def chat_query():
             }
         elif "help" in query or "?" in query:
             response = {
-                "message": "I can help you with: monitoring system health, investigating anomalies, recommending remediation actions, and answering questions about your infrastructure. What would you like to know?",
+                "message": "I can help you with: monitoring system health, "
+                "investigating anomalies, recommending remediation actions, "
+                "and answering questions about your infrastructure. "
+                "What would you like to know?",
                 "intent": "help_request",
                 "confidence": 0.95,
                 "suggested_actions": [
@@ -347,7 +413,9 @@ def chat_query():
             }
         else:
             response = {
-                "message": "I understand you're asking about your infrastructure. Could you be more specific? I can help with system status, anomalies, performance metrics, and remediation actions.",
+                "message": "I understand you're asking about your infrastructure. "
+                "Could you be more specific? I can help with system status, "
+                "anomalies, performance metrics, and remediation actions.",
                 "intent": "general_inquiry",
                 "confidence": 0.60,
                 "suggested_actions": [

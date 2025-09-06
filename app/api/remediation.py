@@ -407,7 +407,8 @@ def delete_remediation_action(action_id):
             jsonify(
                 {
                     "status": "success",
-                    "message": f"Remediation action with ID {action_id} deleted successfully",
+                    "message": f"Remediation action with ID {action_id} "
+                    "deleted successfully",
                     "data": {"deleted_remediation_action": deleted_remediation},
                 }
             ),
@@ -521,7 +522,8 @@ def export_remediation_actions():
                 {
                     "status": "success",
                     "data": {"export": export_data},
-                    "message": f"Remediation actions exported successfully in {format_type} format",
+                    "message": f"Remediation actions exported successfully in "
+                    f"{format_type} format",
                 }
             ),
             200,

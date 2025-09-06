@@ -15,7 +15,7 @@ black>=23.3.0
 isort>=5.12.0
 flake8>=6.0.0
 mypy>=1.5.0
-bandit>=1.7.5
+bandit>=1.8.6
 safety>=2.3.5
 
 # Documentation
@@ -34,7 +34,7 @@ locust>=2.15.1
 k6>=0.0.0
 
 # Security Testing
-bandit>=1.7.5
+bandit>=1.8.6
 safety>=2.3.5
 semgrep>=1.40.0
 

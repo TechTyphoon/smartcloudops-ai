@@ -37,7 +37,8 @@ def load_dotenv():
                         ]:
                             if len(value) < 16:
                                 logger.warning(
-                                    f"Warning: {key} in .env file is too short (line {line_num})"
+                                    f"Warning: {key} in .env file is too short "
+                                    f"(line {line_num})"
                                 )
 
                         os.environ[key] = value

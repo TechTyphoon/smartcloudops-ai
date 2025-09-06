@@ -117,35 +117,57 @@ class LocalProvider(AIProvider):
         # System monitoring responses
         if any(word in query_lower for word in ["cpu", "memory", "disk", "load"]):
             return {
-                "response": "I can help you monitor system resources. Here are the current metrics:\n- CPU Usage: 45%\n- Memory Usage: 62%\n- Disk Usage: 78%\n- Load Average: 1.2",
+                "response": "I can help you monitor system resources. Here are the "
+                "current metrics:\n- CPU Usage: 45%\n- Memory Usage: 62%\n- "
+                "Disk Usage: 78%\n- Load Average: 1.2",
                 "tokens_used": 25,
             }
 
         # Deployment responses
         elif any(word in query_lower for word in ["deploy", "deployment", "release"]):
             return {
-                "response": "I can assist with deployments. Current deployment status:\n- Production: Stable\n- Staging: Ready for deployment\n- Development: In progress\n\nWould you like me to initiate a deployment?",
+                "response": (
+                    "I can assist with deployments. Current deployment status:\n"
+                    "- Production: Stable\n- Staging: Ready for deployment\n- "
+                    "Development: In progress\n\n"
+                    "Would you like me to initiate a deployment?"
+                ),
                 "tokens_used": 30,
             }
 
         # Security responses
         elif any(word in query_lower for word in ["security", "vulnerability", "scan"]):
             return {
-                "response": "Security scan results:\n- No critical vulnerabilities found\n- 2 medium priority issues detected\n- All security patches are up to date\n\nRecommendation: Review the medium priority issues.",
+                "response": (
+                    "Security scan results:\n- No critical vulnerabilities found\n"
+                    "- 2 medium priority issues detected\n- All security patches are "
+                    "up to date\n\n"
+                    "Recommendation: Review the medium priority issues."
+                ),
                 "tokens_used": 28,
             }
 
         # General DevOps responses
         elif any(word in query_lower for word in ["devops", "pipeline", "ci/cd"]):
             return {
-                "response": "DevOps pipeline status:\n- Build: ✅ Passing\n- Test: ✅ Passing\n- Deploy: ✅ Successful\n- Monitoring: ✅ Active\n\nAll systems are operational.",
+                "response": (
+                    "DevOps pipeline status:\n- Build: ✅ Passing\n"
+                    "- Test: ✅ Passing\n"
+                    "- Deploy: ✅ Successful\n- Monitoring: ✅ Active\n\n"
+                    "All systems are operational."
+                ),
                 "tokens_used": 22,
             }
 
         # Default response
         else:
             return {
-                "response": "I'm your DevOps assistant. I can help with:\n- System monitoring and metrics\n- Deployment management\n- Security scanning and alerts\n- Pipeline status and troubleshooting\n- Performance optimization\n\nWhat would you like to know?",
+                "response": "I'm your DevOps assistant. I can help with:\n"
+                "- System monitoring and metrics\n- Deployment management\n"
+                "- Security scanning and alerts\n- Pipeline status and "
+                "troubleshooting\n"
+                "- Performance optimization\n\nWhat would you like to "
+                "know?",
                 "tokens_used": 35,
             }
 

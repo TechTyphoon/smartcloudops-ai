@@ -74,8 +74,10 @@ class GPTHandler:
             "expert. Your role is to assist with:\n\n"
             "1. **Infrastructure Analysis**: Analyze AWS resources, monitoring data, "
             "and system metrics\n"
-            "2. **Troubleshooting**: Help diagnose issues using logs, metrics, and system status\n"
-            "3. **Best Practices**: Provide guidance on DevOps, security, and cloud operations\n"
+            "2. **Troubleshooting**: Help diagnose issues using logs, metrics, and "
+            "system status\n"
+            "3. **Best Practices**: Provide guidance on DevOps, security, and "
+            "cloud operations\n"
             "4. **Automation**: Suggest improvements and automation opportunities\n"
             "5. **Monitoring**: Interpret Prometheus metrics and Grafana dashboards\n\n"
             "**Response Guidelines**:\n"
@@ -89,27 +91,27 @@ class GPTHandler:
             "- Prometheus + Grafana monitoring stack\n"
             "- Flask application with metrics endpoints\n"
             "- Node Exporter for system metrics\n\n"
-            "Always respond in a professional, helpful manner focused on operational excellence."
+            "Always respond in a professional, helpful manner focused on "
+            "operational excellence."
         )
 
-    def sanitize_input(self, query: str) -> str:
-        """Enhanced sanitize and validate user input with comprehensive security checks."""
+    def _validate_input(self, query: str) -> str:
+        """Validate and preprocess input."""
         if not query or not isinstance(query, str):
             raise ValueError("Query must be a non-empty string")
 
-        # Input length validation - truncate instead of error
         if len(query) > 1000:
             query = query[:1000] + "..."
 
-        # Remove leading/trailing whitespace
-        sanitized = query.strip()
+        return query.strip()
 
-        # Comprehensive XSS prevention using bleach
-        allowed_tags = []  # No HTML tags allowed
-        allowed_attributes = {}  # No attributes allowed
-        allowed_protocols = []  # No protocols allowed
+    def _apply_bleach_sanitization(self, sanitized: str) -> str:
+        """Apply bleach sanitization."""
+        allowed_tags = []
+        allowed_attributes = {}
+        allowed_protocols = []
 
-        sanitized = bleach.clean(
+        return bleach.clean(
             sanitized,
             tags=allowed_tags,
             attributes=allowed_attributes,
@@ -117,40 +119,42 @@ class GPTHandler:
             strip=True,
         )
 
-        # SQL Injection prevention patterns - more specific to avoid false positives
+    def _check_sql_patterns(self, sanitized: str) -> None:
+        """Check for SQL injection patterns."""
         sql_patterns = [
             r"(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b)",
-            r"(\b(and|or)\b\s+\d+\s*=\s*\d+)",  # More specific: and/or followed by number = number
-            r"(\b(and|or)\b\s+\d+\s*[<>]\s*\d+)",  # More specific: and/or followed by number comparison
-            r"(\s--\s|\s#\s|/\*|\*/)",  # More specific comment patterns with whitespace
+            r"(\b(and|or)\b\s+\d+\s*=\s*\d+)",
+            r"(\b(and|or)\b\s+\d+\s*[<>]\s*\d+)",
+            r"(\s--\s|\s#\s|/\*|\*/)",
             r"(\bxp_|sp_|fn_)",
             r"(\bwaitfor\b)",
             r"(\bdelay\b)",
-            # Removed: r"(\bscript\b)",  # This was causing false positives with HTML content
         ]
 
         for pattern in sql_patterns:
             if re.search(pattern, sanitized, re.IGNORECASE):
                 raise ValueError("Query contains potentially unsafe SQL content")
 
-        # Command injection prevention - more specific patterns to avoid false positives
+    def _check_command_patterns(self, sanitized: str) -> None:
+        """Check for command injection patterns."""
         command_patterns = [
-            r"(\b(exec\s*\(|eval\s*\(|subprocess\s*\.))",  # Function calls
+            r"(\b(exec\s*\(|eval\s*\(|subprocess\s*\.))",
             r"(\b(import\s+os|import\s+subprocess|from\s+os\s+import)\b)",
             r"(\b(__import__|getattr|setattr|delattr)\b)",
             r"(\b(globals|locals)\b)",
-            r"(\b(compile\s*\(|eval\s*\(|exec\s*\())",  # Function calls
-            r"(\b(file\s*\(|open\s*\(|read\s*\(|write\s*\())",  # Function calls
-            r"(\bos\.system\b)",  # Specific os.system
-            r"(\bsubprocess\.call\b)",  # Specific subprocess.call
-            r"(\bsystem\s*\()",  # system function call
+            r"(\b(compile\s*\(|eval\s*\(|exec\s*\())",
+            r"(\b(file\s*\(|open\s*\(|read\s*\(|write\s*\())",
+            r"(\bos\.system\b)",
+            r"(\bsubprocess\.call\b)",
+            r"(\bsystem\s*\()",
         ]
 
         for pattern in command_patterns:
             if re.search(pattern, sanitized, re.IGNORECASE):
                 raise ValueError("Query contains potentially unsafe command content")
 
-        # Path traversal prevention
+    def _check_path_patterns(self, sanitized: str) -> None:
+        """Check for path traversal patterns."""
         path_patterns = [
             r"(\.\./|\\.\\)",
             r"(\b(cd|chdir|pwd)\b)",
@@ -161,33 +165,35 @@ class GPTHandler:
             if re.search(pattern, sanitized, re.IGNORECASE):
                 raise ValueError("Query contains potentially unsafe path content")
 
-        # All malicious patterns - raise ValueError
+    def _check_malicious_patterns(self, sanitized: str) -> None:
+        """Check for malicious patterns."""
         malicious_patterns = [
-            r"(<script[^>]*>.*?</script>)",  # Script tags
-            r"(javascript:)",  # JavaScript protocol
-            r"(\bonload\s*=)",  # onload attribute
-            r"(\bonerror\s*=)",  # onerror attribute
-            r"(\bonclick\s*=)",  # onclick attribute
-            r"(\bonmouseover\s*=)",  # onmouseover attribute
-            r"(\bdocument\.cookie\b)",  # document.cookie
-            r"(\balert\s*\()",  # alert function
-            r"(\bconfirm\s*\()",  # confirm function
-            r"(\bprompt\s*\()",  # prompt function
-            r"(\bsystem\s*\()",  # system function
-            r"(\bexec\s*\()",  # exec function
-            r"(\beval\s*\()",  # eval function
-            r"(\bimport\s+os\b)",  # import os
-            r"(\bSELECT\s+.*\bFROM\b)",  # SQL injection
-            r"(\bINSERT\s+.*\bINTO\b)",  # SQL injection
-            r"(\bUPDATE\s+.*\bSET\b)",  # SQL injection
-            r"(\bDELETE\s+.*\bFROM\b)",  # SQL injection
+            r"(<script[^>]*>.*?</script>)",
+            r"(javascript:)",
+            r"(\bonload\s*=)",
+            r"(\bonerror\s*=)",
+            r"(\bonclick\s*=)",
+            r"(\bonmouseover\s*=)",
+            r"(\bdocument\.cookie\b)",
+            r"(\balert\s*\()",
+            r"(\bconfirm\s*\()",
+            r"(\bprompt\s*\()",
+            r"(\bsystem\s*\()",
+            r"(\bexec\s*\()",
+            r"(\beval\s*\()",
+            r"(\bimport\s+os\b)",
+            r"(\bSELECT\s+.*\bFROM\b)",
+            r"(\bINSERT\s+.*\bINTO\b)",
+            r"(\bUPDATE\s+.*\bSET\b)",
+            r"(\bDELETE\s+.*\bFROM\b)",
         ]
 
         for pattern in malicious_patterns:
             if re.search(pattern, sanitized, re.IGNORECASE):
                 raise ValueError("Query contains potentially unsafe command content")
 
-        # Additional dangerous patterns - sanitize instead of raising errors
+    def _sanitize_dangerous_patterns(self, sanitized: str) -> str:
+        """Sanitize dangerous patterns."""
         dangerous_patterns = [
             r"(\b(alert|confirm|prompt)\b)",
             r"(\b(document\.|window\.|location\.)\b)",
@@ -198,17 +204,33 @@ class GPTHandler:
         for pattern in dangerous_patterns:
             sanitized = re.sub(pattern, "", sanitized, flags=re.IGNORECASE)
 
-        # HTML encoding for additional safety
-        sanitized = html.escape(sanitized, quote=True)
+        return sanitized
 
-        # Decode HTML entities back to normal characters for natural language processing
+    def _apply_html_encoding(self, sanitized: str) -> str:
+        """Apply HTML encoding and decoding."""
+        sanitized = html.escape(sanitized, quote=True)
         sanitized = html.unescape(sanitized)
 
-        # Additional decoding for numeric character references
         sanitized = re.sub(
             r"&#x([0-9a-fA-F]+);", lambda m: chr(int(m.group(1), 16)), sanitized
         )
         sanitized = re.sub(r"&#(\d+);", lambda m: chr(int(m.group(1))), sanitized)
+
+        return sanitized
+
+    def sanitize_input(self, query: str) -> str:
+        """Enhanced sanitize and validate user input with comprehensive
+        security checks."""
+        sanitized = self._validate_input(query)
+        sanitized = self._apply_bleach_sanitization(sanitized)
+
+        self._check_sql_patterns(sanitized)
+        self._check_command_patterns(sanitized)
+        self._check_path_patterns(sanitized)
+        self._check_malicious_patterns(sanitized)
+
+        sanitized = self._sanitize_dangerous_patterns(sanitized)
+        sanitized = self._apply_html_encoding(sanitized)
 
         return sanitized
 

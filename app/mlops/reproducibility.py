@@ -117,8 +117,10 @@ class ReproducibilityManager:
                 recommendations TEXT,
                 risk_level TEXT,
                 compatibility_score REAL,
-                FOREIGN KEY (target_snapshot_id) REFERENCES environment_snapshots (snapshot_id),
-                FOREIGN KEY (current_snapshot_id) REFERENCES environment_snapshots (snapshot_id)
+                FOREIGN KEY (target_snapshot_id) REFERENCES
+                environment_snapshots (snapshot_id),
+                FOREIGN KEY (current_snapshot_id) REFERENCES
+                environment_snapshots (snapshot_id)
             )
         """
         )
@@ -152,7 +154,8 @@ class ReproducibilityManager:
     ) -> EnvironmentSnapshot:
         """Create a complete environment snapshot"""
 
-        snapshot_id = f"snap_{int(datetime.now().timestamp())}_{hashlib.md5(name.encode()).hexdigest()[:8]}"
+        snapshot_id = f"snap_{int(datetime.now().timestamp())}_"
+        f"{hashlib.sha256(name.encode()).hexdigest()[:8]}"
 
         print(f"📸 Creating environment snapshot: {name}")
 
@@ -291,7 +294,8 @@ class ReproducibilityManager:
             current_snapshot = self.load_snapshot(current_snapshot_id)
 
         print(
-            f"🔍 Comparing environments: {target_snapshot.name} vs {current_snapshot.name}"
+            f"🔍 Comparing environments: {target_snapshot.name} vs "
+            f"{current_snapshot.name}"
         )
 
         # Analyze differences
@@ -358,7 +362,8 @@ class ReproducibilityManager:
         snapshot = self.load_snapshot(snapshot_id)
 
         print(
-            f"🔄 {'Simulating' if dry_run else 'Executing'} environment restoration: {snapshot.name}"
+            f"🔄 {'Simulating' if dry_run else 'Executing'} environment "
+            f"restoration: {snapshot.name}"
         )
 
         restoration_plan = {
@@ -455,7 +460,10 @@ class ReproducibilityManager:
 
     def _get_python_version(self) -> str:
         """Get Python version information"""
-        return f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+        return (
+            f"{sys.version_info.major}.{sys.version_info.minor}."
+            f"{sys.version_info.micro}"
+        )
 
     def _get_platform_info(self) -> Dict[str, str]:
         """Get platform information"""
@@ -841,7 +849,8 @@ class ReproducibilityManager:
         # Python version recommendations
         if differences["python_version"]:
             recommendations.append(
-                f"Update Python from {differences['python_version']['current']} to {differences['python_version']['target']}"
+                f"Update Python from {differences['python_version']['current']} "
+                f"to {differences['python_version']['target']}"
             )
 
         # Package recommendations
@@ -852,7 +861,8 @@ class ReproducibilityManager:
         if differences["packages"]["extra"]:
             extra_count = len(differences["packages"]["extra"])
             recommendations.append(
-                f"Consider removing {extra_count} extra packages that may cause conflicts"
+                f"Consider removing {extra_count} extra packages that may "
+                f"cause conflicts"
             )
 
         if differences["packages"]["version_mismatch"]:
@@ -864,7 +874,8 @@ class ReproducibilityManager:
         # Platform recommendations
         if differences["platform"]:
             recommendations.append(
-                "Platform differences detected - consider using containerization for full reproducibility"
+                "Platform differences detected - consider using containerization "
+                "for full reproducibility"
             )
 
         # General recommendations
@@ -929,13 +940,14 @@ version = "0.1.0"
 description = "Reproduced from snapshot {snapshot.name}"
 
 [tool.poetry.dependencies]
-python = "^{snapshot.python_version}"
+python = "^" + snapshot.python_version
 """
 
         for package, version in sorted(snapshot.packages.items()):
             content += f'{package} = "{version}"\n'
 
-        content += '\n[build-system]\nrequires = ["poetry-core"]\nbuild-backend = "poetry.core.masonry.api"\n'
+        content += '\n[build-system]\nrequires = ["poetry-core"]\nbuild-backend = '
+        '"poetry.core.masonry.api"\n'
 
         output_file = self.exports_path / f"{snapshot.snapshot_id}_pyproject.toml"
         with open(output_file, "w") as f:
@@ -956,7 +968,10 @@ name = "pypi"
         for package, version in sorted(snapshot.packages.items()):
             content += f'{package} = "=={version}"\n'
 
-        content += f'\n[dev-packages]\n\n[requires]\npython_version = "{snapshot.python_version}"\n'
+        content += (
+            "\n[dev-packages]\n\n[requires]\npython_version = "
+            f'"{snapshot.python_version}"\n'
+        )
 
         output_file = self.exports_path / f"{snapshot.snapshot_id}_Pipfile"
         with open(output_file, "w") as f:
@@ -1045,9 +1060,12 @@ name = "pypi"
         cursor.execute(
             """
             INSERT OR REPLACE INTO environment_snapshots (
-                snapshot_id, name, description, created_at, created_by, python_version,
-                platform_info, packages, environment_variables, git_info, system_info,
-                hash_signature, conda_environment, docker_info, jupyter_kernels, cuda_info
+                snapshot_id, name, description, created_at, created_by,
+                python_version,
+                platform_info, packages, environment_variables, git_info,
+                system_info,
+                hash_signature, conda_environment, docker_info, jupyter_kernels,
+                cuda_info
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
             (
@@ -1081,8 +1099,10 @@ name = "pypi"
         cursor.execute(
             """
             INSERT OR REPLACE INTO reproducibility_reports (
-                report_id, target_snapshot_id, current_snapshot_id, timestamp,
-                is_reproducible, differences, recommendations, risk_level, compatibility_score
+                report_id, target_snapshot_id, current_snapshot_id,
+                timestamp,
+                is_reproducible, differences, recommendations, risk_level,
+                compatibility_score
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
             (

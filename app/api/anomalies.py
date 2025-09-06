@@ -315,7 +315,8 @@ def acknowledge_anomaly(anomaly_id):
             jsonify(
                 {
                     "status": "success",
-                    "message": f"Anomaly with ID {anomaly_id} acknowledged successfully",
+                    "message": f"Anomaly with ID {anomaly_id} "
+                    "acknowledged successfully",
                 }
             ),
             200,
@@ -378,7 +379,8 @@ def get_anomaly_stats():
     """Get anomaly statistics."""
     try:
         # Get query parameters for time range
-        # days = request.args.get("days", 7, type=int)  # TODO: Implement time-based filtering
+        # days = request.args.get("days", 7, type=int)  # TODO: Implement
+        # time-based filtering
         request.args.get("source")
 
         # Use service layer for business logic
@@ -422,7 +424,8 @@ def export_anomalies():
                 {
                     "status": "success",
                     "data": {"export": export_data},
-                    "message": f"Anomalies exported successfully in {format_type} format",
+                    "message": f"Anomalies exported successfully in "
+                    f"{format_type} format",
                 }
             ),
             200,

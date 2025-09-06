@@ -83,7 +83,8 @@ class ActionManager:
             )
 
             logger.info(
-                f"Action {action_type} completed with status: {result.get('status', 'unknown')}"
+                f"Action {action_type} completed with status: "
+                f"{result.get('status', 'unknown')}"
             )
             return result
         except Exception as e:
@@ -277,7 +278,7 @@ class ActionManager:
             for i in range(min(limit, 5)):
                 actions.append(
                     {
-                        "action_id": f"action_{i+1}",
+                        "action_id": f"action_{i + 1}",
                         "action_type": "restart_service",
                         "status": "completed",
                         "timestamp": datetime.now().isoformat(),

@@ -29,7 +29,8 @@ def predict():
             return jsonify({"error": "No data provided"}), 400
 
         # ML processing logic here
-        # This is a placeholder - in production you'd load your model and make predictions
+        # This is a placeholder - in production you'd load your model
+        # and make predictions
         prediction = {
             "result": "processed",
             "confidence": 0.95,

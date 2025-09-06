@@ -13,7 +13,8 @@ class AnomalyService:
 
     def __init__(self):
         """Initialize the anomaly service."""
-        # In a real implementation, this would inject dependencies like database, cache, etc.
+        # In a real implementation, this would inject dependencies like
+        # database, cache, etc.
         self.mock_data = [
             {
                 "id": 1,
@@ -182,7 +183,8 @@ class AnomalyService:
                 valid_severities = ["low", "medium", "high", "critical"]
                 if value not in valid_severities:
                     raise ValueError(
-                        f"Invalid severity. Must be one of: {', '.join(valid_severities)}"
+                        f"Invalid severity. Must be one of: "
+                        f"{', '.join(valid_severities)}"
                     )
             elif field in ["anomaly_score", "confidence"]:
                 if not (0 <= value <= 1):

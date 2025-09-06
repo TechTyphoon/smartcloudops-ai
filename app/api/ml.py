@@ -515,7 +515,8 @@ def get_ml_stats():
 
 
 @ml_bp.route("/anomaly", methods=["POST"])
-# @require_auth  # Temporarily disabled for testing - will re-enable after fixing auth issues
+# @require_auth  # Temporarily disabled for testing - will re-enable
+# after fixing auth issues
 def detect_anomaly():
     """Detect anomalies in system metrics."""
     try:

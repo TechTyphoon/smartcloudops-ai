@@ -297,7 +297,7 @@ def cache_key(*args, **kwargs) -> str:
     "Generate cache key from arguments"
     key_data = {"args": args, "kwargs": sorted(kwargs.items())}
     key_str = json.dumps(key_data, sort_keys=True, default=str)
-    return hashlib.md5(key_str.encode()).hexdigest()
+    return hashlib.sha256(key_str.encode()).hexdigest()
 
 
 def cached(
@@ -360,7 +360,8 @@ class CacheWarmup:
                     key = f"experiment:{exp['id']}"
                     cache.set(key, exp, ttl=300)
                 logger.info(
-                    f"Warmed experiments cache with {len(experiments.get('experiments', []))} entries"
+                    f"Warmed experiments cache with "
+                    f"{len(experiments.get('experiments', []))} entries"
                 )
         except Exception as e:
             logger.error(f"Failed to warm experiments cache: {e}")

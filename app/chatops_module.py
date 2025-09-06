@@ -41,82 +41,116 @@ if CHATOPS_AVAILABLE:
         CHATOPS_AVAILABLE = False
 
 
+def _check_chatops_availability():
+    """Check if ChatOps service is available."""
+    if not CHATOPS_AVAILABLE or not ai_handler:
+        return (
+            jsonify(
+                {
+                    "error": "ChatOps service not available",
+                    "message": "AI handler not loaded",
+                }
+            ),
+            503,
+        )
+    return None, None
+
+
+def _validate_request_data(data):
+    """Validate request data."""
+    if not data:
+        return (
+            jsonify({"status": "error", "error": "No JSON data provided"}),
+            400,
+        )
+    return None, None
+
+
+def _handle_empty_query():
+    """Handle empty query case."""
+    return (
+        jsonify(
+            {
+                "status": "success",
+                "message": "Analysis complete for empty query",
+                "data": {
+                    "query": "",
+                    "response": "Empty query processed",
+                    "intent": "unknown",
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                },
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        ),
+        200,
+    )
+
+
+def _validate_query_parameters(data):
+    """Validate query parameters."""
+    try:
+        validate_query_params(data)
+        return None, None
+    except ValueError as e:
+        return jsonify({"error": f"Invalid query parameters: {e}"}), 400
+
+
+def _process_query_with_ai(query, data):
+    """Process query with AI handler."""
+    try:
+        response = ai_handler.process_message(query, data)
+        analysis = ai_handler.analyze_query(query)
+        intent = analysis.get("intent", "unknown")
+        formatted_response = format_response(response)
+
+        return (
+            jsonify(
+                {
+                    "status": "success",
+                    "message": f"Analysis complete for query: {query}",
+                    "data": {
+                        "query": query,
+                        "response": formatted_response,
+                        "intent": intent,
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                    },
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                }
+            ),
+            200,
+        )
+
+    except Exception as e:
+        logger.error(f"AI processing error: {e}")
+        return (
+            jsonify({"error": "AI processing failed", "message": str(e)}),
+            500,
+        )
+
+
 @chatops_bp.route("/analyze", methods=["POST"])
 def chatops_analyze():
     """ChatOps analyze endpoint for backwards compatibility with tests."""
     if request.method == "POST":
         try:
-            if not CHATOPS_AVAILABLE or not ai_handler:
-                return (
-                    jsonify(
-                        {
-                            "error": "ChatOps service not available",
-                            "message": "AI handler not loaded",
-                        }
-                    ),
-                    503,
-                )
+            error_response, error_code = _check_chatops_availability()
+            if error_response:
+                return error_response, error_code
 
             data = request.get_json()
-            if not data:
-                return (
-                    jsonify({"status": "error", "error": "No JSON data provided"}),
-                    400,
-                )
+            error_response, error_code = _validate_request_data(data)
+            if error_response:
+                return error_response, error_code
 
             query = data.get("query", "")
             if not query:
-                # Return success for empty queries as expected by tests
-                return (
-                    jsonify(
-                        {
-                            "status": "success",
-                            "message": "Analysis complete for empty query",
-                            "data": {
-                                "query": "",
-                                "response": "Empty query processed",
-                                "intent": "unknown",
-                                "timestamp": datetime.now(timezone.utc).isoformat(),
-                            },
-                            "timestamp": datetime.now(timezone.utc).isoformat(),
-                        }
-                    ),
-                    200,
-                )
+                return _handle_empty_query()
 
-            # Validate query parameters
-            try:
-                validate_query_params(data)
-            except ValueError as e:
-                return jsonify({"error": f"Invalid query parameters: {e}"}), 400
+            error_response, error_code = _validate_query_parameters(data)
+            if error_response:
+                return error_response, error_code
 
-            # Process query with AI handler
-            try:
-                response = ai_handler.process_message(query, data)
-                analysis = ai_handler.analyze_query(query)
-                intent = analysis.get("intent", "unknown")
-                formatted_response = format_response(response)
-
-                return jsonify(
-                    {
-                        "status": "success",
-                        "message": f"Analysis complete for query: {query}",
-                        "data": {
-                            "query": query,
-                            "response": formatted_response,
-                            "intent": intent,
-                            "timestamp": datetime.now(timezone.utc).isoformat(),
-                        },
-                        "timestamp": datetime.now(timezone.utc).isoformat(),
-                    }
-                )
-
-            except Exception as e:
-                logger.error(f"AI processing error: {e}")
-                return (
-                    jsonify({"error": "AI processing failed", "message": str(e)}),
-                    500,
-                )
+            return _process_query_with_ai(query, data)
 
         except Exception as e:
             logger.error(f"ChatOps analyze error: {e}")
@@ -132,66 +166,76 @@ def chatops_analyze():
             )
 
 
+def _handle_get_request():
+    """Handle GET request for chatops query endpoint."""
+    return jsonify(
+        {
+            "status": "success",
+            "message": "ChatOps Query Service",
+            "chatops_available": CHATOPS_AVAILABLE,
+            "endpoints": {
+                "query": "POST /chatops/query",
+                "logs": "GET /chatops/logs",
+                "context": "GET /chatops/context",
+            },
+        }
+    )
+
+
+def _validate_post_request_data(data):
+    """Validate POST request data."""
+    if not data:
+        return jsonify({"error": "No JSON data provided"}), 400
+
+    query = data.get("query", "")
+    if not query:
+        return jsonify({"error": "No query provided"}), 400
+
+    try:
+        validate_query_params(data)
+        return None, None
+    except ValueError as e:
+        return jsonify({"error": f"Invalid query parameters: {e}"}), 400
+
+
+def _process_query_request(query, data):
+    """Process the query request."""
+    try:
+        response = ai_handler.process_message(query, data)
+        formatted_response = format_response(response)
+
+        return jsonify(
+            {
+                "status": "success",
+                "query": query,
+                "response": formatted_response,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        )
+
+    except Exception as e:
+        logger.error(f"AI processing error: {e}")
+        return (jsonify({"error": "AI processing failed", "message": str(e)}), 500)
+
+
 @chatops_bp.route("/query", methods=["GET", "POST"])
 def chatops_query():
     """ChatOps query endpoint."""
     if request.method == "GET":
-        return jsonify(
-            {
-                "status": "success",
-                "message": "ChatOps Query Service",
-                "chatops_available": CHATOPS_AVAILABLE,
-                "endpoints": {
-                    "query": "POST /chatops/query",
-                    "logs": "GET /chatops/logs",
-                    "context": "GET /chatops/context",
-                },
-            }
-        )
+        return _handle_get_request()
 
     try:
-        if not CHATOPS_AVAILABLE or not ai_handler:
-            return (
-                jsonify(
-                    {
-                        "error": "ChatOps service not available",
-                        "message": "AI handler not loaded",
-                    }
-                ),
-                503,
-            )
+        error_response, error_code = _check_chatops_availability()
+        if error_response:
+            return error_response, error_code
 
         data = request.get_json()
-        if not data:
-            return jsonify({"error": "No JSON data provided"}), 400
+        error_response, error_code = _validate_post_request_data(data)
+        if error_response:
+            return error_response, error_code
 
         query = data.get("query", "")
-        if not query:
-            return jsonify({"error": "No query provided"}), 400
-
-        # Validate query parameters
-        try:
-            validate_query_params(data)
-        except ValueError as e:
-            return jsonify({"error": f"Invalid query parameters: {e}"}), 400
-
-        # Process query with AI handler
-        try:
-            response = ai_handler.process_message(query, data)
-            formatted_response = format_response(response)
-
-            return jsonify(
-                {
-                    "status": "success",
-                    "query": query,
-                    "response": formatted_response,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                }
-            )
-
-        except Exception as e:
-            logger.error(f"AI processing error: {e}")
-            return (jsonify({"error": "AI processing failed", "message": str(e)}), 500)
+        return _process_query_request(query, data)
 
     except Exception as e:
         logger.error(f"ChatOps query error: {e}")

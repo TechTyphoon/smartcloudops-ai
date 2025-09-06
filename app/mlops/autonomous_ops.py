@@ -41,9 +41,11 @@ class PolicyRule:
     def evaluate(
         self, anomaly_info: Dict[str, Any], system_state: Dict[str, Any]
     ) -> bool:
-        """Evaluate if this policy rule applies to the given anomaly and system state."""
+        """Evaluate if this policy rule applies to the given anomaly and
+        system state."""
 
-        # Check severity condition - ensure anomaly severity matches required levels
+        # Check severity condition - ensure anomaly severity
+        # matches required levels
         if "severity" in self.conditions:
             required_severity = self.conditions["severity"]
             if anomaly_info.get("severity") not in required_severity:

@@ -61,15 +61,18 @@ def create_overview_dashboard() -> Dict[str, Any]:
                             "legendFormat": "{{method}} {{endpoint}}",
                         },
                         {
-                            "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket[5m]))",
+                            "expr": "histogram_quantile(0.50, "
+                            "rate(http_request_duration_seconds_bucket[5m]))",
                             "legendFormat": "50th Percentile",
                         },
                         {
-                            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
+                            "expr": "histogram_quantile(0.95, "
+                            "rate(http_request_duration_seconds_bucket[5m]))",
                             "legendFormat": "95th Percentile",
                         },
                         {
-                            "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))",
+                            "expr": "histogram_quantile(0.99, "
+                            "rate(http_request_duration_seconds_bucket[5m]))",
                             "legendFormat": "99th Percentile",
                         },
                     ],
@@ -110,7 +113,8 @@ def create_anomaly_dashboard() -> Dict[str, Any]:
                     "type": "piechart",
                     "targets": [
                         {
-                            "expr": "sum by (severity) (increase(anomalies_detected_total[1h]))",
+                            "expr": "sum by (severity) "
+                            "(increase(anomalies_detected_total[1h]))",
                             "legendFormat": "{{severity}}",
                         }
                     ],
@@ -122,7 +126,8 @@ def create_anomaly_dashboard() -> Dict[str, Any]:
                     "type": "stat",
                     "targets": [
                         {
-                            "expr": "histogram_quantile(0.95, rate(anomaly_detection_duration_seconds_bucket[5m]))",
+                            "expr": "histogram_quantile(0.95, rate("
+                            "anomaly_detection_duration_seconds_bucket[5m]))",
                             "legendFormat": "95th Percentile Detection Time",
                         }
                     ],
@@ -191,7 +196,8 @@ def create_remediation_dashboard() -> Dict[str, Any]:
                     "type": "stat",
                     "targets": [
                         {
-                            "expr": "rate(remediation_success_total[1h]) / rate(remediation_actions_total[1h]) * 100",
+                            "expr": "rate(remediation_success_total[1h]) / "
+                            "rate(remediation_actions_total[1h]) * 100",
                             "legendFormat": "Success Rate %",
                         }
                     ],
@@ -215,7 +221,8 @@ def create_remediation_dashboard() -> Dict[str, Any]:
                     "type": "stat",
                     "targets": [
                         {
-                            "expr": "histogram_quantile(0.50, rate(remediation_duration_seconds_bucket[5m]))",
+                            "expr": "histogram_quantile(0.50, rate("
+                            "remediation_duration_seconds_bucket[5m]))",
                             "legendFormat": "Median Duration",
                         }
                     ],
@@ -227,7 +234,8 @@ def create_remediation_dashboard() -> Dict[str, Any]:
                     "type": "bargauge",
                     "targets": [
                         {
-                            "expr": "sum by (action_type) (increase(remediation_actions_total[1h]))",
+                            "expr": "sum by (action_type) "
+                            "(increase(remediation_actions_total[1h]))",
                             "legendFormat": "{{action_type}}",
                         }
                     ],
@@ -239,7 +247,8 @@ def create_remediation_dashboard() -> Dict[str, Any]:
                     "type": "piechart",
                     "targets": [
                         {
-                            "expr": "sum by (status) (increase(remediation_actions_total[1h]))",
+                            "expr": "sum by (status) "
+                            "(increase(remediation_actions_total[1h]))",
                             "legendFormat": "{{status}}",
                         }
                     ],
@@ -286,7 +295,8 @@ def create_performance_dashboard() -> Dict[str, Any]:
                     "type": "graph",
                     "targets": [
                         {
-                            "expr": "histogram_quantile(0.95, rate(database_query_duration_seconds_bucket[5m]))",
+                            "expr": "histogram_quantile(0.95, rate("
+                            "database_query_duration_seconds_bucket[5m]))",
                             "legendFormat": "95th Percentile Query Time",
                         },
                         {
@@ -372,11 +382,13 @@ def create_business_dashboard() -> Dict[str, Any]:
                     "type": "graph",
                     "targets": [
                         {
-                            "expr": "rate(anomalies_resolved_total[5m]) / rate(anomalies_detected_total[5m]) * 100",
+                            "expr": "rate(anomalies_resolved_total[5m]) / "
+                            "rate(anomalies_detected_total[5m]) * 100",
                             "legendFormat": "Resolution Rate %",
                         },
                         {
-                            "expr": "rate(false_positive_total[5m]) / rate(anomalies_detected_total[5m]) * 100",
+                            "expr": "rate(false_positive_total[5m]) / "
+                            "rate(anomalies_detected_total[5m]) * 100",
                             "legendFormat": "False Positive Rate %",
                         },
                     ],
@@ -427,32 +439,40 @@ def create_alerting_rules() -> Dict[str, Any]:
                 "rules": [
                     {
                         "alert": "HighAnomalyRate",
-                        "expr": 'rate(anomalies_detected_total{severity="high"}[5m]) > 0.1',
+                        "expr": 'rate(anomalies_detected_total{severity="high"}'
+                        "[5m]) > 0.1",
                         "for": "2m",
                         "labels": {"severity": "warning"},
                         "annotations": {
                             "summary": "High rate of high-severity anomalies detected",
-                            "description": "More than 0.1 high-severity anomalies per second detected over the last 5 minutes",
+                            "description": "More than 0.1 high-severity anomalies per "
+                            "second detected over the last 5 minutes",
                         },
                     },
                     {
                         "alert": "RemediationFailureRate",
-                        "expr": 'rate(remediation_actions_total{status="failure"}[5m]) / rate(remediation_actions_total[5m]) > 0.2',
+                        "expr": (
+                            'rate(remediation_actions_total{status="failure"}[5m]) / '
+                            "rate(remediation_actions_total[5m]) > 0.2"
+                        ),
                         "for": "5m",
                         "labels": {"severity": "critical"},
                         "annotations": {
                             "summary": "High remediation failure rate",
-                            "description": "More than 20% of remediation actions are failing",
+                            "description": "More than 20% of remediation actions "
+                            "are failing",
                         },
                     },
                     {
                         "alert": "HighResponseTime",
-                        "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 1.0",
+                        "expr": "histogram_quantile(0.95, rate("
+                        "http_request_duration_seconds_bucket[5m])) > 1.0",
                         "for": "3m",
                         "labels": {"severity": "warning"},
                         "annotations": {
                             "summary": "High API response time",
-                            "description": "95th percentile response time is above 1 second",
+                            "description": "95th percentile response time is "
+                            "above 1 second",
                         },
                     },
                     {
@@ -462,7 +482,8 @@ def create_alerting_rules() -> Dict[str, Any]:
                         "labels": {"severity": "critical"},
                         "annotations": {
                             "summary": "Application is unhealthy",
-                            "description": "SmartCloudOps AI application health status is not healthy",
+                            "description": "SmartCloudOps AI application health "
+                            "status is not healthy",
                         },
                     },
                 ],

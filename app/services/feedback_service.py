@@ -19,7 +19,8 @@ class FeedbackService:
                 "user_id": 1,
                 "feedback_type": "bug_report",
                 "title": "High CPU Alert False Positive",
-                "description": "The system flagged normal CPU usage as high during maintenance window",
+                "description": "The system flagged normal CPU usage as high "
+                "during maintenance window",
                 "rating": 3,
                 "status": "open",
                 "priority": "medium",
@@ -32,7 +33,8 @@ class FeedbackService:
                 "user_id": 2,
                 "feedback_type": "feature_request",
                 "title": "Dashboard Customization",
-                "description": "Would like to customize dashboard layout and add custom widgets",
+                "description": "Would like to customize dashboard layout and "
+                "add custom widgets",
                 "rating": 5,
                 "status": "in_progress",
                 "priority": "low",
@@ -191,7 +193,8 @@ class FeedbackService:
                 valid_priorities = ["low", "medium", "high"]
                 if value not in valid_priorities:
                     raise ValueError(
-                        f"Invalid priority. Must be one of: {', '.join(valid_priorities)}"
+                        f"Invalid priority. Must be one of: "
+                        f"{', '.join(valid_priorities)}"
                     )
             elif field == "status":
                 valid_statuses = ["open", "in_progress", "resolved", "closed"]

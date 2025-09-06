@@ -335,7 +335,8 @@ class EnhancedDataPipeline:
 
                 transformation_log.append(f"Applied {transform_type} transformation")
                 logger.info(
-                    f"Applied transformation {i+1}/{len(transformations)}: {transform_type}"
+                    f"Applied transformation {i + 1}/{len(transformations)}: "
+                    f"{transform_type}"
                 )
 
             except Exception as e:
@@ -589,7 +590,8 @@ class EnhancedDataPipeline:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
                 cursor.execute(
-                    "SELECT data_hash FROM data_versions WHERE dataset_name = ? ORDER BY created_at DESC LIMIT 1 OFFSET 1",
+                    "SELECT data_hash FROM data_versions WHERE dataset_name = ? "
+                    "ORDER BY created_at DESC LIMIT 1 OFFSET 1",
                     (df.columns[0] if len(df.columns) > 0 else "unknown",),
                 )
                 result = cursor.fetchone()
@@ -814,7 +816,10 @@ class EnhancedDataPipeline:
 
     def _save_quality_report(self, quality_report: QualityReport):
         """Save quality report to database"""
-        report_id = f"qr_{quality_report.version_id}_{int(quality_report.timestamp.timestamp())}"
+        report_id = (
+            f"qr_{quality_report.version_id}_"
+            f"{int(quality_report.timestamp.timestamp())}"
+        )
 
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
@@ -907,7 +912,8 @@ class EnhancedDataPipeline:
             if dataset_name:
                 cursor.execute(
                     """
-                    SELECT version_id, dataset_name, created_at, quality_score, quality_status
+                    SELECT version_id, dataset_name, created_at, quality_score,
+                    quality_status
                     FROM data_versions
                     WHERE dataset_name = ?
                     ORDER BY created_at DESC
@@ -917,7 +923,8 @@ class EnhancedDataPipeline:
             else:
                 cursor.execute(
                     """
-                    SELECT version_id, dataset_name, created_at, quality_score, quality_status
+                    SELECT version_id, dataset_name, created_at, quality_score,
+                    quality_status
                     FROM data_versions
                     ORDER BY created_at DESC
                 """
@@ -972,7 +979,8 @@ class EnhancedDataPipeline:
 
             conn.commit()
             logger.info(
-                f"Cleaned up {len(versions_to_delete)} old versions and {deleted_files} files"
+                f"Cleaned up {len(versions_to_delete)} old versions and "
+                f"{deleted_files} files"
             )
             return len(versions_to_delete)
 

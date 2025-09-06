@@ -178,18 +178,20 @@ class RealTimeAnalyticsDashboard:
         self.running = True
 
         # Start background threads
-        self.metrics_thread = threading.Thread(target=self._metrics_collector, daemon=True)
+        self.metrics_thread = threading.Thread(target=self._metrics_collector,
+                                               daemon=True)
         self.metrics_thread.start()
 
-        self.analytics_thread = threading.Thread(target=self._analytics_processor, daemon=True)
+        self.analytics_thread = threading.Thread(target=self._analytics_processor,
+                                                 daemon=True)
         self.analytics_thread.start()
 
         # Start WebSocket server
         self.websocket_server = await websockets.serve(
-            self._websocket_handler, self.host, self.port
-        )
+            self._websocket_handler, self.host, self.port)
 
-        logger.info(f"Real-time analytics dashboard started on ws://{self.host}:{self.port}")
+        logger.info(f"Real-time analytics dashboard started on "
+                    f"ws://{self.host}:{self.port}")
 
     async def stop(self):
         "Stop the analytics dashboard",
@@ -223,9 +225,9 @@ class RealTimeAnalyticsDashboard:
         logger.info(f"Client connected: {client_id}")
 
         try:
-        # Send initial data
+            # Send initial data
             await self._send_initial_data(websocket)
-        # Keep connection alive and handle messages
+            # Keep connection alive and handle messages
             async for message in websocket:
                 await self._handle_client_message(websocket, message, client_id)
 
@@ -256,13 +258,13 @@ class RealTimeAnalyticsDashboard:
             data = json.loads(message)
             message_type = data.get("type")
             if message_type == "subscribe":
-        # Handle subscription to specific metrics
+                # Handle subscription to specific metrics
                 await self._handle_subscription(websocket, data)
             elif message_type == "acknowledge_alert":
-        # Handle alert acknowledgment
+                # Handle alert acknowledgment
                 await self._handle_alert_acknowledgment(data)
             elif message_type == "request_insights":
-        # Handle insight requests
+                # Handle insight requests
                 await self._handle_insight_request(websocket, data)
             else:
                 logger.warning(f"Unknown message type: {message_type}")
@@ -299,16 +301,16 @@ class RealTimeAnalyticsDashboard:
         "Background thread for collecting system metrics",
         while self.running:
             try:
-        # Collect system metrics
+                # Collect system metrics
                 metrics = self._collect_system_metrics()
                 self.metrics_history.append(metrics)
-        # Store in database
+                # Store in database
                 self._store_metrics(metrics)
-        # Check for alerts
+                # Check for alerts
                 self._check_alerts(metrics)
-        # Generate insights
+                # Generate insights
                 self._generate_insights(metrics)
-        # Broadcast to clients
+                # Broadcast to clients
                 asyncio.run(self._broadcast_metrics(metrics))
 
                 time.sleep(self.update_interval)
@@ -358,36 +360,44 @@ class RealTimeAnalyticsDashboard:
     def _get_avg_response_time(self) -> float:
         "Get average response time",
         if LOGGING_AVAILABLE:
-        # Assuming centralized_logging is available and has get_metrics()
-        # This part of the original code was not provided, so we'll assume it's available
-        # For demonstration, we'll return a placeholder value
+            # Assuming centralized_logging is available and has
+            # get_metrics()
+            # This part of the original code was not provided, so we'll
+            # assume it's available
+            # For demonstration, we'll return a placeholder value
             return 0.0   # Placeholder for actual implementation
         return 0.0
 
     def _get_error_rate(self) -> float:
         "Get current error rate",
         if LOGGING_AVAILABLE:
-        # Assuming centralized_logging is available and has get_metrics()
-        # This part of the original code was not provided, so we'll assume it's available
-        # For demonstration, we'll return a placeholder value
+            # Assuming centralized_logging is available and has
+            # get_metrics()
+            # This part of the original code was not provided, so we'll
+            # assume it's available
+            # For demonstration, we'll return a placeholder value
             return 0.0   # Placeholder for actual implementation
         return 0.0
 
     def _get_throughput(self) -> float:
         "Get current throughput (requests per second)",
         if LOGGING_AVAILABLE:
-        # Assuming centralized_logging is available and has get_metrics()
-        # This part of the original code was not provided, so we'll assume it's available
-        # For demonstration, we'll return a placeholder value
+            # Assuming centralized_logging is available and has
+            # get_metrics()
+            # This part of the original code was not provided, so we'll
+            # assume it's available
+            # For demonstration, we'll return a placeholder value
             return 0.0   # Placeholder for actual implementation
         return 0.0
 
     def _get_queue_depth(self) -> int:
         "Get current queue depth",
         if LOGGING_AVAILABLE:
-        # Assuming centralized_logging is available and has log_queue
-        # This part of the original code was not provided, so we'll assume it's available
-        # For demonstration, we'll return a placeholder value
+            # Assuming centralized_logging is available and has
+            # log_queue
+            # This part of the original code was not provided, so we'll
+            # assume it's available
+            # For demonstration, we'll return a placeholder value
             return 0   # Placeholder for actual implementation
         return 0
 
@@ -418,32 +428,41 @@ class RealTimeAnalyticsDashboard:
                 )
                 conn.commit()
         except Exception as e:
-            logger.error(f"Error storing metrics: {e}")
+            logger.error(f"Error storing metrics: {str(e)}")
 
     def _check_alerts(self, metrics: SystemMetrics):
         "Check for system alerts"
         # CPU alert
         if metrics.cpu_usage > 90:
-            self._create_alert("critical", "system", "High CPU usage", {"cpu_usage": metrics.cpu_usage})
+            self._create_alert("critical", "system", "High CPU usage",
+                               {"cpu_usage": metrics.cpu_usage})
         elif metrics.cpu_usage > 80:
-            self._create_alert("warning", "system", "Elevated CPU usage", {"cpu_usage": metrics.cpu_usage})
+            self._create_alert("warning", "system", "Elevated CPU usage",
+                               {"cpu_usage": metrics.cpu_usage})
         # Memory alert
         if metrics.memory_usage > 95:
-            self._create_alert("critical", "system", "Critical memory usage", {"memory_usage": metrics.memory_usage})
+            self._create_alert("critical", "system", "Critical memory usage",
+                               {"memory_usage": metrics.memory_usage})
         elif metrics.memory_usage > 85:
-            self._create_alert("warning", "system", "High memory usage", {"memory_usage": metrics.memory_usage})
+            self._create_alert("warning", "system", "High memory usage",
+                               {"memory_usage": metrics.memory_usage})
         # Disk alert
         if metrics.disk_usage > 95:
-            self._create_alert("critical", "system", "Critical disk usage", {"disk_usage": metrics.disk_usage})
+            self._create_alert("critical", "system", "Critical disk usage",
+                               {"disk_usage": metrics.disk_usage})
         elif metrics.disk_usage > 85:
-            self._create_alert("warning", "system", "High disk usage", {"disk_usage": metrics.disk_usage})
+            self._create_alert("warning", "system", "High disk usage",
+                               {"disk_usage": metrics.disk_usage})
         # Error rate alert
         if metrics.error_rate > 0.1:
-            self._create_alert("critical", "application", "High error rate", {"error_rate": metrics.error_rate})
+            self._create_alert("critical", "application", "High error rate",
+                               {"error_rate": metrics.error_rate})
         elif metrics.error_rate > 0.05:
-            self._create_alert("warning", "application", "Elevated error rate", {"error_rate": metrics.error_rate})
+            self._create_alert("warning", "application", "Elevated error rate",
+                               {"error_rate": metrics.error_rate})
 
-    def _create_alert(self, severity: str, category: str, message: str, details: Dict[str, Any]):
+    def _create_alert(self, severity: str, category: str, message: str,
+                      details: Dict[str, Any]):
         "Create a new alert",
         alert = Alert(
             id=str(uuid.uuid4()),
@@ -492,7 +511,7 @@ class RealTimeAnalyticsDashboard:
         "Background thread for analytics processing",
         while self.running:
             try:
-        # Analyze recent metrics for insights
+                # Analyze recent metrics for insights
                 if len(self.metrics_history) >= 10:
                     recent_metrics = list(self.metrics_history)[-10:]
                     insights = self._analyze_metrics(recent_metrics)
@@ -507,7 +526,8 @@ class RealTimeAnalyticsDashboard:
                 logger.error(f"Error in analytics processor: {e}")
                 time.sleep(30)
 
-    def _analyze_metrics(self, metrics_list: List[SystemMetrics]) -> List[PredictiveInsight]:
+    def _analyze_metrics(self, metrics_list: List[SystemMetrics]) -> \
+            List[PredictiveInsight]:
         "Analyze metrics for insights",
         insights = []
         # Convert to DataFrame for analysis
@@ -525,7 +545,8 @@ class RealTimeAnalyticsDashboard:
             insight_type="anomaly",
             confidence=0.7,
             message="CPU usage anomalies detected",
-            data={"anomalies": [{"index": 10, "value": 105, "deviation": 5}], "confidence": 0.7}
+            data={"anomalies": [{"index": 10, "value": 105, "deviation": 5}],
+                  "confidence": 0.7}
         ))
         insights.append(PredictiveInsight(
             timestamp=datetime.now(),
@@ -608,7 +629,8 @@ class RealTimeAnalyticsDashboard:
             return self._get_recent_insights()
 
         filtered = [
-            asdict(insight) for insight in self.insights if insight["insight_type"] == insight_type
+            asdict(insight) for insight in self.insights
+            if insight["insight_type"] == insight_type
         ]
         return filtered[-10:]
 
@@ -660,7 +682,8 @@ class AnomalyDetector:
         anomalies = []
         for i, value in enumerate(values):
             if abs(value - mean) > 2 * std:    # 2-sigma rule
-                anomalies.append({"index": i, "value": value, "deviation": abs(value - mean)})
+                anomalies.append({"index": i, "value": value,
+                                  "deviation": abs(value - mean)})
 
         confidence = len(anomalies) / len(values) if values else 0.0
 
@@ -728,5 +751,5 @@ class TimeSeriesForecaster:
         }
 
 
-  # Global instance
+# Global instance
 analytics_dashboard = RealTimeAnalyticsDashboard()

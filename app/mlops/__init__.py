@@ -1,6 +1,7 @@
 """
 SmartCloudOps AI - MLOps Module
-Production-ready MLOps capabilities for experiment tracking, model management, and automated operations
+Production-ready MLOps capabilities for experiment tracking, model management,
+and automated operations
 
 Phase 2A: Working modules only - Conservative import approach
 """

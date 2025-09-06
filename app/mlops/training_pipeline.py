@@ -277,7 +277,8 @@ class TrainingPipeline:
                 if not experiment:
                     experiment = self.experiment_tracker.create_experiment(
                         name=experiment_name,
-                        description=f"Training pipeline experiment for {config.algorithm}",
+                        description=f"Training pipeline experiment for "
+                        f"{config.algorithm}",
                         objective="Model training and validation",
                         target_metric="validation_accuracy",
                         maximize_metric=True,
@@ -299,110 +300,142 @@ class TrainingPipeline:
         print(f"📋 Training job submitted: {job_name} ({job_id})")
         return job
 
-    def run_training_job(self, job_id: str) -> TrainingJob:
-        """Execute a training job"""
+    def _initialize_training_job(self, job_id: str) -> tuple:
+        """Initialize training job and configuration."""
         job = self.get_training_job(job_id)
         config = self.get_training_config(job.config_id)
 
-        # Update job status
         job.status = JobStatus.RUNNING
         job.start_time = datetime.now()
         self._save_training_job(job)
 
         print(f"🏃 Starting training job: {job.name}")
+        return job, config
 
-        try:
-            # Set up training environment
-            self._setup_training_environment(config)
+    def _prepare_training_environment(
+        self, job: TrainingJob, config: TrainingConfig
+    ) -> tuple:
+        """Prepare training environment and load dataset."""
+        self._setup_training_environment(config)
+        dataset_info = self._load_training_dataset(config.dataset_config)
 
-            # Load dataset
-            dataset_info = self._load_training_dataset(config.dataset_config)
+        algorithm_func = self.algorithms.get(config.algorithm)
+        if not algorithm_func:
+            raise ValueError(f"Unknown algorithm: {config.algorithm}")
 
-            # Initialize algorithm
-            algorithm_func = self.algorithms.get(config.algorithm)
-            if not algorithm_func:
-                raise ValueError(f"Unknown algorithm: {config.algorithm}")
+        if job.seed:
+            self._set_random_seed(job.seed)
 
-            # Set seed for reproducibility
-            if job.seed:
-                self._set_random_seed(job.seed)
+        return algorithm_func, dataset_info
 
-            # Run training
-            training_result = algorithm_func(
-                config=config, dataset_info=dataset_info, job=job
-            )
+    def _execute_training(
+        self,
+        algorithm_func,
+        config: TrainingConfig,
+        dataset_info: dict,
+        job: TrainingJob,
+    ) -> dict:
+        """Execute the training algorithm."""
+        return algorithm_func(config=config, dataset_info=dataset_info, job=job)
 
-            # Update job with results
-            job.output_model_path = training_result.get("model_path")
-            job.metrics = training_result.get("metrics", {})
-            job.validation_results = training_result.get("validation_results", {})
-            job.artifacts = training_result.get("artifacts", [])
+    def _update_job_results(
+        self, job: TrainingJob, training_result: dict, config: TrainingConfig
+    ):
+        """Update job with training results and validate."""
+        job.output_model_path = training_result.get("model_path")
+        job.metrics = training_result.get("metrics", {})
+        job.validation_results = training_result.get("validation_results", {})
+        job.artifacts = training_result.get("artifacts", [])
 
-            # Validate training results
-            validation_status = self._validate_training_results(job, config)
-            job.validation_results["overall_status"] = validation_status.value
+        validation_status = self._validate_training_results(job, config)
+        job.validation_results["overall_status"] = validation_status.value
 
-            # Register model if successful
-            if validation_status == ValidationResult.PASSED and job.output_model_path:
-                if self.model_registry:
-                    try:
-                        self._register_trained_model(job, config)
-                    except Exception as e:
-                        print(f"⚠️ Failed to register model: {e}")
+        return validation_status
 
-            # Log to experiment tracker
-            if self.experiment_tracker and job.experiment_run_id:
+    def _register_and_log_results(
+        self, job: TrainingJob, config: TrainingConfig, validation_status
+    ) -> None:
+        """Register model and log to experiment tracker."""
+        if validation_status == ValidationResult.PASSED and job.output_model_path:
+            if self.model_registry:
                 try:
-                    for metric_name, metric_value in job.metrics.items():
-                        self.experiment_tracker.log_metric(
-                            metric_name, metric_value, run_id=job.experiment_run_id
-                        )
-
-                    if job.output_model_path:
-                        self.experiment_tracker.log_artifact(
-                            job.output_model_path, run_id=job.experiment_run_id
-                        )
+                    self._register_trained_model(job, config)
                 except Exception as e:
-                    print(f"⚠️ Failed to log to experiment tracker: {e}")
+                    print(f"⚠️ Failed to register model: {e}")
 
-            # Complete job
-            job.status = JobStatus.COMPLETED
-            job.end_time = datetime.now()
+        if self.experiment_tracker and job.experiment_run_id:
+            try:
+                for metric_name, metric_value in job.metrics.items():
+                    self.experiment_tracker.log_metric(
+                        metric_name, metric_value, run_id=job.experiment_run_id
+                    )
+
+                if job.output_model_path:
+                    self.experiment_tracker.log_artifact(
+                        job.output_model_path, run_id=job.experiment_run_id
+                    )
+            except Exception as e:
+                print(f"⚠️ Failed to log to experiment tracker: {e}")
+
+    def _complete_job_successfully(self, job: TrainingJob) -> None:
+        """Complete job successfully."""
+        job.status = JobStatus.COMPLETED
+        job.end_time = datetime.now()
+        job.duration_seconds = (job.end_time - job.start_time).total_seconds()
+
+        print(f"✅ Training job completed: {job.name}")
+        print(f"   Duration: {job.duration_seconds:.2f} seconds")
+        print(f"   Metrics: {job.metrics}")
+
+    def _handle_job_failure(self, job: TrainingJob, error: Exception) -> None:
+        """Handle job failure."""
+        job.status = JobStatus.FAILED
+        job.end_time = datetime.now()
+        job.error_message = str(error)
+
+        if job.start_time:
             job.duration_seconds = (job.end_time - job.start_time).total_seconds()
 
-            print(f"✅ Training job completed: {job.name}")
-            print(f"   Duration: {job.duration_seconds:.2f} seconds")
-            print(f"   Metrics: {job.metrics}")
+        print(f"❌ Training job failed: {job.name}")
+        print(f"   Error: {error}")
+
+    def _finalize_job(self, job: TrainingJob) -> None:
+        """Finalize job and end experiment run."""
+        if self.experiment_tracker and job.experiment_run_id:
+            try:
+                from app.mlops.experiment_tracker import ExperimentStatus
+
+                status = (
+                    ExperimentStatus.COMPLETED
+                    if job.status == JobStatus.COMPLETED
+                    else ExperimentStatus.FAILED
+                )
+                self.experiment_tracker.end_run(status, job.experiment_run_id)
+            except Exception as e:
+                print(f"⚠️ Failed to end experiment run: {e}")
+
+        self._save_training_job(job)
+
+    def run_training_job(self, job_id: str) -> TrainingJob:
+        """Execute a training job"""
+        job, config = self._initialize_training_job(job_id)
+
+        try:
+            algorithm_func, dataset_info = self._prepare_training_environment(
+                job, config
+            )
+            training_result = self._execute_training(
+                algorithm_func, config, dataset_info, job
+            )
+            validation_status = self._update_job_results(job, training_result, config)
+            self._register_and_log_results(job, config, validation_status)
+            self._complete_job_successfully(job)
 
         except Exception as e:
-            # Handle failure
-            job.status = JobStatus.FAILED
-            job.end_time = datetime.now()
-            job.error_message = str(e)
-
-            if job.start_time:
-                job.duration_seconds = (job.end_time - job.start_time).total_seconds()
-
-            print(f"❌ Training job failed: {job.name}")
-            print(f"   Error: {e}")
+            self._handle_job_failure(job, e)
 
         finally:
-            # End experiment run
-            if self.experiment_tracker and job.experiment_run_id:
-                try:
-                    from app.mlops.experiment_tracker import ExperimentStatus
-
-                    status = (
-                        ExperimentStatus.COMPLETED
-                        if job.status == JobStatus.COMPLETED
-                        else ExperimentStatus.FAILED
-                    )
-                    self.experiment_tracker.end_run(status, job.experiment_run_id)
-                except Exception as e:
-                    print(f"⚠️ Failed to end experiment run: {e}")
-
-            # Save final job state
-            self._save_training_job(job)
+            self._finalize_job(job)
 
         return job
 

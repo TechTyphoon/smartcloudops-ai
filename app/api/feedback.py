@@ -18,7 +18,8 @@ MOCK_FEEDBACK = [
         "user_id": 1,
         "feedback_type": "bug_report",
         "title": "High CPU Alert False Positive",
-        "description": "The system flagged normal CPU usage as high during maintenance window",
+        "description": "The system flagged normal CPU usage as high during "
+        "maintenance window",
         "rating": 3,
         "status": "open",
         "priority": "medium",
@@ -31,7 +32,8 @@ MOCK_FEEDBACK = [
         "user_id": 2,
         "feedback_type": "feature_request",
         "title": "Dashboard Customization",
-        "description": "Would like to customize dashboard layout and add custom widgets",
+        "description": "Would like to customize dashboard layout and add "
+        "custom widgets",
         "rating": 5,
         "status": "in_progress",
         "priority": "low",
@@ -383,7 +385,8 @@ def export_feedback():
                 {
                     "status": "success",
                     "data": {"export": export_data},
-                    "message": f"Feedback exported successfully in {format_type} format",
+                    "message": f"Feedback exported successfully in "
+                    f"{format_type} format",
                 }
             ),
             200,

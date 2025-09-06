@@ -36,7 +36,8 @@ def main():
     logger.info(f"🚀 Starting SmartCloudOps AI server on {host}:{port}")
     logger.info(f"🔧 Debug mode: {debug}")
     logger.info(
-        f"⚡ Performance features: {'enabled' if _check_performance_available() else 'disabled'}"
+        f"⚡ Performance features: "
+        f"{'enabled' if _check_performance_available() else 'disabled'}"
     )
 
     try:

@@ -352,11 +352,11 @@ class OptimizedAnomalyDetector:
         """Generate cache key for data"""
         # Create a hash of the data for caching
         data_str = json.dumps(data, sort_keys=True)
-        return hashlib.md5(data_str.encode()).hexdigest()
+        return hashlib.sha256(data_str.encode()).hexdigest()
 
     def _generate_request_id(self, data: Dict[str, Any]) -> str:
         """Generate request ID for batch processing"""
-        return hashlib.md5(str(data).encode()).hexdigest()[:8]
+        return hashlib.sha256(str(data).encode()).hexdigest()[:8]
 
     def get_stats(self) -> Dict[str, Any]:
         """Get detector statistics"""

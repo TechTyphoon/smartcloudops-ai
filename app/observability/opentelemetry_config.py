@@ -52,7 +52,8 @@ def setup_opentelemetry(
     app.logger.info(f"Tracing: {'enabled' if enable_tracing else 'disabled'}")
     app.logger.info(f"Metrics: {'enabled' if enable_metrics else 'disabled'}")
     app.logger.info(
-        f"Logging instrumentation: {'enabled' if enable_logging_instrumentation else 'disabled'}"
+        f"Logging instrumentation: "
+        f"{'enabled' if enable_logging_instrumentation else 'disabled'}"
     )
 
 

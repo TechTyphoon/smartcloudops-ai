@@ -157,7 +157,8 @@ class SecurityConfig:
         "X-Frame-Options": "DENY",
         "X-XSS-Protection": "1; mode=block",
         "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-        "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'",
+        "Content-Security-Policy": "default-src 'self'; script-src 'self' "
+        "'unsafe-inline'",
         "Referrer-Policy": "strict-origin-when-cross-origin",
     }
 
@@ -171,7 +172,8 @@ class SecurityConfig:
             "min_length": 3,
             "max_length": 50,
             "pattern": r"^[a-zA-Z0-9_-]+$",
-            "description": "Username must be 3-50 characters, alphanumeric with underscore and dash",
+            "description": "Username must be 3-50 characters, alphanumeric "
+            "with underscore and dash",
         },
         "email": {
             "pattern": r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
@@ -184,13 +186,15 @@ class SecurityConfig:
             "require_lowercase": True,
             "require_digits": True,
             "require_special": True,
-            "description": "Password must be 12-128 characters with uppercase, lowercase, digits, and special characters",
+            "description": "Password must be 12-128 characters with uppercase, "
+            "lowercase, digits, and special characters",
         },
         "api_key": {
             "min_length": 32,
             "max_length": 64,
             "pattern": r"^[a-zA-Z0-9_-]+$",
-            "description": "API key must be 32-64 characters, alphanumeric with underscore and dash",
+            "description": "API key must be 32-64 characters, alphanumeric "
+            "with underscore and dash",
         },
     }
 
