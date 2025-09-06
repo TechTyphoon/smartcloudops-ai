@@ -473,8 +473,7 @@ class ModelVersioning(ModelVersioningSystem):
     ) -> str:
         """Deploy model version to environment"""
 
-        deployment_id = f"deploy_{version_id}_{environment}_{datetime.now(
-            ).strftime('%Y%m%d_%H%M%S')}"
+        deployment_id = f"deploy_{version_id}_{environment}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
         with sqlite3.connect(self.db_path) as conn:
             # Create deployment record
