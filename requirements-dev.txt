@@ -49,7 +49,7 @@ factory-boy>=3.3.0
 
 # Database Testing
 pytest-postgresql>=4.1.4
-pytest-mysql>=4.1.1
+pytest-mysql>=3.1.0
 
 # API Testing
 pytest-flask>=1.2.0
