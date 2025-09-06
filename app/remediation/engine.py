@@ -324,7 +324,7 @@ class RemediationEngine:
             return {
                 "status": "error",
                 "action_executed": None,
-                "error": "Invalid anomaly data: evaluation must be a non-empty dictionary",
+                "error": "Invalid anomaly data: evaluation must be a non-empty dict",
                 "timestamp": datetime.now().isoformat(),
             }
 
@@ -335,7 +335,7 @@ class RemediationEngine:
             return {
                 "status": "error",
                 "action_executed": None,
-                "error": f"Invalid anomaly data: missing required fields: {', '.join(missing_fields)}",
+                "error": f"Invalid anomaly data: missing: {', '.join(missing_fields)}",
                 "timestamp": datetime.now().isoformat(),
             }
 
