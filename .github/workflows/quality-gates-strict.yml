@@ -170,11 +170,12 @@ jobs:
           bandit-results.json
           safety-results.json
           trivy-results.sarif
+        if-no-files-found: ignore
         retention-days: 30
         
     - name: 📤 Upload SARIF to GitHub Security
       uses: github/codeql-action/upload-sarif@v3
-      if: always()
+      if: always() && hashFiles('trivy-results.sarif') != ''
       with:
         sarif_file: trivy-results.sarif
 
